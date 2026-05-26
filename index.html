@@ -893,17 +893,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   </div>
 
   <!-- verdict -->
-  <div class="verdict-band fi">
-    <div class="vsig" id="vsig">?</div>
-    <div class="vtext">
-      <h3 id="vhead">Reading conditions...</h3>
-      <p id="vbody">Checking flow, temperature, and sky.</p>
-    </div>
-    <div class="v-meta">
-      <div class="v-meta-lbl">Last checked</div>
-      <div class="v-meta-val" id="vtime">—</div>
-    </div>
-  </div>
+
 
   <!-- SECTION 1 -->
   <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
@@ -1005,7 +995,239 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
       <button class="btab active" data-tab="nymphs">Nymphs</button>
       <button class="btab" data-tab="streamers">Streamers</button>
       <button class="btab" data-tab="dries">Dry Flies</button>
-      <button class="btab" data-tab="lures">Lures</button>
+      <button class="btab" data-tab="lures">Lures &amp; Bait</button>
+    </div>
+    <div class="bpanel active" id="p-nymphs">
+      <div class="bgrid">
+        <div class="bi" data-bait-name="Hare's Ear Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Hare's Ear Nymph</div><div class="bdet">#12–16 · Natural / Gold bead</div><div class="bcond">Universal confidence fly. Fish it anywhere, always.</div></div>
+        <div class="bi" data-bait-name="Pheasant Tail Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Pheasant Tail Nymph</div><div class="bdet">#14–18 · Copper wire rib</div><div class="bcond">Deadly in clearer water or when fish are selective.</div></div>
+        <div class="bi" data-bait-name="Tungsten Bead Caddis"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Tungsten Bead Caddis</div><div class="bdet">#12–16 · Olive / Brown</div><div class="bcond">Heavy bead gets to the bottom fast in higher flows.</div></div>
+        <div class="bi" data-bait-name="Stonefly Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Stonefly Nymph</div><div class="bdet">#8–12 · Black / Brown, heavy</div><div class="bcond">Big meal for big fish. Fish along the bottom in fast runs.</div></div>
+        <div class="bi" data-bait-name="Zebra Midge"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">5</div><div class="bname">Zebra Midge</div><div class="bdet">#18–22 · Black/silver or red/silver</div><div class="bcond">When nothing else works in low clear water.</div></div>
+        <div class="bi" data-bait-name="Sulphur Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">6</div><div class="bname">Sulphur Nymph</div><div class="bdet">#14–16 · Yellow / Olive</div><div class="bcond">Pre-hatch nymphing — fish the last hour before hatch begins.</div></div>
+      </div>
+    </div>
+    <div class="bpanel" id="p-streamers">
+      <div class="bgrid">
+        <div class="bi" data-bait-name="Woolly Bugger"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Woolly Bugger</div><div class="bdet">#4–8 · Olive, Black, Brown</div><div class="bcond">Olive in normal conditions, black in stained water, white in high flows.</div></div>
+        <div class="bi" data-bait-name="Sculpin Pattern"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Sculpin Pattern</div><div class="bdet">#4–6 · Tan / Brown, weighted</div><div class="bcond">Browns eat sculpins year-round. Dead-drift then strip erratically.</div></div>
+        <div class="bi" data-bait-name="Clouser Minnow"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Clouser Minnow</div><div class="bdet">#4–8 · Chartreuse/White or Olive/White</div><div class="bcond">Excellent in slightly elevated or stained water.</div></div>
+        <div class="bi" data-bait-name="Articulated Streamer"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Articulated Streamer</div><div class="bdet">#2–4 · Natural or White, jointed</div><div class="bcond">Big fly for trophy fish. Strip fast, pause — erratic triggers reaction strikes.</div></div>
+      </div>
+    </div>
+    <div class="bpanel" id="p-dries">
+      <div class="bgrid">
+        <div class="bi" data-bait-name="Elk Hair Caddis"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Elk Hair Caddis</div><div class="bdet">#14–16 · Tan / Olive</div><div class="bcond">Evening staple. Caddis hatches reliable May–September.</div></div>
+        <div class="bi" data-bait-name="Parachute Adams"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Parachute Adams</div><div class="bdet">#14–18 · Grey</div><div class="bcond">All-purpose dry when you see rises but can't ID the hatch.</div></div>
+        <div class="bi" data-bait-name="Sulphur Comparadun"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Sulphur Comparadun</div><div class="bdet">#14–16 · Yellow / Orange</div><div class="bcond">Match the evening sulphur hatch May–July. Low-riding profile.</div></div>
+        <div class="bi" data-bait-name="Royal Wulff"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Royal Wulff</div><div class="bdet">#12–14 · Classic attractor</div><div class="bcond">High-floating. Also works as a dry-dropper indicator.</div></div>
+      </div>
+    </div>
+    <div class="bpanel" id="p-lures">
+      <div class="bgrid">
+        <div class="bi" data-bait-name="Rapala Original Floating"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Rapala Original Floating</div><div class="bdet">4–7 cm · Firetiger, Perch, Rainbow</div><div class="bcond">Perch in clear water, firetiger in stained conditions, gold in low light.</div></div>
+        <div class="bi" data-bait-name="Blue Fox Vibrax Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Blue Fox Vibrax Spinner</div><div class="bdet">#3–5 · Silver / Gold blade</div><div class="bcond">Silver in clear conditions, gold in stained. Slow retrieve in cold.</div></div>
+        <div class="bi" data-bait-name="Kastmaster Spoon"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Kastmaster Spoon</div><div class="bdet">1/4–3/8 oz · Silver, Gold</div><div class="bcond">Gets deep fast. Let it sink then work slowly near dam pools.</div></div>
+        <div class="bi" data-bait-name="Mepps Aglia Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Mepps Aglia Spinner</div><div class="bdet">#3–4 · Black/Yellow, Natural</div><div class="bcond">Classic trout spinner. Consistent in all flows through seams.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="dam fi" id="dam-section">
+    <div class="dam-icon" id="dam-icon">🏗</div>
+    <div>
+      <div class="dlbl" id="dam-lbl">Key Variable</div>
+      <h3 id="dam-title">Loading…</h3>
+      <p id="dam-desc"></p>
+      <div class="dlinks" id="dam-links"></div>
+    </div>
+  </div>
+
+  <div class="ssec fi" id="species-section">
+    <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
+    <div class="srail" id="species-rail"></div>
+  </div>
+
+<div class="res-footer">
+    <p>Data: Environment Environment Canada Water Office · Open-Meteo · Ontario Fishing Regulations · Refreshes every 15 min</p>
+    <div class="res-flogo">StreamCast</div>
+  </div>
+</div>
+
+<!-- END LANDING -->
+
+<!-- ============ RESULTS PAGE ============ -->
+<div id="results">
+  <header class="res-header">
+    <div class="res-logo-wrap">
+      <div class="res-logo-wave"><span></span><span></span><span></span></div>
+      <div class="res-logo-name">StreamCast</div>
+    </div>
+    <div class="res-center">
+      <div class="res-center-lbl">Viewing</div>
+      <div class="res-center-val" id="res-river"></div>
+    </div>
+    <div class="res-right">
+      <button class="back-btn" id="back-btn-el" >&#8592; New Search</button>
+    </div>
+  </header>
+
+  <!-- one-glance summary strip -->
+  <!-- Species + Summary Banner -->
+  <div id="species-banner" class="fi" style="background:var(--moss);border-bottom:1px solid rgba(139,181,160,0.15);padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;">
+    <div style="flex-shrink:0">
+      <div style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-bottom:.3rem">Target Species</div>
+      <div style="display:flex;align-items:center;gap:.6rem">
+          <div id="species-banner-fish" style="width:52px;height:30px;border-radius:4px;background:rgba(139,181,160,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+          <div id="species-display" style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
+        </div>
+    </div>
+    <div style="width:1px;background:rgba(139,181,160,0.2);align-self:stretch;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-bottom:.3rem">Conditions Summary</div>
+      <div id="plain-summary" style="font-size:.92rem;color:var(--cream);line-height:1.5;font-weight:300">Loading conditions…</div>
+    </div>
+    <div id="summary-stats" style="flex-shrink:0;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+
+      <div style="text-align:center">
+        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.25rem">Window</div>
+        <div id="sum-window" style="font-family:'Lora',serif;font-size:.95rem;font-weight:600;font-style:italic;color:var(--cream)">—</div>
+        <div id="sum-window-note" style="font-family:'DM Mono',monospace;font-size:.52rem;color:var(--mist);opacity:.5;margin-top:.1rem"></div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.25rem">Method</div>
+        <div id="sum-method" style="font-family:'Lora',serif;font-size:.95rem;font-weight:600;font-style:italic;color:var(--cream)">—</div>
+        <div id="sum-method-note" style="font-family:'DM Mono',monospace;font-size:.52rem;color:var(--mist);opacity:.5;margin-top:.1rem"></div>
+      </div>
+    </div>
+  </div>
+  <!-- keep old IDs for JS compat -->
+  <span id="sum-verdict" style="display:none"></span>
+  <span id="sum-verdict-note" style="display:none"></span>
+
+  <!-- TOP PICK BAND — populated by JS, hidden until ready -->
+  <div class="tpband" id="tpband" style="display:none">
+    <div class="tpband-inner">
+      <div class="tp-eyebrow">StreamCast Recommendation</div>
+      <div class="tp-headline" id="tp-headline">Loading…</div>
+      <div class="tp-why" id="tp-why"></div>
+      <div class="tp-chips" id="tp-chips"></div>
+    </div>
+  </div>
+
+  <!-- RIVER RANKER — beginner mode only, hidden in expert mode -->
+  <div class="rrank-section" id="rrank-section" style="display:none">
+    <div class="rrank-inner">
+      <div class="rrank-lbl" id="rrank-lbl">Nearby rivers ranked by today&#39;s conditions</div>
+      <div class="rrank-grid" id="rrank-grid"></div>
+    </div>
+  </div>
+
+  <!-- verdict -->
+
+
+  <!-- SECTION 1 -->
+  <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
+
+    <div class="asec fi">
+    <div class="agrid" id="access-grid-wrap">
+      <div class="agrid-cards" id="access-grid"></div>
+      <div class="agrid-map" id="access-map">
+        <div class="map-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase">Map loads with access points</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label fi"><div class="sec-num">2</div><div><h3>River Conditions</h3><p>Flow, temperature, and sky — the three variables that determine whether browns are feeding.</p></div></div>
+
+  <div class="cgrid">
+    <div class="col fi">
+      <div class="col-lbl" id="flow-gauge-lbl">Flow</div>
+      <div id="flow-gauge-link" style="margin-bottom:.75rem;display:none">
+        <a id="flow-gauge-anchor" href="#" target="_blank" 
+           style="font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.06em;color:var(--water);text-decoration:none;border-bottom:1px solid rgba(58,107,120,0.4);padding-bottom:1px;">
+          &#8599; Check live gauge
+        </a>
+      </div>
+      <div class="bnum-wrap"><div class="bnum" id="fval">—</div><div class="bnum-u">m³/s</div><span class="trd" id="ftrend"></span></div>
+      <div class="bnum-l" id="flbl">Loading gauge data...</div>
+      <div class="gw">
+        <div class="gh"><span class="gn">vs. Sweet Spot (<span id="sweet-range-lbl">8–12</span>)</span><span class="gv" id="fgv">—</span></div>
+        <div class="gt"><div class="gf" id="fbar" style="width:0%"></div></div>
+        <div class="gr"><span>0</span><span id="sweet-range-axis">Sweet 8–12</span><span>20+</span></div>
+        <div class="gs" id="fstat">—</div>
+      </div>
+      <hr class="divr">
+      <ul class="cl" id="fcl"><li><span class="ci">○</span><span>Loading...</span></li></ul>
+    </div>
+
+    <div class="col fi">
+      <div class="col-lbl">Temperature &amp; Light</div>
+      <div class="bnum-wrap"><div class="bnum" id="tval">—</div><div class="bnum-u">°C</div></div>
+      <div class="bnum-l" id="tlbl">Loading temperature...</div>
+      <div class="gw">
+        <div class="gh"><span class="gn">Water Temp vs. Feeding Window</span><span class="gv" id="tgv">—</span></div>
+        <div class="gt"><div class="gf" id="tbar" style="width:0%"></div></div>
+        <div class="gr"><span>0°C</span><span>Prime 8–14°C</span><span>20°C</span></div>
+        <div class="gs" id="tstat">—</div>
+      </div>
+      <hr class="divr">
+      <div class="gw">
+        <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
+        <div class="gt"><div class="gf" id="skybar" style="width:0%"></div></div>
+        <div class="gr"><span>Clear</span><span>Ideal: Overcast</span><span>100%</span></div>
+        <div class="gs" id="skystat">—</div>
+      </div>
+      <hr class="divr">
+      <div class="col-lbl" style="margin-top:0">Best Window Today</div>
+      <div id="twin" style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500;color:var(--moss)">—</div>
+      <div id="tnote" style="font-size:.72rem;color:var(--sage);margin-top:.25rem;line-height:1.4"></div>
+    </div>
+
+    <div class="col fi" id="routine-col">
+    <div class="col-lbl">Pre-Trip Routine</div>
+    <div class="routine" id="routine-steps"></div>
+  </div>
+</div><!-- SECTION 2 -->
+  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Recommended Methods</h3><p>Ranked by effectiveness for current conditions. Check local regulations — some reaches have gear restrictions.</p></div></div>
+
+  <div class="mgrid fi">
+    <div class="mc">
+      <div class="mpr p1">▸ Primary Method</div>
+      <div class="mn" id="m1n">Nymphing</div>
+      <div class="md" id="m1d">The bread and butter on the Grand. Dead-drift subsurface flies through seams and feeding lanes.</div>
+      <div class="mcond" id="m1c"><span>Best at: 8–14°C water, 8–12 m³/s</span><span>Fish: Head of runs, tailouts</span><span>Leader: 9–12 ft · 4x–5x tippet</span></div>
+      <span class="rnote">Artificial only in many reaches</span>
+    </div>
+    <div class="mc">
+      <div class="mpr p2">▸ Secondary Method</div>
+      <div class="mn" id="m2n">Streamer Fishing</div>
+      <div class="md" id="m2d">Swing or strip through deeper pools and undercut banks. Browns respond aggressively in low light.</div>
+      <div class="mcond" id="m2c"><span>Best at: Overcast sky, rising flow</span><span>Fish: Deep pools, undercut banks</span><span>Leader: 9 ft · 2x–3x</span></div>
+      <span class="rnote">Artificial only in many reaches</span>
+    </div>
+    <div class="mc">
+      <div class="mpr p3">▸ Worth Trying</div>
+      <div class="mn" id="m3n">Dry Fly</div>
+      <div class="md" id="m3d">Summer hatches on the Grand can be spectacular. Watch the surface — if fish are rising, switch.</div>
+      <div class="mcond" id="m3c"><span>Best at: Overcast, 10–16°C water</span><span>Watch for: Surface rises, hatches</span><span>Leader: 12–15 ft · 5x–6x</span></div>
+      <span class="rnote">Artificial only in many reaches</span>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="sec-label fi"><div class="sec-num">4</div><div><h3>Flies, Lures &amp; Baits</h3><p>What to have in your box. Bait rules vary by river and reach — always verify current OMNR regulations before fishing.</p></div></div>
+
+  <div class="bsec fi">
+    <div class="btabs">
+      <button class="btab active" data-tab="nymphs">Nymphs</button>
+      <button class="btab" data-tab="streamers">Streamers</button>
+      <button class="btab" data-tab="dries">Dry Flies</button>
+      <button class="btab" data-tab="lures">Lures &amp; Bait</button>
     </div>
     <div class="bpanel active" id="p-nymphs">
       <div class="bgrid">
@@ -1067,6 +1289,19 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2490,32 +2725,7 @@ function clearTech(){document.querySelectorAll(".tech-chip").forEach(function(c)
 
 function goToResults(){
   // Beginner mode: pick top-ranked nearby river automatically
-  if(appMode === 'beginner' && !selectedRiver) {
-    var locInp = document.getElementById('loc-input-field');
-    var locKey = resolveLocation(locInp ? locInp.value : '');
-    if (!locKey) {
-      locInp.style.borderColor="#b87333"; locInp.focus();
-      setTimeout(function(){locInp.style.borderColor="";},2000);
-      return;
-    }
-    var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
-    var rivers = getRivers(locKey, _maxMin);
-    rivers.forEach(function(r){ r.driveTime = r.times[locKey]||60; });
-    var ranked = rankRivers(rivers, selectedSpecies,
-      document.getElementById('trip-date').value||new Date().toISOString().slice(0,10));
-    if (ranked.length > 0) {
-      selectedRiver = ranked[0].name + ', ' + ranked[0].loc.replace(/–/g,'-');
-      document.getElementById('res-river').textContent = selectedRiver;
-      window._beginnerLocKey = locKey;
-    }
-  }
-  if(!selectedRiver){
-    var inp=document.getElementById("loc-input-field");
-    inp.style.borderColor="#b87333"; inp.focus();
-    setTimeout(function(){inp.style.borderColor="";},2000);
-    return;
-  }
-    // Capture technique families — array
+  // Capture technique families — array
   if (appMode === 'beginner') {
     selectedTechFamily = Array.from(document.querySelectorAll('.tech-family-btn.active'))
       .map(function(b){ return b.getAttribute('data-family')||''; })
@@ -2532,7 +2742,44 @@ function goToResults(){
   selectedSpecies=Array.from(document.querySelectorAll(".species-btn.active"))
     .map(function(b){return b.getAttribute("data-value");}).filter(function(v){return v!=="";});
   selectedSpeciesLabel=selectedSpecies.length===0?"Any Species":selectedSpecies.length===1?(_sm[selectedSpecies[0]]||"Any"):selectedSpecies.map(function(k){return _sm[k];}).join(" + ");
-  document.getElementById("res-river").textContent=selectedRiver;
+  if(appMode === 'beginner') { // always re-rank in beginner mode to respect species selection
+    var locInp = document.getElementById('loc-input-field');
+    var locKey = resolveLocation(locInp ? locInp.value : '');
+    if (!locKey) {
+      locInp.style.borderColor="#b87333"; locInp.focus();
+      setTimeout(function(){locInp.style.borderColor="";},2000);
+      return;
+    }
+    var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
+    var rivers = getRivers(locKey, _maxMin);
+    rivers.forEach(function(r){ r.driveTime = r.times[locKey]||60; });
+    var _tripDate = document.getElementById('trip-date').value||new Date().toISOString().slice(0,10);
+    var ranked = rankRivers(rivers, selectedSpecies, _tripDate);
+    // If species selected, prefer a river that actually has it over the closest one
+    var bestPick = ranked[0];
+    if (selectedSpecies.length > 0) {
+      var _sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+      var targetSpeciesNames = selectedSpecies.map(function(k){ return _sm[k]; });
+      // Find the highest-scored river that has at least one selected species
+      var withSpecies = ranked.filter(function(r){
+        var cfg = getRiverConfig(r.name);
+        return cfg && cfg.species && targetSpeciesNames.some(function(n){ return cfg.species.indexOf(n) !== -1; });
+      });
+      if (withSpecies.length > 0) bestPick = withSpecies[0];
+    }
+    if (bestPick) {
+      selectedRiver = bestPick.name + ', ' + bestPick.loc.replace(/–/g,'-');
+      document.getElementById('res-river').textContent = selectedRiver;
+      window._beginnerLocKey = locKey;
+    }
+  }
+  if(!selectedRiver){
+    var inp=document.getElementById("loc-input-field");
+    inp.style.borderColor="#b87333"; inp.focus();
+    setTimeout(function(){inp.style.borderColor="";},2000);
+    return;
+  }
+    document.getElementById("res-river").textContent=selectedRiver;
   document.getElementById("landing").style.display="none";
   document.getElementById("results").style.display="block";
   window.scrollTo(0,0);
@@ -2857,9 +3104,9 @@ async function renderResults(){
   var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
   var isToday=dateStr===new Date().toISOString().slice(0,10);
   var now=new Date();
-  document.getElementById("vtime").textContent=now.toLocaleTimeString("en-CA",{hour:"2-digit",minute:"2-digit"});
-  document.getElementById("vhead").textContent="Reading conditions\u2026";
-  document.getElementById("vsig").className="vsig"; document.getElementById("vsig").textContent="\u2026";
+  var _vtime=document.getElementById("vtime"); if(_vtime) _vtime.textContent=now.toLocaleTimeString("en-CA",{hour:"2-digit",minute:"2-digit"});
+  var _vhrd=document.getElementById("vhead"); if(_vhrd) _vhrd.textContent="Reading conditions\u2026";
+  var _vsig=document.getElementById("vsig"); if(_vsig){_vsig.className="vsig"; _vsig.textContent="\u2026";}
 
   var airTemp=12, cloudPct=50;
   try{var wx=await fetchWeather(cfg);airTemp=wx.airTemp;cloudPct=wx.cloudPct;}
@@ -3073,10 +3320,9 @@ async function renderResults(){
     } else {vh="Marginal \u2014 fish selectively.";vb="Some factors are off. Target the best window of the day and focus on prime lies.";}
   }
 
-  var sig=document.getElementById("vsig");
-  sig.textContent=clsIcon(vl); sig.className="vsig "+vl;
-  document.getElementById("vhead").textContent=vh;
-  document.getElementById("vbody").textContent=vb;
+  var sig=document.getElementById("vsig"); if(sig){sig.textContent=clsIcon(vl); sig.className="vsig "+vl;}
+  var _vh=document.getElementById("vhead"); if(_vh)_vh.textContent=vh;
+  var _vb=document.getElementById("vbody"); if(_vb)_vb.textContent=vb;
 
   // Flow column
   if(flow!=null){
@@ -3125,6 +3371,7 @@ async function renderResults(){
 
   updateMethods(fc,tc,sc,flow,wt);
   updateAccessFlowNotes(cfg,flow);
+  autoSelectBaitTab();
 
   // Top Pick band — always shown
   buildTopPick(nearbyRivers, flow, wt, cloudPct, tc, sc, selectedSpecies);
@@ -3148,122 +3395,44 @@ function renderAccessMap(cfg, coords) {
   var mapEl = document.getElementById("access-map");
   if (!mapEl || coords.length === 0) return;
 
-  // Use OpenStreetMap embed via iframe with markers
-  // Calculate center from coords
   var lat = coords.reduce(function(s,c){return s+c.lat;},0) / coords.length;
   var lng = coords.reduce(function(s,c){return s+c.lng;},0) / coords.length;
+  var spread = coords.length <= 2 ? 0.06 : 0.09;
 
-  // Build a simple leaflet map via a data URL approach
-  // Use OSM static tile approach via an iframe pointing to OSM
-  var markerParams = coords.map(function(c, i) {
-    var a = cfg.access[i];
-    var color = a ? (a.crowd==="low"?"green":a.crowd==="med"?"orange":"red") : "blue";
-    return "marker=" + c.lat + "," + c.lng;
-  }).join("&");
+  // Build OSM static embed URL — use the first point as map marker
+  // OSM supports mlat/mlon for a single pin; we show all via the legend
+  var osmUrl = 'https://www.openstreetmap.org/export/embed.html'
+    + '?bbox=' + (lng-spread) + '%2C' + (lat-spread*0.75)
+    + '%2C' + (lng+spread) + '%2C' + (lat+spread*0.75)
+    + '&layer=mapnik'
+    + '&marker=' + lat + '%2C' + lng;
 
-  // Embed using geoapify static map (free, no key needed for basic use)
-  // Fallback: OpenStreetMap iframe
-  var zoom = coords.length <= 2 ? 13 : 11;
-  var osmUrl = "https://www.openstreetmap.org/export/embed.html?bbox=" +
-    (lng-0.08) + "%2C" + (lat-0.06) + "%2C" + (lng+0.08) + "%2C" + (lat+0.06) +
-    "&layer=mapnik";
-
-  // Build the map panel with iframe + legend
+  // Legend
   var legend = cfg.access.map(function(a, i) {
     var c = coords[i];
-    if (!c) return "";
-    var dotClass = a.crowd === "low" ? "low" : a.crowd === "med" ? "med" : "high";
-    return '<div class="map-pin" data-spot-idx="' + i + '">' +
-      '<div class="map-pin-dot ' + dotClass + '"></div>' +
-      '<span>' + a.name + '</span>' +
-    '</div>';
-  }).join("");
+    if (!c) return '';
+    var dotClass = a.crowd === 'low' ? 'low' : a.crowd === 'med' ? 'med' : 'high';
+    var num = i + 1;
+    return '<div class="map-pin" data-spot-idx="' + i + '">'
+      + '<div class="map-pin-dot ' + dotClass + '" style="min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff">' + num + '</div>'
+      + '<span>' + a.name.split('\u2014')[0].trim() + '</span>'
+      + '</div>';
+  }).join('');
 
   mapEl.innerHTML =
-    '<iframe src="' + osmUrl + '" style="width:100%;height:430px;border:none;display:block" loading="lazy"></iframe>' +
-    '<div class="map-pin-list" style="background:var(--deep);height:170px;overflow-y:auto">' +
-      '<div class="map-legend-lbl">Spots — click to scroll</div>' +
-      legend +
-    '</div>';
-  // Wire map pin clicks
+    '<iframe src="' + osmUrl + '" style="width:100%;height:420px;border:none;display:block" loading="lazy"></iframe>'
+    + '<div class="map-pin-list" style="background:var(--deep);padding:.6rem .75rem;max-height:180px;overflow-y:auto">'
+    + '<div class="map-legend-lbl">Tap a spot to scroll \u2192</div>'
+    + legend
+    + '</div>';
+
   setTimeout(function(){
     mapEl.querySelectorAll('.map-pin[data-spot-idx]').forEach(function(el){
-      el.addEventListener('click',function(){ scrollToSpot(parseInt(this.getAttribute('data-spot-idx'))); });
+      el.addEventListener('click', function(){
+        scrollToSpot(parseInt(this.getAttribute('data-spot-idx')));
+      });
     });
   }, 100);
-}
-
-function scrollToSpot(idx) {
-  var cards = document.querySelectorAll(".ac[data-spot-idx]");
-  if (cards[idx]) {
-    cards[idx].scrollIntoView({behavior:"smooth", block:"nearest"});
-    cards[idx].style.background = "rgba(45,74,50,0.06)";
-    setTimeout(function(){ cards[idx].style.background = ""; }, 1200);
-  }
-}
-
-function highlightSpot(idx) {
-  // Just visual feedback on click - already handled by scrollToSpot
-}
-
-
-
-// ── BAIT IMAGE QUERIES ────────────────────────────────────────────────────────
-var BAIT_IMAGES = {
-  'Hare\'s Ear Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5IYXJlJiMzOTtzIEVhciBOeW1waDwvdGV4dD4KICA8IS0tIEhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNTUgNzAgUSAxNjUgNzAgMTY1IDgwIFEgMTY1IDk1IDE1MCA5NSBRIDE0MCA5NSAxMzggODgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJlYWQgaGVhZCAtLT4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSI2OCIgcj0iOSIgZmlsbD0iI2M4OTYzYSIgc3Ryb2tlPSIjYTA3MDMwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSI2NSIgcj0iMyIgZmlsbD0iI2U4Yjg2MCIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSBCb2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDciIGN5PSI3NCIgcng9IjIyIiByeT0iOSIgZmlsbD0iI2I4YTg4MiIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gUmliYmluZyAtLT4KICA8bGluZSB4MT0iOTUiIHkxPSI2NiIgeDI9IjkyIiB5Mj0iODIiIHN0cm9rZT0iI2M4OTYzYSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTAzIiB5MT0iNjUiIHgyPSIxMDAiIHkyPSI4MyIgc3Ryb2tlPSIjYzg5NjNhIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNyIvPgogIDxsaW5lIHgxPSIxMTEiIHkxPSI2NSIgeDI9IjEwOSIgeTI9IjgzIiBzdHJva2U9IiNjODk2M2EiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjExOSIgeTE9IjY2IiB4Mj0iMTE4IiB5Mj0iODMiIHN0cm9rZT0iI2M4OTYzYSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIFRob3JheCAtIHNoYWdnaWVyIC0tPgogIDxlbGxpcHNlIGN4PSIxMzIiIGN5PSI3MyIgcng9IjEwIiByeT0iMTAiIGZpbGw9IiM4YTdhNWEiIHN0cm9rZT0iIzZhNWEzYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEhhcmUgZHViYmluZyBmaWJlcnMgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjYzIiB4Mj0iMTIyIiB5Mj0iNTgiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTMzIiB5MT0iNjIiIHgyPSIxMzAiIHkyPSI1NiIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMzgiIHkxPSI2MyIgeDI9IjEzOCIgeTI9IjU3IiBzdHJva2U9IiM5YThhNmEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjgzIiB4Mj0iMTIyIiB5Mj0iOTAiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTMzIiB5MT0iODQiIHgyPSIxMzAiIHkyPSI5MSIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODQiIHkxPSI3MyIgeDI9IjcwIiB5Mj0iNjgiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODQiIHkxPSI3NSIgeDI9IjY4IiB5Mj0iNzMiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODQiIHkxPSI3NyIgeDI9IjcwIiB5Mj0iODAiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFNpemUgdGV4dCAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMTImIzgyMTE7MTYgIMK3ICBHb2xkIGJlYWQgIMK3ICBOYXR1cmFsPC90ZXh0Pgo8L3N2Zz4=',
-  'Pheasant Tail Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5QaGVhc2FudCBUYWlsIE55bXBoPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMTU1IDcwIFEgMTY1IDcwIDE2NSA4MCBRIDE2NSA5NSAxNTAgOTUgUSAxNDAgOTUgMTM4IDg4IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPGNpcmNsZSBjeD0iMTMwIiBjeT0iNjgiIHI9IjgiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGNpcmNsZSBjeD0iMTI4IiBjeT0iNjUiIHI9IjIuNSIgZmlsbD0iI2U4Yjg2MCIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSBTbGltIGJvZHkgLS0+CiAgPGVsbGlwc2UgY3g9IjEwNSIgY3k9IjcyIiByeD0iMjQiIHJ5PSI2IiBmaWxsPSIjOEI0NTEzIiBzdHJva2U9IiM2QjM0MTAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBDb3BwZXIgd2lyZSByaWJiaW5nIC0tPgogIDxsaW5lIHgxPSI5MiIgeTE9IjY3IiB4Mj0iOTAiIHkyPSI3NyIgc3Ryb2tlPSIjYzg3ODMyIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxsaW5lIHgxPSIxMDAiIHkxPSI2NiIgeDI9Ijk4IiB5Mj0iNzgiIHN0cm9rZT0iI2M4NzgzMiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8bGluZSB4MT0iMTA4IiB5MT0iNjYiIHgyPSIxMDciIHkyPSI3OCIgc3Ryb2tlPSIjYzg3ODMyIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxsaW5lIHgxPSIxMTYiIHkxPSI2NyIgeDI9IjExNiIgeTI9Ijc4IiBzdHJva2U9IiNjODc4MzIiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGxpbmUgeDE9IjEyNCIgeTE9IjY3IiB4Mj0iMTI0IiB5Mj0iNzciIHN0cm9rZT0iI2M4NzgzMiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8IS0tIFdpbmdjYXNlIC0tPgogIDxlbGxpcHNlIGN4PSIxMzAiIGN5PSI2OCIgcng9IjExIiByeT0iNSIgZmlsbD0iIzVhMzAxMCIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBUYWlsIGZpYmVycyAtLT4KICA8bGluZSB4MT0iODAiIHkxPSI3MCIgeDI9IjY1IiB5Mj0iNjIiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI3MiIgeDI9IjYzIiB5Mj0iNzEiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI3NCIgeDI9IjY1IiB5Mj0iNzgiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIExlZ3MgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjczIiB4Mj0iMTIwIiB5Mj0iODIiIHN0cm9rZT0iIzVhMzAxMCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTMyIiB5MT0iNzMiIHgyPSIxMjgiIHkyPSI4NCIgc3Ryb2tlPSIjNWEzMDEwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMzYiIHkxPSI3MyIgeDI9IjEzNiIgeTI9Ijg0IiBzdHJva2U9IiM1YTMwMTAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzE0JiM4MjExOzE4ICDCtyAgQ29wcGVyIHJpYiAgwrcgIEJyb3duPC90ZXh0Pgo8L3N2Zz4=',
-  'Tungsten Bead Caddis': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5UdW5nc3RlbiBCZWFkIENhZGRpczwvdGV4dD4KICA8cGF0aCBkPSJNIDE1NSA3MCBRIDE2NSA3MCAxNjUgODAgUSAxNjUgOTUgMTUwIDk1IFEgMTQwIDk1IDEzOCA4OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gVHVuZ3N0ZW4gYmVhZCAtIGRhcmtlci9oZWF2aWVyIHRoYW4gYnJhc3MgLS0+CiAgPGNpcmNsZSBjeD0iMTMwIiBjeT0iNjgiIHI9IjEwIiBmaWxsPSIjNzA3MDcwIiBzdHJva2U9IiM1MDUwNTAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjEyNyIgY3k9IjY0IiByPSIzLjUiIGZpbGw9IiNhMGEwYTAiIG9wYWNpdHk9IjAuNSIvPgogIDwhLS0gU2VnbWVudGVkIGNhZGRpcyBib2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3MyIgcng9IjI0IiByeT0iOCIgZmlsbD0iIzZCN0MzQSIgc3Ryb2tlPSIjNGE1YTJhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gU2VnbWVudHMgLS0+CiAgPGxpbmUgeDE9Ijg4IiB5MT0iNjYiIHgyPSI4OCIgeTI9IjgwIiBzdHJva2U9IiM0YTVhMmEiIHN0cm9rZS13aWR0aD0iMC44IiBvcGFjaXR5PSIwLjYiLz4KICA8bGluZSB4MT0iOTYiIHkxPSI2NSIgeDI9Ijk2IiB5Mj0iODEiIHN0cm9rZT0iIzRhNWEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiIG9wYWNpdHk9IjAuNiIvPgogIDxsaW5lIHgxPSIxMDQiIHkxPSI2NSIgeDI9IjEwNCIgeTI9IjgxIiBzdHJva2U9IiM0YTVhMmEiIHN0cm9rZS13aWR0aD0iMC44IiBvcGFjaXR5PSIwLjYiLz4KICA8bGluZSB4MT0iMTEyIiB5MT0iNjUiIHgyPSIxMTIiIHkyPSI4MSIgc3Ryb2tlPSIjNGE1YTJhIiBzdHJva2Utd2lkdGg9IjAuOCIgb3BhY2l0eT0iMC42Ii8+CiAgPGxpbmUgeDE9IjEyMCIgeTE9IjY2IiB4Mj0iMTIwIiB5Mj0iODAiIHN0cm9rZT0iIzRhNWEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiIG9wYWNpdHk9IjAuNiIvPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODAiIHkxPSI3MiIgeDI9IjY1IiB5Mj0iNzAiIHN0cm9rZT0iIzZCN0MzQSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBUaG9yYXggLS0+CiAgPGVsbGlwc2UgY3g9IjEzMSIgY3k9IjcyIiByeD0iOSIgcnk9IjkiIGZpbGw9IiM0YTNhMmEiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIExlZ3MgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjczIiB4Mj0iMTE4IiB5Mj0iODQiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTMxIiB5MT0iNzQiIHgyPSIxMjQiIHkyPSI4NiIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMzQiIHkxPSI3MyIgeDI9IjEzNCIgeTI9Ijg2IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzEyJiM4MjExOzE2ICDCtyAgVHVuZ3N0ZW4gIMK3ICBPbGl2ZS9Ccm93bjwvdGV4dD4KPC9zdmc+',
-  'Stonefly Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TdG9uZWZseSBOeW1waDwvdGV4dD4KICA8cGF0aCBkPSJNIDE1OCA2OCBRIDE2OCA2OCAxNjggNzggUSAxNjggOTMgMTUzIDkzIFEgMTQzIDkzIDE0MSA4NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gQnJvYWQgZmxhdCBib2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI3MiIgcng9IjI2IiByeT0iMTEiIGZpbGw9IiMzYTJhMWEiIHN0cm9rZT0iIzJhMWEwYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBTZWdtZW50YXRpb24gb24gZGFyayBib2R5IC0tPgogIDxsaW5lIHgxPSI5MCIgeTE9IjYyIiB4Mj0iOTAiIHkyPSI4MiIgc3Ryb2tlPSIjNWE0YTNhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMDAiIHkxPSI2MSIgeDI9IjEwMCIgeTI9IjgzIiBzdHJva2U9IiM1YTRhM2EiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjExMCIgeTE9IjYxIiB4Mj0iMTEwIiB5Mj0iODMiIHN0cm9rZT0iIzVhNGEzYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTIwIiB5MT0iNjEiIHgyPSIxMjAiIHkyPSI4MyIgc3Ryb2tlPSIjNWE0YTNhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gV2luZ2Nhc2UgLS0+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjY4IiByeD0iMTQiIHJ5PSI3IiBmaWxsPSIjMmExYTBhIi8+CiAgPCEtLSBIZWFkL2JlYWQgLS0+CiAgPGNpcmNsZSBjeD0iMTQzIiBjeT0iNjciIHI9IjkiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBBbnRlbm5hcyAtLT4KICA8bGluZSB4MT0iODIiIHkxPSI2OCIgeDI9IjYwIiB5Mj0iNTgiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjgyIiB5MT0iNzAiIHgyPSI2MCIgeTI9IjcyIiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDwhLS0gVGFpbHMgLS0+CiAgPGxpbmUgeDE9IjgyIiB5MT0iNzMiIHgyPSI2MiIgeTI9Ijc4IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSI4MiIgeTE9Ijc2IiB4Mj0iNjQiIHkyPSI4NSIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8IS0tIE1hbnkgbGVncyAtLT4KICA8bGluZSB4MT0iMTAwIiB5MT0iODMiIHgyPSI5MCIgeTI9Ijk0IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEwOCIgeTE9IjgzIiB4Mj0iMTAwIiB5Mj0iOTUiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTE2IiB5MT0iODMiIHgyPSIxMTAiIHkyPSI5NSIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMjQiIHkxPSI4MyIgeDI9IjEyMCIgeTI9Ijk1IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEwMCIgeTE9IjYxIiB4Mj0iOTAiIHkyPSI1MCIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMTAiIHkxPSI2MSIgeDI9IjEwNCIgeTI9IjUwIiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzgmIzgyMTE7MTIgIMK3ICBCbGFjay9Ccm93biAgwrcgIEhlYXZ5PC90ZXh0Pgo8L3N2Zz4=',
-  'Zebra Midge': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5aZWJyYSBNaWRnZTwvdGV4dD4KICA8cGF0aCBkPSJNIDE1NSA3MCBRIDE2NSA3MCAxNjUgODAgUSAxNjUgOTUgMTUwIDk1IFEgMTQwIDk1IDEzOCA4OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gVmVyeSBzbGltIGJvZHkgLSBtaWRnZSBpcyB0aW55IC0tPgogIDxsaW5lIHgxPSI3NiIgeTE9IjcyIiB4Mj0iMTM4IiB5Mj0iNzIiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPCEtLSBTaWx2ZXIgcmliIC0gdGhlIHplYnJhIHN0cmlwZXMgLS0+CiAgPGxpbmUgeDE9IjgyIiB5MT0iNzAiIHgyPSI4MiIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9Ijg5IiB5MT0iNzAiIHgyPSI4OSIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9Ijk2IiB5MT0iNzAiIHgyPSI5NiIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9IjEwMyIgeTE9IjcwIiB4Mj0iMTAzIiB5Mj0iNzQiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iNzAiIHgyPSIxMTAiIHkyPSI3NCIgc3Ryb2tlPSIjZDBkMGQwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxMTciIHkxPSI3MCIgeDI9IjExNyIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9IjEyNCIgeTE9IjcwIiB4Mj0iMTI0IiB5Mj0iNzQiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8bGluZSB4MT0iMTMxIiB5MT0iNzAiIHgyPSIxMzEiIHkyPSI3NCIgc3Ryb2tlPSIjZDBkMGQwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDwhLS0gVHVuZ3N0ZW4gYmVhZCAtIHRpbnkgLS0+CiAgPGNpcmNsZSBjeD0iMTQwIiBjeT0iNzAiIHI9IjciIGZpbGw9IiM3MDcwNzAiIHN0cm9rZT0iIzUwNTA1MCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGNpcmNsZSBjeD0iMTM4IiBjeT0iNjgiIHI9IjIiIGZpbGw9IiNhMGEwYTAiIG9wYWNpdHk9IjAuNiIvPgogIDwhLS0gVGFpbCAtIHRpbnkgd2lzcHMgLS0+CiAgPGxpbmUgeDE9Ijc2IiB5MT0iNzEiIHgyPSI2MiIgeTI9IjY2IiBzdHJva2U9IiM2MDYwNjAiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9Ijc2IiB5MT0iNzMiIHgyPSI2MiIgeTI9Ijc1IiBzdHJva2U9IiM2MDYwNjAiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzE4JiM4MjExOzIyICDCtyAgQmxhY2sgIMK3ICBTaWx2ZXIgcmliPC90ZXh0Pgo8L3N2Zz4=',
-  'Sulphur Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TdWxwaHVyIE55bXBoPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMTU1IDcwIFEgMTY1IDcwIDE2NSA4MCBRIDE2NSA5NSAxNTAgOTUgUSAxNDAgOTUgMTM4IDg4IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPCEtLSBQYWxlIHllbGxvdyBib2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3MiIgcng9IjI0IiByeT0iNyIgZmlsbD0iI2Q0YzA2MCIgc3Ryb2tlPSIjYTA5MDQwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gU2VnbWVudGF0aW9uIC0tPgogIDxsaW5lIHgxPSI4OCIgeTE9IjY2IiB4Mj0iODgiIHkyPSI3OCIgc3Ryb2tlPSIjYTA5MDQwIiBzdHJva2Utd2lkdGg9IjAuNyIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9Ijk2IiB5MT0iNjUiIHgyPSI5NiIgeTI9Ijc5IiBzdHJva2U9IiNhMDkwNDAiIHN0cm9rZS13aWR0aD0iMC43IiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTA0IiB5MT0iNjUiIHgyPSIxMDQiIHkyPSI3OSIgc3Ryb2tlPSIjYTA5MDQwIiBzdHJva2Utd2lkdGg9IjAuNyIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjExMiIgeTE9IjY1IiB4Mj0iMTEyIiB5Mj0iNzkiIHN0cm9rZT0iI2EwOTA0MCIgc3Ryb2tlLXdpZHRoPSIwLjciIG9wYWNpdHk9IjAuNyIvPgogIDxsaW5lIHgxPSIxMjAiIHkxPSI2NiIgeDI9IjEyMCIgeTI9Ijc4IiBzdHJva2U9IiNhMDkwNDAiIHN0cm9rZS13aWR0aD0iMC43IiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIFdpbmdjYXNlIC0gZGFyayBvbGl2ZSAtLT4KICA8ZWxsaXBzZSBjeD0iMTMwIiBjeT0iNjciIHJ4PSIxMiIgcnk9IjUiIGZpbGw9IiM0YTVhMmEiLz4KICA8IS0tIEJlYWQgLS0+CiAgPGNpcmNsZSBjeD0iMTQxIiBjeT0iNjciIHI9IjgiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSAzIHRhaWxzIC0tPgogIDxsaW5lIHgxPSI4MCIgeTE9IjcwIiB4Mj0iNjIiIHkyPSI2MiIgc3Ryb2tlPSIjZDRjMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4MCIgeTE9IjcyIiB4Mj0iNjAiIHkyPSI3MiIgc3Ryb2tlPSIjZDRjMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4MCIgeTE9Ijc0IiB4Mj0iNjIiIHkyPSI4MCIgc3Ryb2tlPSIjZDRjMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gR2lsbHMgLSB0aW55IC0tPgogIDxlbGxpcHNlIGN4PSI5MiIgY3k9IjY3IiByeD0iMyIgcnk9IjIiIGZpbGw9IiNkNGMwNjAiIG9wYWNpdHk9IjAuNSIvPgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSI2NiIgcng9IjMiIHJ5PSIyIiBmaWxsPSIjZDRjMDYwIiBvcGFjaXR5PSIwLjUiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMTQmIzgyMTE7MTYgIMK3ICBZZWxsb3cvT2xpdmUgIMK3ICBQcmUtaGF0Y2g8L3RleHQ+Cjwvc3ZnPg==',
-  'Woolly Bugger': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5Xb29sbHkgQnVnZ2VyPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMTU4IDY1IFEgMTY4IDY1IDE2OCA3NSBRIDE2OCA5MiAxNTIgOTIgUSAxNDEgOTIgMTM5IDg0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPCEtLSBCZWFkIC0tPgogIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjYzIiByPSIxMCIgZmlsbD0iI2M4OTYzYSIgc3Ryb2tlPSIjYTA3MDMwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMy41IiBmaWxsPSIjZThiODYwIiBvcGFjaXR5PSIwLjUiLz4KICA8IS0tIENodW5reSBib2R5IHdpdGggY2hlbmlsbGUgbG9vayAtLT4KICA8ZWxsaXBzZSBjeD0iMTAwIiBjeT0iNzAiIHJ4PSIyOCIgcnk9IjEyIiBmaWxsPSIjNGE2YTJhIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBIYWNrbGUgd3JhcHMgLS0+CiAgPGxpbmUgeDE9Ijc4IiB5MT0iNjAiIHgyPSI3MiIgeTI9IjUyIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9Ijg2IiB5MT0iNTgiIHgyPSI4MyIgeTI9IjUwIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9Ijk0IiB5MT0iNTgiIHgyPSI5NCIgeTI9IjUwIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjEwMiIgeTE9IjU4IiB4Mj0iMTA1IiB5Mj0iNTAiIHN0cm9rZT0iIzNhNWExYSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iNTgiIHgyPSIxMTYiIHkyPSI1MCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI3OCIgeTE9IjgwIiB4Mj0iNzIiIHkyPSI4OCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI4NiIgeTE9IjgyIiB4Mj0iODMiIHkyPSI5MCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI5NCIgeTE9IjgyIiB4Mj0iOTQiIHkyPSI5MCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMDIiIHkxPSI4MiIgeDI9IjEwNSIgeTI9IjkwIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjExMCIgeTE9IjgyIiB4Mj0iMTE2IiB5Mj0iOTAiIHN0cm9rZT0iIzNhNWExYSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8IS0tIE1hcmFib3UgdGFpbCAtLT4KICA8cGF0aCBkPSJNIDcyIDY4IFEgNTUgNTggNDIgNDggUSA1MCA1MiA0NSA0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxwYXRoIGQ9Ik0gNzIgNzAgUSA1MiA2OCAzOCA2NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxwYXRoIGQ9Ik0gNzIgNzIgUSA1NSA3OCA0NCA4OCBRIDUwIDgyIDQ2IDkwIiBmaWxsPSJub25lIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzQmIzgyMTE7OCAgwrcgIE9saXZlL0JsYWNrL0Jyb3duICDCtyAgTWFyYWJvdTwvdGV4dD4KPC9zdmc+',
-  'Sculpin Pattern': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TY3VscGluIFBhdHRlcm48L3RleHQ+CiAgPHBhdGggZD0iTSAxNTggNjggUSAxNjggNjggMTY4IDc4IFEgMTY4IDkzIDE1MyA5MyBRIDE0MiA5MyAxNDAgODUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIFdpZGUgc2N1bHBpbiBoZWFkIC0tPgogIDxlbGxpcHNlIGN4PSIxMzAiIGN5PSI3MCIgcng9IjE4IiByeT0iMTQiIGZpbGw9IiM4QjczNTUiIHN0cm9rZT0iIzZCNTMzNSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBFeWVzIC0tPgogIDxjaXJjbGUgY3g9IjEyNCIgY3k9IjY1IiByPSI0IiBmaWxsPSIjZjBmMGYwIiBzdHJva2U9IiM0MDQwNDAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjEyNCIgY3k9IjY1IiByPSIyIiBmaWxsPSIjMWExYTFhIi8+CiAgPCEtLSBCb2R5IHRhcGVycyAtLT4KICA8cGF0aCBkPSJNIDExMyA2OCBRIDg1IDY1IDY1IDcwIFEgODUgNzUgMTEzIDcyIFoiIGZpbGw9IiM5YThhNjAiIHN0cm9rZT0iIzdhNmE0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFBlY3RvcmFsIGZpbnMgLS0+CiAgPHBhdGggZD0iTSAxMTggNzIgUSAxMTAgODUgMTAwIDkwIFEgMTA4IDgyIDExNSA4MCBaIiBmaWxsPSIjOEI3MzU1IiBzdHJva2U9IiM2QjUzMzUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjgiLz4KICA8cGF0aCBkPSJNIDExOCA2OCBRIDEwOCA1NSA5OCA1MiBRIDEwOCA1OCAxMTUgNjIgWiIgZmlsbD0iIzhCNzM1NSIgc3Ryb2tlPSIjNkI1MzM1IiBzdHJva2Utd2lkdGg9IjAuNSIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBUYWlsIGZpbiAtLT4KICA8cGF0aCBkPSJNIDY1IDcwIFEgNTAgNjAgNDAgNTUgUSA0OCA2NSA0NSA3MiBRIDQ4IDc4IDQwIDg1IFEgNTAgODAgNjUgNzAgWiIgZmlsbD0iIzdhNmE0MCIgc3Ryb2tlPSIjNWE0YTIwIiBzdHJva2Utd2lkdGg9IjAuNSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiM0JiM4MjExOzYgIMK3ICBUYW4vQnJvd24gIMK3ICBXZWlnaHRlZCBoZWFkPC90ZXh0Pgo8L3N2Zz4=',
-  'Clouser Minnow': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5DbG91c2VyIE1pbm5vdzwvdGV4dD4KICA8cGF0aCBkPSJNIDE1OCA3MiBRIDE2OCA3MiAxNjggODIgUSAxNjggOTcgMTUzIDk3IFEgMTQyIDk3IDE0MCA4OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gRHVtYmJlbGwgbGVhZCBleWVzIC0tPgogIDxjaXJjbGUgY3g9IjEzNCIgY3k9IjYwIiByPSI3IiBmaWxsPSIjOTA5MDkwIiBzdHJva2U9IiM2MDYwNjAiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGNpcmNsZSBjeD0iMTQwIiBjeT0iNjAiIHI9IjciIGZpbGw9IiM5MDkwOTAiIHN0cm9rZT0iIzYwNjA2MCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8bGluZSB4MT0iMTM0IiB5MT0iNjAiIHgyPSIxNDAiIHkyPSI2MCIgc3Ryb2tlPSIjNjA2MDYwIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8IS0tIFdoaXRlIGJlbGx5IGJ1Y2t0YWlsIC0tPgogIDxwYXRoIGQ9Ik0gMTM3IDYyIFEgMTA1IDY1IDY4IDYyIFEgODUgNjggMTA1IDY4IFEgMTIwIDY4IDEzNyA2NiBaIiBmaWxsPSIjZjVmNWY1IiBzdHJva2U9IiNlMGUwZTAiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgPCEtLSBDaGFydHJldXNlIGJhY2sgLS0+CiAgPHBhdGggZD0iTSAxMzcgNjAgUSAxMDUgNTUgNjUgNjAgUSA4NSA2MiAxMDUgNjIgUSAxMjAgNjIgMTM3IDYwIFoiIGZpbGw9IiM5MGQwMTAiIHN0cm9rZT0iIzcwYTgwMCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KICA8IS0tIEhvb2sgYmVuZCB2aXNpYmxlIC0tPgogIDxwYXRoIGQ9Ik0gMTM3IDY4IFEgMTQzIDY4IDE0MyA3NiBRIDE0MyA4OCAxMzIgODgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPCEtLSBGbGFzaCAtLT4KICA8bGluZSB4MT0iMTA1IiB5MT0iNjAiIHgyPSI5NSIgeTI9IjUyIiBzdHJva2U9IiNmMGUwNjAiIHN0cm9rZS13aWR0aD0iMC44IiBvcGFjaXR5PSIwLjgiLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iNjIiIHgyPSIxMDIiIHkyPSI1NCIgc3Ryb2tlPSIjZjBlMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIgb3BhY2l0eT0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzQmIzgyMTE7OCAgwrcgIENoYXJ0cmV1c2UvV2hpdGUgIMK3ICBEdW1iYmVsbCBleWVzPC90ZXh0Pgo8L3N2Zz4=',
-  'Articulated Streamer': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5BcnRpY3VsYXRlZCBTdHJlYW1lcjwvdGV4dD4KICA8IS0tIFJlYXIgaG9vayAtLT4KICA8cGF0aCBkPSJNIDc2IDcyIFEgODIgNzIgODIgNzggUSA4MiA4OCA3NCA4OCBRIDY4IDg4IDY3IDg0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwhLS0gUmVhciBzZWN0aW9uIG1hcmFib3UgLS0+CiAgPHBhdGggZD0iTSA3NiA3MCBRIDU4IDYwIDQ0IDUyIFEgNTIgNTggNDggNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlhMmEyYSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8cGF0aCBkPSJNIDc2IDcyIFEgNTUgNzIgNDAgNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlhMmEyYSIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8cGF0aCBkPSJNIDc2IDc0IFEgNTggODIgNDYgOTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlhMmEyYSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIENvbm5lY3Rpb24gd2lyZSAtLT4KICA8bGluZSB4MT0iODIiIHkxPSI3NiIgeDI9IjEwMCIgeTI9IjcyIiBzdHJva2U9IiNjMGMwYzAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtZGFzaGFycmF5PSIyLDIiLz4KICA8IS0tIEZyb250IGhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNTUgNjggUSAxNjUgNjggMTY1IDc4IFEgMTY1IDkzIDE1MCA5MyBRIDEzOSA5MyAxMzcgODUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEZyb250IHNlY3Rpb24gYm9keSAtLT4KICA8ZWxsaXBzZSBjeD0iMTIwIiBjeT0iNzEiIHJ4PSIyMiIgcnk9IjkiIGZpbGw9IiM3YTJhMmEiIHN0cm9rZT0iIzVhMWExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEhhY2tsZSAtLT4KICA8bGluZSB4MT0iMTA0IiB5MT0iNjMiIHgyPSI5OCIgeTI9IjU2IiBzdHJva2U9IiM3YTJhMmEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjExMCIgeTE9IjYyIiB4Mj0iMTA4IiB5Mj0iNTUiIHN0cm9rZT0iIzdhMmEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTE2IiB5MT0iNjIiIHgyPSIxMTgiIHkyPSI1NSIgc3Ryb2tlPSIjN2EyYTJhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMDQiIHkxPSI3OSIgeDI9Ijk4IiB5Mj0iODYiIHN0cm9rZT0iIzdhMmEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iODAiIHgyPSIxMDgiIHkyPSI4NyIgc3Ryb2tlPSIjN2EyYTJhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gQmVhZC9oZWFkIC0tPgogIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjY4IiByPSI5IiBmaWxsPSIjYzg5NjNhIiBzdHJva2U9IiNhMDcwMzAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiMyJiM4MjExOzQgIMK3ICBKb2ludGVkICDCtyAgUmVhY3Rpb24gc3RyaWtlPC90ZXh0Pgo8L3N2Zz4=',
-  'Elk Hair Caddis': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5FbGsgSGFpciBDYWRkaXM8L3RleHQ+CiAgPHBhdGggZD0iTSAxNTUgODAgUSAxNjUgODAgMTY1IDkwIFEgMTY1IDEwNSAxNTAgMTA1IFEgMTQwIDEwNSAxMzggOTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJvZHkgLSBvbGl2ZS90YW4gLS0+CiAgPGVsbGlwc2UgY3g9IjEwNSIgY3k9IjgyIiByeD0iMjQiIHJ5PSI4IiBmaWxsPSIjOEI4MDQwIiBzdHJva2U9IiM2QjYwMjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBIYWNrbGUgd3JhcHMgYXJvdW5kIGJvZHkgLS0+CiAgPGxpbmUgeDE9Ijg2IiB5MT0iNzUiIHgyPSI4MiIgeTI9IjkwIiBzdHJva2U9IiNjOGEwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjkzIiB5MT0iNzQiIHgyPSI5MSIgeTI9IjkwIiBzdHJva2U9IiNjOGEwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEwMCIgeTE9Ijc0IiB4Mj0iMTAwIiB5Mj0iOTAiIHN0cm9rZT0iI2M4YTA2MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTA3IiB5MT0iNzQiIHgyPSIxMDkiIHkyPSI5MCIgc3Ryb2tlPSIjYzhhMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMTQiIHkxPSI3NCIgeDI9IjExNyIgeTI9IjkwIiBzdHJva2U9IiNjOGEwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEyMSIgeTE9Ijc1IiB4Mj0iMTI1IiB5Mj0iODkiIHN0cm9rZT0iI2M4YTA2MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEVsayBoYWlyIHdpbmcgLSB0ZW50IHNoYXBlZCBvdmVyIGJvZHkgLS0+CiAgPHBhdGggZD0iTSA4NCA4MCBRIDEwMCA1MiAxMTYgODAiIGZpbGw9IiNkNGMwODAiIHN0cm9rZT0iI2IwYTA2MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8cGF0aCBkPSJNIDg0IDgwIFEgMTAwIDUwIDExNiA4MCBRIDEwOCA1NiAxMDAgNTIgUSA5MiA1NiA4NCA4MCBaIiBmaWxsPSIjZDRjMDgwIiBzdHJva2U9IiNiMGEwNjAiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIEhhaXIgdGlwcyBleHRlbmRpbmcgZm9yd2FyZCAtLT4KICA8bGluZSB4MT0iODQiIHkxPSI3OCIgeDI9IjcyIiB5Mj0iNzIiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iODQiIHkxPSI4MCIgeDI9IjcwIiB5Mj0iNzYiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iODQiIHkxPSI4MiIgeDI9IjcyIiB5Mj0iODQiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8IS0tIFRocmVhZCBoZWFkIC0tPgogIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjYzg5NjNhIi8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzE0JiM4MjExOzE2ICDCtyAgVGFuL09saXZlICDCtyAgRXZlbmluZyBoYXRjaDwvdGV4dD4KPC9zdmc+',
-  'Parachute Adams': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5QYXJhY2h1dGUgQWRhbXM8L3RleHQ+CiAgPHBhdGggZD0iTSAxNTUgODUgUSAxNjUgODUgMTY1IDk1IFEgMTY1IDExMCAxNTAgMTEwIFEgMTQwIDExMCAxMzggMTAzIiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPCEtLSBQYXJhY2h1dGUgcG9zdCAtIHdoaXRlIGNhbGYgdGFpbCB1cHJpZ2h0IC0tPgogIDxsaW5lIHgxPSIxMDgiIHkxPSI4NSIgeDI9IjEwOCIgeTI9IjQ1IiBzdHJva2U9IiNmMGYwZjAiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIFBhcmFjaHV0ZSBoYWNrbGUgd291bmQgaG9yaXpvbnRhbGx5IGFyb3VuZCBwb3N0IC0tPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI2OCIgcng9IjIyIiByeT0iNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE2YTQwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI2NCIgcng9IjE4IiByeT0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE2YTQwIiBzdHJva2Utd2lkdGg9IjEuMiIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBCb2R5IC0gZ3JleSBkdWJiaW5nIC0tPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI4NyIgcng9IjIyIiByeT0iNyIgZmlsbD0iIzkwOTA5MCIgc3Ryb2tlPSIjNzA3MDcwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gV2luZ3MgLSB1cHJpZ2h0IHNwZW50IC0tPgogIDxwYXRoIGQ9Ik0gMTA4IDg1IFEgOTAgNzQgNzYgNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8cGF0aCBkPSJNIDEwOCA4NSBRIDEyNiA3NCAxNDAgNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIFRhaWwgZmliZXJzIC0tPgogIDxsaW5lIHgxPSI4NiIgeTE9IjkwIiB4Mj0iNjgiIHkyPSI5MiIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4NiIgeTE9IjkyIiB4Mj0iNjgiIHkyPSI5NiIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4NiIgeTE9Ijg4IiB4Mj0iNjgiIHkyPSI4OCIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiMxNCYjODIxMTsxOCAgwrcgIEdyZXkgIMK3ICBBbGwtcHVycG9zZSBkcnk8L3RleHQ+Cjwvc3ZnPg==',
-  'Sulphur Comparadun': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TdWxwaHVyIENvbXBhcmFkdW48L3RleHQ+CiAgPHBhdGggZD0iTSAxNTUgOTAgUSAxNjUgOTAgMTY1IDEwMCBRIDE2NSAxMTUgMTUwIDExNSBRIDE0MCAxMTUgMTM4IDEwOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gQm9keSAtIHBhbGUgeWVsbG93IHN1bHBodXIgLS0+CiAgPGVsbGlwc2UgY3g9IjEwNSIgY3k9IjkyIiByeD0iMjQiIHJ5PSI3IiBmaWxsPSIjZjBkMDQwIiBzdHJva2U9IiNjMGE4MjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBEZWVyIGhhaXIgd2luZyAtIGZhbiBzaGFwZWQsIGxvdyByaWRpbmcgLS0+CiAgPHBhdGggZD0iTSA5MCA5MCBRIDEwNSA1OCAxMjAgOTAgWiIgZmlsbD0iI2Q0YzA4MCIgc3Ryb2tlPSIjYjBhMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gSGFpciB0aXBzIGZhbm5pbmcgb3V0IC0tPgogIDxsaW5lIHgxPSI5MCIgeTE9IjkwIiB4Mj0iNzgiIHkyPSI3NiIgc3Ryb2tlPSIjZDRjMDgwIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI5MyIgeTE9Ijg4IiB4Mj0iODQiIHkyPSI3MiIgc3Ryb2tlPSIjZDRjMDgwIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMjAiIHkxPSI5MCIgeDI9IjEzMiIgeTI9Ijc2IiBzdHJva2U9IiNkNGMwODAiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjExNyIgeTE9Ijg4IiB4Mj0iMTI2IiB5Mj0iNzIiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8IS0tIE5vIGhhY2tsZSAtIHNpdHMgbG93IC0tPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODAiIHkxPSI5MSIgeDI9IjYyIiB5Mj0iODciIHN0cm9rZT0iI2YwZDA0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI5MyIgeDI9IjYyIiB5Mj0iOTMiIHN0cm9rZT0iI2YwZDA0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI5NSIgeDI9IjYyIiB5Mj0iOTgiIHN0cm9rZT0iI2YwZDA0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFRocmVhZCAtLT4KICA8Y2lyY2xlIGN4PSIxMjkiIGN5PSI5MCIgcj0iNCIgZmlsbD0iI2M4OTYzYSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiMxNCYjODIxMTsxNiAgwrcgIFllbGxvdy9PcmFuZ2UgIMK3ICBMb3ctcmlkaW5nPC90ZXh0Pgo8L3N2Zz4=',
-  'Royal Wulff': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5Sb3lhbCBXdWxmZjwvdGV4dD4KICA8cGF0aCBkPSJNIDE1NSA4NSBRIDE2NSA4NSAxNjUgOTUgUSAxNjUgMTEwIDE1MCAxMTAgUSAxNDAgMTEwIDEzOCAxMDMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJvZHkgc2VjdGlvbnMgLSBSb3lhbCBDb2FjaG1hbiBzdHlsZSAtLT4KICA8cmVjdCB4PSI4NCIgeT0iODIiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiM4QjAwMDAiLz4KICA8cmVjdCB4PSI5OCIgeT0iODAiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxMiIgcng9IjIiIGZpbGw9IiNmMGYwZjAiLz4KICA8cmVjdCB4PSIxMTQiIHk9IjgyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIHJ4PSIyIiBmaWxsPSIjOEIwMDAwIi8+CiAgPCEtLSBQZWFjb2NrIGhlcmwgZnJvbnQgYW5kIGJhY2sgLS0+CiAgPGxpbmUgeDE9Ijg2IiB5MT0iODAiIHgyPSI4NCIgeTI9Ijc2IiBzdHJva2U9IiMwMDYwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjkwIiB5MT0iNzkiIHgyPSI5MCIgeTI9Ijc1IiBzdHJva2U9IiMwMDYwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBVcHJpZ2h0IHdoaXRlIHdpbmdzIC0tPgogIDxwYXRoIGQ9Ik0gMTA1IDgyIFEgOTUgNjIgODggNTggUSA5NiA2OCAxMDAgNjUgUSAxMDQgNjIgMTA1IDU4IFoiIGZpbGw9IiNmNWY1ZjUiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KICA8cGF0aCBkPSJNIDEwNSA4MiBRIDExNSA2MiAxMjIgNTggUSAxMTQgNjggMTEwIDY1IFEgMTA2IDYyIDEwNSA1OCBaIiBmaWxsPSIjZjVmNWY1IiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgPCEtLSBCcm93biBoYWNrbGUgLS0+CiAgPGxpbmUgeDE9IjkyIiB5MT0iODAiIHgyPSI4MiIgeTI9IjcyIiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9Ijk1IiB5MT0iNzkiIHgyPSI4NyIgeTI9IjcwIiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjExNSIgeTE9Ijc5IiB4Mj0iMTIzIiB5Mj0iNzAiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTE4IiB5MT0iODAiIHgyPSIxMjgiIHkyPSI3MiIgc3Ryb2tlPSIjOEI0NTEzIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gVGFpbCAtIG1vb3NlIGhhaXIgLS0+CiAgPGxpbmUgeDE9Ijg0IiB5MT0iODkiIHgyPSI2NiIgeTI9Ijg2IiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9Ijg0IiB5MT0iOTEiIHgyPSI2NCIgeTI9IjkyIiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzEyJiM4MjExOzE0ICDCtyAgQ2xhc3NpYyBhdHRyYWN0b3IgIMK3ICBIaWdoLWZsb2F0aW5nPC90ZXh0Pgo8L3N2Zz4=',
-  'Rapala Original Floating': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5SYXBhbGEgT3JpZ2luYWwgRmxvYXRpbmc8L3RleHQ+CiAgPCEtLSBNYWluIGx1cmUgYm9keSAtIHBlcmNoIGNvbG9yaW5nIC0tPgogIDxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3MiIgcng9IjQ4IiByeT0iMTQiIGZpbGw9IiNmMGQwNjAiIHN0cm9rZT0iI2MwYTA0MCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBCYWNrIC0gZGFya2VyIC0tPgogIDxwYXRoIGQ9Ik0gNTcgNjggUSAxMDUgNTUgMTUzIDY4IFEgMTA1IDYyIDU3IDY4IFoiIGZpbGw9IiM0YThhMjAiIG9wYWNpdHk9IjAuOCIvPgogIDwhLS0gQmVsbHkgc3RyaXBlcyAtIHBlcmNoIHZlcnRpY2FsIGJhcnMgLS0+CiAgPHJlY3QgeD0iNzgiIHk9IjYyIiB3aWR0aD0iNSIgaGVpZ2h0PSIyMCIgcng9IjEiIGZpbGw9IiMyYTZhMDAiIG9wYWNpdHk9IjAuNSIvPgogIDxyZWN0IHg9IjkwIiB5PSI2MCIgd2lkdGg9IjUiIGhlaWdodD0iMjIiIHJ4PSIxIiBmaWxsPSIjMmE2YTAwIiBvcGFjaXR5PSIwLjUiLz4KICA8cmVjdCB4PSIxMDIiIHk9IjYwIiB3aWR0aD0iNSIgaGVpZ2h0PSIyMiIgcng9IjEiIGZpbGw9IiMyYTZhMDAiIG9wYWNpdHk9IjAuNSIvPgogIDxyZWN0IHg9IjExNCIgeT0iNjAiIHdpZHRoPSI1IiBoZWlnaHQ9IjIyIiByeD0iMSIgZmlsbD0iIzJhNmEwMCIgb3BhY2l0eT0iMC41Ii8+CiAgPHJlY3QgeD0iMTI2IiB5PSI2MSIgd2lkdGg9IjQiIGhlaWdodD0iMjEiIHJ4PSIxIiBmaWxsPSIjMmE2YTAwIiBvcGFjaXR5PSIwLjUiLz4KICA8IS0tIEV5ZSAtLT4KICA8Y2lyY2xlIGN4PSIxNDciIGN5PSI3MCIgcj0iNSIgZmlsbD0iI2YwZjBmMCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxNDciIGN5PSI3MCIgcj0iMi41IiBmaWxsPSIjMWExYTFhIi8+CiAgPCEtLSBMaXAvYmlsbCAtLT4KICA8cGF0aCBkPSJNIDE1MiA3MiBMIDE2NSA2OCBMIDE2NSA3NiBaIiBmaWxsPSIjYzBjMGMwIiBzdHJva2U9IiM5MDkwOTAiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgPCEtLSBUYWlsIGZpbiAtLT4KICA8cGF0aCBkPSJNIDU3IDcyIFEgNDUgNjAgMzYgNTUgUSA0NCA2NSA0MCA3MiBRIDQ0IDc4IDM2IDg3IFEgNDUgODMgNTcgNzIgWiIgZmlsbD0iI2MwYTA0MCIgc3Ryb2tlPSIjYTA4MDIwIiBzdHJva2Utd2lkdGg9IjAuNSIvPgogIDwhLS0gVHJlYmxlIGhvb2tzIC0tPgogIDxwYXRoIGQ9Ik0gODggODYgUSA5MiA5MiA4OCA5OCBRIDg0IDkyIDgwIDk4IiBmaWxsPSJub25lIiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHBhdGggZD0iTSAxMTUgODYgUSAxMTkgOTIgMTE1IDk4IFEgMTExIDkyIDEwNyA5OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjQmIzgyMTE7N2NtICDCtyAgUGVyY2gvRmlyZXRpZ2VyICDCtyAgVHdpdGNoICZhbXA7IHBhdXNlPC90ZXh0Pgo8L3N2Zz4=',
-  'Blue Fox Vibrax Spinner': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5CbHVlIEZveCBWaWJyYXggU3Bpbm5lcjwvdGV4dD4KICA8IS0tIFdpcmUgc2hhZnQgLS0+CiAgPGxpbmUgeDE9IjUwIiB5MT0iNzIiIHgyPSIxNTgiIHkyPSI3MiIgc3Ryb2tlPSIjOTA5MDkwIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIENsZXZpcyBhbmQgYmxhZGUgLS0+CiAgPGVsbGlwc2UgY3g9IjkwIiBjeT0iNjgiIHJ4PSIyOCIgcnk9IjE4IiBmaWxsPSIjZThlOGU4IiBzdHJva2U9IiNjMGMwYzAiIHN0cm9rZS13aWR0aD0iMS4yIiB0cmFuc2Zvcm09InJvdGF0ZSgtMTUgOTAgNjgpIi8+CiAgPGVsbGlwc2UgY3g9IjkwIiBjeT0iNjgiIHJ4PSIyNiIgcnk9IjE2IiBmaWxsPSJub25lIiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMC41IiB0cmFuc2Zvcm09InJvdGF0ZSgtMTUgOTAgNjgpIiBvcGFjaXR5PSIwLjYiLz4KICA8IS0tIFNoaW5lIG9uIGJsYWRlIC0tPgogIDxlbGxpcHNlIGN4PSI4NCIgY3k9IjYyIiByeD0iOCIgcnk9IjQiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjQiIHRyYW5zZm9ybT0icm90YXRlKC0xNSA4NCA2MikiLz4KICA8IS0tIEJvZHkgYmVhZHMgLS0+CiAgPGNpcmNsZSBjeD0iMTI1IiBjeT0iNzIiIHI9IjgiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGNpcmNsZSBjeD0iMTM4IiBjeT0iNzIiIHI9IjYiIGZpbGw9IiNjMGMwYzAiIHN0cm9rZT0iIzkwOTA5MCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBUcmVibGUgaG9vayB3aXRoIGZ1ciAtLT4KICA8cGF0aCBkPSJNIDE0OCA3MiBRIDE1NSA3MiAxNTUgODAgUSAxNTUgOTAgMTQ3IDkwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNDgiIHkxPSI4MCIgeDI9IjE0MCIgeTI9Ijg4IiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPCEtLSBSZWQgZnVyIG9uIGhvb2sgLS0+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjgwIiB4Mj0iMTQyIiB5Mj0iODYiIHN0cm9rZT0iI2NjMjAyMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8bGluZSB4MT0iMTUwIiB5MT0iODIiIHgyPSIxNDYiIHkyPSI5MCIgc3Ryb2tlPSIjY2MyMDIwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNTMiIHkxPSI4MyIgeDI9IjE1MCIgeTI9IjkyIiBzdHJva2U9IiNjYzIwMjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPCEtLSBTcGxpdCByaW5nIGF0IGZyb250IC0tPgogIDxjaXJjbGUgY3g9IjU1IiBjeT0iNzIiIHI9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzkwOTA5MCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMyYjODIxMTs1ICDCtyAgU2lsdmVyIGJsYWRlICDCtyAgSW4tbGluZSBzcGlubmVyPC90ZXh0Pgo8L3N2Zz4=',
-  'Kastmaster Spoon': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5LYXN0bWFzdGVyIFNwb29uPC90ZXh0PgogIDwhLS0gU3Bvb24gYm9keSAtIGFuZ3VsYXIga2FzdG1hc3RlciBzaGFwZSAtLT4KICA8cGF0aCBkPSJNIDE0OCA2MCBRIDE1OCA3MCAxNDggODIgUSAxMjggODggMTA4IDg0IFEgODggODAgNzIgNzAgUSA4OCA1OCAxMDggNTYgUSAxMjggNTQgMTQ4IDYwIFoiIAogICAgICAgIGZpbGw9IiNlOGU4ZTgiIHN0cm9rZT0iI2IwYjBiMCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8IS0tIENocm9tZSBzaGluZSAtLT4KICA8cGF0aCBkPSJNIDE0NSA2MiBRIDE1MiA3MCAxNDUgNzggUSAxMzIgODIgMTE4IDgwIFEgMTM1IDc2IDE0MCA3MCBRIDEzOCA2MyAxMzAgNTggUSAxMzggNTcgMTQ1IDYyIFoiCiAgICAgICAgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuNSIvPgogIDwhLS0gQW5nbGVkIGN1dCBsaW5lIGNoYXJhY3RlcmlzdGljIG9mIEthc3RtYXN0ZXIgLS0+CiAgPGxpbmUgeDE9IjEwOCIgeTE9IjU2IiB4Mj0iMTQ4IiB5Mj0iNjAiIHN0cm9rZT0iIzkwOTA5MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTA4IiB5MT0iODQiIHgyPSIxNDgiIHkyPSI4MiIgc3Ryb2tlPSIjOTA5MDkwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gU3BsaXQgcmluZyBhdCB0b3AgLS0+CiAgPGNpcmNsZSBjeD0iNzUiIGN5PSI3MCIgcj0iNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTA5MDkwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDwhLS0gVHJlYmxlIGhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNDggNzggUSAxNTYgODAgMTU4IDg4IFEgMTU0IDg0IDE1MCA5MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBkPSJNIDE1MCA4MiBRIDE2MiA4NCAxNjQgNzgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xLzQmIzgyMTE7My84b3ogIMK3ICBDaHJvbWUvR29sZCAgwrcgIFNpbmtpbmc8L3RleHQ+Cjwvc3ZnPg==',
-  'Mepps Aglia Spinner': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5NZXBwcyBBZ2xpYSBTcGlubmVyPC90ZXh0PgogIDwhLS0gV2lyZSBzaGFmdCAtLT4KICA8bGluZSB4MT0iNDUiIHkxPSI3MiIgeDI9IjE2MiIgeTI9IjcyIiBzdHJva2U9IiM5MDkwOTAiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwhLS0gQWdsaWEgbGVhZiBibGFkZSAtIHJvdW5kIHRlYXJkcm9wIHNoYXBlIC0tPgogIDxlbGxpcHNlIGN4PSI5MiIgY3k9IjY1IiByeD0iMjIiIHJ5PSIzMiIgZmlsbD0iI2YwYzA0MCIgc3Ryb2tlPSIjYzA5ODIwIiBzdHJva2Utd2lkdGg9IjEuMiIgdHJhbnNmb3JtPSJyb3RhdGUoMjAgOTIgNjUpIi8+CiAgPGVsbGlwc2UgY3g9Ijg4IiBjeT0iNjEiIHJ4PSI4IiByeT0iMTQiIGZpbGw9IiNmOGUwODAiIG9wYWNpdHk9IjAuNSIgdHJhbnNmb3JtPSJyb3RhdGUoMjAgODggNjEpIi8+CiAgPCEtLSBCb2R5IC0gYnJhc3MgLS0+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjcyIiByeD0iMTQiIHJ5PSI4IiBmaWxsPSIjYzg5NjNhIiBzdHJva2U9IiNhMDcwMzAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDwhLS0gU3F1aXJyZWwgdGFpbCBvbiBob29rIC0gYmxhY2sveWVsbG93IC0tPgogIDxsaW5lIHgxPSIxNDgiIHkxPSI3MiIgeDI9IjE1OCIgeTI9IjY0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjcyIiB4Mj0iMTYwIiB5Mj0iNzAiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8bGluZSB4MT0iMTQ4IiB5MT0iNzIiIHgyPSIxNjAiIHkyPSI3OCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxsaW5lIHgxPSIxNDgiIHkxPSI3MiIgeDI9IjE1OCIgeTI9IjgyIiBzdHJva2U9IiNmMGMwNDAiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjcyIiB4Mj0iMTYyIiB5Mj0iNzYiIHN0cm9rZT0iI2YwYzA0MCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8IS0tIFRyZWJsZSBob29rIC0tPgogIDxwYXRoIGQ9Ik0gMTQ4IDcyIFEgMTU2IDcyIDE1NiA4MCBRIDE1NiA5MCAxNDggOTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjgwIiB4Mj0iMTQwIiB5Mj0iODgiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIENsZXZpcyAtLT4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjcyIiByPSI1IiBmaWxsPSJub25lIiBzdHJva2U9IiM5MDkwOTAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzMmIzgyMTE7NCAgwrcgIEdvbGQgYmxhZGUgIMK3ICBBY3Jvc3MvZG93bnN0cmVhbTwvdGV4dD4KPC9zdmc+',
-};
-
-var baitImageCache = {};
-
-function fetchBaitImage(baitName) {
-  // Synchronous lookup from embedded SVG illustrations
-  if (BAIT_IMAGES[baitName]) return Promise.resolve(BAIT_IMAGES[baitName]);
-  return Promise.resolve(null);
-}
-
-
-async function loadBaitImages() {
-  var cards = document.querySelectorAll('.bi[data-bait-name]');
-  var arr = Array.from(cards);
-  // Process in batches of 3
-  for (var i = 0; i < arr.length; i += 3) {
-    var batch = arr.slice(i, i + 3);
-    await Promise.all(batch.map(async function(card) {
-      var name = card.getAttribute('data-bait-name');
-      var wrap = card.querySelector('.bi-img-wrap');
-      if (!wrap || wrap.getAttribute('data-loaded') === '1') return;
-      var url = await fetchBaitImage(name);
-      if (url) {
-        var img = new Image();
-        img.alt = name;
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s';
-        img.onload = function() { this.style.opacity = '1'; };
-        img.onerror = function() { wrap.innerHTML = wrap._ph; };
-        wrap._ph = wrap.innerHTML;
-        wrap.innerHTML = '';
-        wrap.appendChild(img);
-        img.src = url;
-        wrap.setAttribute('data-loaded', '1');
-      }
-    }));
-  }
 }
 
 
@@ -3642,29 +3811,38 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey) {
   var _fl = _famLabels[_fam] || _famLabels[''];
   var topMethod = flow!=null&&flow>(cfg.flowHigh||20)*0.6 ? _fl.high : wt<8 ? _fl.cold : _fl.normal;
 
-  // Species situation
+  // Species situation — fall back to recommendation if target is out of season
   var speciesNote = '';
+  var fallbackSpecies = null;
+  var recs = recommendSpecies(cfg);
+
   if (targetName) {
     var seasonal = getCurrentSeason(targetName);
-    var onRiver = cfg.species && cfg.species.indexOf(targetName) !== -1;
-    if (!onRiver) {
-      speciesNote = targetName + ' are not on this river. ';
+    var onRiver  = cfg.species && cfg.species.indexOf(targetName) !== -1;
+    if (!onRiver || (seasonal && seasonal.quality === 'absent')) {
+      if (recs.length > 0) {
+        fallbackSpecies = recs[0].name;
+        speciesNote = targetName + ' not in river right now. Fish for ' + fallbackSpecies + ' instead (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
+      } else {
+        speciesNote = targetName + ' not in river right now. ';
+      }
     } else if (seasonal && seasonal.quality === 'peak') {
       speciesNote = targetName + ' are at peak season. ';
     } else if (seasonal && seasonal.quality === 'good') {
       speciesNote = targetName + ' are in season. ';
-    } else if (seasonal && seasonal.quality === 'absent') {
-      speciesNote = targetName + ' are not in the river yet. ';
+    } else if (seasonal && seasonal.quality === 'slow') {
+      speciesNote = targetName + ' fishing is slow. ';
+      if (recs.length > 0 && recs[0].name !== targetName) {
+        fallbackSpecies = recs[0].name;
+        speciesNote += 'Consider ' + fallbackSpecies + ' instead. ';
+      }
     }
   } else {
-    // find best in-season species
-    var best = null, bestQ = 'absent';
-    (cfg.species || []).forEach(function(s) {
-      var w = getCurrentSeason(s);
-      if (w && w.quality === 'peak' && bestQ !== 'peak') { best = s; bestQ = 'peak'; }
-      else if (w && w.quality === 'good' && bestQ !== 'peak') { best = s; bestQ = 'good'; }
-    });
-    if (best) speciesNote = best + ' are ' + (bestQ === 'peak' ? 'at peak season' : 'in season') + '. ';
+    if (recs.length > 0) {
+      fallbackSpecies = recs[0].name;
+      speciesNote = 'Best bet: ' + recs[0].name + ' (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
+      if (recs.length > 1) speciesNote += recs[1].name + ' also good. ';
+    }
   }
 
   // Headline
@@ -3672,20 +3850,39 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey) {
   var spotName = bestSpot ? bestSpot.name.split('\u2014')[0].trim() : riverShort;
   var headlineSpecies = targetName || 'Trout';
 
-  var headlineSpeciesNote = '';
-  if (_bka.length === 0) {
-    var _recs = recommendSpecies(cfg);
-    if (_recs.length > 0) headlineSpeciesNote = ' Target <em>' + _recs[0].name + '</em>.';
-  }
-  // Build method phrase that reads naturally regardless of family
+  // Build method phrase (must come before headline)
   var methodPhrase = topMethod.toLowerCase();
   var bringPhrase;
   if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
   else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear — ' + methodPhrase;
   else if (/float|bait|drift/i.test(topMethod)) bringPhrase = 'float rod and bait';
   else bringPhrase = topMethod.toLowerCase() + ' gear';
-  document.getElementById('tp-headline').innerHTML =
-    'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' + headlineSpeciesNote;
+
+  // Build headline — lead with species warning when target is out of season
+  var _displaySpecies = fallbackSpecies || (targetName && (() => {
+    var s = getCurrentSeason(targetName);
+    return s && s.quality !== 'absent' ? targetName : null;
+  })()) || (recs.length > 0 ? recs[0].name : null);
+  var headlineHtml;
+  var timeShort = tw.split(' (')[0].split(' and ')[0];
+  if (fallbackSpecies && targetName) {
+    headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
+      + 'Fish <em>' + fallbackSpecies + '</em> instead — '
+      + 'head to <em>' + spotName + '</em>, '
+      + timeShort.toLowerCase() + ', '
+      + bringPhrase + '.';
+  } else if (!targetName && _displaySpecies) {
+    headlineHtml = 'Try <em>' + _displaySpecies + '</em> at <em>' + spotName + '</em>. '
+      + 'Fish <em>' + timeShort + '</em>. '
+      + 'Bring your <em>' + bringPhrase + '</em>.';
+  } else {
+    headlineHtml = 'Head to <em>' + spotName + '</em>. '
+      + 'Fish <em>' + timeShort + '</em>. '
+      + 'Bring your <em>' + bringPhrase + '</em>.'
+      + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
+  }
+  document.getElementById('tp-headline').innerHTML = headlineHtml;
+    'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
 
   // Why paragraph
   var why = speciesNote;
@@ -4052,6 +4249,79 @@ function recommendSpecies(cfg) {
 }
 
 
+
+var BAIT_IMAGES = {
+  'Hare\'s Ear Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5IYXJlJiMzOTtzIEVhciBOeW1waDwvdGV4dD4KICA8IS0tIEhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNTUgNzAgUSAxNjUgNzAgMTY1IDgwIFEgMTY1IDk1IDE1MCA5NSBRIDE0MCA5NSAxMzggODgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJlYWQgaGVhZCAtLT4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSI2OCIgcj0iOSIgZmlsbD0iI2M4OTYzYSIgc3Ryb2tlPSIjYTA3MDMwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSI2NSIgcj0iMyIgZmlsbD0iI2U4Yjg2MCIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSBCb2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDciIGN5PSI3NCIgcng9IjIyIiByeT0iOSIgZmlsbD0iI2I4YTg4MiIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gUmliYmluZyAtLT4KICA8bGluZSB4MT0iOTUiIHkxPSI2NiIgeDI9IjkyIiB5Mj0iODIiIHN0cm9rZT0iI2M4OTYzYSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTAzIiB5MT0iNjUiIHgyPSIxMDAiIHkyPSI4MyIgc3Ryb2tlPSIjYzg5NjNhIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNyIvPgogIDxsaW5lIHgxPSIxMTEiIHkxPSI2NSIgeDI9IjEwOSIgeTI9IjgzIiBzdHJva2U9IiNjODk2M2EiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjExOSIgeTE9IjY2IiB4Mj0iMTE4IiB5Mj0iODMiIHN0cm9rZT0iI2M4OTYzYSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIFRob3JheCAtIHNoYWdnaWVyIC0tPgogIDxlbGxpcHNlIGN4PSIxMzIiIGN5PSI3MyIgcng9IjEwIiByeT0iMTAiIGZpbGw9IiM4YTdhNWEiIHN0cm9rZT0iIzZhNWEzYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEhhcmUgZHViYmluZyBmaWJlcnMgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjYzIiB4Mj0iMTIyIiB5Mj0iNTgiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTMzIiB5MT0iNjIiIHgyPSIxMzAiIHkyPSI1NiIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMzgiIHkxPSI2MyIgeDI9IjEzOCIgeTI9IjU3IiBzdHJva2U9IiM5YThhNmEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjgzIiB4Mj0iMTIyIiB5Mj0iOTAiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTMzIiB5MT0iODQiIHgyPSIxMzAiIHkyPSI5MSIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODQiIHkxPSI3MyIgeDI9IjcwIiB5Mj0iNjgiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODQiIHkxPSI3NSIgeDI9IjY4IiB5Mj0iNzMiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODQiIHkxPSI3NyIgeDI9IjcwIiB5Mj0iODAiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFNpemUgdGV4dCAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMTImIzgyMTE7MTYgIMK3ICBHb2xkIGJlYWQgIMK3ICBOYXR1cmFsPC90ZXh0Pgo8L3N2Zz4=',
+  'Pheasant Tail Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5QaGVhc2FudCBUYWlsIE55bXBoPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMTU1IDcwIFEgMTY1IDcwIDE2NSA4MCBRIDE2NSA5NSAxNTAgOTUgUSAxNDAgOTUgMTM4IDg4IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPGNpcmNsZSBjeD0iMTMwIiBjeT0iNjgiIHI9IjgiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGNpcmNsZSBjeD0iMTI4IiBjeT0iNjUiIHI9IjIuNSIgZmlsbD0iI2U4Yjg2MCIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSBTbGltIGJvZHkgLS0+CiAgPGVsbGlwc2UgY3g9IjEwNSIgY3k9IjcyIiByeD0iMjQiIHJ5PSI2IiBmaWxsPSIjOEI0NTEzIiBzdHJva2U9IiM2QjM0MTAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBDb3BwZXIgd2lyZSByaWJiaW5nIC0tPgogIDxsaW5lIHgxPSI5MiIgeTE9IjY3IiB4Mj0iOTAiIHkyPSI3NyIgc3Ryb2tlPSIjYzg3ODMyIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxsaW5lIHgxPSIxMDAiIHkxPSI2NiIgeDI9Ijk4IiB5Mj0iNzgiIHN0cm9rZT0iI2M4NzgzMiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8bGluZSB4MT0iMTA4IiB5MT0iNjYiIHgyPSIxMDciIHkyPSI3OCIgc3Ryb2tlPSIjYzg3ODMyIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxsaW5lIHgxPSIxMTYiIHkxPSI2NyIgeDI9IjExNiIgeTI9Ijc4IiBzdHJva2U9IiNjODc4MzIiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGxpbmUgeDE9IjEyNCIgeTE9IjY3IiB4Mj0iMTI0IiB5Mj0iNzciIHN0cm9rZT0iI2M4NzgzMiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8IS0tIFdpbmdjYXNlIC0tPgogIDxlbGxpcHNlIGN4PSIxMzAiIGN5PSI2OCIgcng9IjExIiByeT0iNSIgZmlsbD0iIzVhMzAxMCIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBUYWlsIGZpYmVycyAtLT4KICA8bGluZSB4MT0iODAiIHkxPSI3MCIgeDI9IjY1IiB5Mj0iNjIiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI3MiIgeDI9IjYzIiB5Mj0iNzEiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI3NCIgeDI9IjY1IiB5Mj0iNzgiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIExlZ3MgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjczIiB4Mj0iMTIwIiB5Mj0iODIiIHN0cm9rZT0iIzVhMzAxMCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTMyIiB5MT0iNzMiIHgyPSIxMjgiIHkyPSI4NCIgc3Ryb2tlPSIjNWEzMDEwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMzYiIHkxPSI3MyIgeDI9IjEzNiIgeTI9Ijg0IiBzdHJva2U9IiM1YTMwMTAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzE0JiM4MjExOzE4ICDCtyAgQ29wcGVyIHJpYiAgwrcgIEJyb3duPC90ZXh0Pgo8L3N2Zz4=',
+  'Tungsten Bead Caddis': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5UdW5nc3RlbiBCZWFkIENhZGRpczwvdGV4dD4KICA8cGF0aCBkPSJNIDE1NSA3MCBRIDE2NSA3MCAxNjUgODAgUSAxNjUgOTUgMTUwIDk1IFEgMTQwIDk1IDEzOCA4OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gVHVuZ3N0ZW4gYmVhZCAtIGRhcmtlci9oZWF2aWVyIHRoYW4gYnJhc3MgLS0+CiAgPGNpcmNsZSBjeD0iMTMwIiBjeT0iNjgiIHI9IjEwIiBmaWxsPSIjNzA3MDcwIiBzdHJva2U9IiM1MDUwNTAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjEyNyIgY3k9IjY0IiByPSIzLjUiIGZpbGw9IiNhMGEwYTAiIG9wYWNpdHk9IjAuNSIvPgogIDwhLS0gU2VnbWVudGVkIGNhZGRpcyBib2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3MyIgcng9IjI0IiByeT0iOCIgZmlsbD0iIzZCN0MzQSIgc3Ryb2tlPSIjNGE1YTJhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gU2VnbWVudHMgLS0+CiAgPGxpbmUgeDE9Ijg4IiB5MT0iNjYiIHgyPSI4OCIgeTI9IjgwIiBzdHJva2U9IiM0YTVhMmEiIHN0cm9rZS13aWR0aD0iMC44IiBvcGFjaXR5PSIwLjYiLz4KICA8bGluZSB4MT0iOTYiIHkxPSI2NSIgeDI9Ijk2IiB5Mj0iODEiIHN0cm9rZT0iIzRhNWEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiIG9wYWNpdHk9IjAuNiIvPgogIDxsaW5lIHgxPSIxMDQiIHkxPSI2NSIgeDI9IjEwNCIgeTI9IjgxIiBzdHJva2U9IiM0YTVhMmEiIHN0cm9rZS13aWR0aD0iMC44IiBvcGFjaXR5PSIwLjYiLz4KICA8bGluZSB4MT0iMTEyIiB5MT0iNjUiIHgyPSIxMTIiIHkyPSI4MSIgc3Ryb2tlPSIjNGE1YTJhIiBzdHJva2Utd2lkdGg9IjAuOCIgb3BhY2l0eT0iMC42Ii8+CiAgPGxpbmUgeDE9IjEyMCIgeTE9IjY2IiB4Mj0iMTIwIiB5Mj0iODAiIHN0cm9rZT0iIzRhNWEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiIG9wYWNpdHk9IjAuNiIvPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODAiIHkxPSI3MiIgeDI9IjY1IiB5Mj0iNzAiIHN0cm9rZT0iIzZCN0MzQSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBUaG9yYXggLS0+CiAgPGVsbGlwc2UgY3g9IjEzMSIgY3k9IjcyIiByeD0iOSIgcnk9IjkiIGZpbGw9IiM0YTNhMmEiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIExlZ3MgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjczIiB4Mj0iMTE4IiB5Mj0iODQiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTMxIiB5MT0iNzQiIHgyPSIxMjQiIHkyPSI4NiIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMzQiIHkxPSI3MyIgeDI9IjEzNCIgeTI9Ijg2IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzEyJiM4MjExOzE2ICDCtyAgVHVuZ3N0ZW4gIMK3ICBPbGl2ZS9Ccm93bjwvdGV4dD4KPC9zdmc+',
+  'Stonefly Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TdG9uZWZseSBOeW1waDwvdGV4dD4KICA8cGF0aCBkPSJNIDE1OCA2OCBRIDE2OCA2OCAxNjggNzggUSAxNjggOTMgMTUzIDkzIFEgMTQzIDkzIDE0MSA4NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gQnJvYWQgZmxhdCBib2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI3MiIgcng9IjI2IiByeT0iMTEiIGZpbGw9IiMzYTJhMWEiIHN0cm9rZT0iIzJhMWEwYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBTZWdtZW50YXRpb24gb24gZGFyayBib2R5IC0tPgogIDxsaW5lIHgxPSI5MCIgeTE9IjYyIiB4Mj0iOTAiIHkyPSI4MiIgc3Ryb2tlPSIjNWE0YTNhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMDAiIHkxPSI2MSIgeDI9IjEwMCIgeTI9IjgzIiBzdHJva2U9IiM1YTRhM2EiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjExMCIgeTE9IjYxIiB4Mj0iMTEwIiB5Mj0iODMiIHN0cm9rZT0iIzVhNGEzYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTIwIiB5MT0iNjEiIHgyPSIxMjAiIHkyPSI4MyIgc3Ryb2tlPSIjNWE0YTNhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gV2luZ2Nhc2UgLS0+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjY4IiByeD0iMTQiIHJ5PSI3IiBmaWxsPSIjMmExYTBhIi8+CiAgPCEtLSBIZWFkL2JlYWQgLS0+CiAgPGNpcmNsZSBjeD0iMTQzIiBjeT0iNjciIHI9IjkiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBBbnRlbm5hcyAtLT4KICA8bGluZSB4MT0iODIiIHkxPSI2OCIgeDI9IjYwIiB5Mj0iNTgiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjgyIiB5MT0iNzAiIHgyPSI2MCIgeTI9IjcyIiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDwhLS0gVGFpbHMgLS0+CiAgPGxpbmUgeDE9IjgyIiB5MT0iNzMiIHgyPSI2MiIgeTI9Ijc4IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSI4MiIgeTE9Ijc2IiB4Mj0iNjQiIHkyPSI4NSIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8IS0tIE1hbnkgbGVncyAtLT4KICA8bGluZSB4MT0iMTAwIiB5MT0iODMiIHgyPSI5MCIgeTI9Ijk0IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEwOCIgeTE9IjgzIiB4Mj0iMTAwIiB5Mj0iOTUiIHN0cm9rZT0iIzNhMmExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTE2IiB5MT0iODMiIHgyPSIxMTAiIHkyPSI5NSIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMjQiIHkxPSI4MyIgeDI9IjEyMCIgeTI9Ijk1IiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEwMCIgeTE9IjYxIiB4Mj0iOTAiIHkyPSI1MCIgc3Ryb2tlPSIjM2EyYTFhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMTAiIHkxPSI2MSIgeDI9IjEwNCIgeTI9IjUwIiBzdHJva2U9IiMzYTJhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzgmIzgyMTE7MTIgIMK3ICBCbGFjay9Ccm93biAgwrcgIEhlYXZ5PC90ZXh0Pgo8L3N2Zz4=',
+  'Zebra Midge': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5aZWJyYSBNaWRnZTwvdGV4dD4KICA8cGF0aCBkPSJNIDE1NSA3MCBRIDE2NSA3MCAxNjUgODAgUSAxNjUgOTUgMTUwIDk1IFEgMTQwIDk1IDEzOCA4OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gVmVyeSBzbGltIGJvZHkgLSBtaWRnZSBpcyB0aW55IC0tPgogIDxsaW5lIHgxPSI3NiIgeTE9IjcyIiB4Mj0iMTM4IiB5Mj0iNzIiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPCEtLSBTaWx2ZXIgcmliIC0gdGhlIHplYnJhIHN0cmlwZXMgLS0+CiAgPGxpbmUgeDE9IjgyIiB5MT0iNzAiIHgyPSI4MiIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9Ijg5IiB5MT0iNzAiIHgyPSI4OSIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9Ijk2IiB5MT0iNzAiIHgyPSI5NiIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9IjEwMyIgeTE9IjcwIiB4Mj0iMTAzIiB5Mj0iNzQiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iNzAiIHgyPSIxMTAiIHkyPSI3NCIgc3Ryb2tlPSIjZDBkMGQwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxMTciIHkxPSI3MCIgeDI9IjExNyIgeTI9Ijc0IiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPGxpbmUgeDE9IjEyNCIgeTE9IjcwIiB4Mj0iMTI0IiB5Mj0iNzQiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8bGluZSB4MT0iMTMxIiB5MT0iNzAiIHgyPSIxMzEiIHkyPSI3NCIgc3Ryb2tlPSIjZDBkMGQwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDwhLS0gVHVuZ3N0ZW4gYmVhZCAtIHRpbnkgLS0+CiAgPGNpcmNsZSBjeD0iMTQwIiBjeT0iNzAiIHI9IjciIGZpbGw9IiM3MDcwNzAiIHN0cm9rZT0iIzUwNTA1MCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGNpcmNsZSBjeD0iMTM4IiBjeT0iNjgiIHI9IjIiIGZpbGw9IiNhMGEwYTAiIG9wYWNpdHk9IjAuNiIvPgogIDwhLS0gVGFpbCAtIHRpbnkgd2lzcHMgLS0+CiAgPGxpbmUgeDE9Ijc2IiB5MT0iNzEiIHgyPSI2MiIgeTI9IjY2IiBzdHJva2U9IiM2MDYwNjAiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9Ijc2IiB5MT0iNzMiIHgyPSI2MiIgeTI9Ijc1IiBzdHJva2U9IiM2MDYwNjAiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzE4JiM4MjExOzIyICDCtyAgQmxhY2sgIMK3ICBTaWx2ZXIgcmliPC90ZXh0Pgo8L3N2Zz4=',
+  'Sulphur Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TdWxwaHVyIE55bXBoPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMTU1IDcwIFEgMTY1IDcwIDE2NSA4MCBRIDE2NSA5NSAxNTAgOTUgUSAxNDAgOTUgMTM4IDg4IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPCEtLSBQYWxlIHllbGxvdyBib2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3MiIgcng9IjI0IiByeT0iNyIgZmlsbD0iI2Q0YzA2MCIgc3Ryb2tlPSIjYTA5MDQwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gU2VnbWVudGF0aW9uIC0tPgogIDxsaW5lIHgxPSI4OCIgeTE9IjY2IiB4Mj0iODgiIHkyPSI3OCIgc3Ryb2tlPSIjYTA5MDQwIiBzdHJva2Utd2lkdGg9IjAuNyIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9Ijk2IiB5MT0iNjUiIHgyPSI5NiIgeTI9Ijc5IiBzdHJva2U9IiNhMDkwNDAiIHN0cm9rZS13aWR0aD0iMC43IiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTA0IiB5MT0iNjUiIHgyPSIxMDQiIHkyPSI3OSIgc3Ryb2tlPSIjYTA5MDQwIiBzdHJva2Utd2lkdGg9IjAuNyIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjExMiIgeTE9IjY1IiB4Mj0iMTEyIiB5Mj0iNzkiIHN0cm9rZT0iI2EwOTA0MCIgc3Ryb2tlLXdpZHRoPSIwLjciIG9wYWNpdHk9IjAuNyIvPgogIDxsaW5lIHgxPSIxMjAiIHkxPSI2NiIgeDI9IjEyMCIgeTI9Ijc4IiBzdHJva2U9IiNhMDkwNDAiIHN0cm9rZS13aWR0aD0iMC43IiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIFdpbmdjYXNlIC0gZGFyayBvbGl2ZSAtLT4KICA8ZWxsaXBzZSBjeD0iMTMwIiBjeT0iNjciIHJ4PSIxMiIgcnk9IjUiIGZpbGw9IiM0YTVhMmEiLz4KICA8IS0tIEJlYWQgLS0+CiAgPGNpcmNsZSBjeD0iMTQxIiBjeT0iNjciIHI9IjgiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSAzIHRhaWxzIC0tPgogIDxsaW5lIHgxPSI4MCIgeTE9IjcwIiB4Mj0iNjIiIHkyPSI2MiIgc3Ryb2tlPSIjZDRjMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4MCIgeTE9IjcyIiB4Mj0iNjAiIHkyPSI3MiIgc3Ryb2tlPSIjZDRjMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4MCIgeTE9Ijc0IiB4Mj0iNjIiIHkyPSI4MCIgc3Ryb2tlPSIjZDRjMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gR2lsbHMgLSB0aW55IC0tPgogIDxlbGxpcHNlIGN4PSI5MiIgY3k9IjY3IiByeD0iMyIgcnk9IjIiIGZpbGw9IiNkNGMwNjAiIG9wYWNpdHk9IjAuNSIvPgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSI2NiIgcng9IjMiIHJ5PSIyIiBmaWxsPSIjZDRjMDYwIiBvcGFjaXR5PSIwLjUiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMTQmIzgyMTE7MTYgIMK3ICBZZWxsb3cvT2xpdmUgIMK3ICBQcmUtaGF0Y2g8L3RleHQ+Cjwvc3ZnPg==',
+  'Woolly Bugger': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5Xb29sbHkgQnVnZ2VyPC90ZXh0PgogIDxwYXRoIGQ9Ik0gMTU4IDY1IFEgMTY4IDY1IDE2OCA3NSBRIDE2OCA5MiAxNTIgOTIgUSAxNDEgOTIgMTM5IDg0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPCEtLSBCZWFkIC0tPgogIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjYzIiByPSIxMCIgZmlsbD0iI2M4OTYzYSIgc3Ryb2tlPSIjYTA3MDMwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMy41IiBmaWxsPSIjZThiODYwIiBvcGFjaXR5PSIwLjUiLz4KICA8IS0tIENodW5reSBib2R5IHdpdGggY2hlbmlsbGUgbG9vayAtLT4KICA8ZWxsaXBzZSBjeD0iMTAwIiBjeT0iNzAiIHJ4PSIyOCIgcnk9IjEyIiBmaWxsPSIjNGE2YTJhIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBIYWNrbGUgd3JhcHMgLS0+CiAgPGxpbmUgeDE9Ijc4IiB5MT0iNjAiIHgyPSI3MiIgeTI9IjUyIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9Ijg2IiB5MT0iNTgiIHgyPSI4MyIgeTI9IjUwIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9Ijk0IiB5MT0iNTgiIHgyPSI5NCIgeTI9IjUwIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjEwMiIgeTE9IjU4IiB4Mj0iMTA1IiB5Mj0iNTAiIHN0cm9rZT0iIzNhNWExYSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iNTgiIHgyPSIxMTYiIHkyPSI1MCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI3OCIgeTE9IjgwIiB4Mj0iNzIiIHkyPSI4OCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI4NiIgeTE9IjgyIiB4Mj0iODMiIHkyPSI5MCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI5NCIgeTE9IjgyIiB4Mj0iOTQiIHkyPSI5MCIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMDIiIHkxPSI4MiIgeDI9IjEwNSIgeTI9IjkwIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjExMCIgeTE9IjgyIiB4Mj0iMTE2IiB5Mj0iOTAiIHN0cm9rZT0iIzNhNWExYSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8IS0tIE1hcmFib3UgdGFpbCAtLT4KICA8cGF0aCBkPSJNIDcyIDY4IFEgNTUgNTggNDIgNDggUSA1MCA1MiA0NSA0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxwYXRoIGQ9Ik0gNzIgNzAgUSA1MiA2OCAzOCA2NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2E1YTFhIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxwYXRoIGQ9Ik0gNzIgNzIgUSA1NSA3OCA0NCA4OCBRIDUwIDgyIDQ2IDkwIiBmaWxsPSJub25lIiBzdHJva2U9IiMzYTVhMWEiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzQmIzgyMTE7OCAgwrcgIE9saXZlL0JsYWNrL0Jyb3duICDCtyAgTWFyYWJvdTwvdGV4dD4KPC9zdmc+',
+  'Sculpin Pattern': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TY3VscGluIFBhdHRlcm48L3RleHQ+CiAgPHBhdGggZD0iTSAxNTggNjggUSAxNjggNjggMTY4IDc4IFEgMTY4IDkzIDE1MyA5MyBRIDE0MiA5MyAxNDAgODUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIFdpZGUgc2N1bHBpbiBoZWFkIC0tPgogIDxlbGxpcHNlIGN4PSIxMzAiIGN5PSI3MCIgcng9IjE4IiByeT0iMTQiIGZpbGw9IiM4QjczNTUiIHN0cm9rZT0iIzZCNTMzNSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBFeWVzIC0tPgogIDxjaXJjbGUgY3g9IjEyNCIgY3k9IjY1IiByPSI0IiBmaWxsPSIjZjBmMGYwIiBzdHJva2U9IiM0MDQwNDAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjEyNCIgY3k9IjY1IiByPSIyIiBmaWxsPSIjMWExYTFhIi8+CiAgPCEtLSBCb2R5IHRhcGVycyAtLT4KICA8cGF0aCBkPSJNIDExMyA2OCBRIDg1IDY1IDY1IDcwIFEgODUgNzUgMTEzIDcyIFoiIGZpbGw9IiM5YThhNjAiIHN0cm9rZT0iIzdhNmE0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFBlY3RvcmFsIGZpbnMgLS0+CiAgPHBhdGggZD0iTSAxMTggNzIgUSAxMTAgODUgMTAwIDkwIFEgMTA4IDgyIDExNSA4MCBaIiBmaWxsPSIjOEI3MzU1IiBzdHJva2U9IiM2QjUzMzUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjgiLz4KICA8cGF0aCBkPSJNIDExOCA2OCBRIDEwOCA1NSA5OCA1MiBRIDEwOCA1OCAxMTUgNjIgWiIgZmlsbD0iIzhCNzM1NSIgc3Ryb2tlPSIjNkI1MzM1IiBzdHJva2Utd2lkdGg9IjAuNSIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBUYWlsIGZpbiAtLT4KICA8cGF0aCBkPSJNIDY1IDcwIFEgNTAgNjAgNDAgNTUgUSA0OCA2NSA0NSA3MiBRIDQ4IDc4IDQwIDg1IFEgNTAgODAgNjUgNzAgWiIgZmlsbD0iIzdhNmE0MCIgc3Ryb2tlPSIjNWE0YTIwIiBzdHJva2Utd2lkdGg9IjAuNSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiM0JiM4MjExOzYgIMK3ICBUYW4vQnJvd24gIMK3ICBXZWlnaHRlZCBoZWFkPC90ZXh0Pgo8L3N2Zz4=',
+  'Clouser Minnow': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5DbG91c2VyIE1pbm5vdzwvdGV4dD4KICA8cGF0aCBkPSJNIDE1OCA3MiBRIDE2OCA3MiAxNjggODIgUSAxNjggOTcgMTUzIDk3IFEgMTQyIDk3IDE0MCA4OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gRHVtYmJlbGwgbGVhZCBleWVzIC0tPgogIDxjaXJjbGUgY3g9IjEzNCIgY3k9IjYwIiByPSI3IiBmaWxsPSIjOTA5MDkwIiBzdHJva2U9IiM2MDYwNjAiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGNpcmNsZSBjeD0iMTQwIiBjeT0iNjAiIHI9IjciIGZpbGw9IiM5MDkwOTAiIHN0cm9rZT0iIzYwNjA2MCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8bGluZSB4MT0iMTM0IiB5MT0iNjAiIHgyPSIxNDAiIHkyPSI2MCIgc3Ryb2tlPSIjNjA2MDYwIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8IS0tIFdoaXRlIGJlbGx5IGJ1Y2t0YWlsIC0tPgogIDxwYXRoIGQ9Ik0gMTM3IDYyIFEgMTA1IDY1IDY4IDYyIFEgODUgNjggMTA1IDY4IFEgMTIwIDY4IDEzNyA2NiBaIiBmaWxsPSIjZjVmNWY1IiBzdHJva2U9IiNlMGUwZTAiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgPCEtLSBDaGFydHJldXNlIGJhY2sgLS0+CiAgPHBhdGggZD0iTSAxMzcgNjAgUSAxMDUgNTUgNjUgNjAgUSA4NSA2MiAxMDUgNjIgUSAxMjAgNjIgMTM3IDYwIFoiIGZpbGw9IiM5MGQwMTAiIHN0cm9rZT0iIzcwYTgwMCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KICA8IS0tIEhvb2sgYmVuZCB2aXNpYmxlIC0tPgogIDxwYXRoIGQ9Ik0gMTM3IDY4IFEgMTQzIDY4IDE0MyA3NiBRIDE0MyA4OCAxMzIgODgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPCEtLSBGbGFzaCAtLT4KICA8bGluZSB4MT0iMTA1IiB5MT0iNjAiIHgyPSI5NSIgeTI9IjUyIiBzdHJva2U9IiNmMGUwNjAiIHN0cm9rZS13aWR0aD0iMC44IiBvcGFjaXR5PSIwLjgiLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iNjIiIHgyPSIxMDIiIHkyPSI1NCIgc3Ryb2tlPSIjZjBlMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIgb3BhY2l0eT0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzQmIzgyMTE7OCAgwrcgIENoYXJ0cmV1c2UvV2hpdGUgIMK3ICBEdW1iYmVsbCBleWVzPC90ZXh0Pgo8L3N2Zz4=',
+  'Articulated Streamer': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5BcnRpY3VsYXRlZCBTdHJlYW1lcjwvdGV4dD4KICA8IS0tIFJlYXIgaG9vayAtLT4KICA8cGF0aCBkPSJNIDc2IDcyIFEgODIgNzIgODIgNzggUSA4MiA4OCA3NCA4OCBRIDY4IDg4IDY3IDg0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwhLS0gUmVhciBzZWN0aW9uIG1hcmFib3UgLS0+CiAgPHBhdGggZD0iTSA3NiA3MCBRIDU4IDYwIDQ0IDUyIFEgNTIgNTggNDggNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlhMmEyYSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8cGF0aCBkPSJNIDc2IDcyIFEgNTUgNzIgNDAgNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlhMmEyYSIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8cGF0aCBkPSJNIDc2IDc0IFEgNTggODIgNDYgOTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlhMmEyYSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIENvbm5lY3Rpb24gd2lyZSAtLT4KICA8bGluZSB4MT0iODIiIHkxPSI3NiIgeDI9IjEwMCIgeTI9IjcyIiBzdHJva2U9IiNjMGMwYzAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtZGFzaGFycmF5PSIyLDIiLz4KICA8IS0tIEZyb250IGhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNTUgNjggUSAxNjUgNjggMTY1IDc4IFEgMTY1IDkzIDE1MCA5MyBRIDEzOSA5MyAxMzcgODUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEZyb250IHNlY3Rpb24gYm9keSAtLT4KICA8ZWxsaXBzZSBjeD0iMTIwIiBjeT0iNzEiIHJ4PSIyMiIgcnk9IjkiIGZpbGw9IiM3YTJhMmEiIHN0cm9rZT0iIzVhMWExYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEhhY2tsZSAtLT4KICA8bGluZSB4MT0iMTA0IiB5MT0iNjMiIHgyPSI5OCIgeTI9IjU2IiBzdHJva2U9IiM3YTJhMmEiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjExMCIgeTE9IjYyIiB4Mj0iMTA4IiB5Mj0iNTUiIHN0cm9rZT0iIzdhMmEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTE2IiB5MT0iNjIiIHgyPSIxMTgiIHkyPSI1NSIgc3Ryb2tlPSIjN2EyYTJhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMDQiIHkxPSI3OSIgeDI9Ijk4IiB5Mj0iODYiIHN0cm9rZT0iIzdhMmEyYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTEwIiB5MT0iODAiIHgyPSIxMDgiIHkyPSI4NyIgc3Ryb2tlPSIjN2EyYTJhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gQmVhZC9oZWFkIC0tPgogIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjY4IiByPSI5IiBmaWxsPSIjYzg5NjNhIiBzdHJva2U9IiNhMDcwMzAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiMyJiM4MjExOzQgIMK3ICBKb2ludGVkICDCtyAgUmVhY3Rpb24gc3RyaWtlPC90ZXh0Pgo8L3N2Zz4=',
+  'Elk Hair Caddis': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5FbGsgSGFpciBDYWRkaXM8L3RleHQ+CiAgPHBhdGggZD0iTSAxNTUgODAgUSAxNjUgODAgMTY1IDkwIFEgMTY1IDEwNSAxNTAgMTA1IFEgMTQwIDEwNSAxMzggOTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJvZHkgLSBvbGl2ZS90YW4gLS0+CiAgPGVsbGlwc2UgY3g9IjEwNSIgY3k9IjgyIiByeD0iMjQiIHJ5PSI4IiBmaWxsPSIjOEI4MDQwIiBzdHJva2U9IiM2QjYwMjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBIYWNrbGUgd3JhcHMgYXJvdW5kIGJvZHkgLS0+CiAgPGxpbmUgeDE9Ijg2IiB5MT0iNzUiIHgyPSI4MiIgeTI9IjkwIiBzdHJva2U9IiNjOGEwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjkzIiB5MT0iNzQiIHgyPSI5MSIgeTI9IjkwIiBzdHJva2U9IiNjOGEwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEwMCIgeTE9Ijc0IiB4Mj0iMTAwIiB5Mj0iOTAiIHN0cm9rZT0iI2M4YTA2MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTA3IiB5MT0iNzQiIHgyPSIxMDkiIHkyPSI5MCIgc3Ryb2tlPSIjYzhhMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSIxMTQiIHkxPSI3NCIgeDI9IjExNyIgeTI9IjkwIiBzdHJva2U9IiNjOGEwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjEyMSIgeTE9Ijc1IiB4Mj0iMTI1IiB5Mj0iODkiIHN0cm9rZT0iI2M4YTA2MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEVsayBoYWlyIHdpbmcgLSB0ZW50IHNoYXBlZCBvdmVyIGJvZHkgLS0+CiAgPHBhdGggZD0iTSA4NCA4MCBRIDEwMCA1MiAxMTYgODAiIGZpbGw9IiNkNGMwODAiIHN0cm9rZT0iI2IwYTA2MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8cGF0aCBkPSJNIDg0IDgwIFEgMTAwIDUwIDExNiA4MCBRIDEwOCA1NiAxMDAgNTIgUSA5MiA1NiA4NCA4MCBaIiBmaWxsPSIjZDRjMDgwIiBzdHJva2U9IiNiMGEwNjAiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIEhhaXIgdGlwcyBleHRlbmRpbmcgZm9yd2FyZCAtLT4KICA8bGluZSB4MT0iODQiIHkxPSI3OCIgeDI9IjcyIiB5Mj0iNzIiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iODQiIHkxPSI4MCIgeDI9IjcwIiB5Mj0iNzYiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iODQiIHkxPSI4MiIgeDI9IjcyIiB5Mj0iODQiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8IS0tIFRocmVhZCBoZWFkIC0tPgogIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjgwIiByPSI1IiBmaWxsPSIjYzg5NjNhIi8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzE0JiM4MjExOzE2ICDCtyAgVGFuL09saXZlICDCtyAgRXZlbmluZyBoYXRjaDwvdGV4dD4KPC9zdmc+',
+  'Parachute Adams': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5QYXJhY2h1dGUgQWRhbXM8L3RleHQ+CiAgPHBhdGggZD0iTSAxNTUgODUgUSAxNjUgODUgMTY1IDk1IFEgMTY1IDExMCAxNTAgMTEwIFEgMTQwIDExMCAxMzggMTAzIiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTdhNjAiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPCEtLSBQYXJhY2h1dGUgcG9zdCAtIHdoaXRlIGNhbGYgdGFpbCB1cHJpZ2h0IC0tPgogIDxsaW5lIHgxPSIxMDgiIHkxPSI4NSIgeDI9IjEwOCIgeTI9IjQ1IiBzdHJva2U9IiNmMGYwZjAiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIFBhcmFjaHV0ZSBoYWNrbGUgd291bmQgaG9yaXpvbnRhbGx5IGFyb3VuZCBwb3N0IC0tPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI2OCIgcng9IjIyIiByeT0iNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE2YTQwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI2NCIgcng9IjE4IiByeT0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE2YTQwIiBzdHJva2Utd2lkdGg9IjEuMiIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBCb2R5IC0gZ3JleSBkdWJiaW5nIC0tPgogIDxlbGxpcHNlIGN4PSIxMDgiIGN5PSI4NyIgcng9IjIyIiByeT0iNyIgZmlsbD0iIzkwOTA5MCIgc3Ryb2tlPSIjNzA3MDcwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gV2luZ3MgLSB1cHJpZ2h0IHNwZW50IC0tPgogIDxwYXRoIGQ9Ik0gMTA4IDg1IFEgOTAgNzQgNzYgNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8cGF0aCBkPSJNIDEwOCA4NSBRIDEyNiA3NCAxNDAgNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2QwZDBkMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIFRhaWwgZmliZXJzIC0tPgogIDxsaW5lIHgxPSI4NiIgeTE9IjkwIiB4Mj0iNjgiIHkyPSI5MiIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4NiIgeTE9IjkyIiB4Mj0iNjgiIHkyPSI5NiIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDxsaW5lIHgxPSI4NiIgeTE9Ijg4IiB4Mj0iNjgiIHkyPSI4OCIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiMxNCYjODIxMTsxOCAgwrcgIEdyZXkgIMK3ICBBbGwtcHVycG9zZSBkcnk8L3RleHQ+Cjwvc3ZnPg==',
+  'Sulphur Comparadun': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5TdWxwaHVyIENvbXBhcmFkdW48L3RleHQ+CiAgPHBhdGggZD0iTSAxNTUgOTAgUSAxNjUgOTAgMTY1IDEwMCBRIDE2NSAxMTUgMTUwIDExNSBRIDE0MCAxMTUgMTM4IDEwOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOGE3YTYwIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwhLS0gQm9keSAtIHBhbGUgeWVsbG93IHN1bHBodXIgLS0+CiAgPGVsbGlwc2UgY3g9IjEwNSIgY3k9IjkyIiByeD0iMjQiIHJ5PSI3IiBmaWxsPSIjZjBkMDQwIiBzdHJva2U9IiNjMGE4MjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBEZWVyIGhhaXIgd2luZyAtIGZhbiBzaGFwZWQsIGxvdyByaWRpbmcgLS0+CiAgPHBhdGggZD0iTSA5MCA5MCBRIDEwNSA1OCAxMjAgOTAgWiIgZmlsbD0iI2Q0YzA4MCIgc3Ryb2tlPSIjYjBhMDYwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gSGFpciB0aXBzIGZhbm5pbmcgb3V0IC0tPgogIDxsaW5lIHgxPSI5MCIgeTE9IjkwIiB4Mj0iNzgiIHkyPSI3NiIgc3Ryb2tlPSIjZDRjMDgwIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSI5MyIgeTE9Ijg4IiB4Mj0iODQiIHkyPSI3MiIgc3Ryb2tlPSIjZDRjMDgwIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMjAiIHkxPSI5MCIgeDI9IjEzMiIgeTI9Ijc2IiBzdHJva2U9IiNkNGMwODAiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjExNyIgeTE9Ijg4IiB4Mj0iMTI2IiB5Mj0iNzIiIHN0cm9rZT0iI2Q0YzA4MCIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8IS0tIE5vIGhhY2tsZSAtIHNpdHMgbG93IC0tPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODAiIHkxPSI5MSIgeDI9IjYyIiB5Mj0iODciIHN0cm9rZT0iI2YwZDA0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI5MyIgeDI9IjYyIiB5Mj0iOTMiIHN0cm9rZT0iI2YwZDA0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODAiIHkxPSI5NSIgeDI9IjYyIiB5Mj0iOTgiIHN0cm9rZT0iI2YwZDA0MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFRocmVhZCAtLT4KICA8Y2lyY2xlIGN4PSIxMjkiIGN5PSI5MCIgcj0iNCIgZmlsbD0iI2M4OTYzYSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPiMxNCYjODIxMTsxNiAgwrcgIFllbGxvdy9PcmFuZ2UgIMK3ICBMb3ctcmlkaW5nPC90ZXh0Pgo8L3N2Zz4=',
+  'Royal Wulff': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5Sb3lhbCBXdWxmZjwvdGV4dD4KICA8cGF0aCBkPSJNIDE1NSA4NSBRIDE2NSA4NSAxNjUgOTUgUSAxNjUgMTEwIDE1MCAxMTAgUSAxNDAgMTEwIDEzOCAxMDMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJvZHkgc2VjdGlvbnMgLSBSb3lhbCBDb2FjaG1hbiBzdHlsZSAtLT4KICA8cmVjdCB4PSI4NCIgeT0iODIiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9IiM4QjAwMDAiLz4KICA8cmVjdCB4PSI5OCIgeT0iODAiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxMiIgcng9IjIiIGZpbGw9IiNmMGYwZjAiLz4KICA8cmVjdCB4PSIxMTQiIHk9IjgyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIHJ4PSIyIiBmaWxsPSIjOEIwMDAwIi8+CiAgPCEtLSBQZWFjb2NrIGhlcmwgZnJvbnQgYW5kIGJhY2sgLS0+CiAgPGxpbmUgeDE9Ijg2IiB5MT0iODAiIHgyPSI4NCIgeTI9Ijc2IiBzdHJva2U9IiMwMDYwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjkwIiB5MT0iNzkiIHgyPSI5MCIgeTI9Ijc1IiBzdHJva2U9IiMwMDYwNjAiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPCEtLSBVcHJpZ2h0IHdoaXRlIHdpbmdzIC0tPgogIDxwYXRoIGQ9Ik0gMTA1IDgyIFEgOTUgNjIgODggNTggUSA5NiA2OCAxMDAgNjUgUSAxMDQgNjIgMTA1IDU4IFoiIGZpbGw9IiNmNWY1ZjUiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KICA8cGF0aCBkPSJNIDEwNSA4MiBRIDExNSA2MiAxMjIgNTggUSAxMTQgNjggMTEwIDY1IFEgMTA2IDYyIDEwNSA1OCBaIiBmaWxsPSIjZjVmNWY1IiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgPCEtLSBCcm93biBoYWNrbGUgLS0+CiAgPGxpbmUgeDE9IjkyIiB5MT0iODAiIHgyPSI4MiIgeTI9IjcyIiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9Ijk1IiB5MT0iNzkiIHgyPSI4NyIgeTI9IjcwIiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9IjExNSIgeTE9Ijc5IiB4Mj0iMTIzIiB5Mj0iNzAiIHN0cm9rZT0iIzhCNDUxMyIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTE4IiB5MT0iODAiIHgyPSIxMjgiIHkyPSI3MiIgc3Ryb2tlPSIjOEI0NTEzIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gVGFpbCAtIG1vb3NlIGhhaXIgLS0+CiAgPGxpbmUgeDE9Ijg0IiB5MT0iODkiIHgyPSI2NiIgeTI9Ijg2IiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPGxpbmUgeDE9Ijg0IiB5MT0iOTEiIHgyPSI2NCIgeTI9IjkyIiBzdHJva2U9IiM4QjQ1MTMiIHN0cm9rZS13aWR0aD0iMC44Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzEyJiM4MjExOzE0ICDCtyAgQ2xhc3NpYyBhdHRyYWN0b3IgIMK3ICBIaWdoLWZsb2F0aW5nPC90ZXh0Pgo8L3N2Zz4=',
+  'Rapala Original Floating': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5SYXBhbGEgT3JpZ2luYWwgRmxvYXRpbmc8L3RleHQ+CiAgPCEtLSBNYWluIGx1cmUgYm9keSAtIHBlcmNoIGNvbG9yaW5nIC0tPgogIDxlbGxpcHNlIGN4PSIxMDUiIGN5PSI3MiIgcng9IjQ4IiByeT0iMTQiIGZpbGw9IiNmMGQwNjAiIHN0cm9rZT0iI2MwYTA0MCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBCYWNrIC0gZGFya2VyIC0tPgogIDxwYXRoIGQ9Ik0gNTcgNjggUSAxMDUgNTUgMTUzIDY4IFEgMTA1IDYyIDU3IDY4IFoiIGZpbGw9IiM0YThhMjAiIG9wYWNpdHk9IjAuOCIvPgogIDwhLS0gQmVsbHkgc3RyaXBlcyAtIHBlcmNoIHZlcnRpY2FsIGJhcnMgLS0+CiAgPHJlY3QgeD0iNzgiIHk9IjYyIiB3aWR0aD0iNSIgaGVpZ2h0PSIyMCIgcng9IjEiIGZpbGw9IiMyYTZhMDAiIG9wYWNpdHk9IjAuNSIvPgogIDxyZWN0IHg9IjkwIiB5PSI2MCIgd2lkdGg9IjUiIGhlaWdodD0iMjIiIHJ4PSIxIiBmaWxsPSIjMmE2YTAwIiBvcGFjaXR5PSIwLjUiLz4KICA8cmVjdCB4PSIxMDIiIHk9IjYwIiB3aWR0aD0iNSIgaGVpZ2h0PSIyMiIgcng9IjEiIGZpbGw9IiMyYTZhMDAiIG9wYWNpdHk9IjAuNSIvPgogIDxyZWN0IHg9IjExNCIgeT0iNjAiIHdpZHRoPSI1IiBoZWlnaHQ9IjIyIiByeD0iMSIgZmlsbD0iIzJhNmEwMCIgb3BhY2l0eT0iMC41Ii8+CiAgPHJlY3QgeD0iMTI2IiB5PSI2MSIgd2lkdGg9IjQiIGhlaWdodD0iMjEiIHJ4PSIxIiBmaWxsPSIjMmE2YTAwIiBvcGFjaXR5PSIwLjUiLz4KICA8IS0tIEV5ZSAtLT4KICA8Y2lyY2xlIGN4PSIxNDciIGN5PSI3MCIgcj0iNSIgZmlsbD0iI2YwZjBmMCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxNDciIGN5PSI3MCIgcj0iMi41IiBmaWxsPSIjMWExYTFhIi8+CiAgPCEtLSBMaXAvYmlsbCAtLT4KICA8cGF0aCBkPSJNIDE1MiA3MiBMIDE2NSA2OCBMIDE2NSA3NiBaIiBmaWxsPSIjYzBjMGMwIiBzdHJva2U9IiM5MDkwOTAiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgPCEtLSBUYWlsIGZpbiAtLT4KICA8cGF0aCBkPSJNIDU3IDcyIFEgNDUgNjAgMzYgNTUgUSA0NCA2NSA0MCA3MiBRIDQ0IDc4IDM2IDg3IFEgNDUgODMgNTcgNzIgWiIgZmlsbD0iI2MwYTA0MCIgc3Ryb2tlPSIjYTA4MDIwIiBzdHJva2Utd2lkdGg9IjAuNSIvPgogIDwhLS0gVHJlYmxlIGhvb2tzIC0tPgogIDxwYXRoIGQ9Ik0gODggODYgUSA5MiA5MiA4OCA5OCBRIDg0IDkyIDgwIDk4IiBmaWxsPSJub25lIiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHBhdGggZD0iTSAxMTUgODYgUSAxMTkgOTIgMTE1IDk4IFEgMTExIDkyIDEwNyA5OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTI4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjkiIGZpbGw9IiM2YTVhM2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjQmIzgyMTE7N2NtICDCtyAgUGVyY2gvRmlyZXRpZ2VyICDCtyAgVHdpdGNoICZhbXA7IHBhdXNlPC90ZXh0Pgo8L3N2Zz4=',
+  'Blue Fox Vibrax Spinner': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5CbHVlIEZveCBWaWJyYXggU3Bpbm5lcjwvdGV4dD4KICA8IS0tIFdpcmUgc2hhZnQgLS0+CiAgPGxpbmUgeDE9IjUwIiB5MT0iNzIiIHgyPSIxNTgiIHkyPSI3MiIgc3Ryb2tlPSIjOTA5MDkwIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIENsZXZpcyBhbmQgYmxhZGUgLS0+CiAgPGVsbGlwc2UgY3g9IjkwIiBjeT0iNjgiIHJ4PSIyOCIgcnk9IjE4IiBmaWxsPSIjZThlOGU4IiBzdHJva2U9IiNjMGMwYzAiIHN0cm9rZS13aWR0aD0iMS4yIiB0cmFuc2Zvcm09InJvdGF0ZSgtMTUgOTAgNjgpIi8+CiAgPGVsbGlwc2UgY3g9IjkwIiBjeT0iNjgiIHJ4PSIyNiIgcnk9IjE2IiBmaWxsPSJub25lIiBzdHJva2U9IiNkMGQwZDAiIHN0cm9rZS13aWR0aD0iMC41IiB0cmFuc2Zvcm09InJvdGF0ZSgtMTUgOTAgNjgpIiBvcGFjaXR5PSIwLjYiLz4KICA8IS0tIFNoaW5lIG9uIGJsYWRlIC0tPgogIDxlbGxpcHNlIGN4PSI4NCIgY3k9IjYyIiByeD0iOCIgcnk9IjQiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjQiIHRyYW5zZm9ybT0icm90YXRlKC0xNSA4NCA2MikiLz4KICA8IS0tIEJvZHkgYmVhZHMgLS0+CiAgPGNpcmNsZSBjeD0iMTI1IiBjeT0iNzIiIHI9IjgiIGZpbGw9IiNjODk2M2EiIHN0cm9rZT0iI2EwNzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGNpcmNsZSBjeD0iMTM4IiBjeT0iNzIiIHI9IjYiIGZpbGw9IiNjMGMwYzAiIHN0cm9rZT0iIzkwOTA5MCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPCEtLSBUcmVibGUgaG9vayB3aXRoIGZ1ciAtLT4KICA8cGF0aCBkPSJNIDE0OCA3MiBRIDE1NSA3MiAxNTUgODAgUSAxNTUgOTAgMTQ3IDkwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNDgiIHkxPSI4MCIgeDI9IjE0MCIgeTI9Ijg4IiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPCEtLSBSZWQgZnVyIG9uIGhvb2sgLS0+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjgwIiB4Mj0iMTQyIiB5Mj0iODYiIHN0cm9rZT0iI2NjMjAyMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8bGluZSB4MT0iMTUwIiB5MT0iODIiIHgyPSIxNDYiIHkyPSI5MCIgc3Ryb2tlPSIjY2MyMDIwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNTMiIHkxPSI4MyIgeDI9IjE1MCIgeTI9IjkyIiBzdHJva2U9IiNjYzIwMjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPCEtLSBTcGxpdCByaW5nIGF0IGZyb250IC0tPgogIDxjaXJjbGUgY3g9IjU1IiBjeT0iNzIiIHI9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzkwOTA5MCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMyYjODIxMTs1ICDCtyAgU2lsdmVyIGJsYWRlICDCtyAgSW4tbGluZSBzcGlubmVyPC90ZXh0Pgo8L3N2Zz4=',
+  'Kastmaster Spoon': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5LYXN0bWFzdGVyIFNwb29uPC90ZXh0PgogIDwhLS0gU3Bvb24gYm9keSAtIGFuZ3VsYXIga2FzdG1hc3RlciBzaGFwZSAtLT4KICA8cGF0aCBkPSJNIDE0OCA2MCBRIDE1OCA3MCAxNDggODIgUSAxMjggODggMTA4IDg0IFEgODggODAgNzIgNzAgUSA4OCA1OCAxMDggNTYgUSAxMjggNTQgMTQ4IDYwIFoiIAogICAgICAgIGZpbGw9IiNlOGU4ZTgiIHN0cm9rZT0iI2IwYjBiMCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8IS0tIENocm9tZSBzaGluZSAtLT4KICA8cGF0aCBkPSJNIDE0NSA2MiBRIDE1MiA3MCAxNDUgNzggUSAxMzIgODIgMTE4IDgwIFEgMTM1IDc2IDE0MCA3MCBRIDEzOCA2MyAxMzAgNTggUSAxMzggNTcgMTQ1IDYyIFoiCiAgICAgICAgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuNSIvPgogIDwhLS0gQW5nbGVkIGN1dCBsaW5lIGNoYXJhY3RlcmlzdGljIG9mIEthc3RtYXN0ZXIgLS0+CiAgPGxpbmUgeDE9IjEwOCIgeTE9IjU2IiB4Mj0iMTQ4IiB5Mj0iNjAiIHN0cm9rZT0iIzkwOTA5MCIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iMTA4IiB5MT0iODQiIHgyPSIxNDgiIHkyPSI4MiIgc3Ryb2tlPSIjOTA5MDkwIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gU3BsaXQgcmluZyBhdCB0b3AgLS0+CiAgPGNpcmNsZSBjeD0iNzUiIGN5PSI3MCIgcj0iNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTA5MDkwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDwhLS0gVHJlYmxlIGhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNDggNzggUSAxNTYgODAgMTU4IDg4IFEgMTU0IDg0IDE1MCA5MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBkPSJNIDE1MCA4MiBRIDE2MiA4NCAxNjQgNzgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xLzQmIzgyMTE7My84b3ogIMK3ICBDaHJvbWUvR29sZCAgwrcgIFNpbmtpbmc8L3RleHQ+Cjwvc3ZnPg==',
+  'Mepps Aglia Spinner': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5NZXBwcyBBZ2xpYSBTcGlubmVyPC90ZXh0PgogIDwhLS0gV2lyZSBzaGFmdCAtLT4KICA8bGluZSB4MT0iNDUiIHkxPSI3MiIgeDI9IjE2MiIgeTI9IjcyIiBzdHJva2U9IiM5MDkwOTAiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwhLS0gQWdsaWEgbGVhZiBibGFkZSAtIHJvdW5kIHRlYXJkcm9wIHNoYXBlIC0tPgogIDxlbGxpcHNlIGN4PSI5MiIgY3k9IjY1IiByeD0iMjIiIHJ5PSIzMiIgZmlsbD0iI2YwYzA0MCIgc3Ryb2tlPSIjYzA5ODIwIiBzdHJva2Utd2lkdGg9IjEuMiIgdHJhbnNmb3JtPSJyb3RhdGUoMjAgOTIgNjUpIi8+CiAgPGVsbGlwc2UgY3g9Ijg4IiBjeT0iNjEiIHJ4PSI4IiByeT0iMTQiIGZpbGw9IiNmOGUwODAiIG9wYWNpdHk9IjAuNSIgdHJhbnNmb3JtPSJyb3RhdGUoMjAgODggNjEpIi8+CiAgPCEtLSBCb2R5IC0gYnJhc3MgLS0+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjcyIiByeD0iMTQiIHJ5PSI4IiBmaWxsPSIjYzg5NjNhIiBzdHJva2U9IiNhMDcwMzAiIHN0cm9rZS13aWR0aD0iMSIvPgogIDwhLS0gU3F1aXJyZWwgdGFpbCBvbiBob29rIC0gYmxhY2sveWVsbG93IC0tPgogIDxsaW5lIHgxPSIxNDgiIHkxPSI3MiIgeDI9IjE1OCIgeTI9IjY0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjcyIiB4Mj0iMTYwIiB5Mj0iNzAiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8bGluZSB4MT0iMTQ4IiB5MT0iNzIiIHgyPSIxNjAiIHkyPSI3OCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDxsaW5lIHgxPSIxNDgiIHkxPSI3MiIgeDI9IjE1OCIgeTI9IjgyIiBzdHJva2U9IiNmMGMwNDAiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjcyIiB4Mj0iMTYyIiB5Mj0iNzYiIHN0cm9rZT0iI2YwYzA0MCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8IS0tIFRyZWJsZSBob29rIC0tPgogIDxwYXRoIGQ9Ik0gMTQ4IDcyIFEgMTU2IDcyIDE1NiA4MCBRIDE1NiA5MCAxNDggOTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjE0OCIgeTE9IjgwIiB4Mj0iMTQwIiB5Mj0iODgiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIENsZXZpcyAtLT4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjcyIiByPSI1IiBmaWxsPSJub25lIiBzdHJva2U9IiM5MDkwOTAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHRleHQgeD0iMTAwIiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzZhNWEzYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+IzMmIzgyMTE7NCAgwrcgIEdvbGQgYmxhZGUgIMK3ICBBY3Jvc3MvZG93bnN0cmVhbTwvdGV4dD4KPC9zdmc+',
+};
+
+var baitImageCache = {};
+
+function fetchBaitImage(baitName) {
+  if (BAIT_IMAGES[baitName]) return Promise.resolve(BAIT_IMAGES[baitName]);
+  return Promise.resolve(null);
+}
+
+// ── AUTO-SELECT BAIT TAB BASED ON TECHNIQUE ──────────────────────────────────
+function autoSelectBaitTab() {
+  var fam = selectedTechFamily.length > 0 ? selectedTechFamily[0] : '';
+  var topMethod = document.getElementById('m1n') ? document.getElementById('m1n').textContent : '';
+
+  var tab;
+  if (fam === 'spin') {
+    tab = 'lures';
+  } else if (fam === 'float') {
+    tab = 'lures'; // lures panel contains beads, roe, soft baits
+  } else if (fam === 'fly') {
+    // Within fly fishing, pick based on recommended method
+    if (/dry/i.test(topMethod))      tab = 'dries';
+    else if (/streamer/i.test(topMethod)) tab = 'streamers';
+    else                              tab = 'nymphs';
+  } else {
+    // No family selected — pick based on method
+    if (/streamer|spin|spoon/i.test(topMethod)) tab = 'streamers';
+    else if (/dry/i.test(topMethod))             tab = 'dries';
+    else if (/lure|jig|crankbait/i.test(topMethod)) tab = 'lures';
+    else                                          tab = 'nymphs';
+  }
+
+  // Find the button with that data-tab and activate it
+  var btn = document.querySelector('.btab[data-tab="' + tab + '"]');
+  if (btn) showTab(tab, btn);
+}
+
+
+// ── LOAD BAIT IMAGES ─────────────────────────────────────────────────────────
+function loadBaitImages() {
+  document.querySelectorAll('.bi[data-bait-name]').forEach(function(el) {
+    var name = el.getAttribute('data-bait-name');
+    var ph = el.querySelector('.bi-img-ph');
+    if (!ph || !name) return;
+    fetchBaitImage(name).then(function(src) {
+      if (src) {
+        ph.innerHTML = '<img src="' + src + '" alt="' + name + '" style="width:100%;height:100%;object-fit:contain;border-radius:4px;">';
+      }
+    });
+  });
+}
+
+
 setInterval(function(){
   if(document.getElementById("results").style.display!=="none") renderResults();
 },15*60*1000);
@@ -4092,7 +4362,33 @@ setInterval(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
