@@ -1120,6 +1120,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 
 
+
 // ── MODE STATE ────────────────────────────────────────────────────────────────
 var appMode = 'beginner'; // 'beginner' | 'expert'
 var selectedTechFamily = []; // array of: 'spin', 'float', 'fly' (empty = any)
@@ -2967,7 +2968,13 @@ function showTab(tab,btn){
 // ── RENDER RESULTS ────────────────────────────────────────────────────────────
 async function renderResults(){
   var cfg = getRiverConfig(selectedRiver);
-  renderRiverUI(cfg);
+  try {
+    renderRiverUI(cfg);
+  } catch(e) {
+    var _dbg=document.getElementById('flow-debug');
+    if(_dbg){_dbg.style.display='block';_dbg.textContent+='\nrenderRiverUI ERROR: '+e.message+'\n'+e.stack.split('\n').slice(0,3).join('\n');}
+    console.error('renderRiverUI:', e);
+  }
 
   var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
   var isToday=dateStr===new Date().toISOString().slice(0,10);
@@ -4354,7 +4361,9 @@ setInterval(function(){
 
 
 
+
 </script>
+
 
 
 
