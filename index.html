@@ -855,6 +855,9 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   <span id="sum-verdict-note" style="display:none"></span>
 
   <!-- TOP PICK BAND — populated by JS, hidden until ready -->
+  <!-- FLOW DEBUG PANEL - remove after testing -->
+  <div id="flow-debug" style="background:#1a1a2e;color:#00ff88;font-family:monospace;font-size:.75rem;padding:.75rem 1.5rem;display:none;white-space:pre-wrap;border-bottom:1px solid #333"></div>
+
   <div class="tpband" id="tpband" style="display:none">
     <div class="tpband-inner">
       <div class="tp-eyebrow">StreamCast Recommendation</div>
@@ -1066,6 +1069,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 
 <script>
+
 
 
 
@@ -2800,10 +2804,15 @@ async function fetchFlow(gaugeId) {
     var prev  = readings.length > 1 ? readings[1].flow : null;
     var trend = prev != null ? (flow > prev + 0.05 ? 'up' : flow < prev - 0.05 ? 'down' : 'stable') : 'stable';
     console.log('[fetchFlow] ' + gaugeId + ': ' + flow + ' m3/s ' + trend);
+    // Show in debug panel
+    var dbg = document.getElementById('flow-debug');
+    if (dbg) { dbg.style.display='block'; dbg.textContent += '✓ ' + gaugeId + ': ' + flow + ' m³/s ' + trend + '\n'; }
     return { flow: flow, trend: trend, at: readings[0].at };
 
   } catch(e) {
     console.warn('[fetchFlow] error ' + gaugeId + ':', e.message);
+    var dbg = document.getElementById('flow-debug');
+    if (dbg) { dbg.style.display='block'; dbg.textContent += '✗ ' + gaugeId + ': ' + e.message + '\n'; }
     return null;
   }
 }
@@ -2973,6 +2982,9 @@ async function renderResults(){
   var wt=waterTempEst(airTemp);
 
   var flow=null,trend="stable",flowAt=null;
+  // Debug: show gauge and isToday in panel
+  var _dbg=document.getElementById('flow-debug');
+  if(_dbg){_dbg.style.display='block';_dbg.textContent='FLOW DEBUG\n'+'gauge: '+cfg.gauge+'\nisToday: '+isToday+'\ndate: '+dateStr+'\n';}
   if(isToday){var lf=await fetchFlow(cfg.gauge);if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}}
 
   var skyl=cloudPct>=80?"Overcast":cloudPct>=50?"Mostly Cloudy":cloudPct>=20?"Partly Cloudy":"Clear";
@@ -4341,7 +4353,9 @@ setInterval(function(){
 
 
 
+
 </script>
+
 
 
 
