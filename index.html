@@ -1121,6 +1121,9 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 
 
+
+
+
 // ── MODE STATE ────────────────────────────────────────────────────────────────
 var appMode = 'beginner'; // 'beginner' | 'expert'
 var selectedTechFamily = []; // array of: 'spin', 'float', 'fly' (empty = any)
@@ -2975,6 +2978,9 @@ async function renderResults(){
     if(_dbg){_dbg.style.display='block';_dbg.textContent+='\nrenderRiverUI ERROR: '+e.message+'\n'+e.stack.split('\n').slice(0,3).join('\n');}
     console.error('renderRiverUI:', e);
   }
+  // Post-render debug
+  var _dbg3=document.getElementById('flow-debug');
+  if(_dbg3) _dbg3.textContent += '\nPost-rUI: tpband='+(document.getElementById('tpband')?document.getElementById('tpband').style.display:'?')+' fi-count='+document.querySelectorAll('.fi').length+' ac-kids='+(document.getElementById('access-grid')?document.getElementById('access-grid').children.length:'?');
 
   var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
   var isToday=dateStr===new Date().toISOString().slice(0,10);
@@ -2992,7 +2998,15 @@ async function renderResults(){
   // Debug: show gauge and isToday in panel
   var _dbg=document.getElementById('flow-debug');
   if(_dbg){_dbg.style.display='block';_dbg.textContent='FLOW DEBUG\n'+'gauge: '+cfg.gauge+'\nisToday: '+isToday+'\ndate: '+dateStr+'\n';}
-  if(isToday){var lf=await fetchFlow(cfg.gauge);if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}}
+  if(isToday){
+    var lf=await fetchFlow(cfg.gauge);
+    if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
+  } else {
+    // Future date — flow data only available for today
+    var _fdbg=document.getElementById('flow-gauge-link');
+    var _flbl=document.getElementById('flbl');
+    if(_flbl) _flbl.textContent='Flow data not available for future dates. Check the gauge link for current conditions.';
+  }
 
   var skyl=cloudPct>=80?"Overcast":cloudPct>=50?"Mostly Cloudy":cloudPct>=20?"Partly Cloudy":"Clear";
   var fc=flow!=null?clsFlow(flow,cfg):"warn";
@@ -4362,7 +4376,13 @@ setInterval(function(){
 
 
 
+
+
+
 </script>
+
+
+
 
 
 
