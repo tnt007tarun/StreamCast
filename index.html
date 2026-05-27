@@ -621,18 +621,26 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .rrank-badge.warn{background:rgba(232,168,90,.15);color:#a07020;}
 .rrank-badge.bad{background:rgba(224,112,112,.12);color:#a04040;}
 
-
-/* TECHNIQUE FAMILY BUTTONS */
+.acard-recommended{border-color:var(--fern)!important;box-shadow:0 2px 12px rgba(45,74,50,.15);}
+.acard-rec-badge{display:inline-block;background:var(--fern);color:var(--cream);font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .5rem;border-radius:10px;margin-bottom:.5rem;}
 .tech-family-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.25rem;}
-.tech-family-btn{border:1.5px solid var(--border);border-radius:10px;padding:.7rem .5rem;background:var(--white);cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:.25rem;}
-.tech-family-btn:hover{border-color:var(--fern);background:rgba(45,74,50,.04);}
-.tech-family-btn.active{border-color:var(--fern);background:rgba(45,74,50,.08);box-shadow:0 1px 4px rgba(45,74,50,.12);}
-.tfb-icon{font-size:1.4rem;line-height:1;}
-.tfb-name{font-family:'Lora',serif;font-size:.78rem;font-weight:600;color:var(--moss);}
-.tfb-sub{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.04em;color:var(--sage);opacity:.7;}
-@media(max-width:480px){.tech-family-grid{grid-template-columns:repeat(2,1fr);}}
-
+.tech-family-btn{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .4rem;background:var(--white);cursor:pointer;text-align:center;transition:all .15s;font-size:.78rem;font-family:'Lora',serif;font-weight:600;color:var(--moss);}
+.tech-family-btn.active{border-color:var(--fern);background:rgba(45,74,50,.08);}
 .travel-row{padding:.75rem 0 .25rem;}
+
+
+/* GEAR SETUP CARD */
+.gear-card { background:var(--white); border:1.5px solid var(--border); border-radius:10px; padding:1.25rem 1.5rem; margin:0 2rem 1.5rem; }
+.gear-header { display:flex; gap:.85rem; align-items:center; margin-bottom:1rem; }
+.gear-icon { font-size:1.4rem; line-height:1; }
+.gear-eyebrow { font-family:'DM Mono',monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.2rem; }
+.gear-title { font-family:'Lora',serif; font-size:1rem; font-weight:600; color:var(--moss); }
+.gear-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:.75rem; }
+.gear-item { background:var(--off); border-radius:8px; padding:.7rem .85rem; }
+.gear-item-lbl { font-family:'DM Mono',monospace; font-size:.5rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage); opacity:.65; margin-bottom:.25rem; }
+.gear-item-val { font-size:.82rem; color:var(--text); font-weight:500; line-height:1.4; }
+.gear-item-note { font-size:.68rem; color:var(--sage); margin-top:.2rem; font-style:italic; }
+
 </style>
 </head>
 <body>
@@ -652,8 +660,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   <div class="hero-photo">
     <div class="hero-photo-bg"></div>
     <div class="hero-copy">
-      <h1>Find your next stretch of water.</h1>
-      <p>River conditions, flow data, and technique forecasts for Southern Ontario &mdash; within 3 hours of Toronto.</p>
+      <h1>Find where the fish are today.</h1>
+      <p>Tell us where you are and what you want to catch &mdash; StreamCast picks the best nearby river, tells you what&rsquo;s biting, and exactly how to fish it today.</p>
     </div>
   </div>
 
@@ -695,30 +703,14 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
     <!-- Techniques -->
     <div class="tech-section">
-      <!-- Beginner mode: three family buttons -->
+      <!-- Beginner mode: technique family buttons -->
       <div class="beginner-only">
         <div class="field-lbl" style="margin-bottom:.65rem">How do you fish? <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
-        <div class="tech-family-grid" id="tech-family-grid">
-          <button class="tech-family-btn active" data-family="" id="tfb-any">
-            <div class="tfb-icon">🎣</div>
-            <div class="tfb-name">Any style</div>
-            <div class="tfb-sub">Recommend the best</div>
-          </button>
-          <button class="tech-family-btn" data-family="spin" id="tfb-spin">
-            <div class="tfb-icon">🎡</div>
-            <div class="tfb-name">Spin Fishing</div>
-            <div class="tfb-sub">Lures &amp; spinners</div>
-          </button>
-          <button class="tech-family-btn" data-family="float" id="tfb-float">
-            <div class="tfb-icon">🪮</div>
-            <div class="tfb-name">Float Fishing</div>
-            <div class="tfb-sub">Centrepin &amp; bait</div>
-          </button>
-          <button class="tech-family-btn" data-family="fly" id="tfb-fly">
-            <div class="tfb-icon">🪰</div>
-            <div class="tfb-name">Fly Fishing</div>
-            <div class="tfb-sub">Nymphs, dries &amp; streamers</div>
-          </button>
+        <div id="tech-family-grid">
+          <button class="tech-family-btn active" data-family="">🎣 Any style</button>
+          <button class="tech-family-btn" data-family="spin">🎡 Spin Fishing</button>
+          <button class="tech-family-btn" data-family="float">🪮 Float Fishing</button>
+          <button class="tech-family-btn" data-family="fly">🪰 Fly Fishing</button>
         </div>
       </div>
       <!-- Expert mode: granular chips -->
@@ -757,7 +749,6 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
           <div class="tc-lbl">Streamers</div>
         </div>
       </div>
-      </div><!-- /expert-only -->
     </div>
 
     <!-- Travel time slider (beginner mode only) -->
@@ -771,6 +762,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
       <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
         <span>20 min</span><span>1 hr</span><span>2 hr</span><span>3 hr</span>
       </div>
+      </div><!-- /expert-only -->
     </div>
 
     <!-- Species + CTA -->
@@ -834,7 +826,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     </div>
     <div class="res-center">
       <div class="res-center-lbl">Viewing</div>
-      <div class="res-center-val" id="res-river"></div>
+      <div class="res-center-val" id="res-river">Grand River, Fergus</div>
     </div>
     <div class="res-right">
       <button class="back-btn" id="back-btn-el" >&#8592; New Search</button>
@@ -843,32 +835,20 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
   <!-- one-glance summary strip -->
   <!-- Species + Summary Banner -->
-  <div id="species-banner" class="fi" style="background:var(--moss);border-bottom:1px solid rgba(139,181,160,0.15);padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;">
-    <div style="flex-shrink:0">
-      <div style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-bottom:.3rem">Target Species</div>
-      <div style="display:flex;align-items:center;gap:.6rem">
-          <div id="species-banner-fish" style="width:52px;height:30px;border-radius:4px;background:rgba(139,181,160,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
-          <div id="species-display" style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
-        </div>
+  <div id="species-banner" class="fi" style="background:var(--moss);border-bottom:1px solid rgba(139,181,160,0.15);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;">
+    <div id="species-banner-fish" style="width:44px;height:26px;border-radius:4px;background:rgba(139,181,160,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.55;margin-bottom:.15rem">Target Species</div>
+      <div id="species-display" style="font-family:'Lora',serif;font-size:1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
+      <div id="species-season-badge" style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.15rem;opacity:.8"></div>
     </div>
-    <div style="width:1px;background:rgba(139,181,160,0.2);align-self:stretch;flex-shrink:0"></div>
-    <div style="flex:1">
-      <div style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-bottom:.3rem">Conditions Summary</div>
-      <div id="plain-summary" style="font-size:.92rem;color:var(--cream);line-height:1.5;font-weight:300">Loading conditions…</div>
-    </div>
-    <div id="summary-stats" style="flex-shrink:0;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
-
-      <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.25rem">Window</div>
-        <div id="sum-window" style="font-family:'Lora',serif;font-size:.95rem;font-weight:600;font-style:italic;color:var(--cream)">—</div>
-        <div id="sum-window-note" style="font-family:'DM Mono',monospace;font-size:.52rem;color:var(--mist);opacity:.5;margin-top:.1rem"></div>
-      </div>
-      <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.25rem">Method</div>
-        <div id="sum-method" style="font-family:'Lora',serif;font-size:.95rem;font-weight:600;font-style:italic;color:var(--cream)">—</div>
-        <div id="sum-method-note" style="font-family:'DM Mono',monospace;font-size:.52rem;color:var(--mist);opacity:.5;margin-top:.1rem"></div>
-      </div>
-    </div>
+    <!-- hidden stubs for JS compat -->
+    <span id="plain-summary" style="display:none"></span>
+    <span id="summary-stats" style="display:none"></span>
+    <span id="sum-window" style="display:none"></span>
+    <span id="sum-window-note" style="display:none"></span>
+    <span id="sum-method" style="display:none"></span>
+    <span id="sum-method-note" style="display:none"></span>
   </div>
   <!-- keep old IDs for JS compat -->
   <span id="sum-verdict" style="display:none"></span>
@@ -893,7 +873,15 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   </div>
 
   <!-- verdict -->
-
+    <div class="vtext">
+      <h3 id="vhead">Reading conditions...</h3>
+      <p id="vbody">Checking flow, temperature, and sky.</p>
+    </div>
+    <div class="v-meta">
+      <div class="v-meta-lbl">Last checked</div>
+      <div class="v-meta-val" id="vtime">—</div>
+    </div>
+  </div>
 
   <!-- SECTION 1 -->
   <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
@@ -988,7 +976,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   </div>
 
   <!-- SECTION 3 -->
-  <div class="sec-label fi"><div class="sec-num">4</div><div><h3>Flies, Lures &amp; Baits</h3><p>What to have in your box. Bait rules vary by river and reach — always verify current OMNR regulations before fishing.</p></div></div>
+  <div class="sec-label fi"><div class="sec-num">4</div><div><h3>Flies, Lures &amp; Baits</h3><p>What to have in your box. Live bait prohibited in many Grand River sections — verify OMNR regulations for your reach.</p></div></div>
 
   <div class="bsec fi">
     <div class="btabs">
@@ -996,6 +984,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
       <button class="btab" data-tab="streamers">Streamers</button>
       <button class="btab" data-tab="dries">Dry Flies</button>
       <button class="btab" data-tab="lures">Lures &amp; Bait</button>
+      <button class="btab" data-tab="float">Float Baits</button>
     </div>
     <div class="bpanel active" id="p-nymphs">
       <div class="bgrid">
@@ -1009,7 +998,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     </div>
     <div class="bpanel" id="p-streamers">
       <div class="bgrid">
-        <div class="bi" data-bait-name="Woolly Bugger"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Woolly Bugger</div><div class="bdet">#4–8 · Olive, Black, Brown</div><div class="bcond">Olive in normal conditions, black in stained water, white in high flows.</div></div>
+        <div class="bi" data-bait-name="Woolly Bugger"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Woolly Bugger</div><div class="bdet">#4–8 · Olive, Black, Brown</div><div class="bcond">Grand River standard. Olive in normal conditions, black in stained.</div></div>
         <div class="bi" data-bait-name="Sculpin Pattern"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Sculpin Pattern</div><div class="bdet">#4–6 · Tan / Brown, weighted</div><div class="bcond">Browns eat sculpins year-round. Dead-drift then strip erratically.</div></div>
         <div class="bi" data-bait-name="Clouser Minnow"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Clouser Minnow</div><div class="bdet">#4–8 · Chartreuse/White or Olive/White</div><div class="bcond">Excellent in slightly elevated or stained water.</div></div>
         <div class="bi" data-bait-name="Articulated Streamer"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Articulated Streamer</div><div class="bdet">#2–4 · Natural or White, jointed</div><div class="bcond">Big fly for trophy fish. Strip fast, pause — erratic triggers reaction strikes.</div></div>
@@ -1025,270 +1014,75 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     </div>
     <div class="bpanel" id="p-lures">
       <div class="bgrid">
-        <div class="bi" data-bait-name="Rapala Original Floating"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Rapala Original Floating</div><div class="bdet">4–7 cm · Firetiger, Perch, Rainbow</div><div class="bcond">Perch in clear water, firetiger in stained conditions, gold in low light.</div></div>
+        <div class="bi" data-bait-name="Rapala Original Floating"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Rapala Original Floating</div><div class="bdet">4–7 cm · Firetiger, Perch, Rainbow</div><div class="bcond">Classic for Grand River browns. Perch in clear, firetiger in stained.</div></div>
         <div class="bi" data-bait-name="Blue Fox Vibrax Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Blue Fox Vibrax Spinner</div><div class="bdet">#3–5 · Silver / Gold blade</div><div class="bcond">Silver in clear conditions, gold in stained. Slow retrieve in cold.</div></div>
         <div class="bi" data-bait-name="Kastmaster Spoon"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Kastmaster Spoon</div><div class="bdet">1/4–3/8 oz · Silver, Gold</div><div class="bcond">Gets deep fast. Let it sink then work slowly near dam pools.</div></div>
         <div class="bi" data-bait-name="Mepps Aglia Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Mepps Aglia Spinner</div><div class="bdet">#3–4 · Black/Yellow, Natural</div><div class="bcond">Classic trout spinner. Consistent in all flows through seams.</div></div>
       </div>
     </div>
+    <div class="bpanel" id="p-float">
+      <div class="bgrid">
+        <div class="bi" data-bait-name="Roe Bag"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="4"/><circle cx="14" cy="5" r="3"/><circle cx="17" cy="9" r="2.5"/></svg></div></div><div class="brank">1</div><div class="bname">Roe Bag</div><div class="bdet">Small mesh sacs · Natural or cured</div><div class="bcond">The most effective float fishing bait in Ontario rivers. Match size to flow — smaller in low clear water, larger in high stained water.</div></div>
+        <div class="bi" data-bait-name="Soft Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="3.5"/><circle cx="16" cy="7" r="3.5"/><line x1="11.5" y1="7" x2="12.5" y2="7"/></svg></div></div><div class="brank">2</div><div class="bname">Soft Bead</div><div class="bdet">10–12 mm · Pink, Peach, Natural</div><div class="bcond">Highly effective for steelhead and salmon. Peg 1–2 inches above hook. Pink in coloured water, natural/peach in clear. Essential for spring and fall runs.</div></div>
+        <div class="bi" data-bait-name="Hard Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="7" r="5" fill="rgba(200,150,58,0.2)"/><circle cx="12" cy="7" r="3"/></svg></div></div><div class="brank">3</div><div class="bname">Hard Bead</div><div class="bdet">8–12 mm · Nuke Egg colours</div><div class="bcond">More durable than soft beads. Thread on line and peg 1–2 inches above hook — do not attach directly. Chartreuse and orange are top producers.</div></div>
+        <div class="bi" data-bait-name="Plastic Worm"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 10 Q6 4 9 9 Q12 14 15 9 Q18 4 21 8"/></svg></div></div><div class="brank">4</div><div class="bname">Plastic Worm</div><div class="bdet">3–4 inch · Red, Pink, Chartreuse</div><div class="bcond">Year-round producer. Thread onto a single hook and drift naturally. Red and pink for stained water, natural for clear. Good fallback when fish have seen a lot of roe.</div></div>
+        <div class="bi" data-bait-name="Nightcrawler"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11 Q5 3 8 9 Q11 15 14 9 Q17 3 20 7 Q22 10 22 10"/></svg></div></div><div class="brank">5</div><div class="bname">Nightcrawler</div><div class="bdet">Full or half · Natural</div><div class="bcond">Classic bait for all trout species. Thread onto hook leaving a tail to wiggle. Best in spring and after rain when naturals are washing in. Good fallback when fish ignore roe.</div></div>
+      </div>
+      <div class="bfooter">Bait rules vary by river — always verify current OMNR regulations before fishing.</div>
+    </div>
   </div>
 
   <!-- SECTION 4 -->
-  <div class="dam fi" id="dam-section">
-    <div class="dam-icon" id="dam-icon">🏗</div>
     <div>
       <div class="dlbl" id="dam-lbl">Key Variable</div>
       <h3 id="dam-title">Loading…</h3>
       <p id="dam-desc"></p>
       <div class="dlinks" id="dam-links"></div>
     </div>
+  
+  <div class="gear-card fi" id="gear-card" style="display:none">
+    <div class="gear-header">
+      <div class="gear-icon">🎣</div>
+      <div>
+        <div class="gear-eyebrow">Recommended Setup</div>
+        <div class="gear-title" id="gear-title"></div>
+      </div>
+    </div>
+    <div class="gear-grid" id="gear-grid"></div>
   </div>
 
-  <div class="ssec fi" id="species-section">
-    <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
-    <div class="srail" id="species-rail"></div>
-  </div>
-
-<div class="res-footer">
-    <p>Data: Environment Environment Canada Water Office · Open-Meteo · Ontario Fishing Regulations · Refreshes every 15 min</p>
-    <div class="res-flogo">StreamCast</div>
-  </div>
 </div>
 
-<!-- END LANDING -->
-
-<!-- ============ RESULTS PAGE ============ -->
-<div id="results">
-  <header class="res-header">
-    <div class="res-logo-wrap">
-      <div class="res-logo-wave"><span></span><span></span><span></span></div>
-      <div class="res-logo-name">StreamCast</div>
-    </div>
-    <div class="res-center">
-      <div class="res-center-lbl">Viewing</div>
-      <div class="res-center-val" id="res-river"></div>
-    </div>
-    <div class="res-right">
-      <button class="back-btn" id="back-btn-el" >&#8592; New Search</button>
-    </div>
-  </header>
-
-  <!-- one-glance summary strip -->
-  <!-- Species + Summary Banner -->
-  <div id="species-banner" class="fi" style="background:var(--moss);border-bottom:1px solid rgba(139,181,160,0.15);padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;">
-    <div style="flex-shrink:0">
-      <div style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-bottom:.3rem">Target Species</div>
-      <div style="display:flex;align-items:center;gap:.6rem">
-          <div id="species-banner-fish" style="width:52px;height:30px;border-radius:4px;background:rgba(139,181,160,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
-          <div id="species-display" style="font-family:'Lora',serif;font-size:1.1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
-        </div>
-    </div>
-    <div style="width:1px;background:rgba(139,181,160,0.2);align-self:stretch;flex-shrink:0"></div>
-    <div style="flex:1">
-      <div style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-bottom:.3rem">Conditions Summary</div>
-      <div id="plain-summary" style="font-size:.92rem;color:var(--cream);line-height:1.5;font-weight:300">Loading conditions…</div>
-    </div>
-    <div id="summary-stats" style="flex-shrink:0;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
-
-      <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.25rem">Window</div>
-        <div id="sum-window" style="font-family:'Lora',serif;font-size:.95rem;font-weight:600;font-style:italic;color:var(--cream)">—</div>
-        <div id="sum-window-note" style="font-family:'DM Mono',monospace;font-size:.52rem;color:var(--mist);opacity:.5;margin-top:.1rem"></div>
-      </div>
-      <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.25rem">Method</div>
-        <div id="sum-method" style="font-family:'Lora',serif;font-size:.95rem;font-weight:600;font-style:italic;color:var(--cream)">—</div>
-        <div id="sum-method-note" style="font-family:'DM Mono',monospace;font-size:.52rem;color:var(--mist);opacity:.5;margin-top:.1rem"></div>
-      </div>
-    </div>
-  </div>
-  <!-- keep old IDs for JS compat -->
-  <span id="sum-verdict" style="display:none"></span>
-  <span id="sum-verdict-note" style="display:none"></span>
-
-  <!-- TOP PICK BAND — populated by JS, hidden until ready -->
-  <div class="tpband" id="tpband" style="display:none">
-    <div class="tpband-inner">
-      <div class="tp-eyebrow">StreamCast Recommendation</div>
-      <div class="tp-headline" id="tp-headline">Loading…</div>
-      <div class="tp-why" id="tp-why"></div>
-      <div class="tp-chips" id="tp-chips"></div>
-    </div>
-  </div>
-
-  <!-- RIVER RANKER — beginner mode only, hidden in expert mode -->
-  <div class="rrank-section" id="rrank-section" style="display:none">
-    <div class="rrank-inner">
-      <div class="rrank-lbl" id="rrank-lbl">Nearby rivers ranked by today&#39;s conditions</div>
-      <div class="rrank-grid" id="rrank-grid"></div>
-    </div>
-  </div>
-
-  <!-- verdict -->
-
-
-  <!-- SECTION 1 -->
-  <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
-
-    <div class="asec fi">
-    <div class="agrid" id="access-grid-wrap">
-      <div class="agrid-cards" id="access-grid"></div>
-      <div class="agrid-map" id="access-map">
-        <div class="map-placeholder">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase">Map loads with access points</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec-label fi"><div class="sec-num">2</div><div><h3>River Conditions</h3><p>Flow, temperature, and sky — the three variables that determine whether browns are feeding.</p></div></div>
-
-  <div class="cgrid">
-    <div class="col fi">
-      <div class="col-lbl" id="flow-gauge-lbl">Flow</div>
-      <div id="flow-gauge-link" style="margin-bottom:.75rem;display:none">
-        <a id="flow-gauge-anchor" href="#" target="_blank" 
-           style="font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.06em;color:var(--water);text-decoration:none;border-bottom:1px solid rgba(58,107,120,0.4);padding-bottom:1px;">
-          &#8599; Check live gauge
-        </a>
-      </div>
-      <div class="bnum-wrap"><div class="bnum" id="fval">—</div><div class="bnum-u">m³/s</div><span class="trd" id="ftrend"></span></div>
-      <div class="bnum-l" id="flbl">Loading gauge data...</div>
-      <div class="gw">
-        <div class="gh"><span class="gn">vs. Sweet Spot (<span id="sweet-range-lbl">8–12</span>)</span><span class="gv" id="fgv">—</span></div>
-        <div class="gt"><div class="gf" id="fbar" style="width:0%"></div></div>
-        <div class="gr"><span>0</span><span id="sweet-range-axis">Sweet 8–12</span><span>20+</span></div>
-        <div class="gs" id="fstat">—</div>
-      </div>
-      <hr class="divr">
-      <ul class="cl" id="fcl"><li><span class="ci">○</span><span>Loading...</span></li></ul>
-    </div>
-
-    <div class="col fi">
-      <div class="col-lbl">Temperature &amp; Light</div>
-      <div class="bnum-wrap"><div class="bnum" id="tval">—</div><div class="bnum-u">°C</div></div>
-      <div class="bnum-l" id="tlbl">Loading temperature...</div>
-      <div class="gw">
-        <div class="gh"><span class="gn">Water Temp vs. Feeding Window</span><span class="gv" id="tgv">—</span></div>
-        <div class="gt"><div class="gf" id="tbar" style="width:0%"></div></div>
-        <div class="gr"><span>0°C</span><span>Prime 8–14°C</span><span>20°C</span></div>
-        <div class="gs" id="tstat">—</div>
-      </div>
-      <hr class="divr">
-      <div class="gw">
-        <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
-        <div class="gt"><div class="gf" id="skybar" style="width:0%"></div></div>
-        <div class="gr"><span>Clear</span><span>Ideal: Overcast</span><span>100%</span></div>
-        <div class="gs" id="skystat">—</div>
-      </div>
-      <hr class="divr">
-      <div class="col-lbl" style="margin-top:0">Best Window Today</div>
-      <div id="twin" style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500;color:var(--moss)">—</div>
-      <div id="tnote" style="font-size:.72rem;color:var(--sage);margin-top:.25rem;line-height:1.4"></div>
-    </div>
-
-    <div class="col fi" id="routine-col">
-    <div class="col-lbl">Pre-Trip Routine</div>
-    <div class="routine" id="routine-steps"></div>
-  </div>
-</div><!-- SECTION 2 -->
-  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Recommended Methods</h3><p>Ranked by effectiveness for current conditions. Check local regulations — some reaches have gear restrictions.</p></div></div>
-
-  <div class="mgrid fi">
-    <div class="mc">
-      <div class="mpr p1">▸ Primary Method</div>
-      <div class="mn" id="m1n">Nymphing</div>
-      <div class="md" id="m1d">The bread and butter on the Grand. Dead-drift subsurface flies through seams and feeding lanes.</div>
-      <div class="mcond" id="m1c"><span>Best at: 8–14°C water, 8–12 m³/s</span><span>Fish: Head of runs, tailouts</span><span>Leader: 9–12 ft · 4x–5x tippet</span></div>
-      <span class="rnote">Artificial only in many reaches</span>
-    </div>
-    <div class="mc">
-      <div class="mpr p2">▸ Secondary Method</div>
-      <div class="mn" id="m2n">Streamer Fishing</div>
-      <div class="md" id="m2d">Swing or strip through deeper pools and undercut banks. Browns respond aggressively in low light.</div>
-      <div class="mcond" id="m2c"><span>Best at: Overcast sky, rising flow</span><span>Fish: Deep pools, undercut banks</span><span>Leader: 9 ft · 2x–3x</span></div>
-      <span class="rnote">Artificial only in many reaches</span>
-    </div>
-    <div class="mc">
-      <div class="mpr p3">▸ Worth Trying</div>
-      <div class="mn" id="m3n">Dry Fly</div>
-      <div class="md" id="m3d">Summer hatches on the Grand can be spectacular. Watch the surface — if fish are rising, switch.</div>
-      <div class="mcond" id="m3c"><span>Best at: Overcast, 10–16°C water</span><span>Watch for: Surface rises, hatches</span><span>Leader: 12–15 ft · 5x–6x</span></div>
-      <span class="rnote">Artificial only in many reaches</span>
-    </div>
-  </div>
-
-  <!-- SECTION 3 -->
-  <div class="sec-label fi"><div class="sec-num">4</div><div><h3>Flies, Lures &amp; Baits</h3><p>What to have in your box. Bait rules vary by river and reach — always verify current OMNR regulations before fishing.</p></div></div>
-
-  <div class="bsec fi">
-    <div class="btabs">
-      <button class="btab active" data-tab="nymphs">Nymphs</button>
-      <button class="btab" data-tab="streamers">Streamers</button>
-      <button class="btab" data-tab="dries">Dry Flies</button>
-      <button class="btab" data-tab="lures">Lures &amp; Bait</button>
-    </div>
-    <div class="bpanel active" id="p-nymphs">
-      <div class="bgrid">
-        <div class="bi" data-bait-name="Hare's Ear Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Hare's Ear Nymph</div><div class="bdet">#12–16 · Natural / Gold bead</div><div class="bcond">Universal confidence fly. Fish it anywhere, always.</div></div>
-        <div class="bi" data-bait-name="Pheasant Tail Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Pheasant Tail Nymph</div><div class="bdet">#14–18 · Copper wire rib</div><div class="bcond">Deadly in clearer water or when fish are selective.</div></div>
-        <div class="bi" data-bait-name="Tungsten Bead Caddis"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Tungsten Bead Caddis</div><div class="bdet">#12–16 · Olive / Brown</div><div class="bcond">Heavy bead gets to the bottom fast in higher flows.</div></div>
-        <div class="bi" data-bait-name="Stonefly Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Stonefly Nymph</div><div class="bdet">#8–12 · Black / Brown, heavy</div><div class="bcond">Big meal for big fish. Fish along the bottom in fast runs.</div></div>
-        <div class="bi" data-bait-name="Zebra Midge"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">5</div><div class="bname">Zebra Midge</div><div class="bdet">#18–22 · Black/silver or red/silver</div><div class="bcond">When nothing else works in low clear water.</div></div>
-        <div class="bi" data-bait-name="Sulphur Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">6</div><div class="bname">Sulphur Nymph</div><div class="bdet">#14–16 · Yellow / Olive</div><div class="bcond">Pre-hatch nymphing — fish the last hour before hatch begins.</div></div>
-      </div>
-    </div>
-    <div class="bpanel" id="p-streamers">
-      <div class="bgrid">
-        <div class="bi" data-bait-name="Woolly Bugger"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Woolly Bugger</div><div class="bdet">#4–8 · Olive, Black, Brown</div><div class="bcond">Olive in normal conditions, black in stained water, white in high flows.</div></div>
-        <div class="bi" data-bait-name="Sculpin Pattern"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Sculpin Pattern</div><div class="bdet">#4–6 · Tan / Brown, weighted</div><div class="bcond">Browns eat sculpins year-round. Dead-drift then strip erratically.</div></div>
-        <div class="bi" data-bait-name="Clouser Minnow"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Clouser Minnow</div><div class="bdet">#4–8 · Chartreuse/White or Olive/White</div><div class="bcond">Excellent in slightly elevated or stained water.</div></div>
-        <div class="bi" data-bait-name="Articulated Streamer"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Articulated Streamer</div><div class="bdet">#2–4 · Natural or White, jointed</div><div class="bcond">Big fly for trophy fish. Strip fast, pause — erratic triggers reaction strikes.</div></div>
-      </div>
-    </div>
-    <div class="bpanel" id="p-dries">
-      <div class="bgrid">
-        <div class="bi" data-bait-name="Elk Hair Caddis"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Elk Hair Caddis</div><div class="bdet">#14–16 · Tan / Olive</div><div class="bcond">Evening staple. Caddis hatches reliable May–September.</div></div>
-        <div class="bi" data-bait-name="Parachute Adams"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Parachute Adams</div><div class="bdet">#14–18 · Grey</div><div class="bcond">All-purpose dry when you see rises but can't ID the hatch.</div></div>
-        <div class="bi" data-bait-name="Sulphur Comparadun"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Sulphur Comparadun</div><div class="bdet">#14–16 · Yellow / Orange</div><div class="bcond">Match the evening sulphur hatch May–July. Low-riding profile.</div></div>
-        <div class="bi" data-bait-name="Royal Wulff"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Royal Wulff</div><div class="bdet">#12–14 · Classic attractor</div><div class="bcond">High-floating. Also works as a dry-dropper indicator.</div></div>
-      </div>
-    </div>
-    <div class="bpanel" id="p-lures">
-      <div class="bgrid">
-        <div class="bi" data-bait-name="Rapala Original Floating"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Rapala Original Floating</div><div class="bdet">4–7 cm · Firetiger, Perch, Rainbow</div><div class="bcond">Perch in clear water, firetiger in stained conditions, gold in low light.</div></div>
-        <div class="bi" data-bait-name="Blue Fox Vibrax Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Blue Fox Vibrax Spinner</div><div class="bdet">#3–5 · Silver / Gold blade</div><div class="bcond">Silver in clear conditions, gold in stained. Slow retrieve in cold.</div></div>
-        <div class="bi" data-bait-name="Kastmaster Spoon"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Kastmaster Spoon</div><div class="bdet">1/4–3/8 oz · Silver, Gold</div><div class="bcond">Gets deep fast. Let it sink then work slowly near dam pools.</div></div>
-        <div class="bi" data-bait-name="Mepps Aglia Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Mepps Aglia Spinner</div><div class="bdet">#3–4 · Black/Yellow, Natural</div><div class="bcond">Classic trout spinner. Consistent in all flows through seams.</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 4 -->
-  <div class="dam fi" id="dam-section">
-    <div class="dam-icon" id="dam-icon">🏗</div>
-    <div>
-      <div class="dlbl" id="dam-lbl">Key Variable</div>
-      <h3 id="dam-title">Loading…</h3>
-      <p id="dam-desc"></p>
-      <div class="dlinks" id="dam-links"></div>
-    </div>
-  </div>
-
   <div class="ssec fi" id="species-section">
     <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
     <div class="srail" id="species-rail"></div>
   </div>
 
 <div class="res-footer">
-    <p>Data: Environment Environment Canada Water Office · Open-Meteo · Ontario Fishing Regulations · Refreshes every 15 min</p>
+    <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
     <div class="res-flogo">StreamCast</div>
   </div>
 </div>
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2486,8 +2280,20 @@ function renderRiverUI(cfg) {
   var regs = getRiverRegs(selectedRiver);
   var coords = ACCESS_COORDS[riverName] || [];
 
+  // Sort access cards: recommended spot (low crowd, best match) first
+  var _accessSorted = cfg.access.slice(); // copy
+  // Find the bestSpot index — same logic as buildTopPick (first low crowd, else first med)
+  var _bestIdx = 0;
+  var _lowIdx = _accessSorted.findIndex(function(a){ return a.crowd === 'low'; });
+  var _medIdx = _accessSorted.findIndex(function(a){ return a.crowd === 'med'; });
+  _bestIdx = _lowIdx !== -1 ? _lowIdx : _medIdx !== -1 ? _medIdx : 0;
+  if (_bestIdx > 0) {
+    // Move best spot to front
+    var _best = _accessSorted.splice(_bestIdx, 1)[0];
+    _accessSorted.unshift(_best);
+  }
   // Build access cards
-  grid.innerHTML = cfg.access.map(function(a, idx) {
+  grid.innerHTML = _accessSorted.map(function(a, idx) {
     var tags = a.tags.map(function(t) { return '<span class="atag">' + t + '</span>'; }).join("");
 
     // Filter regs to selected species only
@@ -2537,7 +2343,10 @@ function renderRiverUI(cfg) {
       '</div>';
     }
 
-    return '<div class="ac" data-spot-idx="' + idx + '">' +
+    var isRecommended = idx === 0;
+    var recBadge = isRecommended ? '<div class="acard-rec-badge">★ Recommended spot</div>' : '';
+    return '<div class="ac' + (isRecommended ? ' acard-recommended' : '') + '" data-spot-idx="' + idx + '">' +
+      recBadge +
       '<div class="act"><div class="aname">' + a.name + '</div>' +
       '<div class="acrowd ' + a.crowd + '">' + a.crowdLabel + '</div></div>' +
       '<div class="aloc">' + a.loc + '</div>' +
@@ -2555,8 +2364,8 @@ function renderRiverUI(cfg) {
   // Species rail
   renderSpeciesRail(cfg);
 
-  // Dam / key info band
-  if (cfg.dam) {
+  // Dam section removed — info is covered in Top Pick summary
+  if (false && cfg.dam) {
     document.getElementById("dam-icon").textContent = cfg.dam.icon;
     document.getElementById("dam-lbl").textContent = cfg.dam.label;
     document.getElementById("dam-title").textContent = cfg.dam.title;
@@ -2921,36 +2730,82 @@ function waterTempEst(airTemp){
 async function fetchFlow(gaugeId) {
   if (!gaugeId) return null;
   try {
+    // Try JSON API first with both sort param variants
     var url = 'https://api.weather.gc.ca/collections/hydrometric-realtime/items' +
-      '?station_number=' + gaugeId +
-      '&sortby=-datetime&limit=3&f=json';
+      '?STATION_NUMBER=' + gaugeId +
+      '&sortby=-DATETIME&limit=5&f=json';
     var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) {
+      // Try lowercase datetime sort
+      url = url.replace('sortby=-DATETIME', 'sortby=-datetime');
+      res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    }
     if (!res.ok) throw new Error('HTTP ' + res.status);
+
     var data = await res.json();
-    var features = data.features || [];
-    // Find two most recent readings with non-null DISCHARGE
+    var features = (data.features || []);
+    console.log('[fetchFlow] ' + gaugeId + ': ' + features.length + ' features');
+    if (features.length === 0) return null;
+
+    // Log all property keys from first feature for debugging
+    var props0 = features[0].properties || {};
+    var keys = Object.keys(props0);
+    console.log('[fetchFlow] keys:', keys.join(', '));
+    console.log('[fetchFlow] sample:', JSON.stringify(props0).slice(0, 200));
+
+    // Dynamically find discharge field (DISCHARGE, LEVEL, VALUE, value, discharge, level)
+    function pick(obj, candidates) {
+      for (var i = 0; i < candidates.length; i++) {
+        var k = candidates[i];
+        if (obj[k] != null && obj[k] !== '') return { k: k, v: parseFloat(obj[k]) };
+        // case-insensitive fallback
+        for (var kk in obj) {
+          if (kk.toLowerCase() === k.toLowerCase() && obj[kk] != null && obj[kk] !== '')
+            return { k: kk, v: parseFloat(obj[kk]) };
+        }
+      }
+      return null;
+    }
+
+    var dischargeKeys = ['DISCHARGE', 'discharge', 'FLOW', 'flow', 'LEVEL', 'level', 'VALUE', 'value'];
+    var datetimeKeys  = ['DATETIME', 'datetime', 'DATE', 'date', 'TIMESTAMP', 'timestamp'];
+
+    var dtField = pick(props0, datetimeKeys);
+    var dfField = pick(props0, dischargeKeys);
+
+    console.log('[fetchFlow] discharge field:', dfField ? dfField.k + '=' + dfField.v : 'NOT FOUND');
+    console.log('[fetchFlow] datetime field:', dtField ? dtField.k : 'NOT FOUND');
+
+    if (!dfField) {
+      console.warn('[fetchFlow] no discharge/level field found for ' + gaugeId);
+      return null;
+    }
+
+    // Collect up to 3 valid readings
     var readings = [];
-    for (var i = 0; i < features.length && readings.length < 2; i++) {
-      var props = features[i].properties || {};
-      var discharge = props.DISCHARGE != null ? props.DISCHARGE :
-                      props.discharge != null ? props.discharge : null;
-      if (discharge != null) {
-        readings.push({ flow: discharge, at: props.DATETIME || props.datetime || null });
+    for (var i = 0; i < features.length && readings.length < 3; i++) {
+      var p = features[i].properties || {};
+      var df = pick(p, dischargeKeys);
+      if (df && !isNaN(df.v)) {
+        var dt = pick(p, datetimeKeys);
+        readings.push({ flow: df.v, at: dt ? dt.v : null });
       }
     }
-    if (readings.length === 0) return null;
-    var flow = Math.round(readings[0].flow * 100) / 100;
-    var prev = readings.length > 1 ? readings[1].flow : null;
-    var trend = prev != null
-      ? (flow > prev + 0.1 ? 'up' : flow < prev - 0.1 ? 'down' : 'stable')
-      : 'stable';
-    console.log('Flow ' + gaugeId + ':', flow, 'm3/s', trend);
+
+    if (readings.length === 0) { console.warn('[fetchFlow] all null for ' + gaugeId); return null; }
+
+    var flow  = Math.round(readings[0].flow * 100) / 100;
+    var prev  = readings.length > 1 ? readings[1].flow : null;
+    var trend = prev != null ? (flow > prev + 0.05 ? 'up' : flow < prev - 0.05 ? 'down' : 'stable') : 'stable';
+    console.log('[fetchFlow] ' + gaugeId + ': ' + flow + ' m3/s ' + trend);
     return { flow: flow, trend: trend, at: readings[0].at };
+
   } catch(e) {
-    console.warn('Flow fetch error:', e.message);
+    console.warn('[fetchFlow] error ' + gaugeId + ':', e.message);
     return null;
   }
 }
+
 
 
 // ── METHODS ───────────────────────────────────────────────────────────────────
@@ -3086,6 +2941,8 @@ function updateMethods(fc,tc,sc,flow,wt){
   document.getElementById("m1n").textContent=m1.n;document.getElementById("m1d").textContent=m1.d;document.getElementById("m1c").innerHTML=m1.c;
   document.getElementById("m2n").textContent=m2.n;document.getElementById("m2d").textContent=m2.d;document.getElementById("m2c").innerHTML=m2.c;
   document.getElementById("m3n").textContent=m3.n;document.getElementById("m3d").textContent=m3.d;document.getElementById("m3c").innerHTML=m3.c;
+  // Build gear setup card
+  buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
 }
 
 // ── BAIT TABS ─────────────────────────────────────────────────────────────────
@@ -4287,7 +4144,7 @@ function autoSelectBaitTab() {
   if (fam === 'spin') {
     tab = 'lures';
   } else if (fam === 'float') {
-    tab = 'lures'; // lures panel contains beads, roe, soft baits
+    tab = 'float'; // dedicated float fishing bait panel
   } else if (fam === 'fly') {
     // Within fly fishing, pick based on recommended method
     if (/dry/i.test(topMethod))      tab = 'dries';
@@ -4297,6 +4154,7 @@ function autoSelectBaitTab() {
     // No family selected — pick based on method
     if (/streamer|spin|spoon/i.test(topMethod)) tab = 'streamers';
     else if (/dry/i.test(topMethod))             tab = 'dries';
+    else if (/float|drift|bait/i.test(topMethod)) tab = 'float';
     else if (/lure|jig|crankbait/i.test(topMethod)) tab = 'lures';
     else                                          tab = 'nymphs';
   }
@@ -4319,6 +4177,93 @@ function loadBaitImages() {
       }
     });
   });
+}
+
+
+// ── GEAR SETUP RECOMMENDATIONS ────────────────────────────────────────────────
+function buildGearSetup(topMethod, fam, conditions) {
+  var cold = conditions.cold, high = conditions.high, low = conditions.low;
+
+  // Species context from selectedSpecies global
+  var sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var primarySpecies = selectedSpecies.length > 0 ? sm[selectedSpecies[0]] : null;
+  var isSalmon = primarySpecies && primarySpecies.indexOf('Salmon') !== -1;
+  var isBrook  = primarySpecies === 'Brook Trout';
+
+  var gear = {};  // { label: { val, note } }
+
+  // ── FLY FISHING ────────────────────────────────────────────
+  if (fam === 'fly' || (!fam && /nymph|dry|streamer|midge/i.test(topMethod))) {
+
+    if (/streamer/i.test(topMethod)) {
+      gear['Rod'] = { val: isSalmon ? '7–8 wt, 9–10 ft' : '5–6 wt, 9 ft', note: 'Fast action for casting big flies' };
+      gear['Line'] = { val: 'Sinking tip or full sink', note: 'Type II–III sink tip for most rivers' };
+      gear['Leader'] = { val: '6–9 ft · 1x–3x fluorocarbon', note: 'Short and stout — fish inhale streamers' };
+      gear['Fly size'] = { val: '#2–8', note: 'Olive, black, rust. Lighter in clear low water' };
+      gear['Extras'] = { val: 'Locking pliers, net', note: 'Streamers hook fish deep — have tools ready' };
+
+    } else if (/dry/i.test(topMethod)) {
+      gear['Rod'] = { val: isBrook ? '2–3 wt, 7–8 ft' : '4–5 wt, 8–9 ft', note: 'Lighter is better for delicate presentations' };
+      gear['Line'] = { val: 'Weight forward floating', note: 'Match to rod weight' };
+      gear['Leader'] = { val: '12–15 ft · 5x–6x tippet', note: 'Long leader critical for spooky fish' };
+      gear['Fly size'] = { val: '#14–20', note: 'Match the hatch — Adams or Elk Hair Caddis as defaults' };
+      gear['Extras'] = { val: 'Floatant, tippet spools', note: 'Dry fly gel + 5x and 6x spools' };
+
+    } else {
+      // Nymphing (default fly)
+      if (/euro|tight.?line/i.test(topMethod) || isBrook) {
+        gear['Rod'] = { val: isBrook ? '3 wt, 10 ft' : '3–4 wt, 10–11 ft', note: 'Long rod for contact nymphing — no indicator needed' };
+        gear['Line'] = { val: 'Euro nymphing line or mono rig', note: 'Level mono or specialty euro line' };
+        gear['Leader'] = { val: '15–20 ft · 5x sighter + 5x–6x tippet', note: 'Bi-colour sighter for strike detection' };
+      } else {
+        gear['Rod'] = { val: isSalmon ? '8–9 wt, 9–10 ft' : '5–6 wt, 9 ft', note: 'Medium-fast action suits most nymphing' };
+        gear['Line'] = { val: 'Weight forward floating', note: 'Standard WF line for indicator nymphing' };
+        gear['Leader'] = { val: '9–12 ft · 4x–5x', note: 'Fluorocarbon tippet — nearly invisible underwater' };
+      }
+      gear['Fly size'] = { val: '#12–18', note: cold ? 'Go small and slow in cold water — #16–18 midge' : 'Match water clarity — smaller in clear, larger in stained' };
+      gear['Extras'] = { val: 'Split shot, indicators, floatant', note: 'Tungsten split shot + yarn or Thingamabobber' };
+    }
+
+  // ── FLOAT FISHING ──────────────────────────────────────────
+  } else if (fam === 'float' || (!fam && /float|drift|bait/i.test(topMethod))) {
+
+    gear['Rod'] = { val: isSalmon ? '10–12 ft centrepin or spinning rod' : '9–11 ft medium-light spinning', note: 'Long rod = better float control and mending' };
+    gear['Reel'] = { val: isSalmon ? 'Centrepin or large arbor spinning' : 'Light spinning reel, 2500 size', note: 'Smooth drag essential for long runs' };
+    gear['Main line'] = { val: '8–12 lb monofilament', note: 'Mono floats — keeps float riding high' };
+    gear['Leader'] = { val: '6–8 lb fluorocarbon, 18–24 in', note: 'Fluoro sinks and is nearly invisible — critical in clear water' };
+    gear['Float'] = { val: high ? 'Large balsa, 4–6 g' : 'Small balsa or pencil, 1–3 g', note: high ? 'Heavier float handles faster water' : 'Smaller float = more sensitive strike detection' };
+    gear['Hook'] = { val: '#8–12 single octopus hook', note: 'Barbless where required. Offset point grips bead/roe better' };
+
+  // ── SPIN FISHING ───────────────────────────────────────────
+  } else {
+
+    gear['Rod'] = { val: isSalmon ? '8–9 ft medium-heavy spinning' : '6–7 ft medium-light spinning', note: isSalmon ? 'Backbone needed to move big fish in current' : 'Sensitive tip for detecting subtle takes' };
+    gear['Reel'] = { val: '2500–3000 size spinning reel', note: 'Smooth drag, 6–8 lb capacity' };
+    gear['Main line'] = { val: '8–12 lb monofilament or braid', note: 'Braid for sensitivity, mono for stretch and forgiveness' };
+    gear['Leader'] = { val: '8–12 lb fluorocarbon, 24 in', note: 'Fluoro leader reduces visibility next to lure' };
+    gear['Lure weight'] = { val: high ? '1/4–1/2 oz' : '1/8–1/4 oz', note: high ? 'Heavier to stay down in current' : 'Lighter = more natural presentation' };
+    gear['Extras'] = { val: 'Split rings, swivels', note: 'Ball bearing swivel prevents line twist with spinners' };
+  }
+
+  // Populate the card
+  var card = document.getElementById('gear-card');
+  var title = document.getElementById('gear-title');
+  var grid  = document.getElementById('gear-grid');
+  if (!card || !grid) return;
+
+  var famLabel = fam === 'fly' ? 'Fly Fishing' : fam === 'float' ? 'Float Fishing' : fam === 'spin' ? 'Spin Fishing' : 'General';
+  if (title) title.textContent = famLabel + ' Setup' + (primarySpecies ? ' \u00b7 ' + primarySpecies : '');
+
+  grid.innerHTML = Object.keys(gear).map(function(lbl) {
+    var item = gear[lbl];
+    return '<div class="gear-item">' +
+      '<div class="gear-item-lbl">' + lbl + '</div>' +
+      '<div class="gear-item-val">' + item.val + '</div>' +
+      (item.note ? '<div class="gear-item-note">' + item.note + '</div>' : '') +
+    '</div>';
+  }).join('');
+
+  card.style.display = 'block';
 }
 
 
@@ -4375,30 +4320,24 @@ setInterval(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
