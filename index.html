@@ -1114,6 +1114,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 
 
+
+
 // ── MODE STATE ────────────────────────────────────────────────────────────────
 var appMode = 'beginner'; // 'beginner' | 'expert'
 var selectedTechFamily = []; // array of: 'spin', 'float', 'fly' (empty = any)
@@ -1157,9 +1159,9 @@ const TEMP_MIN = 8, TEMP_MAX = 14, TEMP_STRESS = 18;
 
 var RIVER_CONFIG = {
   "Grand River": {
-    gauge: "02GA010",
-    gaugeName: "Fergus (02GA010)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA010",
+    gauge: "02GA016",
+    gaugeName: "Grand River below Shand Dam (02GA016)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA016",
     lat: 43.703, lng: -80.274,
     sweetMin: 8, sweetMax: 12,
     flowLow: 6, flowHigh: 20,
@@ -1176,7 +1178,7 @@ var RIVER_CONFIG = {
       title: "The factor most anglers underestimate",
       desc: "The Grand below Shand is managed water. Dam releases control flow independently of rainfall and bring cold water from depth \u2014 why the Grand holds browns through summer at all. Always check dam operations before you drive.",
       links: [
-        { text: "Fergus Gauge (02GA010)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA010" },
+        { text: "Grand River below Shand Dam (02GA016)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA016" },
         { text: "GRCA Conditions", url: "https://www.grandriver.ca/en/our-watershed/Flood-Forecasting-and-Warning.aspx" },
         { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
       ]
@@ -1192,9 +1194,9 @@ var RIVER_CONFIG = {
   },
 
   "Credit River": {
-    gauge: "02HB028",
-    gaugeName: "Credit River at Guelph Line (02HB028)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB028",
+    gauge: "02HB001",
+    gaugeName: "Credit River near Cataract (02HB001)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB001",
     lat: 43.78, lng: -79.97,
     sweetMin: 5, sweetMax: 15,
     flowLow: 3, flowHigh: 25,
@@ -1226,9 +1228,9 @@ var RIVER_CONFIG = {
   },
 
   "Bronte Creek": {
-    gauge: "02HB025",
-    gaugeName: "Bronte Creek at Lowville (02HB025)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB025",
+    gauge: "02HB022",
+    gaugeName: "Bronte Creek at Carlisle (02HB022)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB022",
     lat: 43.51, lng: -79.82,
     sweetMin: 2, sweetMax: 8,
     flowLow: 0.5, flowHigh: 15,
@@ -1258,9 +1260,9 @@ var RIVER_CONFIG = {
   },
 
   "Humber River": {
-    gauge: "02HC017",
-    gaugeName: "Humber River near Bolton (02HC017)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC017",
+    gauge: "02HC025",
+    gaugeName: "Humber River at Elder Mills (02HC025)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC025",
     lat: 43.88, lng: -79.73,
     sweetMin: 3, sweetMax: 12,
     flowLow: 1, flowHigh: 20,
@@ -1322,9 +1324,9 @@ var RIVER_CONFIG = {
   },
 
   "Duffins Creek": {
-    gauge: "02HC030",
-    gaugeName: "Duffins Creek at Pickering (02HC030)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC030",
+    gauge: "02HC022",
+    gaugeName: "Duffins Creek above Pickering (02HC019)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC019",
     lat: 43.87, lng: -79.12,
     sweetMin: 2, sweetMax: 10,
     flowLow: 0.5, flowHigh: 18,
@@ -1353,9 +1355,9 @@ var RIVER_CONFIG = {
   },
 
   "Ganaraska River": {
-    gauge: "02HD006",
-    gaugeName: "Ganaraska River at Port Hope (02HD006)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD006",
+    gauge: "02HD012",
+    gaugeName: "Ganaraska River above Dale (02HD012)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD012",
     lat: 43.95, lng: -78.30,
     sweetMin: 2, sweetMax: 12,
     flowLow: 0.5, flowHigh: 20,
@@ -1384,9 +1386,9 @@ var RIVER_CONFIG = {
   },
 
   "Beaver River": {
-    gauge: "02ED007",
-    gaugeName: "Beaver River near Kimberley (02ED007)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02ED007",
+    gauge: "02FB009",
+    gaugeName: "Beaver River near Clarksburg (02FB009)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02FB009",
     lat: 44.37, lng: -80.50,
     sweetMin: 3, sweetMax: 12,
     flowLow: 1, flowHigh: 20,
@@ -1416,9 +1418,9 @@ var RIVER_CONFIG = {
   },
 
   "Saugeen River": {
-    gauge: "02GB001",
-    gaugeName: "Saugeen River near Hanover (02GB001)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GB001",
+    gauge: "02FC016",
+    gaugeName: "Saugeen River above Durham (02FC016)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02FC016",
     lat: 44.15, lng: -81.02,
     sweetMin: 10, sweetMax: 30,
     flowLow: 5, flowHigh: 60,
@@ -1448,8 +1450,8 @@ var RIVER_CONFIG = {
   },
 
   "Sixteen Mile Creek": {
-    gauge: "02HB007", gaugeName: "Sixteen Mile Creek at Oakville (02HB007)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB007",
+    gauge: "02HB005", gaugeName: "Sixteen Mile Creek at Milton (02HB005)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB005",
     lat: 43.48, lng: -79.72, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon"],
     routine: [
@@ -1468,8 +1470,8 @@ var RIVER_CONFIG = {
     ]
   },
   "Rouge River": {
-    gauge: "02HC019", gaugeName: "Rouge River near Markham (02HC019)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC019",
+    gauge: "02HC019", gaugeName: "Rouge River near Markham (02HC022)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC022",
     lat: 43.86, lng: -79.18, sweetMin: 2, sweetMax: 10, flowLow: 0.5, flowHigh: 18,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
     routine: [
@@ -1487,8 +1489,8 @@ var RIVER_CONFIG = {
     ]
   },
   "Wilmot Creek": {
-    gauge: null, gaugeName: "No active gauge \u2014 use Bowmanville Creek (02HD013) as proxy",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD013",
+    gauge: null, gaugeName: "Wilmot Creek near Newcastle (02HD009)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD009",
     lat: 43.92, lng: -78.58, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
     routine: [
@@ -1506,8 +1508,8 @@ var RIVER_CONFIG = {
     ]
   },
   "Bowmanville Creek": {
-    gauge: "02HD013", gaugeName: "Bowmanville Creek at Bowmanville (02HD013)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD013",
+    gauge: "02HD006", gaugeName: "Bowmanville Creek at Bowmanville (02HD006)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD006",
     lat: 43.91, lng: -78.68, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
     routine: [
@@ -1525,8 +1527,8 @@ var RIVER_CONFIG = {
     ]
   },
   "Speed River": {
-    gauge: "02GA034", gaugeName: "Speed River at Guelph (02GA034)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA034",
+    gauge: "02GA015", gaugeName: "Speed River below Guelph (02GA015)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA015",
     lat: 43.55, lng: -80.25, sweetMin: 3, sweetMax: 12, flowLow: 1, flowHigh: 20,
     species: ["Brown Trout","Rainbow Trout","Brook Trout"],
     routine: [
@@ -1544,8 +1546,8 @@ var RIVER_CONFIG = {
     ]
   },
   "Eramosa River": {
-    gauge: "02GA047", gaugeName: "Eramosa River near Guelph (02GA047)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA047",
+    gauge: "02GA029", gaugeName: "Eramosa River above Guelph (02GA029)",
+    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA029",
     lat: 43.60, lng: -80.12, sweetMin: 2, sweetMax: 8, flowLow: 0.5, flowHigh: 15,
     species: ["Brown Trout","Brook Trout"],
     routine: [
@@ -4337,7 +4339,11 @@ setInterval(function(){
 
 
 
+
+
 </script>
+
+
 
 
 
