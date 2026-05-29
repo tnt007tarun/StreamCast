@@ -797,6 +797,164 @@ select:focus-visible, input:focus-visible {
 .sum-method, .sum-window, .gs, .g-unit, .v-meta-lbl {
   font-size: max(11px, 0.688rem) !important;
 }
+
+/* SPECIES BUTTON ACCESSIBILITY FIX */
+.species-btn-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem !important;   /* was .46rem = 7.36px — now 11.5px */
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.4;
+  color: rgba(247, 245, 241, 0.85) !important;  /* bright cream — readable on dark moss */
+}
+
+/* Active state — amber */
+.species-btn.active .species-btn-name {
+  color: var(--amber-l) !important;
+  font-weight: 600;
+}
+
+/* Hover state — brighten */
+.species-btn:hover .species-btn-name {
+  color: var(--cream) !important;
+}
+
+/* Responsive grid — 3 cols on mobile, 6 on desktop */
+.species-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .5rem;
+}
+
+@media (min-width: 600px) {
+  .species-btn-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Give buttons a bit more breathing room */
+.species-btn {
+  padding: .65rem .3rem .55rem;
+  gap: .4rem;
+}
+
+/* Section label above species — make sure it's readable too */
+.field-group .field-lbl {
+  font-size: 0.82rem !important;
+  color: var(--text) !important;
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+
+
+/* SPECIES BUTTON NAME — dark text on white card */
+.species-btn-name {
+  color: var(--moss) !important;
+  font-size: 0.75rem !important;
+  font-weight: 400;            /* regular — not a heading */
+  font-family: 'DM Mono', monospace;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.4;
+}
+.species-btn:hover .species-btn-name {
+  color: var(--fern) !important;
+}
+.species-btn.active .species-btn-name {
+  color: var(--amber-l) !important;
+  font-weight: 700;
+}
+
+/* TECHNIQUE + TRAVEL LABELS — match Target Species heading size */
+.tech-section .field-lbl,
+.tech-section .beginner-only .field-lbl,
+.travel-row label,
+.travel-row .field-lbl {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: var(--text) !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+
+/* REGS GLOSSARY */
+.regs-glossary {
+  border-top: 1px solid var(--border);
+  margin-top: .75rem;
+  padding-top: .75rem;
+}
+.regs-glossary-title {
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: .5rem;
+}
+.regs-glossary-row {
+  display: flex;
+  gap: .75rem;
+  margin-bottom: .4rem;
+  align-items: baseline;
+}
+.rg-term {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  color: var(--moss);
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 7rem;
+  flex-shrink: 0;
+}
+.rg-def {
+  font-size: .78rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+
+/* MODE TOGGLE DESCRIPTIONS */
+.mode-option { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+.mode-desc {
+  font-size: .75rem;
+  color: var(--sage);
+  text-align: center;
+  max-width: 160px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+
+/* METHOD TIP */
+.tg-tip {
+  background: rgba(45,74,50,.06);
+  border-left: 3px solid var(--fern);
+  padding: .5rem .75rem;
+  border-radius: 0 6px 6px 0;
+  font-size: .82rem;
+  color: var(--moss);
+  line-height: 1.5;
+  margin-bottom: .75rem;
+}
+.tg-tip:empty { display: none; }
+
+
+/* TOP PICK DRIVE TIME */
+.tp-drive-time {
+  font-family: 'DM Mono', monospace;
+  font-size: .75rem;
+  color: var(--fern);
+  font-weight: 600;
+  margin: .35rem 0 .6rem;
+  letter-spacing: .02em;
+}
+@media (min-width: 600px) {
+  .tp-drive-time { font-size: .82rem; }
+}
+
 </style>
 </head>
 <body>
@@ -819,16 +977,22 @@ select:focus-visible, input:focus-visible {
     <div class="hero-photo-bg"></div>
     <div class="hero-copy">
       <h1>Find where the fish are today.</h1>
-      <p>Tell us where you are and what you want to catch &mdash; StreamCast picks the best nearby river, tells you what&rsquo;s biting, and exactly how to fish it today.</p>
+      <p style="margin-bottom:1.5rem">Tell us where you are and what you want to catch &mdash; StreamCast picks the best nearby river, tells you what&rsquo;s biting, and exactly how to fish it today.</p>
     </div>
   </div>
 
   <div class="form-card">
 
     <!-- Mode toggle -->
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="mode-btn-beginner">🎣 &nbsp;Recommend me a spot</button>
-      <button class="mode-btn" id="mode-btn-expert">I know where I&#39;m going</button>
+    <div class="mode-toggle" id="mode-toggle">
+      <div class="mode-option">
+        <button class="mode-btn active" id="mode-btn-beginner">🎣 &nbsp;Recommend me a spot</button>
+        <p class="mode-desc">We pick the best river for today's conditions.</p>
+      </div>
+      <div class="mode-option">
+        <button class="mode-btn" id="mode-btn-expert">I know where I'm going</button>
+        <p class="mode-desc">You choose the river — we check if it's worth the drive.</p>
+      </div>
     </div>
 
     <!-- Date + Location -->
@@ -907,7 +1071,7 @@ select:focus-visible, input:focus-visible {
     <div class="tech-section">
       <!-- Beginner mode: technique family buttons -->
       <div class="beginner-only">
-        <div class="field-lbl" style="margin-bottom:.65rem">How do you fish? <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
+        <div class="field-lbl" style="margin-bottom:.65rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
         <div id="tech-family-grid">
           <button class="tech-family-btn active" data-family="">🎣 Any style</button>
           <button class="tech-family-btn" data-family="spin">🎡 Spin Fishing</button>
@@ -956,7 +1120,7 @@ select:focus-visible, input:focus-visible {
     <!-- Travel time slider (beginner mode only) -->
     <div class="beginner-only travel-row">
       <div class="field-lbl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
-        <label for="travel-range">How far will you travel?</label>
+        <label for="travel-range">TRAVEL TIME</label>
         <span id="travel-lbl" style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
       </div>
       <input type="range" id="travel-range" min="20" max="180" step="10" value="60"
@@ -1062,6 +1226,7 @@ select:focus-visible, input:focus-visible {
     <div class="tpband-inner">
       <div class="tp-eyebrow">StreamCast Recommendation</div>
       <div class="tp-headline" id="tp-headline">Loading…</div>
+      <div class="tp-drive-time" id="tp-drive-time" style="display:none"></div>
       <div class="tp-why" id="tp-why"></div>
       <div class="tp-chips" id="tp-chips"></div>
     </div>
@@ -1206,6 +1371,7 @@ select:focus-visible, input:focus-visible {
       </button>
       <div class="tg-body" id="tg-primary-body">
         <p class="tg-desc" id="m1d"></p>
+        <div class="tg-tip" id="m1tip"></div>
         <div class="tg-cond" id="m1c"></div>
 
         <!-- Gear setup (inline) -->
@@ -1287,6 +1453,27 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1464,7 +1651,7 @@ var RIVER_CONFIG = {
     access: [
       { name: "Belfountain Conservation Area", crowd: "med", crowdLabel: "Med. Pressure", loc: "Belfountain, ON \u00b7 Above the falls", desc: "Picturesque gorge setting above a small dam. Good dry fly water in low flows. The pool below the dam holds resident brown trout year-round. CVC managed \u2014 day-use fee applies.", tags: ["Conservation Area","Fee Required","Dry Fly Water"], best: "Best at 3\u201310 m\u00b3/s in spring and fall." },
       { name: "Forks of the Credit Provincial Park", crowd: "med", crowdLabel: "Med. Pressure", loc: "Cataract, ON \u00b7 Niagara Escarpment gorge", desc: "Spectacular gorge section below the Cataract waterfalls. Wild brown trout in pools below the escarpment. Catch-and-release only in most sections. Hike-in required to the best water.", tags: ["Provincial Park","C&R Only","Gorge Water","Hike-in"], best: "Spring and fall best. Summer midday fishing tough due to low flows." },
-      { name: "Terra Cotta Conservation Area", crowd: "low", crowdLabel: "Low Pressure", loc: "Terra Cotta, ON \u00b7 CVC managed", desc: "Quieter stretch of the upper Credit through a forested valley. Resident brook trout in the tributaries and browns in the main river. Less pressure than Belfountain or Forks.", tags: ["Conservation Area","Brook Trout","Lower Pressure"], best: "Best in spring (April\u2013May) and fall (September\u2013October)." },
+      { name: "Upper Credit Conservation Area", crowd: "low", crowdLabel: "Low Pressure", loc: "Caledon, ON \u00b7 CVC managed \u00b7 above Orangeville", desc: "CVC-designated coldwater fishery on the upper Credit headwaters. Wild brook trout in the main river and feeder creeks. Catch-and-release only. Quieter than Belfountain or Forks \u2014 bring waders as bank access is limited.", tags: ["Conservation Area","Brook Trout","C&R Only","Lower Pressure"], best: "Best in spring (April\u2013May) and fall (September\u2013October). Brook trout active in cool, clear flows." },
       { name: "Belfountain to Inglewood Reach", crowd: "low", crowdLabel: "Low Pressure", loc: "Between Belfountain and Inglewood", desc: "Walk-in access only along this productive section. Fewer anglers, quality fish. Brown trout and rainbow trout throughout. Road allowance access at several bridge crossings.", tags: ["Walk-in","Brown Trout","Rainbow Trout","Road Allowance"], best: "Best in spring and fall. Access at bridge crossings only." }
     ]
   },
@@ -2557,14 +2744,20 @@ function renderRiverUI(cfg) {
       // Fallback: if filter yields nothing, show all
       if (filteredSpecies.length === 0) filteredSpecies = regs.species;
 
-      var speciesRows = filteredSpecies.map(function(s) {
-        return '<div class="reg-row">' +
-          '<div class="reg-species">' + s.name + '</div>' +
-          '<div class="reg-season">' + s.season + '</div>' +
-          '<div class="reg-limit">' + s.limit + '</div>' +
-          (s.notes ? '<div class="reg-note">' + s.notes + '</div>' : '') +
-        '</div>';
-      }).join("");
+      var speciesRows;
+      if (filteredSpecies.length === 0 && selectedSpecies.length > 0) {
+        var _noRegNames = selectedSpecies.map(function(k){ return _speciesNameMap[k]||k; }).join(', ');
+        speciesRows = '<div class="reg-row reg-row-empty">No specific regulations listed for <strong>' + _noRegNames + '</strong> on this river — check <a href="https://www.ontario.ca/page/ontario-fishing-regulations" target="_blank" style="color:var(--fern)">Ontario Fishing Regulations</a> for general FMZ rules.</div>';
+      } else {
+        speciesRows = filteredSpecies.map(function(s) {
+          return '<div class="reg-row">' +
+            '<div class="reg-species">' + s.name + '</div>' +
+            '<div class="reg-season">' + s.season + '</div>' +
+            '<div class="reg-limit">' + s.limit + '</div>' +
+            (s.notes ? '<div class="reg-note">' + s.notes + '</div>' : '') +
+          '</div>';
+        }).join("");
+      }
 
       var rows = filteredSpecies.map(function(s) {
         return '<div class="reg-row">' +
@@ -2584,6 +2777,15 @@ function renderRiverUI(cfg) {
         '</div>' +
         '<div class="regs-species-list">' + rows + '</div>' +
         (regsSummary ? '<div class="regs-specials"><div class="reg-special">📋 ' + regsSummary + '</div></div>' : '') +
+        '<div class="regs-glossary">' +
+          '<div class="regs-glossary-title">How to read these rules</div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">S-5 / C-2</span><span class="rg-def">Snagging limit 5 fish per day, possession limit 2. S-0/C-0 means catch &amp; release only — no keeping fish.</span></div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">C&amp;R Only</span><span class="rg-def">Catch and release — you must return the fish to the water immediately, unharmed.</span></div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">4th Sat. April</span><span class="rg-def">Season opens on the fourth Saturday of April — the traditional Ontario trout opener.</span></div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">' + regs.zone + '</span><span class="rg-def">Fisheries Management Zone — Ontario divides the province into zones, each with its own rules. Always confirm the zone for your exact spot.</span></div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">Artificial only</span><span class="rg-def">You may only use artificial lures or flies — no live bait, worms, or roe in that section.</span></div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">Barbless hook</span><span class="rg-def">The hook must have no barb (or it must be pinched flat). Makes releasing fish easier and is required in some sections.</span></div>' +
+        '</div>';
       '</div>';
     }
 
@@ -2824,6 +3026,7 @@ function goToResults(){
       selectedRiver = bestPick.name + ', ' + bestPick.loc.replace(/–/g,'-');
       document.getElementById('res-river').textContent = selectedRiver;
       window._beginnerLocKey = locKey;
+      nearbyRivers = ranked; // expose ranked list for buildTopPick drive time
     }
   }
   if(!selectedRiver){
@@ -3064,6 +3267,12 @@ function updateMethods(fc,tc,sc,flow,wt){
   var fam=selectedTechFamily.length===1?selectedTechFamily[0]:selectedTechFamily.length>1?selectedTechFamily[0]:'';
   var m1,m2,m3;
 
+  // Species context — drives method choice when no technique family is forced
+  var _sp = selectedSpecies.length > 0 ? selectedSpecies[0] : '';
+  var isSalmonSp = _sp === 'chinook' || _sp === 'coho';
+  var isResidentTrout = _sp === 'brown' || _sp === 'rainbow' || _sp === 'brook';
+  var warmEnoughForDries = wt != null && wt >= 10;
+
   // Helper: translate method names to the selected technique family
   function adapt(flyName, spinName, floatName) {
     if(fam==='spin')  return spinName;
@@ -3165,29 +3374,75 @@ function updateMethods(fc,tc,sc,flow,wt){
                 "<span>Skip in cold water</span><span>Return to jig or bottom rig</span>",
                 "<span>Switch to bottom rig</span><span>Not worth it below 8°C</span>")};
   } else {
-    m1={n:adapt("Nymphing","Spinner Fishing","Float Fishing"),
-        d:adapt("The default starting point. Dead-drift subsurface flies through seams and feeding lanes.",
-                "Spinners are the go-to for Southern Ontario rivers. Cast across, retrieve through current seams.",
-                "Float fishing with bait or roe is one of the most effective methods on Ontario rivers."),
-        c:adapt("<span>Best: 8–14°C, moderate flow</span><span>Fish: Head of runs, tailouts, seams</span><span>Leader: 9–12 ft · 4x–5x</span>",
-                "<span>Lures: Mepps #2–3, Blue Fox Vibrax</span><span>Cast across and down</span><span>Vary retrieve, match current speed</span>",
-                "<span>Bait: Roe, worms, minnows</span><span>Float: Match depth to water</span><span>Dead drift through runs and pools</span>")};
-    m2={n:adapt("Streamer Fishing","Spoons & Crankbaits","Jig Fishing"),
-        d:adapt("Swing or strip through deeper pools and undercut banks. Most effective in low light.",
-                "Spoons and crankbaits cover water fast and target feeding fish in pools and runs.",
-                "Jigging bait or soft plastics through pools is highly effective and easy to learn."),
-        c:adapt("<span>Best: Low light, overcast, rising flow</span><span>Fish: Deep pools, undercut banks</span>",
-                "<span>Lures: Kastmaster, Rapala Original</span><span>Work pools and deeper runs</span>",
-                "<span>Lure: 1/8–1/4 oz jig + worm</span><span>Hop along bottom through pools</span>")};
-    m3={n:adapt("Dry Fly","Surface Lures","Surface Float"),
-        d:adapt("Worth trying in evening if you spot rises. Match the hatch.",
-                "Surface lures (spinnerbaits, poppers) work in calm evening conditions.",
-                "Surface float in calm evening water when fish are visibly rising."),
-        c:adapt("<span>Best: Evening hatch periods</span><span>Watch for surface rises</span>",
-                "<span>Best: Calm evening conditions</span><span>Lures: Spinnerbait, popper</span>",
-                "<span>Best: Evening when fish are rising</span><span>Bait: Worms under small float</span>")};
+    // ── NORMAL CONDITIONS — recommendation adapts to target species ──────────
+    if (isSalmonSp && fam !== 'fly' && fam !== 'spin') {
+      // Salmon: float fishing with roe/beads is the standard Ontario approach
+      m1={n:'Float Fishing \u2014 Roe & Beads',
+          d:'For salmon in the river, drift roe bags or beads under a float through holding water. This is the most productive salmon method on Ontario rivers.',
+          tip:'Set your float so the bait drifts just above the bottom. Cast upstream, keep the line tight, and watch for the float to dip — that\'s your bite.',
+          c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>Fish: Deep pools, tailouts, current seams</span>'};
+      m2={n:'Bottom Bouncing',
+          d:'Drift roe or beads along the bottom without a float in faster runs. Effective when fish hold deep.',
+          c:'<span>Bait: Roe, beads, yarn</span><span>Add split shot to reach bottom</span><span>Fish: Fast runs, deep pockets</span>'};
+      m3={n:'Swung Streamers / Spoons',
+          d:'Swing large streamers or cast spoons through runs to trigger aggressive salmon. Works best on fresh, active fish.',
+          c:'<span>Lures: Spoons, large streamers</span><span>Swing across current</span><span>Best on fresh-run fish</span>'};
+    } else if (isResidentTrout && warmEnoughForDries && overcast) {
+      // Resident trout + warm water + overcast \u2014 prime dry fly conditions
+      m1={n:adapt("Dry Fly","Surface Lures","Float Fishing"),
+          d:adapt("Warm water and overcast sky mean active surface feeding. Match the hatch and fish the rises.",
+                  "Topwater lures can draw aggressive strikes in warm overcast conditions.",
+                  "Drift natural bait through feeding lanes where you see surface activity."),
+          c:adapt("<span>Flies: Adams, Elk Hair Caddis #14\u201316</span><span>Watch for rising fish</span><span>Leader: 12 ft \u00b7 5x</span>",
+                  "<span>Lures: Small surface plugs</span><span>Twitch over likely lies</span>",
+                  "<span>Bait: Worms, small roe</span><span>Drift through rises</span>"),
+          tip:adapt('Look for fish rising to the surface and cast your fly 2 feet upstream of the rise. Let it drift naturally over the fish — don\'t drag it. If nothing happens after a few drifts, try a different fly.',
+                    'Cast surface lures near rises or overhanging banks. Let it sit still for a moment, then twitch gently.',
+                    'Watch for feeding fish near the surface and drift your bait through those areas.')};
+      m2={n:adapt("Nymphing","Spinner Fishing","Tight-Line Drift"),
+          d:adapt("Dead-drift nymphs through seams when fish aren't looking up. The reliable producer.",
+                  "Spinners cover water and find active trout through runs and seams.",
+                  "Drift bait naturally along the bottom through holding water."),
+          c:adapt("<span>Flies: Hare's Ear, PT #14\u201318</span><span>Fish: Seams, tailouts</span><span>Leader: 9\u201312 ft \u00b7 4x\u20135x</span>",
+                  "<span>Lures: Mepps #2\u20133, Vibrax</span><span>Cast across and down</span>",
+                  "<span>Bait: Roe, worms</span><span>Dead drift through runs</span>")};
+      m3={n:adapt("Streamer Fishing","Spoons & Crankbaits","Jig Fishing"),
+          d:adapt("Swing streamers through deeper pools for larger fish, especially in low light.",
+                  "Spoons and crankbaits target bigger fish holding in pools.",
+                  "Jig soft plastics or bait through deeper pools."),
+          c:adapt("<span>Best: Dawn, dusk, overcast</span><span>Fish: Deep pools, undercuts</span>",
+                  "<span>Lures: Kastmaster, Rapala</span><span>Work the pools</span>",
+                  "<span>Lure: 1/8 oz jig + worm</span><span>Hop through pools</span>")};
+    } else {
+      // Default resident-trout / general approach \u2014 nymphing leads, dry fly secondary
+      m1={n:adapt("Nymphing","Spinner Fishing","Float Fishing"),
+          d:adapt("The reliable starting point for resident trout. Dead-drift subsurface flies through seams and feeding lanes.",
+                  "Spinners are the go-to for Southern Ontario rivers. Cast across, retrieve through current seams.",
+                  "Float fishing with bait or roe is one of the most effective methods on Ontario rivers."),
+          c:adapt("<span>Best: 8\u201314\u00b0C, moderate flow</span><span>Fish: Head of runs, tailouts, seams</span><span>Leader: 9\u201312 ft \u00b7 4x\u20135x</span>",
+                  "<span>Lures: Mepps #2\u20133, Blue Fox Vibrax</span><span>Cast across and down</span><span>Vary retrieve, match current speed</span>",
+                  "<span>Bait: Roe, worms, minnows</span><span>Float: Match depth to water</span><span>Dead drift through runs and pools</span>"),
+          tip:adapt('Cast upstream into the fast water, let the fly drift naturally into the slower pool below. Keep your line off the water so the fly moves with the current — no drag.',
+                    'Cast across the river and let the current swing your spinner downstream. A slow, steady retrieve works best.',
+                    'Set the float so the bait hangs 6 inches off the bottom. Cast upstream and let it drift naturally through the run.')};
+      m2={n:adapt("Dry Fly","Spoons & Crankbaits","Jig Fishing"),
+          d:adapt("When fish are rising or water is warm, switch to dries. Especially good mornings and evenings.",
+                  "Spoons and crankbaits cover water fast and target feeding fish in pools and runs.",
+                  "Jigging bait or soft plastics through pools is highly effective and easy to learn."),
+          c:adapt("<span>Flies: Adams, Caddis #14\u201318</span><span>Best: Rising fish, evenings</span>",
+                  "<span>Lures: Kastmaster, Rapala Original</span><span>Work pools and deeper runs</span>",
+                  "<span>Lure: 1/8\u20131/4 oz jig + worm</span><span>Hop along bottom through pools</span>")};
+      m3={n:adapt("Streamer Fishing","Surface Lures","Bottom Bouncing"),
+          d:adapt("Swing or strip through deeper pools and undercut banks. Most effective in low light.",
+                  "Surface lures draw reaction strikes from aggressive fish in low light.",
+                  "Drift bait along the bottom through deeper holding water."),
+          c:adapt("<span>Best: Low light, overcast, rising flow</span><span>Fish: Deep pools, undercut banks</span>",
+                  "<span>Lures: Surface plugs, poppers</span><span>Dawn and dusk</span>",
+                  "<span>Bait: Roe, worms + split shot</span><span>Fish: Deep runs</span>")};
+    }
   }
   document.getElementById("m1n").textContent=m1.n;document.getElementById("m1d").textContent=m1.d;document.getElementById("m1c").innerHTML=m1.c;
+  var _m1tip=document.getElementById("m1tip"); if(_m1tip) _m1tip.textContent=m1.tip||"";
   document.getElementById("m2n").textContent=m2.n;document.getElementById("m2d").textContent=m2.d;document.getElementById("m2c").innerHTML=m2.c;
   document.getElementById("m3n").textContent=m3.n;document.getElementById("m3d").textContent=m3.d;document.getElementById("m3c").innerHTML=m3.c;
   // Build gear for primary method
@@ -3295,9 +3550,15 @@ async function renderResults(){
   var _vhrd=document.getElementById("vhead"); if(_vhrd) _vhrd.textContent="Reading conditions\u2026";
   var _vsig=document.getElementById("vsig"); if(_vsig){_vsig.className="vsig"; _vsig.textContent="\u2026";}
 
-  var airTemp=12, cloudPct=50;
-  try{var wx=await fetchWeather(cfg);airTemp=wx.airTemp;cloudPct=wx.cloudPct;}
-  catch(e){console.warn("Weather failed",e);}
+  var airTemp=null, cloudPct=null, weatherOk=false;
+  try{
+    var wx=await fetchWeather(cfg);
+    if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
+      airTemp=wx.airTemp; cloudPct=wx.cloudPct; weatherOk=true;
+    }
+  } catch(e){ console.warn("Weather failed",e); }
+  // Fall back to seasonal-typical only if the fetch genuinely failed
+  if(!weatherOk){ airTemp=12; cloudPct=50; }
   var wt=waterTempEst(airTemp);
 
   var flow=null,trend="stable",flowAt=null;
@@ -3309,12 +3570,12 @@ async function renderResults(){
     // Future date — flow data only available for today
     var _fdbg=document.getElementById('flow-gauge-link');
     var _flbl=document.getElementById('flbl');
-    if(_flbl) _flbl.textContent='Flow data not available for future dates. Check the gauge link for current conditions.';
+    if(_flbl) _flbl.textContent='Flow data not available for future dates. Check the gauge link before you drive — you want to see '+(cfg.sweetMin+'–'+cfg.sweetMax)+' m³/s for this river.';
   }
 
   var skyl=cloudPct>=80?"Overcast":cloudPct>=50?"Mostly Cloudy":cloudPct>=20?"Partly Cloudy":"Clear";
   var fc=flow!=null?clsFlow(flow,cfg):"warn";
-  var tc=clsTemp(wt); var sc=clsSky(cloudPct);
+  var tc=weatherOk?clsTemp(wt):"warn"; var sc=weatherOk?clsSky(cloudPct):"warn";
   var score=[fc,tc,sc].reduce(function(a,c){return a+(c==="good"?2:c==="warn"?1:0);},0);
   var vl=flow!=null?(score>=5?"good":score>=3?"warn":"bad"):"warn";
 
@@ -3544,7 +3805,7 @@ async function renderResults(){
   } else {
     document.getElementById("fval").textContent=isToday?"\u2014":"N/A";
     document.getElementById("ftrend").textContent="";
-    document.getElementById("flbl").textContent="Live data unavailable. Use the gauge link to check current flow.";
+    document.getElementById("flbl").textContent="Live data unavailable — use the gauge link. You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
     document.getElementById("fgv").textContent="\u2014";
     document.getElementById("fstat").textContent="CHECK GAUGE";document.getElementById("fstat").className="gs warn";
     document.getElementById("fcl").innerHTML="<li><span class=\"ci warn\">\u25b3</span><span>Check the gauge link above for current flow before heading out.</span></li>";
@@ -3570,7 +3831,7 @@ async function renderResults(){
   autoSelectBaitTab();
 
   // Top Pick band — always shown
-  buildTopPick(nearbyRivers, flow, wt, cloudPct, tc, sc, selectedSpecies);
+  buildTopPick(nearbyRivers, flow, wt, cloudPct, tc, sc, selectedSpecies, weatherOk);
 
   // River Ranker — beginner mode only
   if (appMode === 'beginner' && window._beginnerLocKey) {
@@ -3974,7 +4235,7 @@ function rankRivers(rivers, speciesKey, dateStr) {
 }
 
 // ── BUILD TOP PICK BAND ───────────────────────────────────────────────────────
-function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey) {
+function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weatherOk) {
   var band = document.getElementById('tpband');
   if (!band) return;
 
@@ -4078,6 +4339,17 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey) {
       + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
   }
   document.getElementById('tp-headline').innerHTML = headlineHtml;
+  // Drive time — show prominently below the headline
+  var _topRiver = rankedRivers && rankedRivers[0];
+  var _driveEl = document.getElementById('tp-drive-time');
+  if (_driveEl && _topRiver && _topRiver.driveTime) {
+    var _dt = _topRiver.driveTime;
+    var _dtStr = _dt < 60 ? _dt + ' min drive' : (_dt === 60 ? '1 hr drive' : Math.floor(_dt/60) + ' hr ' + (_dt%60 ? _dt%60 + ' min' : '') + ' drive');
+    var _lk = window._beginnerLocKey || '';
+    var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
+    _driveEl.textContent = '🚗 ' + _dtStr + ' from ' + _lkLabel;
+    _driveEl.style.display = 'block';
+  }
     'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
 
   // Why paragraph
@@ -4091,10 +4363,14 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey) {
            fc === 'warn' ? 'at ' + flow + ' m\u00b3/s (outside the ideal ' + sweetRange + ')' :
            'at ' + flow + ' m\u00b3/s \u2014 outside safe range') + '. ';
   }
-  why += 'Water is estimated at ' + wt + '\u00b0C. ' +
-    (sc === 'good' ? 'Overcast sky means fish feed all day.' :
-     sc === 'warn' ? 'Partly cloudy \u2014 morning and evening are your best windows.' :
-     'Clear sky \u2014 get on the water before 9 AM.');
+  if (weatherOk) {
+    why += 'Water is around ' + wt + '\u00b0C (estimated from air temp). ' +
+      (sc === 'good' ? 'Overcast sky means fish feed all day.' :
+       sc === 'warn' ? 'Partly cloudy \u2014 morning and evening are your best windows.' :
+       'Clear sky \u2014 get on the water before 9 AM.');
+  } else {
+    why += 'Live weather is unavailable right now \u2014 check the temperature and sky before you go.';
+  }
 
   document.getElementById('tp-why').textContent = why;
 
@@ -4804,7 +5080,49 @@ setInterval(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
