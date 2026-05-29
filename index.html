@@ -373,16 +373,6 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .sum-val.good { color:#6dbf8a; } .sum-val.warn { color:var(--amber-l); } .sum-val.bad { color:#e07070; }
 .sum-note { font-size:0.68rem; color:var(--mist); opacity:0.5; margin-top:0.2rem; }
 
-/* verdict band */
-.verdict-band { background:var(--fern); color:var(--cream); padding:1.5rem 2rem; display:flex; align-items:center; gap:1.5rem; border-bottom:2px solid rgba(255,255,255,0.08); }
-.vsig { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
-.vsig.good { background:var(--good); } .vsig.warn { background:var(--warn); } .vsig.bad { background:var(--bad); }
-.vtext h3 { font-family:'Lora',serif; font-size:1.4rem; font-weight:700; }
-.vtext p { font-size:0.82rem; opacity:0.65; margin-top:0.2rem; line-height:1.5; }
-.v-meta { margin-left:auto; text-align:right; flex-shrink:0; }
-.v-meta-lbl { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; opacity:0.45; }
-.v-meta-val { font-family:'DM Mono',monospace; font-size:0.8rem; margin-top:0.15rem; }
-
 /* section label */
 .sec-label { background:var(--cream); border-bottom:1px solid var(--border); padding:1.2rem 2rem; display:flex; align-items:center; gap:1rem; border-top:2px solid var(--fern); margin-top:1px; }
 .sec-num { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; font-style:italic; color:var(--amber); line-height:1; flex-shrink:0; }
@@ -641,9 +631,177 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .gear-item-val { font-size:.82rem; color:var(--text); font-weight:500; line-height:1.4; }
 .gear-item-note { font-size:.68rem; color:var(--sage); margin-top:.2rem; font-style:italic; }
 
+
+/* TECHNIQUE & GEAR ACCORDION */
+.tgsec { background:var(--white); border:1.5px solid var(--border); border-radius:10px; overflow:hidden; margin:0 2rem 1.5rem; }
+.tg-item { border-bottom:1px solid var(--border); }
+.tg-item:last-child { border-bottom:none; }
+.tg-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; user-select:none; transition:background .12s; }
+.tg-header:hover { background:rgba(45,74,50,.03); }
+.tg-item.tg-open .tg-header { background:rgba(45,74,50,.04); }
+.tg-header-left { flex:1; }
+.tg-label { font-family:'DM Mono',monospace; font-size:.5rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); margin-bottom:.2rem; }
+.tg-name { font-family:'Lora',serif; font-size:1.05rem; font-weight:600; color:var(--moss); }
+.tg-chevron { font-size:1rem; color:var(--sage); margin-left:.75rem; transition:transform .2s; }
+.tg-body { padding:0 1.25rem 1.25rem; }
+.tg-body-collapsed { display:none; }
+.tg-desc { font-size:.88rem; color:var(--text); line-height:1.6; margin-bottom:.75rem; }
+.tg-cond { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1rem; }
+.tg-cond span { font-family:'DM Mono',monospace; font-size:.6rem; background:var(--off); padding:.2rem .5rem; border-radius:4px; color:var(--sage); }
+.tg-gear { margin:1rem 0; }
+.tg-gear-lbl { font-family:'DM Mono',monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.65rem; }
+.tg-baits { margin-top:1.25rem; border-top:1px solid var(--border); padding-top:1rem; }
+
+
+/* ── ACCESSIBILITY FIXES ─────────────────────────────────────────────────── */
+
+/* 1. Sage colour — darken for sufficient contrast on white backgrounds
+      Old: #4a7a52 (~3.4:1)  New: #2d5a36 (5.1:1 on white) */
+:root {
+  --sage: #2d5a36;          /* was #4a7a52 — now passes WCAG AA */
+  --sage-subtle: #4a7a52;   /* keep original for decorative use only */
+}
+
+/* 2. Minimum font sizes — nothing below 11px */
+.bdet, .rrank-drive, .tg-label, .gear-item-note,
+.btab, .slat, .season-bar-labels span,
+.rrank-num, .acard-rec-badge,
+.tp-eyebrow, .gear-eyebrow, .tg-gear-lbl,
+.field-lbl, .sec-label p,
+.map-legend-lbl, .map-pin span,
+.brank, .stag, .sst, .sc-note,
+.reg-note, .aloc, .atags, .atag,
+.tp-chip, .rrank-badge, .v-meta-lbl {
+  font-size: max(11px, 0.688rem) !important;
+  line-height: 1.5;
+}
+
+/* Bait condition text — was 11.2px sage, increase + darken */
+.bcond {
+  font-size: 0.8rem !important;
+  color: var(--sage) !important;
+  line-height: 1.6;
+}
+
+/* 3. Touch targets — minimum 44px for all interactive elements */
+button, .btab, .tech-family-btn, .species-btn,
+.mode-btn, .cta-btn, select, input[type="date"],
+input[type="range"], .river-chip,
+.acard-rec-badge, .rrank-card, .tg-header,
+.btab, .clear-all {
+  min-height: 44px;
+}
+
+/* Accordion header specifically */
+.tg-header {
+  min-height: 52px;
+  padding: 0.9rem 1.25rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.tg-header:focus-visible {
+  outline: 2px solid var(--fern);
+  outline-offset: -2px;
+}
+
+/* Mode toggle buttons */
+.mode-btn { min-height: 40px; padding: .5rem .75rem; }
+
+/* Species buttons */
+.species-btn { min-height: 80px; }
+
+/* Bait tabs */
+.btab {
+  min-height: 40px;
+  padding: .4rem .8rem;
+  font-size: 0.78rem;
+}
+
+/* New Search button */
+.new-search-btn, #new-search-btn, [href="#landing"], button[onclick*="goBack"] {
+  min-height: 44px;
+  padding: .5rem 1.25rem;
+}
+
+/* 4. Focus styles — visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--fern);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Remove focus style on mouse click (only show for keyboard) */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Select and date inputs */
+select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--fern);
+  outline-offset: 0;
+  box-shadow: 0 0 0 3px rgba(45,74,50,.15);
+}
+
+/* 5. River ranker cards — tap target */
+.rrank-card {
+  min-height: 80px;
+  padding: 1rem;
+}
+
+/* 6. Section label sub-paragraph — was too light */
+.sec-label p {
+  color: var(--sage);
+  font-size: 0.82rem !important;
+}
+
+/* 7. Gear note — was 10.88px, too small */
+.gear-item-note {
+  font-size: 0.72rem !important;
+  color: var(--sage);
+  line-height: 1.5;
+}
+
+/* 8. Accordion label — was 8px (absurdly small) */
+.tg-label {
+  font-size: 0.68rem !important;
+  letter-spacing: .08em;
+}
+
+/* 9. Mobile — larger tap targets and text on small screens */
+@media (max-width: 600px) {
+  .btab { min-height: 44px; font-size: 0.82rem; }
+  .tech-family-btn { min-height: 64px; }
+  .tg-header { min-height: 56px; }
+  .aname, .tg-name { font-size: 1rem; }
+  .tg-desc { font-size: 0.9rem; }
+  .gear-item-val { font-size: 0.88rem; }
+  .bcond { font-size: 0.82rem !important; }
+  .bname { font-size: 0.88rem; }
+  /* Accordion body padding */
+  .tg-body { padding: 0 1rem 1rem; }
+}
+
+/* 10. Desktop — comfortable spacing */
+@media (min-width: 1024px) {
+  .tg-header { padding: 1rem 1.5rem; }
+  .tg-body { padding: 0 1.5rem 1.5rem; }
+  .gear-item { padding: .85rem 1rem; }
+}
+
+.skip-link{position:absolute;top:-40px;left:0;background:var(--moss);color:var(--cream);padding:.5rem 1rem;border-radius:0 0 6px 0;font-size:.9rem;z-index:9999;text-decoration:none;}.skip-link:focus{top:0;}
+.logo-region, .land-date, .mode-btn, .river-sublbl, .rc-time,
+.sec-num, .vsig, .acrowd, .atag, .bi-img-ph, .brank,
+.sum-method, .sum-window, .gs, .g-unit, .v-meta-lbl {
+  font-size: max(11px, 0.688rem) !important;
+}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
 
 <!-- ========== LANDING PAGE ========== -->
 <div id="landing">
@@ -676,12 +834,56 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     <!-- Date + Location -->
     <div class="form-top">
       <div class="field-group">
-        <label class="field-lbl">Date</label>
-        <input type="date" id="trip-date" class="field-input">
+        <label class="field-lbl" for="trip-date">Date</label>
+        <input type="date" id="trip-date" class="field-input" aria-label="Trip date">
       </div>
       <div class="field-group">
-        <label class="field-lbl">Your Location</label>
-        <input type="text" id="loc-input-field" class="field-input" placeholder="City or postal code..." autocomplete="off">
+        <label class="field-lbl" for="loc-input-field">Your Location</label>
+        <select id="loc-input-field" class="field-input" style="cursor:pointer;background:var(--white)">
+          <option value="">— Select your city —</option>
+          <optgroup label="Greater Toronto Area">
+            <option value="toronto">Toronto</option>
+            <option value="north york">North York</option>
+            <option value="scarborough">Scarborough</option>
+            <option value="etobicoke">Etobicoke</option>
+            <option value="markham">Markham</option>
+            <option value="richmond hill">Richmond Hill</option>
+            <option value="vaughan">Vaughan</option>
+            <option value="ajax">Ajax</option>
+            <option value="pickering">Pickering</option>
+          </optgroup>
+          <optgroup label="West / Halton">
+            <option value="mississauga">Mississauga</option>
+            <option value="brampton">Brampton</option>
+            <option value="oakville">Oakville</option>
+            <option value="burlington">Burlington</option>
+            <option value="milton">Milton</option>
+          </optgroup>
+          <optgroup label="Hamilton">
+            <option value="hamilton">Hamilton</option>
+          </optgroup>
+          <optgroup label="Waterloo Region &amp; Guelph">
+            <option value="guelph">Guelph</option>
+            <option value="cambridge">Cambridge</option>
+            <option value="kitchener">Kitchener</option>
+            <option value="waterloo">Waterloo</option>
+            <option value="orangeville">Orangeville</option>
+          </optgroup>
+          <optgroup label="Durham &amp; East">
+            <option value="oshawa">Oshawa</option>
+            <option value="whitby">Whitby</option>
+            <option value="bowmanville">Bowmanville</option>
+            <option value="clarington">Clarington</option>
+            <option value="newcastle">Newcastle</option>
+            <option value="cobourg">Cobourg</option>
+            <option value="port hope">Port Hope</option>
+          </optgroup>
+          <optgroup label="Simcoe &amp; Georgian Bay">
+            <option value="barrie">Barrie</option>
+            <option value="collingwood">Collingwood</option>
+            <option value="owen sound">Owen Sound</option>
+          </optgroup>
+        </select>
       </div>
     </div>
 
@@ -754,7 +956,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     <!-- Travel time slider (beginner mode only) -->
     <div class="beginner-only travel-row">
       <div class="field-lbl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
-        <span>How far will you travel?</span>
+        <label for="travel-range">How far will you travel?</label>
         <span id="travel-lbl" style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
       </div>
       <input type="range" id="travel-range" min="20" max="180" step="10" value="60"
@@ -807,7 +1009,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
           </button>
         </div>
       </div>
-      <button class="forecast-btn" id="forecast-btn-el" >
+      <button class="forecast-btn" id="forecast-btn-el" aria-label="Find my best fishing spot" >
         <span id="cta-label">Find my best spot</span>
         <svg viewBox="0 0 16 16"><path d="M3 8 L13 8"/><path d="M9 4 L13 8 L9 12"/></svg>
       </button>
@@ -855,8 +1057,6 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   <span id="sum-verdict-note" style="display:none"></span>
 
   <!-- TOP PICK BAND — populated by JS, hidden until ready -->
-  <!-- FLOW DEBUG PANEL - remove after testing -->
-  <div id="flow-debug" style="background:#1a1a2e;color:#00ff88;font-family:monospace;font-size:.75rem;padding:.75rem 1.5rem;display:none;white-space:pre-wrap;border-bottom:1px solid #333"></div>
 
   <div class="tpband" id="tpband" style="display:none">
     <div class="tpband-inner">
@@ -875,16 +1075,6 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     </div>
   </div>
 
-  <!-- verdict -->
-    <div class="vtext">
-      <h3 id="vhead">Reading conditions...</h3>
-      <p id="vbody">Checking flow, temperature, and sky.</p>
-    </div>
-    <div class="v-meta">
-      <div class="v-meta-lbl">Last checked</div>
-      <div class="v-meta-val" id="vtime">—</div>
-    </div>
-  </div>
 
   <!-- SECTION 1 -->
   <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
@@ -951,45 +1141,13 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     <div class="col-lbl">Pre-Trip Routine</div>
     <div class="routine" id="routine-steps"></div>
   </div>
-</div><!-- SECTION 2 -->
-  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Recommended Methods</h3><p>Ranked by effectiveness for current conditions. Check local regulations — some reaches have gear restrictions.</p></div></div>
+</div><!-- SECTION 2: Technique & Gear (accordion) -->
+  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p>Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
-  <div class="mgrid fi">
-    <div class="mc">
-      <div class="mpr p1">▸ Primary Method</div>
-      <div class="mn" id="m1n">Nymphing</div>
-      <div class="md" id="m1d">The bread and butter on the Grand. Dead-drift subsurface flies through seams and feeding lanes.</div>
-      <div class="mcond" id="m1c"><span>Best at: 8–14°C water, 8–12 m³/s</span><span>Fish: Head of runs, tailouts</span><span>Leader: 9–12 ft · 4x–5x tippet</span></div>
-      <span class="rnote">Artificial only in many reaches</span>
-    </div>
-    <div class="mc">
-      <div class="mpr p2">▸ Secondary Method</div>
-      <div class="mn" id="m2n">Streamer Fishing</div>
-      <div class="md" id="m2d">Swing or strip through deeper pools and undercut banks. Browns respond aggressively in low light.</div>
-      <div class="mcond" id="m2c"><span>Best at: Overcast sky, rising flow</span><span>Fish: Deep pools, undercut banks</span><span>Leader: 9 ft · 2x–3x</span></div>
-      <span class="rnote">Artificial only in many reaches</span>
-    </div>
-    <div class="mc">
-      <div class="mpr p3">▸ Worth Trying</div>
-      <div class="mn" id="m3n">Dry Fly</div>
-      <div class="md" id="m3d">Summer hatches on the Grand can be spectacular. Watch the surface — if fish are rising, switch.</div>
-      <div class="mcond" id="m3c"><span>Best at: Overcast, 10–16°C water</span><span>Watch for: Surface rises, hatches</span><span>Leader: 12–15 ft · 5x–6x</span></div>
-      <span class="rnote">Artificial only in many reaches</span>
-    </div>
-  </div>
 
-  <!-- SECTION 3 -->
-  <div class="sec-label fi"><div class="sec-num">4</div><div><h3>Flies, Lures &amp; Baits</h3><p>What to have in your box. Live bait prohibited in many Grand River sections — verify OMNR regulations for your reach.</p></div></div>
-
-  <div class="bsec fi">
-    <div class="btabs">
-      <button class="btab active" data-tab="nymphs">Nymphs</button>
-      <button class="btab" data-tab="streamers">Streamers</button>
-      <button class="btab" data-tab="dries">Dry Flies</button>
-      <button class="btab" data-tab="lures">Lures &amp; Bait</button>
-      <button class="btab" data-tab="float">Float Baits</button>
-    </div>
-    <div class="bpanel active" id="p-nymphs">
+  <!-- Hidden bait source panels — cloned by JS into accordion -->
+  <div id="bait-source" style="display:none">
+    <div class="bpanel" id="p-nymphs">
       <div class="bgrid">
         <div class="bi" data-bait-name="Hare's Ear Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Hare's Ear Nymph</div><div class="bdet">#12–16 · Natural / Gold bead</div><div class="bcond">Universal confidence fly. Fish it anywhere, always.</div></div>
         <div class="bi" data-bait-name="Pheasant Tail Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Pheasant Tail Nymph</div><div class="bdet">#14–18 · Copper wire rib</div><div class="bcond">Deadly in clearer water or when fish are selective.</div></div>
@@ -1026,37 +1184,97 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
     <div class="bpanel" id="p-float">
       <div class="bgrid">
         <div class="bi" data-bait-name="Roe Bag"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="4"/><circle cx="14" cy="5" r="3"/><circle cx="17" cy="9" r="2.5"/></svg></div></div><div class="brank">1</div><div class="bname">Roe Bag</div><div class="bdet">Small mesh sacs · Natural or cured</div><div class="bcond">The most effective float fishing bait in Ontario rivers. Match size to flow — smaller in low clear water, larger in high stained water.</div></div>
-        <div class="bi" data-bait-name="Soft Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="3.5"/><circle cx="16" cy="7" r="3.5"/><line x1="11.5" y1="7" x2="12.5" y2="7"/></svg></div></div><div class="brank">2</div><div class="bname">Soft Bead</div><div class="bdet">10–12 mm · Pink, Peach, Natural</div><div class="bcond">Highly effective for steelhead and salmon. Peg 1–2 inches above hook. Pink in coloured water, natural/peach in clear. Essential for spring and fall runs.</div></div>
-        <div class="bi" data-bait-name="Hard Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="7" r="5" fill="rgba(200,150,58,0.2)"/><circle cx="12" cy="7" r="3"/></svg></div></div><div class="brank">3</div><div class="bname">Hard Bead</div><div class="bdet">8–12 mm · Nuke Egg colours</div><div class="bcond">More durable than soft beads. Thread on line and peg 1–2 inches above hook — do not attach directly. Chartreuse and orange are top producers.</div></div>
-        <div class="bi" data-bait-name="Plastic Worm"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 10 Q6 4 9 9 Q12 14 15 9 Q18 4 21 8"/></svg></div></div><div class="brank">4</div><div class="bname">Plastic Worm</div><div class="bdet">3–4 inch · Red, Pink, Chartreuse</div><div class="bcond">Year-round producer. Thread onto a single hook and drift naturally. Red and pink for stained water, natural for clear. Good fallback when fish have seen a lot of roe.</div></div>
-        <div class="bi" data-bait-name="Nightcrawler"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11 Q5 3 8 9 Q11 15 14 9 Q17 3 20 7 Q22 10 22 10"/></svg></div></div><div class="brank">5</div><div class="bname">Nightcrawler</div><div class="bdet">Full or half · Natural</div><div class="bcond">Classic bait for all trout species. Thread onto hook leaving a tail to wiggle. Best in spring and after rain when naturals are washing in. Good fallback when fish ignore roe.</div></div>
+        <div class="bi" data-bait-name="Soft Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="3.5"/><circle cx="16" cy="7" r="3.5"/><line x1="11.5" y1="7" x2="12.5" y2="7"/></svg></div></div><div class="brank">2</div><div class="bname">Soft Bead</div><div class="bdet">10–12 mm · Pink, Peach, Natural</div><div class="bcond">Highly effective for steelhead and salmon. Peg 1–2 inches above hook. Pink in coloured water, natural/peach in clear.</div></div>
+        <div class="bi" data-bait-name="Hard Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="7" r="5" fill="rgba(200,150,58,0.2)"/><circle cx="12" cy="7" r="3"/></svg></div></div><div class="brank">3</div><div class="bname">Hard Bead</div><div class="bdet">8–12 mm · Nuke Egg colours</div><div class="bcond">Peg 1–2 inches above hook. Chartreuse and orange are top producers.</div></div>
+        <div class="bi" data-bait-name="Plastic Worm"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 10 Q6 4 9 9 Q12 14 15 9 Q18 4 21 8"/></svg></div></div><div class="brank">4</div><div class="bname">Plastic Worm</div><div class="bdet">3–4 inch · Red, Pink, Chartreuse</div><div class="bcond">Thread onto hook and drift naturally. Red and pink for stained water, natural for clear.</div></div>
+        <div class="bi" data-bait-name="Nightcrawler"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11 Q5 3 8 9 Q11 15 14 9 Q17 3 20 7 Q22 10 22 10"/></svg></div></div><div class="brank">5</div><div class="bname">Nightcrawler</div><div class="bdet">Full or half · Natural</div><div class="bcond">Classic bait for all trout species. Best in spring and after rain when naturals are washing in.</div></div>
       </div>
       <div class="bfooter">Bait rules vary by river — always verify current OMNR regulations before fishing.</div>
     </div>
   </div>
 
-  <!-- SECTION 4 -->
-    <div>
-      <div class="dlbl" id="dam-lbl">Key Variable</div>
-      <h3 id="dam-title">Loading…</h3>
-      <p id="dam-desc"></p>
-      <div class="dlinks" id="dam-links"></div>
-    </div>
-  
-  <div class="gear-card fi" id="gear-card" style="display:none">
-    <div class="gear-header">
-      <div class="gear-icon">🎣</div>
-      <div>
-        <div class="gear-eyebrow">Recommended Setup</div>
-        <div class="gear-title" id="gear-title"></div>
+  <div class="tgsec fi" id="tg-section" role="region" aria-label="Technique and Gear">
+
+    <!-- PRIMARY METHOD ACCORDION ITEM (expanded by default) -->
+    <div class="tg-item tg-open" id="tg-primary">
+      <button class="tg-header" onclick="toggleTG('tg-primary')" aria-expanded="true" aria-controls="tg-primary-body" type="button">
+        <div class="tg-header-left">
+          <div class="tg-label">▸ Primary Method</div>
+          <div class="tg-name" id="m1n">Nymphing</div>
+        </div>
+        <div class="tg-chevron" id="tg-primary-chev">▾</div>
+      </button>
+      <div class="tg-body" id="tg-primary-body">
+        <p class="tg-desc" id="m1d"></p>
+        <div class="tg-cond" id="m1c"></div>
+
+        <!-- Gear setup (inline) -->
+        <div class="tg-gear" id="tg-gear">
+          <div class="tg-gear-lbl">Recommended Setup</div>
+          <div class="gear-grid" id="gear-grid"></div>
+        </div>
+
+        <!-- Bait tabs (inline) -->
+        <div class="tg-baits" id="tg-baits-primary">
+          <div class="tg-gear-lbl" id="tg-baits-primary-lbl">Recommended Baits</div>
+          <div id="bpanels-primary"></div>
+        </div>
       </div>
     </div>
-    <div class="gear-grid" id="gear-grid"></div>
+
+    <!-- SECONDARY METHOD (collapsed) -->
+    <div class="tg-item" id="tg-secondary">
+      <button class="tg-header" onclick="toggleTG('tg-secondary')" aria-expanded="false" aria-controls="tg-secondary-body" type="button">
+        <div class="tg-header-left">
+          <div class="tg-label">Secondary Method</div>
+          <div class="tg-name" id="m2n">—</div>
+        </div>
+        <div class="tg-chevron" id="tg-secondary-chev">▸</div>
+      </button>
+      <div class="tg-body tg-body-collapsed" id="tg-secondary-body">
+        <p class="tg-desc" id="m2d"></p>
+        <div class="tg-cond" id="m2c"></div>
+        <div class="tg-gear" id="tg-gear-2" style="display:none">
+          <div class="tg-gear-lbl" id="tg-gear-2-lbl">Setup</div>
+          <div class="gear-grid" id="gear-grid-2"></div>
+        </div>
+        <div class="tg-baits tg-baits-m2" id="tg-baits-2" style="display:none">
+          <div class="tg-gear-lbl">Flies, Lures &amp; Bait</div>
+          <div class="btabs btabs-2" style="margin-bottom:.75rem" id="btabs-2"></div>
+          <div id="bpanels-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERTIARY METHOD (collapsed) -->
+    <div class="tg-item" id="tg-tertiary">
+      <button class="tg-header" onclick="toggleTG('tg-tertiary')" aria-expanded="false" aria-controls="tg-tertiary-body" type="button">
+        <div class="tg-header-left">
+          <div class="tg-label">Also Consider</div>
+          <div class="tg-name" id="m3n">—</div>
+        </div>
+        <div class="tg-chevron" id="tg-tertiary-chev">▸</div>
+      </button>
+      <div class="tg-body tg-body-collapsed" id="tg-tertiary-body">
+        <p class="tg-desc" id="m3d"></p>
+        <div class="tg-cond" id="m3c"></div>
+        <div class="tg-gear" id="tg-gear-3" style="display:none">
+          <div class="tg-gear-lbl" id="tg-gear-3-lbl">Setup</div>
+          <div class="gear-grid" id="gear-grid-3"></div>
+        </div>
+        <div class="tg-baits tg-baits-m3" id="tg-baits-3" style="display:none">
+          <div class="tg-gear-lbl">Flies, Lures &amp; Bait</div>
+          <div class="btabs btabs-3" style="margin-bottom:.75rem" id="btabs-3"></div>
+          <div id="bpanels-3"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-</div>
 
-  <div class="ssec fi" id="species-section">
+
+  <div class="ssec fi" id="species-section" role="region" aria-label="Species Coverage">
     <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
     <div class="srail" id="species-rail"></div>
   </div>
@@ -1069,6 +1287,22 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2565,8 +2799,8 @@ function goToResults(){
     var locInp = document.getElementById('loc-input-field');
     var locKey = resolveLocation(locInp ? locInp.value : '');
     if (!locKey) {
-      locInp.style.borderColor="#b87333"; locInp.focus();
-      setTimeout(function(){locInp.style.borderColor="";},2000);
+      locInp.style.outline="2px solid #b87333";
+      setTimeout(function(){locInp.style.outline="";},2000);
       return;
     }
     var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
@@ -2594,8 +2828,8 @@ function goToResults(){
   }
   if(!selectedRiver){
     var inp=document.getElementById("loc-input-field");
-    inp.style.borderColor="#b87333"; inp.focus();
-    setTimeout(function(){inp.style.borderColor="";},2000);
+    inp.style.outline="2px solid #b87333";
+    setTimeout(function(){inp.style.outline="";},2000);
     return;
   }
     document.getElementById("res-river").textContent=selectedRiver;
@@ -2647,7 +2881,7 @@ function goBack(){
   }
 
   // Location input
-  wire("loc-input-field", "input", function(){ onLocationInput(this.value); });
+  wire("loc-input-field", "change", function(){ onLocationInput(this.value); });
 
   // Technique family buttons — multi-select
   wireAll(".tech-family-btn", "click", function(){
@@ -2956,36 +3190,108 @@ function updateMethods(fc,tc,sc,flow,wt){
   document.getElementById("m1n").textContent=m1.n;document.getElementById("m1d").textContent=m1.d;document.getElementById("m1c").innerHTML=m1.c;
   document.getElementById("m2n").textContent=m2.n;document.getElementById("m2d").textContent=m2.d;document.getElementById("m2c").innerHTML=m2.c;
   document.getElementById("m3n").textContent=m3.n;document.getElementById("m3d").textContent=m3.d;document.getElementById("m3c").innerHTML=m3.c;
-  // Build gear setup card
+  // Build gear for primary method
   buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
+
+  // Populate primary bait panel — single relevant panel, no tabs
+  (function() {
+    var primaryTab = methodToBaitTab(m1.n);
+    var container  = document.getElementById('bpanels-primary');
+    var lbl        = document.getElementById('tg-baits-primary-lbl');
+    if (!container) return;
+    var tabLabels  = {nymphs:'Recommended Nymphs', dries:'Recommended Dry Flies',
+                      streamers:'Recommended Streamers', lures:'Recommended Lures',
+                      float:'Recommended Float Baits'};
+    if (lbl) lbl.textContent = tabLabels[primaryTab] || 'Recommended Baits';
+    var src = document.getElementById('p-' + primaryTab);
+    if (src) {
+      container.innerHTML = '';
+      var clone = src.cloneNode(true);
+      clone.id = 'primary-bpanel';
+      clone.className = 'bpanel active';
+      container.appendChild(clone);
+      // Load bait images into cloned cards
+      loadBaitImages();
+    }
+  })();
+
+  // Populate gear + baits for secondary and tertiary methods
+  // Secondary
+  var _g2 = document.getElementById('tg-gear-2');
+  var _b2 = document.getElementById('tg-baits-2');
+  if (_g2) { buildGearSetup(m2.n, fam, {cold:cold,high:high,low:low}, 'gear-grid-2', 'tg-gear-2-lbl'); _g2.style.display='block'; }
+  if (_b2) {
+    (function() {
+      var tab = methodToBaitTab(m2.n);
+      var lbl2 = document.getElementById('tg-gear-2-lbl');
+      var bLbl2 = document.querySelector('#tg-baits-2 .tg-gear-lbl');
+      var tabLabels = {nymphs:'Recommended Nymphs', dries:'Recommended Dry Flies',
+                       streamers:'Recommended Streamers', lures:'Recommended Lures', float:'Recommended Float Baits'};
+      if (bLbl2) bLbl2.textContent = tabLabels[tab] || 'Recommended Baits';
+      var src = document.getElementById('p-' + tab);
+      var container2 = document.getElementById('bpanels-2');
+      if (src && container2) {
+        container2.innerHTML = '';
+        var clone2 = src.cloneNode(true);
+        clone2.id = 'bpanel-2-clone'; clone2.className = 'bpanel active';
+        container2.appendChild(clone2);
+      }
+      // Hide the btabs-2 tab bar (no tabs needed)
+      var bt2 = document.getElementById('btabs-2'); if(bt2) bt2.style.display='none';
+      _b2.style.display='block';
+    })();
+  }
+
+  // Tertiary
+  var _g3 = document.getElementById('tg-gear-3');
+  var _b3 = document.getElementById('tg-baits-3');
+  if (_g3) { buildGearSetup(m3.n, fam, {cold:cold,high:high,low:low}, 'gear-grid-3', 'tg-gear-3-lbl'); _g3.style.display='block'; }
+  if (_b3) {
+    (function() {
+      var tab = methodToBaitTab(m3.n);
+      var bLbl3 = document.querySelector('#tg-baits-3 .tg-gear-lbl');
+      var tabLabels = {nymphs:'Recommended Nymphs', dries:'Recommended Dry Flies',
+                       streamers:'Recommended Streamers', lures:'Recommended Lures', float:'Recommended Float Baits'};
+      if (bLbl3) bLbl3.textContent = tabLabels[tab] || 'Recommended Baits';
+      var src = document.getElementById('p-' + tab);
+      var container3 = document.getElementById('bpanels-3');
+      if (src && container3) {
+        container3.innerHTML = '';
+        var clone3 = src.cloneNode(true);
+        clone3.id = 'bpanel-3-clone'; clone3.className = 'bpanel active';
+        container3.appendChild(clone3);
+      }
+      var bt3 = document.getElementById('btabs-3'); if(bt3) bt3.style.display='none';
+      _b3.style.display='block';
+    })();
+  }
 }
 
 // ── BAIT TABS ─────────────────────────────────────────────────────────────────
 function showTab(tab,btn){
-  document.querySelectorAll(".btab").forEach(function(b){b.classList.remove("active");});
+  // Only affect primary bait tabs (not cloned secondary/tertiary ones)
+  var primaryBtabs = btn.closest(".btabs:not([id])");
+  var primaryBsec  = document.querySelector(".tg-baits:not([id])");
+  if (primaryBtabs) primaryBtabs.querySelectorAll(".btab").forEach(function(b){b.classList.remove("active");});
+  else document.querySelectorAll(".btabs:not([id]) .btab").forEach(function(b){b.classList.remove("active");});
   btn.classList.add("active");
-  document.querySelectorAll(".bpanel").forEach(function(p){p.classList.remove("active");});
-  document.getElementById("p-"+tab).classList.add("active");
+  // Only toggle primary bpanels (those with single-word ids like "p-nymphs")
+  ["p-nymphs","p-streamers","p-dries","p-lures","p-float"].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.classList.remove("active");
+  });
+  var target = document.getElementById("p-"+tab);
+  if (target) target.classList.add("active");
 }
 
 // ── RENDER RESULTS ────────────────────────────────────────────────────────────
 async function renderResults(){
   var cfg = getRiverConfig(selectedRiver);
-  try {
-    renderRiverUI(cfg);
-  } catch(e) {
-    var _dbg=document.getElementById('flow-debug');
-    if(_dbg){_dbg.style.display='block';_dbg.textContent+='\nrenderRiverUI ERROR: '+e.message+'\n'+e.stack.split('\n').slice(0,3).join('\n');}
-    console.error('renderRiverUI:', e);
-  }
-  // Post-render debug
-  var _dbg3=document.getElementById('flow-debug');
-  if(_dbg3) _dbg3.textContent += '\nPost-rUI: tpband='+(document.getElementById('tpband')?document.getElementById('tpband').style.display:'?')+' fi-count='+document.querySelectorAll('.fi').length+' ac-kids='+(document.getElementById('access-grid')?document.getElementById('access-grid').children.length:'?');
+  renderRiverUI(cfg);
 
   var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
   var isToday=dateStr===new Date().toISOString().slice(0,10);
   var now=new Date();
-  var _vtime=document.getElementById("vtime"); if(_vtime) _vtime.textContent=now.toLocaleTimeString("en-CA",{hour:"2-digit",minute:"2-digit"});
+  var _vtime=document.getElementById("vtime"); if(_vtime && _vtime.textContent !== undefined) _vtime.textContent=now.toLocaleTimeString("en-CA",{hour:"2-digit",minute:"2-digit"});
   var _vhrd=document.getElementById("vhead"); if(_vhrd) _vhrd.textContent="Reading conditions\u2026";
   var _vsig=document.getElementById("vsig"); if(_vsig){_vsig.className="vsig"; _vsig.textContent="\u2026";}
 
@@ -2996,8 +3302,6 @@ async function renderResults(){
 
   var flow=null,trend="stable",flowAt=null;
   // Debug: show gauge and isToday in panel
-  var _dbg=document.getElementById('flow-debug');
-  if(_dbg){_dbg.style.display='block';_dbg.textContent='FLOW DEBUG\n'+'gauge: '+cfg.gauge+'\nisToday: '+isToday+'\ndate: '+dateStr+'\n';}
   if(isToday){
     var lf=await fetchFlow(cfg.gauge);
     if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
@@ -4216,7 +4520,7 @@ function loadBaitImages() {
 
 
 // ── GEAR SETUP RECOMMENDATIONS ────────────────────────────────────────────────
-function buildGearSetup(topMethod, fam, conditions) {
+function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var cold = conditions.cold, high = conditions.high, low = conditions.low;
 
   // Species context from selectedSpecies global
@@ -4281,13 +4585,15 @@ function buildGearSetup(topMethod, fam, conditions) {
   }
 
   // Populate the card
-  var card = document.getElementById('gear-card');
-  var title = document.getElementById('gear-title');
-  var grid  = document.getElementById('gear-grid');
-  if (!card || !grid) return;
+  var grid  = document.getElementById(gridId || 'gear-grid');
+  var tgGear = gridId ? null : document.getElementById('tg-gear');
+  if (!grid) return;
 
   var famLabel = fam === 'fly' ? 'Fly Fishing' : fam === 'float' ? 'Float Fishing' : fam === 'spin' ? 'Spin Fishing' : 'General';
-  if (title) title.textContent = famLabel + ' Setup' + (primarySpecies ? ' \u00b7 ' + primarySpecies : '');
+  // Update gear section label with technique + species
+  var _tgLblId = labelId || null;
+  var _tgLbl = _tgLblId ? document.getElementById(_tgLblId) : document.querySelector('#tg-gear .tg-gear-lbl');
+  if (_tgLbl) _tgLbl.textContent = famLabel + ' Setup' + (primarySpecies ? ' \u00b7 ' + primarySpecies : '');
 
   grid.innerHTML = Object.keys(gear).map(function(lbl) {
     var item = gear[lbl];
@@ -4298,7 +4604,110 @@ function buildGearSetup(topMethod, fam, conditions) {
     '</div>';
   }).join('');
 
-  card.style.display = 'block';
+  if (tgGear) tgGear.style.display = 'block';
+}
+
+
+// ── ACCORDION TOGGLE ──────────────────────────────────────────────────────────
+function toggleTG(id) {
+  var item  = document.getElementById(id);
+  var body  = document.getElementById(id + '-body');
+  var chev  = document.getElementById(id + '-chev');
+  if (!item || !body) return;
+  var isOpen = item.classList.contains('tg-open');
+  // Collapse all + update aria-expanded
+  ['tg-primary','tg-secondary','tg-tertiary'].forEach(function(k) {
+    var it = document.getElementById(k);
+    var bd = document.getElementById(k + '-body');
+    var ch = document.getElementById(k + '-chev');
+    var hdr = it ? it.querySelector('.tg-header') : null;
+    if (it) it.classList.remove('tg-open');
+    if (bd) bd.classList.add('tg-body-collapsed');
+    if (ch) ch.textContent = '▸';
+    if (hdr) hdr.setAttribute('aria-expanded', 'false');
+  });
+  // Open the clicked one (unless it was already open)
+  if (!isOpen) {
+    item.classList.add('tg-open');
+    body.classList.remove('tg-body-collapsed');
+    if (chev) chev.textContent = '▾';
+    var hdr2 = item.querySelector('.tg-header');
+    if (hdr2) hdr2.setAttribute('aria-expanded', 'true');
+  }
+}
+
+
+// ── BAIT TAB MAPPING ─────────────────────────────────────────────────────────
+// Returns the best bait tab for a given method name
+function methodToBaitTab(methodName) {
+  var m = (methodName || '').toLowerCase();
+  if (/dry fly|dry-fly|caddis|comparadun|parachute|wulff/i.test(m)) return 'dries';
+  if (/streamer|sculpin|woolly|clouser|articulated|minnow/i.test(m)) return 'streamers';
+  if (/nymph|midge|hatch|euro|tight.?line|subsurface/i.test(m)) return 'nymphs';
+  if (/float|bait|roe|bead|centrepin|drift.*bait|stationary/i.test(m)) return 'float';
+  if (/spinner|spoon|lure|jig|crankbait|plug|kastmaster|rapala|mepps/i.test(m)) return 'lures';
+  // fallback by family
+  if (/fly/i.test(m)) return 'nymphs';
+  return 'lures';
+}
+
+// Build a bait tab + panel set for a given method, inserting into btabs/bpanels containers
+function populateMethodBaits(methodName, btabsId, bpanelsId) {
+  var btabsEl   = document.getElementById(btabsId);
+  var bpanelsEl = document.getElementById(bpanelsId);
+  if (!btabsEl || !bpanelsEl) return;
+
+  var primaryTab = methodToBaitTab(methodName);
+
+  // Tabs to show for this method (always show at least the primary + one related)
+  var tabSets = {
+    dries:     ['dries', 'nymphs'],
+    streamers: ['streamers', 'nymphs'],
+    nymphs:    ['nymphs', 'dries', 'streamers'],
+    float:     ['float'],
+    lures:     ['lures'],
+  };
+  var tabsToShow = tabSets[primaryTab] || ['nymphs'];
+
+  // Tab labels
+  var tabLabels = {nymphs:'Nymphs', dries:'Dry Flies', streamers:'Streamers', lures:'Lures & Bait', float:'Float Baits'};
+
+  // Build tab buttons
+  btabsEl.innerHTML = tabsToShow.map(function(t, i) {
+    return '<button class="btab' + (i===0?' active':'') + '" data-tab="' + t + '" data-container="' + bpanelsId + '">' + tabLabels[t] + '</button>';
+  }).join('');
+
+  // Clone the relevant bpanel(s) from the primary panels
+  bpanelsEl.innerHTML = '';
+  tabsToShow.forEach(function(t, i) {
+    var src = document.getElementById('p-' + t);
+    if (src) {
+      var clone = src.cloneNode(true);
+      clone.id = bpanelsId + '-p-' + t;
+      clone.className = 'bpanel' + (i===0?' active':'');
+      bpanelsEl.appendChild(clone);
+    }
+  });
+
+  // Explicitly activate first tab and panel
+  var firstBtn = btabsEl.querySelector('.btab');
+  var firstPanel = bpanelsEl.querySelector('.bpanel');
+  btabsEl.querySelectorAll('.btab').forEach(function(b){ b.classList.remove('active'); });
+  bpanelsEl.querySelectorAll('.bpanel').forEach(function(p){ p.classList.remove('active'); });
+  if (firstBtn) firstBtn.classList.add('active');
+  if (firstPanel) firstPanel.classList.add('active');
+
+  // Wire tab clicks for this method's btabs
+  btabsEl.querySelectorAll('.btab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tab = this.getAttribute('data-tab');
+      btabsEl.querySelectorAll('.btab').forEach(function(b){ b.classList.remove('active'); });
+      this.classList.add('active');
+      bpanelsEl.querySelectorAll('.bpanel').forEach(function(p){ p.classList.remove('active'); });
+      var target = bpanelsEl.querySelector('[id$="-p-' + tab + '"]');
+      if (target) target.classList.add('active');
+    });
+  });
 }
 
 
@@ -4379,7 +4788,39 @@ setInterval(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
