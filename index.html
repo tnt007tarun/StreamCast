@@ -595,7 +595,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tp-chip.bad{background:rgba(224,112,112,.12);border-color:rgba(224,112,112,.25);color:#e09090;}
 
 /* RIVER RANKER (beginner mode results) */
-.rrank-section{background:var(--off);border-bottom:1px solid var(--border);padding:1.5rem 2rem;}
+
 .rrank-inner{max-width:1100px;margin:0 auto;}
 .rrank-lbl{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.9rem;}
 .rrank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
@@ -970,7 +970,13 @@ select:focus-visible, input:focus-visible {
 
 
 /* RIVER RANKER — compact bottom strip */
-.rrank-section { border-top: 1px solid var(--border); margin-top: 2rem; }
+.rrank-section {
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+}
 .rrank-toggle-btn {
   width: 100%;
   display: flex;
@@ -1496,10 +1502,7 @@ select:focus-visible, input:focus-visible {
     <div class="srail" id="species-rail"></div>
   </div>
 
-<div class="res-footer">
-    <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
-    <div class="res-flogo">StreamCast</div>
-  
+
   <!-- RIVER RANKER — compact, at bottom -->
   <div class="rrank-section" id="rrank-section" style="display:none">
     <button class="rrank-toggle-btn" id="rrank-toggle-btn" onclick="toggleRranker()" aria-expanded="false">
@@ -1511,11 +1514,25 @@ select:focus-visible, input:focus-visible {
       <div class="rrank-grid" id="rrank-grid"></div>
     </div>
   </div>
+
+  <div class="res-footer">
+    <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
+    <div class="res-flogo">StreamCast</div>
+  
 </div>
+
 </div>
 
 
 <script>
+
+
+
+
+
+
+
+
 
 
 
@@ -3072,6 +3089,16 @@ function toggleTech(el){el.classList.toggle("active");}
 function clearTech(){document.querySelectorAll(".tech-chip").forEach(function(c){c.classList.remove("active");});}
 
 function goToResults(){
+  // Resolve location — needed in both beginner and expert mode
+  var locInp = document.getElementById('loc-input-field');
+  var locKey = resolveLocation(locInp ? locInp.value : '');
+  if (locKey) window._beginnerLocKey = locKey;
+  if (!locKey) {
+    locInp.style.outline="2px solid #b87333";
+    setTimeout(function(){locInp.style.outline="";},2000);
+    return;
+  }
+
   // Beginner mode: pick top-ranked nearby river automatically
   // Capture technique families — array
   if (appMode === 'beginner') {
@@ -3091,14 +3118,7 @@ function goToResults(){
     .map(function(b){return b.getAttribute("data-value");}).filter(function(v){return v!=="";});
   selectedSpeciesLabel=selectedSpecies.length===0?"Any Species":selectedSpecies.length===1?(_sm[selectedSpecies[0]]||"Any"):selectedSpecies.map(function(k){return _sm[k];}).join(" + ");
   if(appMode === 'beginner') { // always re-rank in beginner mode to respect species selection
-    var locInp = document.getElementById('loc-input-field');
-    var locKey = resolveLocation(locInp ? locInp.value : '');
-    if (!locKey) {
-      locInp.style.outline="2px solid #b87333";
-      setTimeout(function(){locInp.style.outline="";},2000);
-      return;
-    }
-    var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
+      var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
     var rivers = getRivers(locKey, _maxMin);
     rivers.forEach(function(r){ r.driveTime = r.times[locKey]||60; });
     var _tripDate = document.getElementById('trip-date').value||new Date().toISOString().slice(0,10);
@@ -3119,9 +3139,10 @@ function goToResults(){
       selectedRiver = bestPick.name + ', ' + bestPick.loc.replace(/–/g,'-');
       document.getElementById('res-river').textContent = selectedRiver;
       window._beginnerLocKey = locKey;
-      nearbyRivers = ranked; // expose ranked list for buildTopPick drive time
     }
   }
+  // Always expose ranked list for drive time (works in both modes)
+  if (typeof ranked !== "undefined") nearbyRivers = ranked;
   if(!selectedRiver){
     var inp=document.getElementById("loc-input-field");
     inp.style.outline="2px solid #b87333";
@@ -4438,8 +4459,18 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
   }
   document.getElementById('tp-headline').innerHTML = headlineHtml;
+  // Always show the band
+  if (band) band.style.display = 'block';
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
+  // Always try RIVERS_DB for drive time (covers expert mode and when nearbyRivers misses)
+  if ((!_topRiver || !_topRiver.driveTime) && window._beginnerLocKey) {
+    var _locKey2 = window._beginnerLocKey;
+    var _riverName2 = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _dbEntry = RIVERS_DB.find(function(r){ return r.name === _riverName2; });
+    var _dt2 = _dbEntry && _dbEntry.times ? _dbEntry.times[_locKey2] : null;
+    if (_dt2) _topRiver = { driveTime: _dt2 };
+  }
   var _driveEl = document.getElementById('tp-drive-time');
   if (_driveEl && _topRiver && _topRiver.driveTime) {
     var _dt = _topRiver.driveTime;
@@ -5234,7 +5265,23 @@ setInterval(function(){
 
 
 
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
 
 
 
