@@ -917,15 +917,7 @@ select:focus-visible, input:focus-visible {
 
 
 /* MODE TOGGLE DESCRIPTIONS */
-.mode-option { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
-.mode-desc {
-  font-size: .75rem;
-  color: var(--sage);
-  text-align: center;
-  max-width: 160px;
-  line-height: 1.4;
-  margin: 0;
-}
+/* old mode-desc removed */
 
 
 /* METHOD TIP */
@@ -954,6 +946,72 @@ select:focus-visible, input:focus-visible {
 @media (min-width: 600px) {
   .tp-drive-time { font-size: .82rem; }
 }
+
+
+
+
+/* ACCESS CARD COLLAPSE */
+.ac-collapsed { cursor: default; }
+.ac-summary {
+  cursor: pointer;
+  user-select: none;
+  padding: .75rem 0 .75rem;
+  align-items: center;
+}
+.ac-summary:hover .aname { color: var(--fern); }
+.ac-chevron {
+  font-size: .9rem;
+  color: var(--sage);
+  transition: transform .15s;
+  flex-shrink: 0;
+}
+.ac-open .ac-chevron { transform: rotate(90deg); }
+.ac-detail { padding-top: .5rem; border-top: 1px solid var(--border); margin-top: .25rem; }
+
+
+/* RIVER RANKER — compact bottom strip */
+.rrank-section { border-top: 1px solid var(--border); margin-top: 2rem; }
+.rrank-toggle-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .9rem 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sage);
+  text-align: left;
+}
+.rrank-toggle-btn:hover { color: var(--moss); }
+.rrank-toggle-chev { font-size: .8rem; transition: transform .15s; }
+.rrank-inner { padding: 0 1.5rem 1.5rem; }
+.rrank-lbl { font-size: .72rem; color: var(--sage); margin-bottom: .75rem; font-family: 'DM Mono', monospace; letter-spacing: .04em; }
+.rrank-grid { display: flex; flex-direction: column; gap: .5rem; }
+.rrank-card {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem .85rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.rrank-card:hover { border-color: var(--fern); box-shadow: 0 2px 8px rgba(45,74,50,.1); }
+.rrank-num { font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--sage); min-width: 1.2rem; }
+.rrank-name { font-family: 'Lora', serif; font-size: .9rem; font-weight: 600; color: var(--moss); flex: 1; }
+.rrank-drive { font-family: 'DM Mono', monospace; font-size: .62rem; color: var(--sage); white-space: nowrap; }
+.rrank-badge { font-family: 'DM Mono', monospace; font-size: .55rem; letter-spacing: .06em; text-transform: uppercase; padding: .15rem .4rem; border-radius: 8px; white-space: nowrap; }
+.rrank-badge.good { background: rgba(45,74,50,.1); color: var(--fern); }
+.rrank-badge.warn { background: rgba(210,160,60,.12); color: #a07820; }
+.rrank-badge.bad  { background: rgba(180,60,60,.1);  color: #a03030; }
+.rr-top { border-color: var(--fern); }
 
 </style>
 </head>
@@ -984,15 +1042,15 @@ select:focus-visible, input:focus-visible {
   <div class="form-card">
 
     <!-- Mode toggle -->
+    <div class="mode-wrap">
     <div class="mode-toggle" id="mode-toggle">
-      <div class="mode-option">
-        <button class="mode-btn active" id="mode-btn-beginner">🎣 &nbsp;Recommend me a spot</button>
-        <p class="mode-desc">We pick the best river for today's conditions.</p>
-      </div>
-      <div class="mode-option">
-        <button class="mode-btn" id="mode-btn-expert">I know where I'm going</button>
-        <p class="mode-desc">You choose the river — we check if it's worth the drive.</p>
-      </div>
+      <button class="mode-btn active" id="mode-btn-beginner">🎣 Recommend me a spot</button>
+      <button class="mode-btn" id="mode-btn-expert">🗺️ I know where I'm going</button>
+    </div>
+    <div class="mode-descs" style="display:flex;flex-direction:row;gap:0;margin-top:.4rem;">
+      <p class="mode-desc active" id="mode-desc-beginner" style="flex:1;font-size:.68rem;color:var(--sage);text-align:center;line-height:1.4;margin:0;padding:0 .25rem;opacity:1;color:var(--moss);font-weight:500;">We pick the best river for today's conditions.</p>
+      <p class="mode-desc" id="mode-desc-expert" style="flex:1;font-size:.68rem;color:var(--sage);text-align:center;line-height:1.4;margin:0;padding:0 .25rem;opacity:.6;">You choose the river — we check if it's worth the drive.</p>
+    </div>
     </div>
 
     <!-- Date + Location -->
@@ -1232,13 +1290,6 @@ select:focus-visible, input:focus-visible {
     </div>
   </div>
 
-  <!-- RIVER RANKER — beginner mode only, hidden in expert mode -->
-  <div class="rrank-section" id="rrank-section" style="display:none">
-    <div class="rrank-inner">
-      <div class="rrank-lbl" id="rrank-lbl">Nearby rivers ranked by today&#39;s conditions</div>
-      <div class="rrank-grid" id="rrank-grid"></div>
-    </div>
-  </div>
 
 
   <!-- SECTION 1 -->
@@ -1448,11 +1499,34 @@ select:focus-visible, input:focus-visible {
 <div class="res-footer">
     <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
     <div class="res-flogo">StreamCast</div>
+  
+  <!-- RIVER RANKER — compact, at bottom -->
+  <div class="rrank-section" id="rrank-section" style="display:none">
+    <button class="rrank-toggle-btn" id="rrank-toggle-btn" onclick="toggleRranker()" aria-expanded="false">
+      <span>Other nearby rivers</span>
+      <span class="rrank-toggle-chev">&#9656;</span>
+    </button>
+    <div class="rrank-inner" id="rrank-inner" style="display:none">
+      <div class="rrank-lbl" id="rrank-lbl">Ranked by today&#39;s conditions and drive time</div>
+      <div class="rrank-grid" id="rrank-grid"></div>
+    </div>
   </div>
+</div>
 </div>
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2779,29 +2853,48 @@ function renderRiverUI(cfg) {
         (regsSummary ? '<div class="regs-specials"><div class="reg-special">📋 ' + regsSummary + '</div></div>' : '') +
         '<div class="regs-glossary">' +
           '<div class="regs-glossary-title">How to read these rules</div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">S-5 / C-2</span><span class="rg-def">Snagging limit 5 fish per day, possession limit 2. S-0/C-0 means catch &amp; release only — no keeping fish.</span></div>' +
+          '<div class="regs-glossary-row"><span class="rg-term">S-5 / C-2</span><span class="rg-def">Daily catch limit: 5 fish on a Sport licence, 2 on a Conservation licence — these are Ontario’s two angling licence types. S-0/C-0 means catch &amp; release only — no keeping fish.</span></div>' +
           '<div class="regs-glossary-row"><span class="rg-term">C&amp;R Only</span><span class="rg-def">Catch and release — you must return the fish to the water immediately, unharmed.</span></div>' +
           '<div class="regs-glossary-row"><span class="rg-term">4th Sat. April</span><span class="rg-def">Season opens on the fourth Saturday of April — the traditional Ontario trout opener.</span></div>' +
           '<div class="regs-glossary-row"><span class="rg-term">' + regs.zone + '</span><span class="rg-def">Fisheries Management Zone — Ontario divides the province into zones, each with its own rules. Always confirm the zone for your exact spot.</span></div>' +
           '<div class="regs-glossary-row"><span class="rg-term">Artificial only</span><span class="rg-def">You may only use artificial lures or flies — no live bait, worms, or roe in that section.</span></div>' +
           '<div class="regs-glossary-row"><span class="rg-term">Barbless hook</span><span class="rg-def">The hook must have no barb (or it must be pinched flat). Makes releasing fish easier and is required in some sections.</span></div>' +
-        '</div>';
+        '</div>' +
       '</div>';
     }
 
     var isRecommended = idx === 0;
     var recBadge = isRecommended ? '<div class="acard-rec-badge">★ Recommended spot</div>' : '';
-    return '<div class="ac' + (isRecommended ? ' acard-recommended' : '') + '" data-spot-idx="' + idx + '">' +
-      recBadge +
-      '<div class="act"><div class="aname">' + a.name + '</div>' +
-      '<div class="acrowd ' + a.crowd + '">' + a.crowdLabel + '</div></div>' +
-      '<div class="aloc">' + a.loc + '</div>' +
-      '<div class="adesc">' + a.desc + '</div>' +
-      '<div class="atags">' + tags + '</div>' +
-      '<div class="abest">' + a.best + '</div>' +
-      '<div class="afnote" data-access-idx="' + idx + '">…</div>' +
-      regsHtml +
-    '</div>';
+    var detailHtml = '<div class="adesc">' + a.desc + '</div>' +
+        '<div class="atags">' + tags + '</div>' +
+        '<div class="abest">' + a.best + '</div>' +
+        '<div class="afnote" data-access-idx="' + idx + '">\u2026</div>' +
+        regsHtml;
+    if (isRecommended) {
+      return '<div class="ac acard-recommended" data-spot-idx="' + idx + '">' +
+        recBadge +
+        '<div class="act"><div class="aname">' + a.name + '</div>' +
+        '<div class="acrowd ' + a.crowd + '">' + a.crowdLabel + '</div></div>' +
+        '<div class="aloc">' + a.loc + '</div>' +
+        detailHtml +
+      '</div>';
+    } else {
+      return '<div class="ac ac-collapsed" data-spot-idx="' + idx + '">' +
+        '<div class="act ac-summary" onclick="toggleAcard(this)">' +
+          '<div>' +
+            '<div class="aname">' + a.name + '</div>' +
+            '<div class="aloc">' + a.loc + '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0">' +
+            '<div class="acrowd ' + a.crowd + '">' + a.crowdLabel + '</div>' +
+            '<span class="ac-chevron">'+ '\u25b8' +'</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ac-detail" style="display:none">' +
+          detailHtml +
+        '</div>' +
+      '</div>';
+    }
   }).join("");
 
   // Build map with OpenStreetMap iframe
@@ -4140,18 +4233,24 @@ function setMode(mode) {
   var card = document.querySelector('.form-card');
   var btnB = document.getElementById('mode-btn-beginner');
   var btnE = document.getElementById('mode-btn-expert');
+  var descB = document.getElementById('mode-desc-beginner');
+  var descE = document.getElementById('mode-desc-expert');
   var cta  = document.getElementById('cta-label');
   if (mode === 'beginner') {
     card.classList.add('mode-beginner');
     card.classList.remove('mode-expert');
     btnB.classList.add('active');
     btnE.classList.remove('active');
+    if (descB) { descB.style.opacity='1'; descB.style.fontWeight='500'; descB.style.color='var(--moss)'; }
+    if (descE) { descE.style.opacity='.6'; descE.style.fontWeight='normal'; descE.style.color='var(--sage)'; }
     if (cta) cta.textContent = 'Find my best spot';
   } else {
     card.classList.add('mode-expert');
     card.classList.remove('mode-beginner');
     btnB.classList.remove('active');
     btnE.classList.add('active');
+    if (descB) { descB.style.opacity='.6'; descB.style.fontWeight='normal'; descB.style.color='var(--sage)'; }
+    if (descE) { descE.style.opacity='1'; descE.style.fontWeight='500'; descE.style.color='var(--moss)'; }
     if (cta) cta.textContent = 'Get Forecast';
   }
 }
@@ -4987,6 +5086,29 @@ function populateMethodBaits(methodName, btabsId, bpanelsId) {
 }
 
 
+function toggleRranker() {
+  var inner = document.getElementById('rrank-inner');
+  var btn   = document.getElementById('rrank-toggle-btn');
+  var chev  = btn ? btn.querySelector('.rrank-toggle-chev') : null;
+  if (!inner) return;
+  var open = inner.style.display !== 'none';
+  inner.style.display = open ? 'none' : 'block';
+  if (btn)  btn.setAttribute('aria-expanded', String(!open));
+  if (chev) chev.innerHTML = open ? '&#9656;' : '&#9662;';
+}
+
+function toggleAcard(summaryEl) {
+  var card   = summaryEl.closest('.ac-collapsed');
+  var detail = card ? card.querySelector('.ac-detail') : null;
+  var chev   = summaryEl.querySelector('.ac-chevron');
+  if (!detail) return;
+  var open = detail.style.display !== 'none';
+  detail.style.display = open ? 'none' : 'block';
+  if (chev) chev.textContent = open ? '\u25b8' : '\u25be';
+  card.classList.toggle('ac-open', !open);
+}
+
+
 setInterval(function(){
   if(document.getElementById("results").style.display!=="none") renderResults();
 },15*60*1000);
@@ -5101,7 +5223,29 @@ setInterval(function(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
