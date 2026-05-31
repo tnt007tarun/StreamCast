@@ -1636,6 +1636,13 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+// ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
+// Set this to your deployed Worker URL after running: npx wrangler deploy
+// Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
+// Leave as null to use direct EC API calls (works on pages.dev, may CORS on localhost)
+var PROXY_URL = null;
+
 // ── MODE STATE ────────────────────────────────────────────────────────────────
 var appMode = 'beginner'; // 'beginner' | 'expert'
 var selectedTechFamily = []; // array of: 'spin', 'float', 'fly' (empty = any)
@@ -3291,6 +3298,18 @@ function waterTempEst(airTemp){
 async function fetchFlow(gaugeId) {
   if (!gaugeId) return null;
   try {
+    // Use proxy Worker if configured, otherwise call EC directly
+    if (PROXY_URL) {
+      var proxyUrl = PROXY_URL + '/flow?station=' + gaugeId;
+      var proxyRes = await fetch(proxyUrl, { headers: { 'Accept': 'application/json' } });
+      if (proxyRes.ok) {
+        var proxyData = await proxyRes.json();
+        if (proxyData && proxyData.flow != null) {
+          console.log('[fetchFlow] proxy: ' + gaugeId + ' ' + proxyData.flow + ' m3/s ' + proxyData.trend);
+          return { flow: proxyData.flow, trend: proxyData.trend || 'stable', at: proxyData.at };
+        }
+      }
+    }
     // Try JSON API first with both sort param variants
     var url = 'https://api.weather.gc.ca/collections/hydrometric-realtime/items' +
       '?STATION_NUMBER=' + gaugeId +
@@ -5273,7 +5292,9 @@ setInterval(function(){
 
 
 
+
 </script>
+
 
 
 
