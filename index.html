@@ -1019,6 +1019,39 @@ select:focus-visible, input:focus-visible {
 .rrank-badge.bad  { background: rgba(180,60,60,.1);  color: #a03030; }
 .rr-top { border-color: var(--fern); }
 
+
+/* STOCKING SECTION */
+.stocking-grid { display: flex; flex-direction: column; gap: .5rem; padding: 0 2rem 1rem; }
+.stocking-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: .75rem; padding: .6rem .85rem;
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+}
+.stocking-row.stocking-future { opacity: .7; }
+.stocking-row.stocking-active { border-color: var(--fern); background: rgba(45,74,50,.03); }
+.stocking-badge.past { background: rgba(100,100,120,.06); color: var(--sage); }
+
+.stocking-species {
+  font-family: 'Lora', serif; font-size: .9rem; font-weight: 600; color: var(--moss);
+  flex: 1;
+}
+.stocking-detail {
+  font-family: 'DM Mono', monospace; font-size: .62rem; color: var(--sage);
+  white-space: nowrap;
+}
+.stocking-badge {
+  font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .06em;
+  text-transform: uppercase; padding: .18rem .45rem; border-radius: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.stocking-badge.now  { background: rgba(45,74,50,.1); color: var(--fern); }
+.stocking-badge.soon { background: rgba(210,160,60,.12); color: #a07820; }
+.stocking-badge.future { background: rgba(100,100,120,.08); color: var(--sage); }
+.stocking-source {
+  font-size: .68rem; color: var(--sage); padding: .25rem 2rem .75rem;
+  opacity: .7;
+}
+
 </style>
 </head>
 <body>
@@ -1497,6 +1530,16 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+  <!-- STOCKING SECTION -->
+  <div class="ssec fi" id="stocking-section" style="display:none">
+    <div class="sec-label fi">
+      <div class="sec-num">📦</div>
+      <div><h3>Stocking Report</h3><p>OMNRF stocking records with maturity forecast</p></div>
+    </div>
+    <div class="stocking-grid" id="stocking-grid"></div>
+  </div>
+
   <div class="ssec fi" id="species-section" role="region" aria-label="Species Coverage">
     <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
     <div class="srail" id="species-rail"></div>
@@ -1638,10 +1681,15 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+
+
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
 // Set this to your deployed Worker URL after running: npx wrangler deploy
 // Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
 // Leave as null to use direct EC API calls (works on pages.dev, may CORS on localhost)
+var RIVER_STOCKING = {"Credit River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 3975, "qtyStr": "4k", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Coho Salmon", "year": 2024, "stage": "Fingerlings", "quantity": 45000, "qtyStr": "45k", "primeYear": 2026, "status": "now", "label": "Fall 2026 run"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 193759, "qtyStr": "194k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 120018, "qtyStr": "120k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2017, "stage": "Yearlings", "quantity": 1100, "qtyStr": "1k", "primeYear": 2018, "status": "past", "label": "Class of 2017 — established fish"}], "Grand River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 272, "qtyStr": "272", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 300, "qtyStr": "300", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 6, "qtyStr": "6", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Humber River": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 30135, "qtyStr": "30k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brook Trout", "year": 2023, "stage": "Yearlings", "quantity": 5603, "qtyStr": "6k", "primeYear": 2024, "status": "past", "label": "Class of 2023 — established fish"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 302, "qtyStr": "302", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Bronte Creek": [{"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 54474, "qtyStr": "54k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 80047, "qtyStr": "80k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}], "Rouge River": [{"species": "Rainbow Trout", "year": 2024, "stage": "Fingerlings", "quantity": 16000, "qtyStr": "16k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}], "Beaver River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 1200, "qtyStr": "1k", "primeYear": 2026, "status": "now", "label": "Prime this season"}], "Saugeen River": [{"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 50, "qtyStr": "50", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Bowmanville Creek": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 31261, "qtyStr": "31k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2023, "stage": "Fingerlings", "quantity": 40000, "qtyStr": "40k", "primeYear": 2025, "status": "past", "label": "Class of 2023 — established fish"}]};
+
 var PROXY_URL = "https://streamcast-proxy.tnt-tarun.workers.dev";
 
 // ── MODE STATE ────────────────────────────────────────────────────────────────
@@ -2925,6 +2973,9 @@ function renderRiverUI(cfg) {
   // Build map with OpenStreetMap iframe
   renderAccessMap(cfg, coords);
 
+  // Stocking section
+  renderStockingSection(selectedRiver);
+
   // Species rail
   renderSpeciesRail(cfg);
 
@@ -3984,47 +4035,103 @@ async function renderResults(){
 // ── ACCESS MAP ────────────────────────────────────────────────────────────────
 function renderAccessMap(cfg, coords) {
   var mapEl = document.getElementById("access-map");
-  if (!mapEl || coords.length === 0) return;
+  if (!mapEl || !coords.length) return;
 
-  var lat = coords.reduce(function(s,c){return s+c.lat;},0) / coords.length;
-  var lng = coords.reduce(function(s,c){return s+c.lng;},0) / coords.length;
-  var spread = coords.length <= 2 ? 0.06 : 0.09;
+  // Store coords globally so legend clicks can update the map
+  window._mapCoords = coords;
+  window._mapCfg    = cfg;
 
-  // Build OSM static embed URL — use the first point as map marker
-  // OSM supports mlat/mlon for a single pin; we show all via the legend
-  var osmUrl = 'https://www.openstreetmap.org/export/embed.html'
+  // Default: show recommended spot (index 0 = sorted first)
+  updateMapPin(0);
+}
+
+function buildMapOsmUrl(lat, lng, allCoords) {
+  var spread = allCoords.length <= 2 ? 0.06 : 0.09;
+  return 'https://www.openstreetmap.org/export/embed.html'
     + '?bbox=' + (lng-spread) + '%2C' + (lat-spread*0.75)
     + '%2C' + (lng+spread) + '%2C' + (lat+spread*0.75)
     + '&layer=mapnik'
     + '&marker=' + lat + '%2C' + lng;
+}
 
-  // Legend
-  var legend = cfg.access.map(function(a, i) {
-    var c = coords[i];
-    if (!c) return '';
-    var dotClass = a.crowd === 'low' ? 'low' : a.crowd === 'med' ? 'med' : 'high';
-    var num = i + 1;
-    return '<div class="map-pin" data-spot-idx="' + i + '">'
-      + '<div class="map-pin-dot ' + dotClass + '" style="min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff">' + num + '</div>'
-      + '<span>' + a.name.split('\u2014')[0].trim() + '</span>'
+function updateMapPin(spotIdx) {
+  var mapEl  = document.getElementById("access-map");
+  var coords = window._mapCoords || [];
+  var cfg    = window._mapCfg;
+  if (!mapEl || !coords.length || !cfg) return;
+
+  // Clamp index
+  var idx = Math.max(0, Math.min(spotIdx, coords.length - 1));
+  var c   = coords[idx];
+  var a   = cfg.access[idx];
+  if (!c) return;
+
+  var osmUrl = buildMapOsmUrl(c.lat, c.lng, coords);
+  var gmUrl  = 'https://maps.google.com/?q=' + c.lat + ',' + c.lng;
+  var spotName = a ? a.name.split('\u2014')[0].trim() : 'Fishing spot';
+
+  // Build legend — highlight selected pin
+  var legend = cfg.access.map(function(ac, i) {
+    var co = coords[i];
+    if (!co) return '';
+    var dotCls = ac.crowd === 'low' ? 'low' : ac.crowd === 'med' ? 'med' : 'high';
+    var active  = i === idx ? ' style="opacity:1;font-weight:700"' : ' style="opacity:.65"';
+    return '<div class="map-pin" data-spot-idx="' + i + '"' + active + '>'
+      + '<div class="map-pin-dot ' + dotCls + '" style="min-width:18px;height:18px;border-radius:50%;'
+      + 'display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff'
+      + (i === idx ? ';box-shadow:0 0 0 2px #fff,0 0 0 4px var(--fern)' : '') + '">'
+      + (i + 1) + '</div>'
+      + '<span>' + ac.name.split('\u2014')[0].trim() + '</span>'
       + '</div>';
   }).join('');
 
-  mapEl.innerHTML =
-    '<iframe src="' + osmUrl + '" style="width:100%;height:420px;border:none;display:block" loading="lazy"></iframe>'
-    + '<div class="map-pin-list" style="background:var(--deep);padding:.6rem .75rem;max-height:180px;overflow-y:auto">'
-    + '<div class="map-legend-lbl">Tap a spot to scroll \u2192</div>'
-    + legend
-    + '</div>';
+  // Update iframe src (change pin without full reload if already rendered)
+  var iframe = mapEl.querySelector('iframe');
+  if (iframe) {
+    iframe.src = osmUrl;
+  } else {
+    // First render — build full widget
+    mapEl.innerHTML =
+      '<iframe src="' + osmUrl + '" style="width:100%;height:340px;border:none;display:block" loading="lazy"></iframe>'
+      + '<div id="map-gm-cta" style="background:var(--fern);padding:.6rem 1rem;display:flex;align-items:center;justify-content:center;gap:.5rem">'
+      + '<a id="map-gm-link" href="' + gmUrl + '" target="_blank" rel="noopener" '
+      + 'style="color:#fff;font-family:\'DM Mono\',monospace;font-size:.68rem;letter-spacing:.06em;'
+      + 'text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:.4rem">'
+      + '\uD83D\uDCCD Navigate to ' + spotName + ' on Google Maps</a>'
+      + '</div>'
+      + '<div class="map-pin-list" style="background:var(--deep);padding:.6rem .75rem;max-height:120px;overflow-y:auto" id="map-legend">'
+      + '<div class="map-legend-lbl">Other spots \u2192 tap to move pin</div>'
+      + legend
+      + '</div>';
 
-  setTimeout(function(){
-    mapEl.querySelectorAll('.map-pin[data-spot-idx]').forEach(function(el){
-      el.addEventListener('click', function(){
-        scrollToSpot(parseInt(this.getAttribute('data-spot-idx')));
+    // Wire legend clicks
+    setTimeout(function() {
+      mapEl.querySelectorAll('.map-pin[data-spot-idx]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          updateMapPin(parseInt(this.getAttribute('data-spot-idx')));
+        });
+      });
+    }, 100);
+    return; // done for first render
+  }
+
+  // Subsequent renders — update legend and Google Maps link in place
+  var legendEl = document.getElementById('map-legend');
+  if (legendEl) {
+    legendEl.innerHTML = '<div class="map-legend-lbl">Other spots \u2192 tap to move pin</div>' + legend;
+    legendEl.querySelectorAll('.map-pin[data-spot-idx]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        updateMapPin(parseInt(this.getAttribute('data-spot-idx')));
       });
     });
-  }, 100);
+  }
+  var gmLink = document.getElementById('map-gm-link');
+  if (gmLink) {
+    gmLink.href = gmUrl;
+    gmLink.innerHTML = '\uD83D\uDCCD Navigate to ' + spotName + ' on Google Maps';
+  }
 }
+
 
 
 // ── SPECIES RAIL ─────────────────────────────────────────────────────────────
@@ -5157,145 +5264,63 @@ function toggleAcard(summaryEl) {
   detail.style.display = open ? 'none' : 'block';
   if (chev) chev.textContent = open ? '\u25b8' : '\u25be';
   card.classList.toggle('ac-open', !open);
+  // Update map pin to this spot when expanding
+  if (!open) {
+    var spotIdx = card ? parseInt(card.getAttribute('data-spot-idx')) : -1;
+    if (!isNaN(spotIdx) && spotIdx >= 0) updateMapPin(spotIdx);
+  }
 }
 
 
-setInterval(function(){
-  if(document.getElementById("results").style.display!=="none") renderResults();
-},15*60*1000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ── STOCKING SECTION ──────────────────────────────────────────────────────────
+function renderStockingSection(riverName) {
+  var sec  = document.getElementById('stocking-section');
+  var grid = document.getElementById('stocking-grid');
+  if (!sec || !grid) return;
+
+  var name = riverName ? riverName.split(',')[0].trim() : '';
+  var records = RIVER_STOCKING[name];
+  if (!records) {
+    var key = Object.keys(RIVER_STOCKING).find(function(k) {
+      return name.indexOf(k) !== -1 || k.indexOf(name.split(' ')[0]) !== -1;
+    });
+    if (key) records = RIVER_STOCKING[key];
+  }
+  if (!records || !records.length) { sec.style.display = 'none'; return; }
+
+  var html = records.map(function(r) {
+    var icon, badgeCls, statusTxt;
+    if (r.status === 'now') {
+      icon = '\u2714'; badgeCls = 'now'; statusTxt = r.label;
+    } else if (r.status === 'next') {
+      icon = '\u2192'; badgeCls = 'soon'; statusTxt = r.label;
+    } else if (r.status === 'future') {
+      icon = '\u23f3'; badgeCls = 'future'; statusTxt = r.label;
+    } else {
+      icon = '\u007e'; badgeCls = 'past'; statusTxt = r.label;
+    }
+    return '<div class="stocking-row' + (r.status === 'now' ? ' stocking-active' : '') + '">' +
+      '<div>' +
+        '<div class="stocking-species">' + r.species + '</div>' +
+        '<div class="stocking-detail">' + r.qtyStr + ' ' + r.stage.toLowerCase() +
+          ' stocked ' + r.year + '</div>' +
+      '</div>' +
+      '<span class="stocking-badge ' + badgeCls + '">' + icon + '\u00a0' + statusTxt + '</span>' +
+    '</div>';
+  }).join('');
+
+  html += '<div class="stocking-source">Source: OMNRF FishONLine \u00b7 Updated annually</div>';
+  grid.innerHTML = html;
+  sec.style.display = 'block';
+}
 
 
 
 
 </script>
+
+
+
 
 
 
