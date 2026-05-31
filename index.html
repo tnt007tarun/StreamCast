@@ -884,7 +884,7 @@ select:focus-visible, input:focus-visible {
 .regs-glossary {
   border-top: 1px solid var(--border);
   margin-top: .75rem;
-  padding-top: .75rem;
+  padding: .75rem 1rem 0 1rem;
 }
 .regs-glossary-title {
   font-family: 'DM Mono', monospace;
@@ -1568,6 +1568,8 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
 
 
 
@@ -2971,7 +2973,13 @@ function renderRiverUI(cfg) {
   }).join("");
 
   // Build map with OpenStreetMap iframe
-  renderAccessMap(cfg, coords);
+  // Reorder coords to match _accessSorted (recommended spot first)
+  var _sortedCoords = _accessSorted.map(function(a) {
+    // Find this access point's original index in cfg.access
+    var origIdx = cfg.access.indexOf(a);
+    return coords[origIdx] || null;
+  }).filter(Boolean);
+  renderAccessMap(cfg, _sortedCoords);
 
   // Stocking section
   renderStockingSection(selectedRiver);
@@ -3955,7 +3963,7 @@ async function renderResults(){
   } else {
     if(vl==="good"){vh="Go. Conditions are live.";vb="Flow, temperature, and sky all support active feeding. Get out there.";}
     else if(vl==="bad"){
-      if(fc==="bad"&&flow<cfg.flowLow){vh="No-Go. Water too low.";vb="Flow at "+flow+" m\u00b3/s \u2014 below the "+cfg.flowLow+" m\u00b3/s threshold. Fish spread and ultra-wary.";}
+      if(fc==="bad"&&flow<cfg.flowLow){vh="No-Go. Water too low.";vb="Flow at "+flow+" m\u00b3/s \u2014 below the ideal "+cfg.sweetMin+"\u2013"+cfg.sweetMax+" m\u00b3/s range. Fish spread and ultra-wary.";}
       else if(wt>=TEMP_STRESS){vh="Conservation Advisory.";vb="Water above 18\u00b0C. Please stop fishing \u2014 stress mortality increases significantly.";}
       else if(tc==="bad"){vh="No-Go. Temperature off.";vb="Water temp outside the 8\u201314\u00b0C prime window.";}
       else{vh="Poor conditions today.";vb="Multiple factors are off. Best to wait and check tomorrow.";}
@@ -3972,7 +3980,7 @@ async function renderResults(){
     document.getElementById("fval").textContent=flow;
     document.getElementById("ftrend").textContent=trend==="up"?"\u2191":trend==="down"?"\u2193":"\u2192";
     document.getElementById("ftrend").className="trd "+ta;
-    var fd=flow<cfg.flowLow?flow+" m\u00b3/s \u2014 below threshold. Fish scattered."
+    var fd=flow<cfg.flowLow?flow+" m\u00b3/s \u2014 below ideal range. Fish scattered."
       :flow<cfg.sweetMin?flow+" m\u00b3/s \u2014 below sweet spot. Watch for rising trend."
       :flow<=cfg.sweetMax?flow+" m\u00b3/s \u2014 in the "+sweetRange+" sweet spot."
       :flow<=cfg.flowHigh?flow+" m\u00b3/s \u2014 elevated. Target slower edges."
@@ -4093,11 +4101,10 @@ function updateMapPin(spotIdx) {
     // First render — build full widget
     mapEl.innerHTML =
       '<iframe src="' + osmUrl + '" style="width:100%;height:340px;border:none;display:block" loading="lazy"></iframe>'
-      + '<div id="map-gm-cta" style="background:var(--fern);padding:.6rem 1rem;display:flex;align-items:center;justify-content:center;gap:.5rem">'
+      + '<div id="map-gm-cta" style="padding:.75rem 1rem;">'
       + '<a id="map-gm-link" href="' + gmUrl + '" target="_blank" rel="noopener" '
-      + 'style="color:#fff;font-family:\'DM Mono\',monospace;font-size:.68rem;letter-spacing:.06em;'
-      + 'text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:.4rem">'
-      + '\uD83D\uDCCD Navigate to ' + spotName + ' on Google Maps</a>'
+      + 'style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--fern);color:#fff;border-radius:8px;padding:.65rem 1rem;font-family:\'DM Mono\',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;font-weight:600;box-shadow:0 2px 8px rgba(45,74,50,.3);transition:opacity .15s">'
+      + '\uD83D\uDCCD Navigate to ' + spotName + '</a>'
       + '</div>'
       + '<div class="map-pin-list" style="background:var(--deep);padding:.6rem .75rem;max-height:120px;overflow-y:auto" id="map-legend">'
       + '<div class="map-legend-lbl">Other spots \u2192 tap to move pin</div>'
@@ -4128,7 +4135,7 @@ function updateMapPin(spotIdx) {
   var gmLink = document.getElementById('map-gm-link');
   if (gmLink) {
     gmLink.href = gmUrl;
-    gmLink.innerHTML = '\uD83D\uDCCD Navigate to ' + spotName + ' on Google Maps';
+    gmLink.innerHTML = '\uD83D\uDCCD Navigate to ' + spotName;
   }
 }
 
@@ -4618,7 +4625,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var fc = clsFlow(flow, cfg);
     why += 'Flow is ' + (fc === 'good' ? 'in the sweet spot at ' + flow + ' m\u00b3/s' :
            fc === 'warn' ? 'at ' + flow + ' m\u00b3/s (outside the ideal ' + sweetRange + ')' :
-           'at ' + flow + ' m\u00b3/s \u2014 outside safe range') + '. ';
+           'at ' + flow + ' m\u00b3/s \u2014 below ideal range') + '. ';
   }
   if (weatherOk) {
     why += 'Water is around ' + wt + '\u00b0C (estimated from air temp). ' +
@@ -5317,7 +5324,11 @@ function renderStockingSection(riverName) {
 
 
 
+
+
 </script>
+
+
 
 
 
