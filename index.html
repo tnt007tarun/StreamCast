@@ -1781,6 +1781,9 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+
+
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
 // Set this to your deployed Worker URL after running: npx wrangler deploy
 // Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
@@ -3236,15 +3239,26 @@ function goToResults(){
     return;
   }
 
-  // Beginner mode: pick top-ranked nearby river automatically
-  // Capture technique families — array
+  // Capture technique family — beginner uses tech-family-btn, expert uses tech-chip
   if (appMode === 'beginner') {
     selectedTechFamily = Array.from(document.querySelectorAll('.tech-family-btn.active'))
       .map(function(b){ return b.getAttribute('data-family')||''; })
       .filter(function(v){ return v !== ''; });
   } else {
-    selectedTechFamily = [];
+    // Map expert tech chip selections to family values used by updateMethods
+    var _chipFamilyMap = {
+      'Dry Fly':'fly','Nymphing':'fly','Euro Nymphing':'fly','Streamers':'fly',
+      'Float / Centrepin':'float','Bait Fishing':'float','Spin / Lure':'spin'
+    };
+    // Read directly from DOM — window._selectedTechs isn't set until renderResults
+    var _activeTechs = Array.from(document.querySelectorAll('.tech-chip.active'))
+      .map(function(el){ return el.getAttribute('data-tech'); });
+    var _families = _activeTechs.map(function(t){ return _chipFamilyMap[t]||''; })
+      .filter(function(v,i,a){ return v && a.indexOf(v)===i; });
+    selectedTechFamily = _families.length ? [_families[0]] : [];
   }
+
+  // Beginner mode: pick top-ranked nearby river automatically
 
   // Capture species selection
   var activeBtn=document.querySelector(".species-btn.active");
@@ -5406,7 +5420,13 @@ function renderStockingSection(riverName) {
 
 
 
+
+
+
 </script>
+
+
+
 
 
 
