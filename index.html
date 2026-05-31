@@ -1052,6 +1052,95 @@ select:focus-visible, input:focus-visible {
   opacity: .7;
 }
 
+
+/* ── MOBILE PORTRAIT FIXES (≤600px) ─────────────────────────────────────── */
+@media (max-width: 600px) {
+
+  /* Form card — reduce side margins so it doesn't overflow */
+  .form-card {
+    margin: 0 1rem 2rem;
+    padding: 1.5rem 1.25rem;
+  }
+
+  /* Date + Location — stack vertically */
+  .form-top {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* CTA button — full width */
+  .forecast-btn {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+  }
+  .form-bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Hero section padding */
+  .hero-copy {
+    padding: 2.5rem 1.25rem 1.5rem;
+  }
+
+  /* Stocking badge — allow wrapping, don't overflow */
+  .stocking-row {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .stocking-badge {
+    white-space: normal;
+    text-align: right;
+    max-width: 120px;
+    line-height: 1.3;
+    font-size: .55rem;
+  }
+  .stocking-species {
+    font-size: .82rem;
+  }
+
+  /* River ranker cards — no overflow */
+  .rrank-card {
+    flex-wrap: wrap;
+  }
+
+  /* Access cards — reduce padding */
+  .ac { padding: 1rem; }
+
+  /* Top pick band — reduce padding */
+  .tpband-inner { padding: 1.25rem 1.25rem 1rem; }
+  .tp-headline { font-size: 1.35rem; }
+
+  /* Technique accordion */
+  .tgsec { margin: 0 1rem 1.5rem; }
+  .tg-header { padding: .85rem 1rem; }
+  .tg-body { padding: 0 1rem 1rem; }
+
+  /* Gear grid — single column on small screens */
+  .gear-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Flow gauge bar section */
+  .cgrid { padding: 1rem; }
+
+  /* Section labels */
+  .sec-label { padding: 1rem 1.25rem .5rem; }
+
+  /* Map */
+  .agrid { flex-direction: column; }
+  .agrid-map { width: 100%; }
+  #access-map iframe { height: 260px; }
+
+  /* Stocking grid */
+  .stocking-grid { padding: 0 1rem .75rem; }
+
+  /* Pre-trip routine */
+  .rgrid { padding: 0 1rem; }
+  .rs { gap: .75rem; }
+}
+
 </style>
 </head>
 <body>
@@ -1686,6 +1775,12 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+
+
+
+
+
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
 // Set this to your deployed Worker URL after running: npx wrangler deploy
 // Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
@@ -1744,9 +1839,7 @@ var RIVER_CONFIG = {
     sweetMin: 8, sweetMax: 12,
     flowLow: 6, flowHigh: 20,
     species: ["Brown Trout", "Rainbow Trout", "Brook Trout"],
-    routine: [
-      { t: "Check Fergus gauge the night before", d: "Note direction, not just the number. A rising 7 m\u00b3/s beats a falling 10 m\u00b3/s every time." },
-      { t: "Check GRCA for Shand Dam operation notices", d: "Dam releases control flow independently of rain. Planned releases change everything." },
+    routine: [{ t: "Check GRCA for Shand Dam operation notices", d: "Dam releases control flow independently of rain. Planned releases change everything." },
       { t: "Review 48-hr upstream rain", d: "Rain fills Belwood Lake, triggers releases \u2014 rising flow + slight colour tint means prime conditions 24\u201348 hrs after." },
       { t: "Make your go/no-go call", d: "If two of three factors (flow, temp, sky) are wrong, reschedule. Browns will wait." }
     ],
@@ -1779,9 +1872,7 @@ var RIVER_CONFIG = {
     sweetMin: 5, sweetMax: 15,
     flowLow: 3, flowHigh: 25,
     species: ["Brown Trout", "Rainbow Trout", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [
-      { t: "Check Credit River at Guelph Line gauge (02HB028)", d: "This is your primary flow indicator. Ideal range is 5\u201315 m\u00b3/s for trout fishing. Below 3 m\u00b3/s, fish become wary." },
-      { t: "Review CVC (Credit Valley Conservation) notices", d: "CVC manages flood control and can issue flow warnings. Check cvc.ca for any active advisories before heading out." },
+    routine: [{ t: "Review CVC (Credit Valley Conservation) notices", d: "CVC manages flood control and can issue flow warnings. Check cvc.ca for any active advisories before heading out." },
       { t: "Check for recent rain in Orangeville / Caledon", d: "The Credit headwaters above Orangeville respond quickly to rain. A moderate rain 24 hrs prior means rising flows and slightly stained, productive water." },
       { t: "Check regulations for your specific reach", d: "Many upper Credit sections are catch-and-release only. Special regulations apply around Forks of the Credit Provincial Park. Always verify OMNR rules." }
     ],
@@ -1813,9 +1904,7 @@ var RIVER_CONFIG = {
     sweetMin: 2, sweetMax: 8,
     flowLow: 0.5, flowHigh: 15,
     species: ["Brown Trout", "Rainbow Trout", "Brook Trout", "Chinook Salmon"],
-    routine: [
-      { t: "Check Bronte Creek at Lowville gauge (02HB025)", d: "Bronte runs small \u2014 ideal flows are 2\u20138 m\u00b3/s. Below 0.5 m\u00b3/s the creek is too low to fish productively." },
-      { t: "Check Conservation Halton notices", d: "Halton manages flood control on Bronte. Check for any active warnings at conservationhalton.ca before heading out." },
+    routine: [{ t: "Check Conservation Halton notices", d: "Halton manages flood control on Bronte. Check for any active warnings at conservationhalton.ca before heading out." },
       { t: "Time your visit for spring or fall runs", d: "Bronte\u2019s best fishing is during steelhead and salmon migrations. Spring (March\u2013April) and fall (October\u2013November) are peak season." },
       { t: "Respect the waterfall boundary at Lowville Park", d: "A large waterfall in Lowville Park blocks migratory fish. ALL the best salmon and steelhead fishing is below the falls \u2014 this is where to focus." }
     ],
@@ -1845,9 +1934,7 @@ var RIVER_CONFIG = {
     sweetMin: 3, sweetMax: 12,
     flowLow: 1, flowHigh: 20,
     species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Chinook Salmon"],
-    routine: [
-      { t: "Check Humber River near Bolton gauge (02HC017)", d: "Sweet spot is 3\u201312 m\u00b3/s for the upper Humber. The river responds quickly to rain \u2014 check flow direction as much as the number." },
-      { t: "Know the falls and fish ladders", d: "Several dams and falls on the Humber limit migratory fish movement. Focus your efforts on the reaches the fish can actually reach." },
+    routine: [{ t: "Know the falls and fish ladders", d: "Several dams and falls on the Humber limit migratory fish movement. Focus your efforts on the reaches the fish can actually reach." },
       { t: "Upstream rain in the Oak Ridges Moraine = rising flows within hours", d: "The Moraine drains quickly. A rain event north of Bolton will hit the gauge within 2\u20134 hours and can transform the creek rapidly." },
       { t: "Upper Humber for brook trout, lower for migratory species", d: "The upper Humber above Mono is classic brook trout water. The lower Humber near Toronto gets fall salmon and spring steelhead." }
     ],
@@ -1877,9 +1964,7 @@ var RIVER_CONFIG = {
     sweetMin: 6, sweetMax: 18,
     flowLow: 3, flowHigh: 35,
     species: ["Brown Trout", "Rainbow Trout", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [
-      { t: "Check Nottawasaga gauge near Angus (02ED101)", d: "The Notty runs larger than southern Ontario creeks \u2014 ideal 6\u201318 m\u00b3/s for wade fishing. Excellent at many flows due to its size." },
-      { t: "Call the Angus bait shop or check Nottawasaga Valley CA reports", d: "Local outfitters near Alliston and Angus are the best real-time source. They fish it daily and will tell you exactly what\u2019s happening." },
+    routine: [{ t: "Call the Angus bait shop or check Nottawasaga Valley CA reports", d: "Local outfitters near Alliston and Angus are the best real-time source. They fish it daily and will tell you exactly what\u2019s happening." },
       { t: "Check for upstream rain from Georgian Bay watersheds", d: "The Notty\u2019s upper tributaries drain the Collingwood highlands. Heavy rain north of Barrie will raise the Alliston reach within 6\u20138 hours." },
       { t: "Time for steelhead and salmon runs in the lower river", d: "Below Alliston, the Nottawasaga receives significant steelhead (spring) and Chinook/Coho (fall) runs from Georgian Bay. Timing the run is everything." }
     ],
@@ -1909,9 +1994,7 @@ var RIVER_CONFIG = {
     sweetMin: 2, sweetMax: 10,
     flowLow: 0.5, flowHigh: 18,
     species: ["Rainbow Trout", "Brown Trout", "Brook Trout", "Chinook Salmon"],
-    routine: [
-      { t: "Check Duffins Creek at Pickering gauge (02HC030)", d: "Duffins runs small \u2014 ideal 2\u201310 m\u00b3/s. It responds very quickly to rain; a major storm can blow it out within hours." },
-      { t: "Know the Whitevale Dam barrier", d: "A dam at Whitevale blocks migratory fish on the West Duffins. ALL steelhead and salmon fishing is below the dam. Above it: brook trout only." },
+    routine: [{ t: "Know the Whitevale Dam barrier", d: "A dam at Whitevale blocks migratory fish on the West Duffins. ALL steelhead and salmon fishing is below the dam. Above it: brook trout only." },
       { t: "Check TRCA conditions before driving", d: "Toronto Region Conservation Authority manages Duffins. Check trca.ca for any closures or active flood warnings before heading out." },
       { t: "Target early morning during fall salmon runs", d: "Duffins Creek is a well-known salmon and steelhead river close to Toronto. Can be very crowded on weekends during runs \u2014 arrive at dawn." }
     ],
@@ -1940,9 +2023,7 @@ var RIVER_CONFIG = {
     sweetMin: 2, sweetMax: 12,
     flowLow: 0.5, flowHigh: 20,
     species: ["Rainbow Trout", "Brown Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [
-      { t: "Check Ganaraska gauge at Port Hope (02HD006)", d: "The Ganny runs small but punches above its weight for fish numbers. Ideal is 2\u201312 m\u00b3/s. It clears quickly after rain \u2014 often fishable within 24 hrs." },
-      { t: "Check the Ganaraska Region Conservation Authority", d: "GRCA (not to be confused with the Grand River CA) manages the Ganny watershed. They track run timing and can advise on current conditions." },
+    routine: [{ t: "Check the Ganaraska Region Conservation Authority", d: "GRCA (not to be confused with the Grand River CA) manages the Ganny watershed. They track run timing and can advise on current conditions." },
       { t: "Time your trip for the October Chinook run", d: "Port Hope\u2019s main draw is the fall Chinook salmon run \u2014 one of the most accessible in Ontario. Fish stack up in the lower river from late September through October." },
       { t: "Fish the upper reaches for resident trout in summer", d: "Above the lower migratory section, the upper Ganaraska holds resident brown trout and some brook trout in cooler, more forested water." }
     ],
@@ -1971,9 +2052,7 @@ var RIVER_CONFIG = {
     sweetMin: 3, sweetMax: 12,
     flowLow: 1, flowHigh: 20,
     species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Chinook Salmon"],
-    routine: [
-      { t: "Check Beaver River near Kimberley gauge (02ED007)", d: "The Beaver is a cold tailwater fed partly by spring-fed limestone springs. Ideal flows 3\u201312 m\u00b3/s. It stays cooler than most rivers even in summer." },
-      { t: "Check Grey Sauble Conservation Authority", d: "GSCA manages the Beaver watershed. Check gsca.ca for any active flood advisories or special conditions." },
+    routine: [{ t: "Check Grey Sauble Conservation Authority", d: "GSCA manages the Beaver watershed. Check gsca.ca for any active flood advisories or special conditions." },
       { t: "Target the Kimberley stretch first \u2014 it\u2019s the crown jewel", d: "The Beaver through Kimberley is arguably the best wild brown trout water in Ontario. Pools and riffles through a stunning valley. Go early on weekends." },
       { t: "Summer fishing is legitimate here \u2014 cold springs keep temps in check", d: "Unlike most southern Ontario rivers, the Beaver stays fishable into summer due to cold spring inputs. Check water temp and fish early morning in July\u2013August." }
     ],
@@ -2003,9 +2082,7 @@ var RIVER_CONFIG = {
     sweetMin: 10, sweetMax: 30,
     flowLow: 5, flowHigh: 60,
     species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [
-      { t: "Check Saugeen River gauge near Hanover (02GB001)", d: "The Saugeen is Ontario\u2019s largest trout river. It runs big \u2014 ideal wade fishing at 10\u201330 m\u00b3/s. The drift boat section is productive at much higher flows." },
-      { t: "Consider a drift boat or canoe for the best water", d: "The Saugeen\u2019s best water is only accessible by boat. Float fishing is a legitimate strategy \u2014 many guides offer drift trips that access water no walk-in angler reaches." },
+    routine: [{ t: "Consider a drift boat or canoe for the best water", d: "The Saugeen\u2019s best water is only accessible by boat. Float fishing is a legitimate strategy \u2014 many guides offer drift trips that access water no walk-in angler reaches." },
       { t: "Check Saugeen Valley Conservation Authority", d: "SVCA manages the watershed. They publish flow and run reports especially during steelhead and salmon seasons." },
       { t: "Plan around major salmon and steelhead runs", d: "The Saugeen receives exceptional Chinook, Coho, and steelhead runs from Lake Huron. September\u2013November and March\u2013April are peak seasons. Book accommodation well in advance." }
     ],
@@ -2032,9 +2109,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB005",
     lat: 43.48, lng: -79.72, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon"],
-    routine: [
-      {t:"Check Sixteen Mile Creek gauge at Oakville (02HB007)",d:"Runs best at 1\u20136 m\u00b3/s. Responds quickly to rain \u2014 can blow out overnight and clear within 24\u201348 hrs."},
-      {t:"Check Conservation Halton notices",d:"Halton manages Sixteen Mile Creek. Check conservationhalton.ca for flood warnings or seasonal closures before heading out."},
+    routine: [{t:"Check Conservation Halton notices",d:"Halton manages Sixteen Mile Creek. Check conservationhalton.ca for flood warnings or seasonal closures before heading out."},
       {t:"Target fall and spring for migratory fish",d:"Best fishing is during steelhead runs (March\u2013April) and Chinook salmon (October\u2013November). Summer holds some resident browns."},
       {t:"Know your access points \u2014 many sections are private",d:"Public access is limited. Stick to TRCA/Conservation Halton managed areas and road allowances at bridge crossings."}
     ],
@@ -2052,9 +2127,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC022",
     lat: 43.86, lng: -79.18, sweetMin: 2, sweetMax: 10, flowLow: 0.5, flowHigh: 18,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
-    routine: [
-      {t:"Check Rouge River near Markham gauge (02HC019)",d:"Runs best at 2\u201310 m\u00b3/s. Responds quickly to rain and can blow out and clear within 24\u201348 hrs."},
-      {t:"Check TRCA conditions before driving",d:"Toronto Region Conservation Authority manages the Rouge. Check trca.ca for conditions and any seasonal closures."},
+    routine: [{t:"Check TRCA conditions before driving",d:"Toronto Region Conservation Authority manages the Rouge. Check trca.ca for conditions and any seasonal closures."},
       {t:"Target fall salmon and spring steelhead",d:"The Rouge receives Chinook, Coho, and steelhead from Lake Ontario. Fall (Sept\u2013Nov) and spring (Mar\u2013Apr) are peak seasons."},
       {t:"Use Rouge National Urban Park access for best water",d:"The park provides managed public access to quality stretches. Check pc.gc.ca for current access restrictions."}
     ],
@@ -2071,9 +2144,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD009",
     lat: 43.92, lng: -78.58, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
-    routine: [
-      {t:"No real-time gauge \u2014 use Bowmanville Creek (02HD013) as proxy",d:"Wilmot and Bowmanville share similar watershed characteristics. Check the Bowmanville gauge as your best indicator."},
-      {t:"Check Ganaraska Region Conservation Authority",d:"GRCA manages Wilmot Creek. Check grca.on.ca for advisories or seasonal closures."},
+    routine: [{t:"Check Ganaraska Region Conservation Authority",d:"GRCA manages Wilmot Creek. Check grca.on.ca for advisories or seasonal closures."},
       {t:"Time your trip for fall salmon and spring steelhead",d:"Wilmot gets excellent Chinook and Coho (Oct\u2013Nov) and steelhead (Mar\u2013Apr) runs from Lake Ontario."},
       {t:"Fish below Highway 2 bridge for best access",d:"The lower reaches near Newcastle give the best migratory fish access via road allowances at bridge crossings."}
     ],
@@ -2090,9 +2161,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD006",
     lat: 43.91, lng: -78.68, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
     species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
-    routine: [
-      {t:"Check Bowmanville Creek gauge (02HD013)",d:"Small creek best at 1\u20136 m\u00b3/s. Check the morning of your trip \u2014 it responds fast to rain events."},
-      {t:"Check Central Lake Ontario Conservation (CLOCA)",d:"CLOCA manages the Bowmanville watershed. Their website has flood advisories and access information."},
+    routine: [{t:"Check Central Lake Ontario Conservation (CLOCA)",d:"CLOCA manages the Bowmanville watershed. Their website has flood advisories and access information."},
       {t:"Time for fall salmon and spring steelhead",d:"Chinook and Coho (Oct\u2013Nov) and steelhead (Mar\u2013Apr) from Lake Ontario are the primary draw."},
       {t:"Access at the main downtown bridge is the classic spot",d:"The pool below the main Bowmanville bridge is the most accessible location. Arrive early on fall weekends."}
     ],
@@ -2109,9 +2178,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA015",
     lat: 43.55, lng: -80.25, sweetMin: 3, sweetMax: 12, flowLow: 1, flowHigh: 20,
     species: ["Brown Trout","Rainbow Trout","Brook Trout"],
-    routine: [
-      {t:"Check Speed River at Guelph gauge (02GA034)",d:"Runs best at 3\u201312 m\u00b3/s. Spring-fed in the upper reaches which keeps it stable and cold."},
-      {t:"Check Grand River Conservation Authority",d:"The Speed is a Grand River tributary managed by GRCA. Check grandriver.ca for notices or advisories."},
+    routine: [{t:"Check Grand River Conservation Authority",d:"The Speed is a Grand River tributary managed by GRCA. Check grandriver.ca for notices or advisories."},
       {t:"Fish the Hanlon Creek confluence for concentrated fish",d:"Cold tributary water draws fish in summer when the main river warms."},
       {t:"Urban river \u2014 check access carefully",d:"The Speed flows through Guelph. Many sections have public trail access but private land limits some stretches."}
     ],
@@ -2128,9 +2195,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA029",
     lat: 43.60, lng: -80.12, sweetMin: 2, sweetMax: 8, flowLow: 0.5, flowHigh: 15,
     species: ["Brown Trout","Brook Trout"],
-    routine: [
-      {t:"Check Eramosa River gauge near Guelph (02GA047)",d:"Best at 2\u20138 m\u00b3/s. Cold limestone springs keep it stable year-round."},
-      {t:"Plan around Rockwood Conservation Area",d:"The Eramosa flows through Rockwood CA which provides excellent managed access. Day-use fee applies."},
+    routine: [{t:"Plan around Rockwood Conservation Area",d:"The Eramosa flows through Rockwood CA which provides excellent managed access. Day-use fee applies."},
       {t:"This river fishes well year-round \u2014 even summer",d:"Cold spring inputs keep the Eramosa cool even in July. Often stays under 16\u00b0C when surrounding rivers are too warm."},
       {t:"Wild brook trout in the upper reaches",d:"The upper Eramosa above Rockwood holds wild brook trout in addition to brown trout."}
     ],
@@ -2147,9 +2212,7 @@ var RIVER_CONFIG = {
     gaugeUrl: "https://www.gsca.on.ca/",
     lat: 44.40, lng: -79.68, sweetMin: 1, sweetMax: 5, flowLow: 0.2, flowHigh: 10,
     species: ["Brown Trout","Brook Trout","Rainbow Trout"],
-    routine: [
-      {t:"No real-time gauge \u2014 call Grey Sauble Conservation Authority",d:"Black Creek has no active real-time gauge. Contact GSCA or check local bait shops in Barrie for current conditions."},
-      {t:"Target early morning in summer",d:"Black Creek stays cool due to spring inputs but can warm midday. Fish before 9 AM in July and August."},
+    routine: [{t:"Target early morning in summer",d:"Black Creek stays cool due to spring inputs but can warm midday. Fish before 9 AM in July and August."},
       {t:"Check for hatches \u2014 this creek produces good dry fly action",d:"Prolific caddis and mayfly hatches in May and June. Evening dry fly can be exceptional."},
       {t:"Keep it low-impact \u2014 this is fragile small-stream habitat",d:"Small and sensitive. Wade carefully, handle fish quickly, and practice catch-and-release especially for brook trout."}
     ],
@@ -2169,9 +2232,7 @@ var RIVER_CONFIG = {
     sweetMin: 5, sweetMax: 15,
     flowLow: 2, flowHigh: 25,
     species: ["Trout", "Salmon"],
-    routine: [
-      { t: "Check Environment Canada Water Office for nearest gauge", d: "Search wateroffice.ec.gc.ca by river name to find the closest active gauge station." },
-      { t: "Check the local Conservation Authority", d: "Each watershed has a Conservation Authority that tracks conditions and may issue flow or flood advisories." },
+    routine: [{ t: "Check the local Conservation Authority", d: "Each watershed has a Conservation Authority that tracks conditions and may issue flow or flood advisories." },
       { t: "Review recent rain in the upstream watershed", d: "Most Southern Ontario rivers respond to rain within 6\u201324 hours. A modest rain 24\u201348 hrs prior often produces ideal, slightly-stained conditions." },
       { t: "Make your go/no-go call based on flow direction", d: "A rising flow is almost always better than a falling one at the same level. Direction matters more than the number." }
     ],
@@ -2849,9 +2910,17 @@ function renderRiverUI(cfg) {
 
   // Routine
   var steps = document.getElementById("routine-steps");
+  var _rLinks = {'cvc.ca':'https://cvc.ca','grca.on.ca':'https://www.grandriver.ca','grandriver.ca':'https://www.grandriver.ca','trca.ca':'https://trca.ca','saugeen.on.ca':'https://www.saugeenconservation.ca','cloca.com':'https://www.cloca.com','nvca.on.ca':'https://nvca.on.ca'};
+  function _linkify(t){
+    t=t.replace(/\b(https?:\/\/[^\s<"']+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:var(--fern)">$1</a>');
+    Object.keys(_rLinks).forEach(function(d){
+      t=t.replace(new RegExp(d.replace(/\./g,'\\.'),'g'),
+        '<a href="'+_rLinks[d]+'" target="_blank" rel="noopener" style="color:var(--fern)">'+d+'</a>');
+    }); return t;
+  }
   steps.innerHTML = cfg.routine.map(function(s, i) {
     return '<div class="rs"><div class="rn">' + (i+1) + '</div>' +
-           '<div><div class="rt">' + s.t + '</div><div class="rd">' + s.d + '</div></div></div>';
+           '<div><div class="rt">' + s.t + '</div><div class="rd">' + _linkify(s.d) + '</div></div></div>';
   }).join("");
 
   // Access points
@@ -2975,10 +3044,11 @@ function renderRiverUI(cfg) {
   // Build map with OpenStreetMap iframe
   // Reorder coords to match _accessSorted (recommended spot first)
   var _sortedCoords = _accessSorted.map(function(a) {
-    // Find this access point's original index in cfg.access
     var origIdx = cfg.access.indexOf(a);
     return coords[origIdx] || null;
   }).filter(Boolean);
+  // Pass sorted access order via cfg so updateMapPin uses correct names
+  cfg._sortedAccess = _accessSorted;
   renderAccessMap(cfg, _sortedCoords);
 
   // Stocking section
@@ -4045,9 +4115,11 @@ function renderAccessMap(cfg, coords) {
   var mapEl = document.getElementById("access-map");
   if (!mapEl || !coords.length) return;
 
-  // Store coords globally so legend clicks can update the map
-  window._mapCoords = coords;
-  window._mapCfg    = cfg;
+  // Store coords and sorted access list globally
+  window._mapCoords  = coords;
+  window._mapCfg     = cfg;
+  // _mapAccess holds the sorted access list matching coords order
+  window._mapAccess  = cfg._sortedAccess || cfg.access;
 
   // Default: show recommended spot (index 0 = sorted first)
   updateMapPin(0);
@@ -4071,7 +4143,8 @@ function updateMapPin(spotIdx) {
   // Clamp index
   var idx = Math.max(0, Math.min(spotIdx, coords.length - 1));
   var c   = coords[idx];
-  var a   = cfg.access[idx];
+  var _access = window._mapAccess || cfg.access;
+  var a   = _access[idx];
   if (!c) return;
 
   var osmUrl = buildMapOsmUrl(c.lat, c.lng, coords);
@@ -4079,7 +4152,8 @@ function updateMapPin(spotIdx) {
   var spotName = a ? a.name.split('\u2014')[0].trim() : 'Fishing spot';
 
   // Build legend — highlight selected pin
-  var legend = cfg.access.map(function(ac, i) {
+  var _accessList = window._mapAccess || cfg.access;
+  var legend = _accessList.map(function(ac, i) {
     var co = coords[i];
     if (!co) return '';
     var dotCls = ac.crowd === 'low' ? 'low' : ac.crowd === 'med' ? 'med' : 'high';
@@ -5326,7 +5400,19 @@ function renderStockingSection(riverName) {
 
 
 
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
 
 
 
