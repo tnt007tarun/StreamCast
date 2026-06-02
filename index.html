@@ -433,7 +433,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .btab:last-child { border-right:none; }
 .btab.active { background:var(--moss); color:var(--cream); }
 .btab:hover:not(.active) { background:rgba(45,74,50,0.06); }
-.bgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); border:1.5px solid var(--border); border-radius:8px; overflow:hidden; }
+.bgrid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid var(--border); border-radius:8px; overflow:hidden; }
 .bi { padding:1rem 1.25rem; background:var(--white); border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
 .brank { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; color:rgba(45,74,50,0.08); float:right; line-height:1; margin-left:0.5rem; font-style:italic; }
 .bname { font-size:0.84rem; font-weight:500; margin-bottom:0.2rem; color:var(--moss); }
@@ -1200,30 +1200,27 @@ select:focus-visible, input:focus-visible {
 .conf-badge { font-size: .58rem; padding: .15rem .45rem; }
 
 /* ── DEFAULT RIVER PREVIEW (landing) ─────────────────────────────────────── */
-#default-preview { padding: 2rem 0 2rem; display: none; }
+#default-preview {
+  display: none;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 40px rgba(14,26,20,0.1), 0 1px 4px rgba(14,26,20,0.06);
+  padding: 1.25rem 1.25rem 1rem;
+}
 .dp-label {
   font-family: 'DM Mono', monospace;
-  font-size: .62rem;
-  letter-spacing: .1em;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--sage);
-  margin-bottom: .75rem;
+  color: var(--moss);
+  font-weight: 600;
+  margin-bottom: .85rem;
   padding: 0 .1rem;
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-.dp-label::before {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-  display: none;
 }
 .dp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: .5rem;
+  gap: .6rem;
 }
 .dp-card {
   background: var(--white);
@@ -1317,6 +1314,105 @@ select:focus-visible, input:focus-visible {
 
 
 .sky-badge { margin-bottom: .25rem; }
+
+
+/* ── DEFAULT PREVIEW WRAPPER ────────────────────────────────────────────── */
+.default-preview-wrap {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 1rem 2.5rem;
+}
+/* preview box styles moved to #default-preview rule */
+
+/* Tablet: 3 columns */
+@media (min-width: 600px) {
+  .dp-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* Desktop: 6 columns in one row */
+@media (min-width: 1024px) {
+  .dp-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: .75rem;
+  }
+  .dp-card {
+    padding: .75rem .85rem;
+  }
+}
+
+
+/* CONDITIONS CARD — matches tgsec box style */
+.cond-card {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 2rem 1.5rem;
+  background: var(--white);
+}
+/* Remove bottom border from cgrid since cond-card provides the border */
+.cond-card .cgrid {
+  border-bottom: none;
+}
+@media (max-width: 600px) {
+  .cond-card { margin: 0 1rem 1.5rem; }
+}
+
+
+/* ── TP-WHY STRUCTURED ROWS ─────────────────────────────────────────────── */
+#tp-why { display: flex; flex-direction: column; gap: .35rem; margin: .5rem 0 .75rem; }
+.why-row {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  font-size: .82rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+.why-icon {
+  font-size: .75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  width: 1rem;
+  text-align: center;
+}
+.why-good  { color: #2a7a30; }
+.why-warn  { color: #a07820; }
+.why-bad   { color: #b03030; }
+.why-label {
+  font-weight: 600;
+  color: var(--moss);
+  flex-shrink: 0;
+}
+.why-detail {
+  color: var(--sage);
+  font-size: .78rem;
+}
+@media (max-width: 600px) {
+  .why-row { font-size: .78rem; }
+  .why-detail { font-size: .72rem; }
+}
+
+
+/* ── BAIT SHOW MORE ──────────────────────────────────────────────────────── */
+.bait-show-more {
+  display: block;
+  width: 100%;
+  padding: .6rem 1rem;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  font-family: 'DM Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sage);
+  cursor: pointer;
+  text-align: center;
+  transition: color .15s, background .15s;
+}
+.bait-show-more:hover { color: var(--moss); background: rgba(45,74,50,.03); }
 
 </style>
 </head>
@@ -1545,7 +1641,9 @@ select:focus-visible, input:focus-visible {
   </div>
 
   <!-- TODAY'S RIVERS — below the form -->
-  <div id="default-preview" style="display:none"></div>
+  <div class="default-preview-wrap">
+    <div id="default-preview" style="display:none"></div>
+  </div>
 </div>
 <!-- END LANDING -->
 
@@ -1618,6 +1716,7 @@ select:focus-visible, input:focus-visible {
 
   <div class="sec-label fi"><div class="sec-num">2</div><div><h3>River Conditions</h3><p>Flow, temperature, and sky — the three variables that determine whether browns are feeding.</p></div></div>
 
+  <div class="cond-card">
   <div class="cgrid">
     <div class="col fi">
       <div class="col-lbl" id="flow-gauge-lbl">Flow<span class="col-status-dot" id="flow-dot"></span></div>
@@ -1651,10 +1750,9 @@ select:focus-visible, input:focus-visible {
       </div>
       <hr class="divr">
       <div class="gw">
-        <div class="gh"><span class="gn">Sky Cover<span class="col-status-dot" id="sky-dot"></span></span><span class="gv" id="skyv">—</span></div>
+        <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
         <div class="gt"><div class="gf" id="skybar" style="width:0%"></div></div>
         <div class="gr"><span>Clear</span><span>Ideal: Overcast</span><span>100%</span></div>
-        <div class="gs sky-badge" id="skystat-badge">—</div>
         <div class="gs" id="skystat">—</div>
       </div>
       <hr class="divr">
@@ -1667,7 +1765,8 @@ select:focus-visible, input:focus-visible {
     <div class="col-lbl">Pre-Trip Routine</div>
     <div class="routine" id="routine-steps"></div>
   </div>
-</div><!-- SECTION 2: Technique & Gear (accordion) -->
+</div>
+  </div><!-- SECTION 2: Technique & Gear (accordion) -->
   <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p>Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
 
@@ -1839,6 +1938,21 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3969,6 +4083,8 @@ function updateMethods(fc,tc,sc,flow,wt){
       container.appendChild(clone);
       // Load bait images into cloned cards
       loadBaitImages();
+      // Show top 3, hide rest behind 'Show more'
+      applyBaitShowMore(clone, 3);
     }
   })();
 
@@ -3992,6 +4108,7 @@ function updateMethods(fc,tc,sc,flow,wt){
         var clone2 = src.cloneNode(true);
         clone2.id = 'bpanel-2-clone'; clone2.className = 'bpanel active';
         container2.appendChild(clone2);
+        applyBaitShowMore(clone2, 3);
       }
       // Hide the btabs-2 tab bar (no tabs needed)
       var bt2 = document.getElementById('btabs-2'); if(bt2) bt2.style.display='none';
@@ -4017,6 +4134,7 @@ function updateMethods(fc,tc,sc,flow,wt){
         var clone3 = src.cloneNode(true);
         clone3.id = 'bpanel-3-clone'; clone3.className = 'bpanel active';
         container3.appendChild(clone3);
+        applyBaitShowMore(clone3, 3);
       }
       var bt3 = document.getElementById('btabs-3'); if(bt3) bt3.style.display='none';
       _b3.style.display='block';
@@ -4321,15 +4439,18 @@ async function renderResults(){
   document.getElementById("tgv").textContent=wt+"\u00b0C";
   var tb=document.getElementById("tbar");tb.style.width=barW(wt,0,22)+"%";tb.className="gf "+tc;
   document.getElementById("tstat").textContent=clsLbl(tc);document.getElementById("tstat").className="gs "+tc;
+  // Combined temp+sky indicator — average the two classifications
+  var _clsRank = {good:2, warn:1, bad:0};
+  var _tcRank = _clsRank[tc] !== undefined ? _clsRank[tc] : 1;
+  var _scRank = _clsRank[sc] !== undefined ? _clsRank[sc] : 1;
+  var _avgRank = Math.round((_tcRank + _scRank) / 2);
+  var _avgCls  = _avgRank >= 2 ? "good" : _avgRank >= 1 ? "warn" : "bad";
   var _td=document.getElementById("temp-dot");
-  if(_td){_td.className="col-status-dot visible dot-"+(tc==="good"?"good":tc==="warn"?"warn":"bad");}
+  if(_td){_td.className="col-status-dot visible dot-"+_avgCls;}
 
   // Sky column
   document.getElementById("skyv").textContent=skyl+" ("+cloudPct+"%)";
-  var _skyBadge=document.getElementById("skystat-badge");
-  if(_skyBadge){_skyBadge.innerHTML=clsLbl(sc);_skyBadge.className="gs sky-badge "+sc;}
-  var _skd=document.getElementById("sky-dot");
-  if(_skd){_skd.className="col-status-dot visible dot-"+(sc==="good"?"good":sc==="warn"?"warn":"bad");}
+  // sky sub-indicators removed — combined into temp-dot
   var sb=document.getElementById("skybar");sb.style.width=cloudPct+"%";sb.className="gf "+sc;
   document.getElementById("skystat").textContent=sc==="good"?"Fish feed through the whole water column all day.":sc==="warn"?"Morning and evening windows open. Midday slows.":"Clear \u2014 fish hard until 8:30 AM then expect it to die.";
   document.getElementById("skystat").className="gs "+sc;
@@ -4976,27 +5097,65 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   }
     'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
 
-  // Why paragraph
-  var why = speciesNote;
+  // Why — structured condition rows with icons
+  function _whyRow(cls, label, detail) {
+    var icon = cls === 'good' ? '\u2713' : cls === 'warn' ? '\u26a0\ufe0f' : '\u00d7';
+    var iconCls = cls === 'good' ? 'why-good' : cls === 'warn' ? 'why-warn' : 'why-bad';
+    return '<div class="why-row">'
+      + '<span class="why-icon ' + iconCls + '">' + icon + '</span>'
+      + '<span class="why-label">' + label + '</span>'
+      + (detail ? '<span class="why-detail">' + detail + '</span>' : '')
+      + '</div>';
+  }
+
+  var whyRows = '';
+
+  // Row 1: Species season
+  if (speciesNote) {
+    var _seasCls = speciesNote.toLowerCase().indexOf('peak') !== -1 ? 'good'
+      : speciesNote.toLowerCase().indexOf('slow') !== -1 ? 'warn' : 'good';
+    // Extract label (species name) and detail (season quality)
+    var _snParts = speciesNote.split('.');
+    var _snFirst = _snParts[0] ? _snParts[0].trim() : speciesNote;
+    // Shorten: 'Brown Trout are at peak season' → label='Brown Trout', detail='Peak season'
+    var _spMatch = _snFirst.match(/^([A-Za-z ]+?(?:Trout|Salmon))/);
+    var _spName  = _spMatch ? _spMatch[1] : targetName || '';
+    var _spDetail = _seasCls === 'good' ? 'Peak season' : _seasCls === 'warn' ? 'In season' : 'Slow season';
+    whyRows += _whyRow(_seasCls, _spName || _snFirst, _spDetail);
+  }
+
+  // Row 2: Flow
   if (flow == null) {
-    why += 'Check the ' + cfg.gaugeName + ' gauge before driving. ';
+    whyRows += _whyRow('warn', 'Flow unknown', 'Check the gauge before driving');
   } else {
     var sweetRange = cfg.sweetMin + '\u2013' + cfg.sweetMax;
     var fc = clsFlow(flow, cfg);
-    why += 'Flow is ' + (fc === 'good' ? 'in the sweet spot at ' + flow + ' m\u00b3/s' :
-           fc === 'warn' ? 'at ' + flow + ' m\u00b3/s (outside the ideal ' + sweetRange + ')' :
-           'at ' + flow + ' m\u00b3/s \u2014 below ideal range') + '. ';
-  }
-  if (weatherOk) {
-    why += 'Water is around ' + wt + '\u00b0C (estimated from air temp). ' +
-      (sc === 'good' ? 'Overcast sky means fish feed all day.' :
-       sc === 'warn' ? 'Partly cloudy \u2014 morning and evening are your best windows.' :
-       'Clear sky \u2014 get on the water before 9 AM.');
-  } else {
-    why += 'Live weather is unavailable right now \u2014 check the temperature and sky before you go.';
+    var flowLabel = flow + ' m\u00b3/s';
+    var flowDetail = fc === 'good' ? 'In the sweet spot (' + sweetRange + ')'
+      : fc === 'warn' ? 'Outside ideal range (' + sweetRange + ')'
+      : 'Below ideal range (' + sweetRange + ')';
+    whyRows += _whyRow(fc, 'Flow ' + flowLabel, flowDetail);
   }
 
-  document.getElementById('tp-why').textContent = why;
+  // Row 3: Temperature
+  if (weatherOk) {
+    var tc2 = clsTemp(wt);
+    var tempDetail = tc2 === 'good' ? 'Prime feeding range (8\u201314\u00b0C)'
+      : tc2 === 'warn' ? 'Acceptable but not ideal'
+      : wt > 18 ? 'Too warm \u2014 fish lethargic above 18\u00b0C' : 'Very cold \u2014 slow fishing';
+    whyRows += _whyRow(tc2, 'Water ~' + wt + '\u00b0C', tempDetail);
+
+  // Row 4: Sky
+    var skyLabel = sc === 'good' ? 'Overcast' : sc === 'warn' ? 'Partly cloudy' : 'Clear sky';
+    var skyDetail = sc === 'good' ? 'Fish feed all day'
+      : sc === 'warn' ? 'Morning and evening windows'
+      : 'Get on water before 9 AM';
+    whyRows += _whyRow(sc, skyLabel, skyDetail);
+  } else {
+    whyRows += _whyRow('warn', 'Weather unavailable', 'Check temp and sky before you go');
+  }
+
+  document.getElementById('tp-why').innerHTML = whyRows;
 
   // Species recommendation chips (no species selected)
   var chips = [];
@@ -5808,6 +5967,37 @@ async function fetchLandingWeather(lat, lng) {
   } catch(e) { return null; }
 }
 
+
+// ── BAIT SHOW MORE ────────────────────────────────────────────────────────────
+function applyBaitShowMore(panel, showCount) {
+  var grid = panel.querySelector('.bgrid');
+  if (!grid) return;
+  var items = Array.from(grid.querySelectorAll('.bi'));
+  if (items.length <= showCount) return; // nothing to hide
+
+  // Hide items beyond showCount
+  items.forEach(function(item, i) {
+    if (i >= showCount) item.style.display = 'none';
+  });
+
+  // Add "Show more" button after grid
+  var hiddenCount = items.length - showCount;
+  var btn = document.createElement('button');
+  btn.className = 'bait-show-more';
+  btn.textContent = 'Show ' + hiddenCount + ' more \u25b8';
+  btn.addEventListener('click', function() {
+    var expanded = btn.getAttribute('data-expanded') === 'true';
+    items.forEach(function(item, i) {
+      if (i >= showCount) item.style.display = expanded ? 'none' : '';
+    });
+    btn.setAttribute('data-expanded', String(!expanded));
+    btn.textContent = expanded
+      ? 'Show ' + hiddenCount + ' more \u25b8'
+      : 'Show fewer \u25be';
+  });
+  panel.appendChild(btn);
+}
+
 function scoreToConfidence(score) {
   if (score >= 10) return { label: 'Excellent',  cls: 'conf-excellent' };
   if (score >= 6)  return { label: 'Good',       cls: 'conf-good'      };
@@ -5850,7 +6040,10 @@ function renderDefaultPreview() {
 
     var shortName = name.replace(' River','').replace(' Creek','');
     var speciesShort = speciesLabel ? speciesLabel.replace(' Trout','').replace(' Salmon','') : '';
-    return '<div class="dp-card" data-river="' + name + '" data-gauge="' + river.gauge + '"'+'data-sweet-min="' + river.sweetMin + '" data-sweet-max="' + river.sweetMax + '">' +
+    // Species key for goToResults (e.g. 'rainbow', 'brown', 'chinook')
+    var speciesKeyMap = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Brook Trout':'brook','Chinook Salmon':'chinook','Coho Salmon':'coho'};
+    var speciesKey = bestSp ? (speciesKeyMap[bestSp] || '') : '';
+    return '<div class="dp-card" data-river="' + name + '" data-gauge="' + river.gauge + '"'+'data-species="' + speciesKey + '" data-sweet-min="' + river.sweetMin + '" data-sweet-max="' + river.sweetMax + '">' +
       '<div class="dp-name">' + shortName + '</div>' +
       '<div class="dp-row2">' +
         (speciesShort ? '<span class="dp-species">' + speciesShort + '</span>' : '') +
@@ -5862,20 +6055,46 @@ function renderDefaultPreview() {
   el.innerHTML = '<div class="dp-label" id="dp-label-el">Today near Toronto</div>' + '<div class="dp-grid">' + cards + '</div>';
   el.style.display = 'block';
 
-  // Wire card clicks — pick city nearest to this river and go
+  // Wire card clicks — go directly to that river's results page
   el.querySelectorAll('.dp-card').forEach(function(card) {
     card.addEventListener('click', function() {
-      var rname = this.getAttribute('data-river');
+      var rname   = this.getAttribute('data-river');
+      var spKey   = this.getAttribute('data-species') || '';
       var cityMap = {
         'Credit River':'mississauga','Grand River':'guelph','Humber River':'toronto',
         'Bronte Creek':'oakville','Duffins Creek':'ajax','Ganaraska River':'cobourg'
       };
       var city = cityMap[rname] || 'toronto';
-      var locInp = document.getElementById('loc-input-field');
-      if (locInp) { locInp.value = city; locInp.dispatchEvent(new Event('change')); }
-      // Scroll to form
-      var form = document.querySelector('.form-card');
-      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Set all state directly and jump to results — no form submission needed
+      var dbEntry = RIVERS_DB.find(function(r){ return r.name === rname; });
+      if (!dbEntry) return;
+
+      // Set global state
+      selectedRiver = rname + ', ' + dbEntry.loc;
+      selectedTechFamily = [];
+      selectedSpecies = spKey ? [spKey] : [];
+      appMode = 'expert';  // skip beginner ranking block
+      window._beginnerLocKey = city;
+
+      // Set date to today
+      var dateInp = document.getElementById('trip-date');
+      if (dateInp) dateInp.value = new Date().toISOString().slice(0,10);
+
+      // Update species buttons UI
+      document.querySelectorAll('.species-btn').forEach(function(b){ b.classList.remove('active'); });
+      if (spKey) {
+        var spBtn = document.querySelector('.species-btn[data-value="' + spKey + '"]');
+        if (spBtn) spBtn.classList.add('active');
+      }
+
+      // Show results page directly
+      document.getElementById('res-river').textContent = selectedRiver;
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('results').style.display = 'block';
+      window.scrollTo(0, 0);
+      renderResults();
+      setTimeout(loadBaitImages, 800);
     });
   });
 
@@ -5948,7 +6167,37 @@ renderDefaultPreview();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
