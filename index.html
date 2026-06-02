@@ -37,7 +37,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .land-header {
   position:absolute; top:0; left:0; right:0; z-index:10;
   display:flex; align-items:center; justify-content:space-between;
-  padding:1rem 2rem;
+  padding: max(1rem, env(safe-area-inset-top, 1rem)) 2rem 0.75rem;
   background:rgba(14,26,20,0.55);
   backdrop-filter:blur(8px);
   border-bottom:1px solid rgba(139,181,160,0.12);
@@ -60,7 +60,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 /* HERO — river photo */
 .hero-photo {
   position:relative;
-  height:300px;
+  height:320px;
   overflow:hidden;
   flex-shrink:0;
 }
@@ -118,8 +118,11 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 }
 .hero-copy {
   position:absolute;
-  bottom:2.5rem; left:2.5rem; right:2.5rem;
+  bottom:2rem; left:2rem; right:2rem;
   z-index:2;
+  /* Ensure copy doesn't extend above the nav bar */
+  max-height:calc(100% - 4rem);
+  overflow:hidden;
 }
 .hero-copy h1 {
   font-family:'Lora',serif;
@@ -1141,6 +1144,180 @@ select:focus-visible, input:focus-visible {
   .rs { gap: .75rem; }
 }
 
+
+/* Safe area + nav overlap fixes */
+.land-header {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.hero-photo {
+  min-height: 280px;
+}
+/* Ensure hero copy doesn't get hidden behind status bar on iOS */
+.hero-copy {
+  bottom: 2rem;
+  left: 1.5rem;
+  right: 1.5rem;
+}
+@media (max-width: 600px) {
+  .hero-copy h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+  .land-header {
+    padding: max(0.75rem, env(safe-area-inset-top)) 1.25rem 0.75rem;
+  }
+}
+
+/* Bait section inside accordion — remove extra top gap */
+.tg-baits {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: .85rem;
+}
+.tg-baits .tg-gear-lbl {
+  margin-bottom: .5rem;
+}
+
+
+/* ── CONFIDENCE BADGE ────────────────────────────────────────────────────── */
+.tp-confidence {
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: .25rem .7rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin: .4rem 0 .75rem;
+}
+.conf-excellent { background: rgba(45,74,50,.15); color: #2a5e30; }
+.conf-good      { background: rgba(60,120,60,.1);  color: #3a7a3a; }
+.conf-marginal  { background: rgba(180,140,30,.12); color: #8a6800; }
+.conf-tough     { background: rgba(180,60,60,.1);  color: #a03030; }
+
+/* Reuse on rrank cards */
+.conf-badge { font-size: .58rem; padding: .15rem .45rem; }
+
+/* ── DEFAULT RIVER PREVIEW (landing) ─────────────────────────────────────── */
+#default-preview { padding: 2rem 0 2rem; display: none; }
+.dp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: .75rem;
+  padding: 0 .1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.dp-label::before {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  display: none;
+}
+.dp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+.dp-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .75rem;
+  cursor: pointer;
+  transition: border-color .15s;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.dp-card:active { border-color: var(--fern); }
+.dp-name {
+  font-family: 'Lora', serif;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--moss);
+  line-height: 1.2;
+}
+.dp-row2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .25rem;
+}
+.dp-species {
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem;
+  color: var(--sage);
+  opacity: .85;
+}
+.dp-conf {
+  font-family: 'DM Mono', monospace;
+  font-size: .55rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: .15rem .4rem;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+
+.dp-source {
+  font-family: 'DM Mono', monospace;
+  font-size: .55rem;
+  color: var(--sage);
+  opacity: .7;
+  letter-spacing: .03em;
+  text-transform: none;
+  font-weight: normal;
+}
+
+
+/* ── STATUS DOTS ──────────────────────────────────────────────────────────── */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.dot-good { background: #3a9a4a; }
+.dot-warn { background: #d4a012; }
+.dot-bad  { background: #c0392b; }
+
+/* Update gs to use flex for dot + label alignment */
+.gs {
+  display: flex;
+  align-items: center;
+}
+
+/* Column header dot — shown next to col-lbl */
+.col-status-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0;
+  transition: opacity .3s;
+}
+.col-status-dot.visible { opacity: 1; }
+.col-status-dot.dot-good { background: #3a9a4a; }
+.col-status-dot.dot-warn { background: #d4a012; }
+.col-status-dot.dot-bad  { background: #c0392b; }
+
+
+.sky-badge { margin-bottom: .25rem; }
+
 </style>
 </head>
 <body>
@@ -1366,11 +1543,14 @@ select:focus-visible, input:focus-visible {
     </div>
 
   </div>
+
+  <!-- TODAY'S RIVERS — below the form -->
+  <div id="default-preview" style="display:none"></div>
 </div>
 <!-- END LANDING -->
 
 <!-- ============ RESULTS PAGE ============ -->
-<div id="results">
+<div id="results" style="display:none">
   <header class="res-header">
     <div class="res-logo-wrap">
       <div class="res-logo-wave"><span></span><span></span><span></span></div>
@@ -1413,6 +1593,7 @@ select:focus-visible, input:focus-visible {
       <div class="tp-eyebrow">StreamCast Recommendation</div>
       <div class="tp-headline" id="tp-headline">Loading…</div>
       <div class="tp-drive-time" id="tp-drive-time" style="display:none"></div>
+      <div class="tp-confidence" id="tp-confidence" style="display:none"></div>
       <div class="tp-why" id="tp-why"></div>
       <div class="tp-chips" id="tp-chips"></div>
     </div>
@@ -1439,7 +1620,7 @@ select:focus-visible, input:focus-visible {
 
   <div class="cgrid">
     <div class="col fi">
-      <div class="col-lbl" id="flow-gauge-lbl">Flow</div>
+      <div class="col-lbl" id="flow-gauge-lbl">Flow<span class="col-status-dot" id="flow-dot"></span></div>
       <div id="flow-gauge-link" style="margin-bottom:.75rem;display:none">
         <a id="flow-gauge-anchor" href="#" target="_blank" 
            style="font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.06em;color:var(--water);text-decoration:none;border-bottom:1px solid rgba(58,107,120,0.4);padding-bottom:1px;">
@@ -1459,7 +1640,7 @@ select:focus-visible, input:focus-visible {
     </div>
 
     <div class="col fi">
-      <div class="col-lbl">Temperature &amp; Light</div>
+      <div class="col-lbl">Temperature &amp; Light<span class="col-status-dot" id="temp-dot"></span></div>
       <div class="bnum-wrap"><div class="bnum" id="tval">—</div><div class="bnum-u">°C</div></div>
       <div class="bnum-l" id="tlbl">Loading temperature...</div>
       <div class="gw">
@@ -1470,9 +1651,10 @@ select:focus-visible, input:focus-visible {
       </div>
       <hr class="divr">
       <div class="gw">
-        <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
+        <div class="gh"><span class="gn">Sky Cover<span class="col-status-dot" id="sky-dot"></span></span><span class="gv" id="skyv">—</span></div>
         <div class="gt"><div class="gf" id="skybar" style="width:0%"></div></div>
         <div class="gr"><span>Clear</span><span>Ideal: Overcast</span><span>100%</span></div>
+        <div class="gs sky-badge" id="skystat-badge">—</div>
         <div class="gs" id="skystat">—</div>
       </div>
       <hr class="divr">
@@ -1519,17 +1701,17 @@ select:focus-visible, input:focus-visible {
     </div>
     <div class="bpanel" id="p-lures">
       <div class="bgrid">
-        <div class="bi" data-bait-name="Rapala Original Floating"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Rapala Original Floating</div><div class="bdet">4–7 cm · Firetiger, Perch, Rainbow</div><div class="bcond">Classic for Grand River browns. Perch in clear, firetiger in stained.</div></div>
+        <div class="bi" data-bait-name="Rapala Original Floating"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">1</div><div class="bname">Rapala Original Floating</div><div class="bdet">4–7 cm · Firetiger, Perch, Rainbow</div><div class="bcond">Classic crankbait for river browns. Perch in clear water, firetiger in stained.</div></div>
         <div class="bi" data-bait-name="Blue Fox Vibrax Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">2</div><div class="bname">Blue Fox Vibrax Spinner</div><div class="bdet">#3–5 · Silver / Gold blade</div><div class="bcond">Silver in clear conditions, gold in stained. Slow retrieve in cold.</div></div>
-        <div class="bi" data-bait-name="Kastmaster Spoon"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Kastmaster Spoon</div><div class="bdet">1/4–3/8 oz · Silver, Gold</div><div class="bcond">Gets deep fast. Let it sink then work slowly near dam pools.</div></div>
+        <div class="bi" data-bait-name="Kastmaster Spoon"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Kastmaster Spoon</div><div class="bdet">1/4–3/8 oz · Silver, Gold</div><div class="bcond">Gets deep fast. Work it through pools and current seams near structure.</div></div>
         <div class="bi" data-bait-name="Mepps Aglia Spinner"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Mepps Aglia Spinner</div><div class="bdet">#3–4 · Black/Yellow, Natural</div><div class="bcond">Classic trout spinner. Consistent in all flows through seams.</div></div>
       </div>
     </div>
     <div class="bpanel" id="p-float">
       <div class="bgrid">
-        <div class="bi" data-bait-name="Roe Bag"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="4"/><circle cx="14" cy="5" r="3"/><circle cx="17" cy="9" r="2.5"/></svg></div></div><div class="brank">1</div><div class="bname">Roe Bag</div><div class="bdet">Small mesh sacs · Natural or cured</div><div class="bcond">The most effective float fishing bait in Ontario rivers. Match size to flow — smaller in low clear water, larger in high stained water.</div></div>
-        <div class="bi" data-bait-name="Soft Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="7" r="3.5"/><circle cx="16" cy="7" r="3.5"/><line x1="11.5" y1="7" x2="12.5" y2="7"/></svg></div></div><div class="brank">2</div><div class="bname">Soft Bead</div><div class="bdet">10–12 mm · Pink, Peach, Natural</div><div class="bcond">Highly effective for steelhead and salmon. Peg 1–2 inches above hook. Pink in coloured water, natural/peach in clear.</div></div>
-        <div class="bi" data-bait-name="Hard Bead"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="7" r="5" fill="rgba(200,150,58,0.2)"/><circle cx="12" cy="7" r="3"/></svg></div></div><div class="brank">3</div><div class="bname">Hard Bead</div><div class="bdet">8–12 mm · Nuke Egg colours</div><div class="bcond">Peg 1–2 inches above hook. Chartreuse and orange are top producers.</div></div>
+        <div class="bi" data-bait-name="Roe Bag"><div class="brank">1</div><div class="bname">Roe Bag</div><div class="bdet">Small mesh sacs · Natural or cured</div><div class="bcond">The most effective float fishing bait in Ontario rivers. Match size to flow — smaller in low clear water, larger in high stained water.</div></div>
+        <div class="bi" data-bait-name="Soft Bead"><div class="brank">2</div><div class="bname">Soft Bead</div><div class="bdet">10–12 mm · Pink, Peach, Natural</div><div class="bcond">Highly effective for steelhead and salmon. Peg 1–2 inches above hook. Pink in coloured water, natural/peach in clear.</div></div>
+        <div class="bi" data-bait-name="Hard Bead"><div class="brank">3</div><div class="bname">Hard Bead</div><div class="bdet">8–12 mm · Nuke Egg colours</div><div class="bcond">Peg 1–2 inches above hook. Chartreuse and orange are top producers.</div></div>
         <div class="bi" data-bait-name="Plastic Worm"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 10 Q6 4 9 9 Q12 14 15 9 Q18 4 21 8"/></svg></div></div><div class="brank">4</div><div class="bname">Plastic Worm</div><div class="bdet">3–4 inch · Red, Pink, Chartreuse</div><div class="bcond">Thread onto hook and drift naturally. Red and pink for stained water, natural for clear.</div></div>
         <div class="bi" data-bait-name="Nightcrawler"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11 Q5 3 8 9 Q11 15 14 9 Q17 3 20 7 Q22 10 22 10"/></svg></div></div><div class="brank">5</div><div class="bname">Nightcrawler</div><div class="bdet">Full or half · Natural</div><div class="bcond">Classic bait for all trout species. Best in spring and after rain when naturals are washing in.</div></div>
       </div>
@@ -1784,11 +1966,45 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
 // Set this to your deployed Worker URL after running: npx wrangler deploy
 // Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
 // Leave as null to use direct EC API calls (works on pages.dev, may CORS on localhost)
 var RIVER_STOCKING = {"Credit River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 3975, "qtyStr": "4k", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Coho Salmon", "year": 2024, "stage": "Fingerlings", "quantity": 45000, "qtyStr": "45k", "primeYear": 2026, "status": "now", "label": "Fall 2026 run"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 193759, "qtyStr": "194k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 120018, "qtyStr": "120k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2017, "stage": "Yearlings", "quantity": 1100, "qtyStr": "1k", "primeYear": 2018, "status": "past", "label": "Class of 2017 — established fish"}], "Grand River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 272, "qtyStr": "272", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 300, "qtyStr": "300", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 6, "qtyStr": "6", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Humber River": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 30135, "qtyStr": "30k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brook Trout", "year": 2023, "stage": "Yearlings", "quantity": 5603, "qtyStr": "6k", "primeYear": 2024, "status": "past", "label": "Class of 2023 — established fish"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 302, "qtyStr": "302", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Bronte Creek": [{"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 54474, "qtyStr": "54k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 80047, "qtyStr": "80k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}], "Rouge River": [{"species": "Rainbow Trout", "year": 2024, "stage": "Fingerlings", "quantity": 16000, "qtyStr": "16k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}], "Beaver River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 1200, "qtyStr": "1k", "primeYear": 2026, "status": "now", "label": "Prime this season"}], "Saugeen River": [{"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 50, "qtyStr": "50", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Bowmanville Creek": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 31261, "qtyStr": "31k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2023, "stage": "Fingerlings", "quantity": 40000, "qtyStr": "40k", "primeYear": 2025, "status": "past", "label": "Class of 2023 — established fish"}]};
+
+
+var DEFAULT_RIVERS = [
+  { name:'Credit River',    gauge:'02HB001', sweetMin:5,  sweetMax:15, lat:43.78, lng:-79.97 },
+  { name:'Grand River',     gauge:'02GA016', sweetMin:8,  sweetMax:12, lat:43.703,lng:-80.274},
+  { name:'Humber River',    gauge:'02HC025', sweetMin:3,  sweetMax:12, lat:43.88, lng:-79.73 },
+  { name:'Bronte Creek',    gauge:'02HB022', sweetMin:2,  sweetMax:8,  lat:43.51, lng:-79.82 },
+  { name:'Duffins Creek',   gauge:'02HC019', sweetMin:2,  sweetMax:10, lat:43.87, lng:-79.12 },
+  { name:'Ganaraska River', gauge:'02HD012', sweetMin:2,  sweetMax:12, lat:43.95, lng:-78.30 },
+];
 
 var PROXY_URL = "https://streamcast-proxy.tnt-tarun.workers.dev";
 
@@ -3411,7 +3627,11 @@ function clsFlow(f,cfg){
 }
 function clsTemp(t){return t<TEMP_MIN-2?"bad":t<TEMP_MIN?"warn":t<=TEMP_MAX?"good":t<TEMP_STRESS?"warn":"bad";}
 function clsSky(c){return c>=70?"good":c>=40?"warn":"bad";}
-function clsLbl(c){return c==="good"?"IDEAL":c==="warn"?"MARGINAL":"POOR";}
+function clsLbl(c){
+  var dot = '<span class="status-dot '+( c==="good"?"dot-good":c==="warn"?"dot-warn":"dot-bad")+'"></span>';
+  var lbl = c==="good"?"Ideal":c==="warn"?"Marginal":"Poor";
+  return dot+lbl;
+}
 function clsIcon(c){return c==="good"?"\u2713":c==="warn"?"\u25b3":"\u2715";}
 function barW(v,mn,mx){return Math.min(100,Math.max(2,((v-mn)/(mx-mn))*100));}
 
@@ -3724,6 +3944,11 @@ function updateMethods(fc,tc,sc,flow,wt){
   document.getElementById("m3n").textContent=m3.n;document.getElementById("m3d").textContent=m3.d;document.getElementById("m3c").innerHTML=m3.c;
   // Build gear for primary method
   buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
+  // Adapt lure panel to species and conditions
+  setTimeout(function(){
+    var _sp = selectedSpecies.length > 0 ? selectedSpecies[0] : '';
+    adaptLurePanel(_sp, {cold:cold, high:high, low:low});
+  }, 50);
 
   // Populate primary bait panel — single relevant panel, no tabs
   (function() {
@@ -4073,6 +4298,8 @@ async function renderResults(){
     document.getElementById("fgv").textContent=flow+" m\u00b3/s";
     var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh*1.1)+"%";fb.className="gf "+fc;
     document.getElementById("fstat").textContent=clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
+    var _fd=document.getElementById("flow-dot");
+    if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
     document.getElementById("fcl").innerHTML=[
       {t:"Flow "+flow+" m\u00b3/s (sweet spot: "+sweetRange+")",c:fc},
       {t:"Trend: "+(trend==="up"?"Rising \u2191 \u2014 good sign":trend==="down"?"Falling \u2193 \u2014 monitor":"Stable \u2192 watch for changes"),c:trend==="up"?"good":"warn"},
@@ -4094,9 +4321,15 @@ async function renderResults(){
   document.getElementById("tgv").textContent=wt+"\u00b0C";
   var tb=document.getElementById("tbar");tb.style.width=barW(wt,0,22)+"%";tb.className="gf "+tc;
   document.getElementById("tstat").textContent=clsLbl(tc);document.getElementById("tstat").className="gs "+tc;
+  var _td=document.getElementById("temp-dot");
+  if(_td){_td.className="col-status-dot visible dot-"+(tc==="good"?"good":tc==="warn"?"warn":"bad");}
 
   // Sky column
   document.getElementById("skyv").textContent=skyl+" ("+cloudPct+"%)";
+  var _skyBadge=document.getElementById("skystat-badge");
+  if(_skyBadge){_skyBadge.innerHTML=clsLbl(sc);_skyBadge.className="gs sky-badge "+sc;}
+  var _skd=document.getElementById("sky-dot");
+  if(_skd){_skd.className="col-status-dot visible dot-"+(sc==="good"?"good":sc==="warn"?"warn":"bad");}
   var sb=document.getElementById("skybar");sb.style.width=cloudPct+"%";sb.className="gf "+sc;
   document.getElementById("skystat").textContent=sc==="good"?"Fish feed through the whole water column all day.":sc==="warn"?"Morning and evening windows open. Midday slows.":"Clear \u2014 fish hard until 8:30 AM then expect it to die.";
   document.getElementById("skystat").className="gs "+sc;
@@ -4683,6 +4916,45 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   document.getElementById('tp-headline').innerHTML = headlineHtml;
   // Always show the band
   if (band) band.style.display = 'block';
+
+  // Confidence badge
+  var _confEl = document.getElementById('tp-confidence');
+  if (_confEl) {
+    var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
+    // In expert mode, estimate score from season quality
+    if (_topScore == null) {
+      var _cfg2 = getRiverConfig(selectedRiver);
+      var _bka2 = Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
+      var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+      var _spName = _bka2.length ? _sm2[_bka2[0]] : null;
+      var _seas = _spName ? getCurrentSeason(_spName) : null;
+      _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
+    }
+    // Add live conditions bonus to the score
+    var _liveCfg = getRiverConfig(selectedRiver);
+    if (_liveCfg && flow != null) {
+      var _liveBonus = liveConditionsScore(
+        flow, _liveCfg.sweetMin, _liveCfg.sweetMax,
+        _liveCfg.flowLow, _liveCfg.flowHigh,
+        wt, cloudPct
+      );
+      _topScore += _liveBonus;
+    }
+    // Add live conditions bonus to score (flow, temp, sky all available at this point)
+    var _liveCfg = getRiverConfig(selectedRiver);
+    if (_liveCfg && flow != null) {
+      _topScore += liveConditionsScore(
+        flow, _liveCfg.sweetMin, _liveCfg.sweetMax,
+        _liveCfg.flowLow || _liveCfg.sweetMin * 0.3,
+        _liveCfg.flowHigh || _liveCfg.sweetMax * 3,
+        weatherOk ? wt : null, weatherOk ? cloudPct : null
+      );
+    }
+    var _conf = scoreToConfidence(_topScore);
+    _confEl.textContent = 'Conditions: ' + _conf.label;
+    _confEl.className = 'tp-confidence ' + _conf.cls;
+    _confEl.style.display = 'inline-block';
+  }
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
   // Always try RIVERS_DB for drive time (covers expert mode and when nearbyRivers misses)
@@ -4796,7 +5068,7 @@ function renderRiverRanker(locKey, maxMinutes) {
       '<div class="rrank-drive">'+fmtDrive(r.driveTime)+' away</div>' +
       (notesHtml ? '<div style="margin-bottom:.3rem">'+notesHtml+'</div>' : '') +
       (warnHtml  ? '<div style="margin-bottom:.3rem">'+warnHtml+'</div>'  : '') +
-      '<span class="rrank-badge '+scoreLabel+'">'+scoreText+'</span>' +
+      rrankBadge(r.score) +
     '</div>';
   }).join('');
 
@@ -5423,7 +5695,284 @@ function renderStockingSection(riverName) {
 
 
 
+// ── LURE PANEL ADAPTER ────────────────────────────────────────────────────────
+// Re-ranks lure bait cards based on selected species and conditions
+function adaptLurePanel(species, conditions) {
+  var panel = document.getElementById('bpanels-primary');
+  if (!panel) return;
+  var activePanelClone = panel.querySelector('.bpanel.active');
+  if (!activePanelClone) return;
+
+  // Check if this is a lures panel
+  var baitLabel = document.getElementById('tg-baits-primary-lbl');
+  if (!baitLabel || !baitLabel.textContent.includes('Lure')) return;
+
+  var isSalmon = species === 'chinook' || species === 'coho';
+  var isTrout  = species === 'brown' || species === 'rainbow' || species === 'brook';
+  var isLow    = conditions && conditions.low;
+  var isCold   = conditions && conditions.cold;
+
+  // Re-rank cards: move most relevant to top
+  var cards = Array.from(activePanelClone.querySelectorAll('.bi'));
+  if (!cards.length) return;
+
+  var order = [];
+  if (isSalmon) {
+    // Salmon: spoons and larger spinners, skip small crankbaits
+    order = ['Kastmaster Spoon', 'Mepps Aglia Spinner', 'Blue Fox Vibrax Spinner', 'Rapala Original Floating'];
+  } else if (isCold) {
+    // Cold water: slow spinners, blade baits
+    order = ['Blue Fox Vibrax Spinner', 'Mepps Aglia Spinner', 'Kastmaster Spoon', 'Rapala Original Floating'];
+  } else if (isLow) {
+    // Low clear water: small spinners, natural colours
+    order = ['Mepps Aglia Spinner', 'Blue Fox Vibrax Spinner', 'Rapala Original Floating', 'Kastmaster Spoon'];
+  } else {
+    // Normal trout conditions: spinners first
+    order = ['Blue Fox Vibrax Spinner', 'Mepps Aglia Spinner', 'Rapala Original Floating', 'Kastmaster Spoon'];
+  }
+
+  var cardMap = {};
+  cards.forEach(function(c) { cardMap[c.getAttribute('data-bait-name')] = c; });
+
+  var grid = activePanelClone.querySelector('.bgrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  // Add in preferred order, then any remaining
+  order.forEach(function(name) {
+    if (cardMap[name]) {
+      var rank = order.indexOf(name) + 1;
+      cardMap[name].querySelector('.brank').textContent = rank;
+      grid.appendChild(cardMap[name]);
+      delete cardMap[name];
+    }
+  });
+  // Append any remaining cards not in the order list
+  Object.values(cardMap).forEach(function(c, i) {
+    c.querySelector('.brank').textContent = order.length + i + 1;
+    grid.appendChild(c);
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+// ── CONFIDENCE SCORE ──────────────────────────────────────────────────────────
+
+// ── LIVE CONDITIONS SCORING ───────────────────────────────────────────────────
+function liveConditionsScore(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct) {
+  var s = 0;
+  // Flow
+  if (flow != null) {
+    if (flow >= sweetMin && flow <= sweetMax)         s += 5;  // in sweet spot
+    else if (flow >= flowLow && flow <= flowHigh)     s += 0;  // fishable but not ideal
+    else                                              s -= 4;  // blown or too low
+  }
+  // Temperature
+  if (tempC != null) {
+    if (tempC >= 8  && tempC <= 14)  s += 3;  // prime
+    else if (tempC >= 4  && tempC < 8)  s += 1;
+    else if (tempC > 14 && tempC <= 18) s += 1;
+    else                                s -= 3;  // too cold or too warm
+  }
+  // Sky
+  if (cloudPct != null) {
+    if (cloudPct >= 60)  s += 2;  // overcast — ideal
+    else if (cloudPct >= 30) s += 1;
+    // clear = 0 bonus
+  }
+  return s;
+}
+
+// Fetch weather for a lat/lng and return {tempC, cloudPct}
+async function fetchLandingWeather(lat, lng) {
+  try {
+    var url = 'https://api.open-meteo.com/v1/forecast'
+      + '?latitude=' + lat + '&longitude=' + lng
+      + '&hourly=temperature_2m,cloudcover'
+      + '&forecast_days=1&timezone=America%2FToronto';
+    var res = await fetch(url);
+    if (!res.ok) return null;
+    var data = await res.json();
+    var hour = new Date().getHours();
+    var tempC    = data.hourly && data.hourly.temperature_2m   ? data.hourly.temperature_2m[hour]   : null;
+    var cloudPct = data.hourly && data.hourly.cloudcover       ? data.hourly.cloudcover[hour]       : null;
+    return { tempC: tempC, cloudPct: cloudPct };
+  } catch(e) { return null; }
+}
+
+function scoreToConfidence(score) {
+  if (score >= 10) return { label: 'Excellent',  cls: 'conf-excellent' };
+  if (score >= 6)  return { label: 'Good',       cls: 'conf-good'      };
+  if (score >= 2)  return { label: 'Marginal',   cls: 'conf-marginal'  };
+  return              { label: 'Tough',      cls: 'conf-tough'     };
+}
+
+function rrankBadge(score) {
+  var c = scoreToConfidence(score);
+  return '<span class="rrank-badge conf-badge ' + c.cls + '">' + c.label + '</span>';
+}
+
+
+// ── DEFAULT RIVER PREVIEW (landing page, no city selected) ───────────────────
+function renderDefaultPreview() {
+  var el = document.getElementById('default-preview');
+  if (!el) return;
+
+  var cards = DEFAULT_RIVERS.map(function(river) {
+    var name = river.name;
+    var dbEntry = RIVERS_DB.find(function(r){ return r.name === name; });
+    var cfg = getRiverConfig(name);
+    if (!cfg || !dbEntry) return '';
+
+    // Quick season quality estimate (no flow data on landing)
+    var bestQ = 'absent', bestSp = '';
+    (cfg.species || []).forEach(function(s) {
+      var w = getCurrentSeason(s);
+      if (!w) return;
+      if (w.quality === 'peak' && bestQ !== 'peak')       { bestQ = 'peak';   bestSp = s; }
+      else if (w.quality === 'good' && bestQ === 'absent'){ bestQ = 'good';   bestSp = s; }
+      else if (w.quality === 'slow' && bestQ === 'absent'){ bestQ = 'slow';   bestSp = s; }
+    });
+
+    var score = bestQ === 'peak' ? 10 : bestQ === 'good' ? 6 : bestQ === 'slow' ? 2 : 0;
+    var conf  = scoreToConfidence(score);
+    var drive = dbEntry.times['toronto'] || 60;
+    var driveStr = drive < 60 ? drive + ' min' : (drive === 60 ? '1 hr' : Math.floor(drive/60) + ' hr ' + (drive%60||''));
+    var speciesLabel = bestSp ? bestSp.replace(' Trout','').replace(' Salmon','') : (cfg.species||[])[0]||'';
+
+    var shortName = name.replace(' River','').replace(' Creek','');
+    var speciesShort = speciesLabel ? speciesLabel.replace(' Trout','').replace(' Salmon','') : '';
+    return '<div class="dp-card" data-river="' + name + '" data-gauge="' + river.gauge + '"'+'data-sweet-min="' + river.sweetMin + '" data-sweet-max="' + river.sweetMax + '">' +
+      '<div class="dp-name">' + shortName + '</div>' +
+      '<div class="dp-row2">' +
+        (speciesShort ? '<span class="dp-species">' + speciesShort + '</span>' : '') +
+        '<span class="dp-conf ' + conf.cls + '" id="dp-conf-' + name.replace(/ /g,'-') + '">' + conf.label + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  el.innerHTML = '<div class="dp-label" id="dp-label-el">Today near Toronto</div>' + '<div class="dp-grid">' + cards + '</div>';
+  el.style.display = 'block';
+
+  // Wire card clicks — pick city nearest to this river and go
+  el.querySelectorAll('.dp-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var rname = this.getAttribute('data-river');
+      var cityMap = {
+        'Credit River':'mississauga','Grand River':'guelph','Humber River':'toronto',
+        'Bronte Creek':'oakville','Duffins Creek':'ajax','Ganaraska River':'cobourg'
+      };
+      var city = cityMap[rname] || 'toronto';
+      var locInp = document.getElementById('loc-input-field');
+      if (locInp) { locInp.value = city; locInp.dispatchEvent(new Event('change')); }
+      // Scroll to form
+      var form = document.querySelector('.form-card');
+      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Update label with source note
+  var lbl = document.getElementById('dp-label-el') || el.querySelector('.dp-label');
+  if (lbl) lbl.innerHTML = 'TODAY NEAR TORONTO <span class="dp-source">· Live flow loading…</span>';
+
+  // Fetch live conditions for each river in parallel
+  var _baseScores = {};
+  DEFAULT_RIVERS.forEach(function(river) { _baseScores[river.name] = 0; });
+
+  // Get weather once for Toronto area (shared)
+  fetchLandingWeather(43.7, -79.4).then(function(wx) {
+    var tempC = wx ? wx.tempC : null;
+    var cloudPct = wx ? wx.cloudPct : null;
+
+    // Fetch flow for each river
+    var fetches = DEFAULT_RIVERS.map(function(river) {
+      return fetchFlow(river.gauge).then(function(fd) {
+        var flow = fd ? fd.flow : null;
+        var cfg  = getRiverConfig(river.name);
+        var flowLow  = cfg ? cfg.flowLow  : river.sweetMin * 0.3;
+        var flowHigh = cfg ? cfg.flowHigh : river.sweetMax * 2;
+
+        // Recalculate base score from season
+        var dbEntry = RIVERS_DB.find(function(r){ return r.name === river.name; });
+        var drive = dbEntry && dbEntry.times ? (dbEntry.times['toronto'] || 60) : 60;
+        var tempRivers = [{ name: river.name, driveTime: drive, times: dbEntry ? dbEntry.times : {} }];
+        var ranked = rankRivers(tempRivers, [], new Date().toISOString().slice(0,10));
+        var baseScore = ranked.length ? ranked[0].score : 4;
+
+        // Add live conditions
+        var liveBonus = liveConditionsScore(flow, river.sweetMin, river.sweetMax, flowLow, flowHigh, tempC, cloudPct);
+        var totalScore = baseScore + liveBonus;
+        var conf = scoreToConfidence(totalScore);
+
+        // Update badge in place
+        var badgeEl = document.getElementById('dp-conf-' + river.name.replace(/ /g, '-'));
+        if (badgeEl) {
+          badgeEl.textContent = conf.label;
+          badgeEl.className = 'dp-conf ' + conf.cls;
+        }
+        // Update card data attrs for tooltip
+        var card = el.querySelector('[data-river="' + river.name + '"]');
+        if (card && flow != null) {
+          card.setAttribute('data-flow', flow);
+        }
+        return { name: river.name, flow: flow, score: totalScore };
+      }).catch(function() { return { name: river.name, flow: null }; });
+    });
+
+    Promise.all(fetches).then(function(results) {
+      var gotFlow = results.some(function(r){ return r.flow != null; });
+      if (lbl) lbl.innerHTML = 'Today near Toronto'
+        + ' <span class="dp-source">'+(gotFlow?'· Live flow · Default gauge':'· Seasonal estimate')+'</span>';
+    });
+  });
+}
+
+// Render default preview after all JS is parsed
+renderDefaultPreview();
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
