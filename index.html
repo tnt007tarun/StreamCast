@@ -258,7 +258,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .clear-all:hover { opacity:1; }
 .tech-chips {
   display:grid;
-  grid-template-columns:repeat(7,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:0.5rem;
 }
 .tech-chip {
@@ -506,7 +506,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .fi:nth-child(10){animation-delay:.58s} .fi:nth-child(11){animation-delay:.64s}
 
 @media(max-width:900px){
-  .form-top,.tech-chips{grid-template-columns:1fr 1fr;}
+  .form-top{grid-template-columns:1fr 1fr;}
+  .tech-chips{grid-template-columns:repeat(3,1fr);}
   .cgrid,.mgrid{grid-template-columns:1fr;}
   .col,.mc{border-right:none;border-bottom:1px solid var(--border);}
   .summary-strip{grid-template-columns:1fr 1fr;}
@@ -1414,6 +1415,10 @@ select:focus-visible, input:focus-visible {
 }
 .bait-show-more:hover { color: var(--moss); background: rgba(45,74,50,.03); }
 
+
+/* Steelhead species button — silver-blue palette */
+.sb-steelhead { filter: hue-rotate(180deg) saturate(0.6); }
+
 </style>
 </head>
 <body>
@@ -1532,10 +1537,10 @@ select:focus-visible, input:focus-visible {
       <div class="beginner-only">
         <div class="field-lbl" style="margin-bottom:.65rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
         <div id="tech-family-grid">
-          <button class="tech-family-btn active" data-family="">🎣 Any style</button>
-          <button class="tech-family-btn" data-family="spin">🎡 Spin Fishing</button>
-          <button class="tech-family-btn" data-family="float">🪮 Float Fishing</button>
-          <button class="tech-family-btn" data-family="fly">🪰 Fly Fishing</button>
+          <button class="tech-family-btn active" data-family=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
+          <button class="tech-family-btn" data-family="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
+          <button class="tech-family-btn" data-family="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
+          <button class="tech-family-btn" data-family="fly"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/></svg></div>Fly Fishing</button>
         </div>
       </div>
       <!-- Expert mode: granular chips -->
@@ -1546,35 +1551,30 @@ select:focus-visible, input:focus-visible {
       </div>
       <div class="tech-chips">
         <div class="tech-chip" data-tech="Dry Fly">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><path d="M3 18 C6 14, 10 10, 14 8"/><path d="M14 8 C16 7, 18 8, 19 10"/><circle cx="19" cy="10" r="1.5" fill="currentColor" stroke="none"/><path d="M5 20 L3 22"/></svg></div>
+          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/><path d="M18 18 C18 20 17 21 16 21 C15 21 14 20 14 19"/></svg></div>
           <div class="tc-lbl">Dry Fly</div>
         </div>
         <div class="tech-chip" data-tech="Nymphing">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><path d="M12 4 L12 18"/><path d="M8 10 C9 12, 11 13, 12 13"/><path d="M16 10 C15 12, 13 13, 12 13"/><path d="M9 18 L15 18"/><circle cx="12" cy="20" r="1.5" fill="currentColor" stroke="none"/></svg></div>
+          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="11"/><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M10 15 C8 17 8 19 10 19"/><path d="M14 15 C16 17 16 19 14 19"/></svg></div>
           <div class="tc-lbl">Nymphing</div>
         </div>
-        <div class="tech-chip" data-tech="Euro Nymphing">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><path d="M4 18 L20 6"/><path d="M20 6 L16 8"/><path d="M20 6 L18 10"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg></div>
-          <div class="tc-lbl">Euro Nymphing</div>
-        </div>
         <div class="tech-chip" data-tech="Float / Centrepin">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 4 L12 8"/><path d="M12 16 L12 20"/><path d="M4 12 L8 12"/><path d="M16 12 L20 12"/></svg></div>
+          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
           <div class="tc-lbl">Float / Centrepin</div>
         </div>
         <div class="tech-chip" data-tech="Spin / Lure">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><path d="M4 12 C6 9, 10 8, 14 10 C18 12, 20 10, 21 8"/><path d="M21 8 L19 12"/><path d="M21 8 L17 9"/></svg></div>
+          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/><path d="M20 6 L22 8 L20 10 L18 8 Z" fill="currentColor" stroke="none"/></svg></div>
           <div class="tc-lbl">Spin / Lure</div>
         </div>
         <div class="tech-chip" data-tech="Bait Fishing">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><path d="M7 20 C7 16, 10 14, 12 14 C14 14, 17 16, 17 20"/><path d="M12 4 L12 14"/><path d="M9 7 L15 7"/></svg></div>
+          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6 C6 10 10 10 10 14 C10 18 6 18 6 16"/><path d="M10 14 C12 12 14 13 14 15 C14 18 11 19 10 17"/><path d="M17 8 C17 10 16 13 15 14"/><path d="M17 8 C19 8 20 10 19 12 C18 14 16 14 15 14"/></svg></div>
           <div class="tc-lbl">Bait Fishing</div>
         </div>
         <div class="tech-chip" data-tech="Streamers">
-          <div class="tc-icon"><svg viewBox="0 0 24 24"><path d="M3 12 C6 8, 10 6, 14 8 C18 10, 20 14, 20 14"/><path d="M14 8 L18 6"/><path d="M14 8 L16 12"/></svg></div>
+          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 C6 10 9 10 11 12 C13 14 15 14 18 12"/><path d="M11 12 L14 8 M11 12 L14 16 M11 12 L8 8"/><path d="M18 12 C20 12 21 13 21 15 C21 17 20 18 18 18 C17 18 17 17 18 16"/></svg></div>
           <div class="tc-lbl">Streamers</div>
         </div>
       </div>
-    </div>
 
     <!-- Travel time slider (beginner mode only) -->
     <div class="beginner-only travel-row">
@@ -1612,6 +1612,12 @@ select:focus-visible, input:focus-visible {
             </div>
             <span class="species-btn-name">Rainbow Trout</span>
           </button>
+          <button class="species-btn" data-value="steelhead" data-label="Steelhead">
+            <div class="species-btn-img" style="background:linear-gradient(135deg,#3a6e8c,#7ab8d4,#c8dce8)">
+              <svg viewBox="0 0 50 28" fill="none"><path d="M38 14 C34 7,24 4,14 7 C8 9,3 13,3 14 C3 15,8 19,14 21 C24 24,34 21,38 14Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"/><path d="M38 14 L46 9 L44 14 L46 19 Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"/><path d="M14 8 C20 5 30 5 37 12 C30 20 20 22 14 20" stroke="rgba(220,100,140,0.65)" stroke-width="2.5" fill="none"/><circle cx="10" cy="13" r="1.4" fill="rgba(255,255,255,0.85)"/></svg>
+            </div>
+            <span class="species-btn-name">Steelhead</span>
+          </button>
           <button class="species-btn" data-value="brook" data-label="Brook Trout">
             <div class="species-btn-img" style="background:linear-gradient(135deg,#1a4a2e,#2d6b4a,#4a9a6a)">
               <svg viewBox="0 0 50 28" fill="none"><path d="M38 14 C34 7,24 4,14 7 C8 9,3 13,3 14 C3 15,8 19,14 21 C24 24,34 21,38 14Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"/><path d="M38 14 L46 9 L44 14 L46 19 Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"/><circle cx="10" cy="13" r="1.4" fill="rgba(255,255,255,0.85)"/><circle cx="19" cy="9.5" r="2" fill="rgba(200,150,50,0.45)" stroke="rgba(255,210,100,0.55)" stroke-width="0.8"/><circle cx="27" cy="16" r="1.6" fill="rgba(200,150,50,0.45)" stroke="rgba(255,210,100,0.55)" stroke-width="0.8"/><circle cx="31" cy="10" r="1.8" fill="rgba(200,150,50,0.45)" stroke="rgba(255,210,100,0.55)" stroke-width="0.8"/></svg>
@@ -1639,11 +1645,13 @@ select:focus-visible, input:focus-visible {
     </div>
 
   </div>
+</div>
 
   <!-- TODAY'S RIVERS — below the form -->
   <div class="default-preview-wrap">
     <div id="default-preview" style="display:none"></div>
   </div>
+
 </div>
 <!-- END LANDING -->
 
@@ -2104,6 +2112,18 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
 // Set this to your deployed Worker URL after running: npx wrangler deploy
 // Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
@@ -2204,7 +2224,7 @@ var RIVER_CONFIG = {
     lat: 43.78, lng: -79.97,
     sweetMin: 5, sweetMax: 15,
     flowLow: 3, flowHigh: 25,
-    species: ["Brown Trout", "Rainbow Trout", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
+    species: ["Brown Trout", "Rainbow Trout", "Steelhead", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
     routine: [{ t: "Review CVC (Credit Valley Conservation) notices", d: "CVC manages flood control and can issue flow warnings. Check cvc.ca for any active advisories before heading out." },
       { t: "Check for recent rain in Orangeville / Caledon", d: "The Credit headwaters above Orangeville respond quickly to rain. A moderate rain 24 hrs prior means rising flows and slightly stained, productive water." },
       { t: "Check regulations for your specific reach", d: "Many upper Credit sections are catch-and-release only. Special regulations apply around Forks of the Credit Provincial Park. Always verify OMNR rules." }
@@ -2296,7 +2316,7 @@ var RIVER_CONFIG = {
     lat: 44.19, lng: -79.88,
     sweetMin: 6, sweetMax: 18,
     flowLow: 3, flowHigh: 35,
-    species: ["Brown Trout", "Rainbow Trout", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
+    species: ["Brown Trout", "Rainbow Trout", "Steelhead", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
     routine: [{ t: "Call the Angus bait shop or check Nottawasaga Valley CA reports", d: "Local outfitters near Alliston and Angus are the best real-time source. They fish it daily and will tell you exactly what\u2019s happening." },
       { t: "Check for upstream rain from Georgian Bay watersheds", d: "The Notty\u2019s upper tributaries drain the Collingwood highlands. Heavy rain north of Barrie will raise the Alliston reach within 6\u20138 hours." },
       { t: "Time for steelhead and salmon runs in the lower river", d: "Below Alliston, the Nottawasaga receives significant steelhead (spring) and Chinook/Coho (fall) runs from Georgian Bay. Timing the run is everything." }
@@ -3577,7 +3597,7 @@ function goToResults(){
   } else {
     // Map expert tech chip selections to family values used by updateMethods
     var _chipFamilyMap = {
-      'Dry Fly':'fly','Nymphing':'fly','Euro Nymphing':'fly','Streamers':'fly',
+      'Dry Fly':'fly','Nymphing':'fly','Streamers':'fly',
       'Float / Centrepin':'float','Bait Fishing':'float','Spin / Lure':'spin'
     };
     // Read directly from DOM — window._selectedTechs isn't set until renderResults
@@ -3607,7 +3627,7 @@ function goToResults(){
     // If species selected, prefer a river that actually has it over the closest one
     var bestPick = ranked[0];
     if (selectedSpecies.length > 0) {
-      var _sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+      var _sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
       var targetSpeciesNames = selectedSpecies.map(function(k){ return _sm[k]; });
       // Find the highest-scored river that has at least one selected species
       var withSpecies = ranked.filter(function(r){
@@ -4438,7 +4458,7 @@ async function renderResults(){
   document.getElementById("tlbl").textContent="Est. water temp (air: "+airTemp+"\u00b0C). "+(tc==="good"?"Prime feeding range for trout.":tc==="warn"?(wt<TEMP_MIN?"Below prime \u2014 fish lethargic.":"Warming \u2014 early morning only."):(wt>=TEMP_STRESS?"Conservation advisory: stop fishing above 18\u00b0C.":"Too cold \u2014 fish inactive."));
   document.getElementById("tgv").textContent=wt+"\u00b0C";
   var tb=document.getElementById("tbar");tb.style.width=barW(wt,0,22)+"%";tb.className="gf "+tc;
-  document.getElementById("tstat").textContent=clsLbl(tc);document.getElementById("tstat").className="gs "+tc;
+  document.getElementById("tstat").innerHTML=clsLbl(tc);document.getElementById("tstat").className="gs "+tc;
   // Combined temp+sky indicator — average the two classifications
   var _clsRank = {good:2, warn:1, bad:0};
   var _tcRank = _clsRank[tc] !== undefined ? _clsRank[tc] : 1;
@@ -4608,14 +4628,24 @@ var SPECIES_SEASONS = {
   },
   "Rainbow Trout": {
     latin: "Oncorhynchus mykiss",
-    type: "resident+migratory",
+    type: "resident",
     windows: [
-      { months: [2,4],   quality: "peak",    label: "Steelhead Run", note: "Spring steelhead run from Lake Ontario / Georgian Bay. Peak fishing of the year." },
-      { months: [3,5],   quality: "peak",    label: "Spring",        note: "Resident fish active post-spawn. Nymphs and dry flies." },
-      { months: [6,7],   quality: "slow",    label: "Summer",        note: "Resident fish slow in heat. Steelhead back in lake." },
-      { months: [8,9],   quality: "good",    label: "Fall",          note: "Resident fish feeding hard. Some early steelhead return." },
-      { months: [10,11], quality: "good",    label: "Late Fall",     note: "Steelhead begin returning to rivers. Building toward winter." },
-      { months: [11,2],  quality: "slow",    label: "Winter",        note: "Winter steelhead possible in some rivers. Slow and technical." }
+      { months: [3,5],   quality: "peak",    label: "Spring",     note: "Resident rainbow active post-steelhead season. Nymphs and emerging dries." },
+      { months: [5,6],   quality: "good",    label: "Late Spring",note: "Good evening dry fly fishing. Find fish in riffles and runs." },
+      { months: [6,7],   quality: "slow",    label: "Summer",     note: "Seek cold headwaters. Early morning essential above 18°C." },
+      { months: [8,9],   quality: "good",    label: "Fall",       note: "Resident fish feeding hard pre-winter. Nymphs and streamers." },
+      { months: [10,11], quality: "slow",    label: "Late Fall",  note: "Cooling water slows residents. Fish deep slow pools." },
+      { months: [11,2],  quality: "slow",    label: "Winter",     note: "Very slow. Residents hold in deepest pools. Closed most sections." }
+    ]
+  },
+  "Steelhead": {
+    latin: "Oncorhynchus mykiss (anadromous)",
+    type: "migratory",
+    windows: [
+      { months: [2,4],   quality: "peak",    label: "Spring Run",  note: "Peak spring steelhead run from Lake Ontario and Georgian Bay. Best of the year." },
+      { months: [5,8],   quality: "absent",  label: "Lake",        note: "Steelhead have dropped back to the lake. Target resident rainbow instead." },
+      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through October." },
+      { months: [11,1],  quality: "good",    label: "Winter Run",  note: "Winter steelhead in larger rivers. Slow float with roe or beads. Hardy angling." }
     ]
   },
   "Brook Trout": {
@@ -4749,7 +4779,7 @@ function renderSpeciesRail(cfg) {
 
   var allSpecies = ["Brown Trout","Rainbow Trout","Brook Trout","Chinook Salmon","Coho Salmon"];
   var speciesFilterMap = {brown:"Brown Trout",rainbow:"Rainbow Trout",brook:"Brook Trout",chinook:"Chinook Salmon",coho:"Coho Salmon"};
-  var _spm2={brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var _spm2={brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var targetSpeciesArr=selectedSpecies.map(function(k){return _spm2[k];}).filter(Boolean);
 
   // Count how many are present and in-season
@@ -4855,7 +4885,7 @@ function setMode(mode) {
 // ── RANK NEARBY RIVERS BY FISHABILITY ─────────────────────────────────────────
 function rankRivers(rivers, speciesKey, dateStr) {
   var isToday = dateStr === new Date().toISOString().slice(0,10);
-  var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var _ska=Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
   var targetSpeciesNames=_ska.map(function(k){return speciesMap[k];}).filter(Boolean);
   var targetSpeciesName=targetSpeciesNames.length===1?targetSpeciesNames[0]:null;
@@ -4935,7 +4965,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var band = document.getElementById('tpband');
   if (!band) return;
 
-  var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var _bka=Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
   var targetName=_bka.length===1?speciesMap[_bka[0]]:null;
   var cfg = getRiverConfig(selectedRiver);
@@ -5046,7 +5076,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     if (_topScore == null) {
       var _cfg2 = getRiverConfig(selectedRiver);
       var _bka2 = Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
-      var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+      var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
       var _spName = _bka2.length ? _sm2[_bka2[0]] : null;
       var _seas = _spName ? getCurrentSeason(_spName) : null;
       _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
@@ -5097,65 +5127,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   }
     'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
 
-  // Why — structured condition rows with icons
-  function _whyRow(cls, label, detail) {
-    var icon = cls === 'good' ? '\u2713' : cls === 'warn' ? '\u26a0\ufe0f' : '\u00d7';
-    var iconCls = cls === 'good' ? 'why-good' : cls === 'warn' ? 'why-warn' : 'why-bad';
-    return '<div class="why-row">'
-      + '<span class="why-icon ' + iconCls + '">' + icon + '</span>'
-      + '<span class="why-label">' + label + '</span>'
-      + (detail ? '<span class="why-detail">' + detail + '</span>' : '')
-      + '</div>';
-  }
-
-  var whyRows = '';
-
-  // Row 1: Species season
-  if (speciesNote) {
-    var _seasCls = speciesNote.toLowerCase().indexOf('peak') !== -1 ? 'good'
-      : speciesNote.toLowerCase().indexOf('slow') !== -1 ? 'warn' : 'good';
-    // Extract label (species name) and detail (season quality)
-    var _snParts = speciesNote.split('.');
-    var _snFirst = _snParts[0] ? _snParts[0].trim() : speciesNote;
-    // Shorten: 'Brown Trout are at peak season' → label='Brown Trout', detail='Peak season'
-    var _spMatch = _snFirst.match(/^([A-Za-z ]+?(?:Trout|Salmon))/);
-    var _spName  = _spMatch ? _spMatch[1] : targetName || '';
-    var _spDetail = _seasCls === 'good' ? 'Peak season' : _seasCls === 'warn' ? 'In season' : 'Slow season';
-    whyRows += _whyRow(_seasCls, _spName || _snFirst, _spDetail);
-  }
-
-  // Row 2: Flow
-  if (flow == null) {
-    whyRows += _whyRow('warn', 'Flow unknown', 'Check the gauge before driving');
-  } else {
-    var sweetRange = cfg.sweetMin + '\u2013' + cfg.sweetMax;
-    var fc = clsFlow(flow, cfg);
-    var flowLabel = flow + ' m\u00b3/s';
-    var flowDetail = fc === 'good' ? 'In the sweet spot (' + sweetRange + ')'
-      : fc === 'warn' ? 'Outside ideal range (' + sweetRange + ')'
-      : 'Below ideal range (' + sweetRange + ')';
-    whyRows += _whyRow(fc, 'Flow ' + flowLabel, flowDetail);
-  }
-
-  // Row 3: Temperature
-  if (weatherOk) {
-    var tc2 = clsTemp(wt);
-    var tempDetail = tc2 === 'good' ? 'Prime feeding range (8\u201314\u00b0C)'
-      : tc2 === 'warn' ? 'Acceptable but not ideal'
-      : wt > 18 ? 'Too warm \u2014 fish lethargic above 18\u00b0C' : 'Very cold \u2014 slow fishing';
-    whyRows += _whyRow(tc2, 'Water ~' + wt + '\u00b0C', tempDetail);
-
-  // Row 4: Sky
-    var skyLabel = sc === 'good' ? 'Overcast' : sc === 'warn' ? 'Partly cloudy' : 'Clear sky';
-    var skyDetail = sc === 'good' ? 'Fish feed all day'
-      : sc === 'warn' ? 'Morning and evening windows'
-      : 'Get on water before 9 AM';
-    whyRows += _whyRow(sc, skyLabel, skyDetail);
-  } else {
-    whyRows += _whyRow('warn', 'Weather unavailable', 'Check temp and sky before you go');
-  }
-
-  document.getElementById('tp-why').innerHTML = whyRows;
+  document.getElementById('tp-why').innerHTML = '';
 
   // Species recommendation chips (no species selected)
   var chips = [];
@@ -5583,7 +5555,7 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var cold = conditions.cold, high = conditions.high, low = conditions.low;
 
   // Species context from selectedSpecies global
-  var sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var primarySpecies = selectedSpecies.length > 0 ? sm[selectedSpecies[0]] : null;
   var isSalmon = primarySpecies && primarySpecies.indexOf('Salmon') !== -1;
   var isBrook  = primarySpecies === 'Brook Trout';
@@ -6182,7 +6154,31 @@ renderDefaultPreview();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
