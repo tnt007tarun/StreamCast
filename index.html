@@ -3,29 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StreamCast — Fishing Intelligence</title>
+<title>HereFishyFishy — Find where the fish are today</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --deep:    #0e1a14;
-  --moss:    #1c2e20;
-  --fern:    #2d4a32;
-  --sage:    #4a7a52;
-  --water:   #3a6b78;
-  --mist:    #8bb5a0;
-  --foam:    #d4e8dc;
-  --cream:   #f7f5f1;
+  /* HereFishyFishy — warm river morning palette */
+  --deep:    #0d1f2d;
+  --moss:    #1a3a4a;
+  --fern:    #1e7a6e;
+  --sage:    #4a8c7a;
+  --water:   #2e8fa8;
+  --mist:    #9ecfca;
+  --foam:    #e0f4f0;
+  --cream:   #faf8f4;
   --white:   #ffffff;
-  --amber:   #c8833a;
-  --amber-l: #e8a85a;
-  --gold:    #d4a94a;
-  --red:     #7a3030;
-  --ink:     #1a2a1e;
-  --good:    #2d6b4a;
-  --warn:    #b87333;
-  --bad:     #7a3030;
-  --border:  rgba(45,74,50,0.15);
+  --amber:   #e07b2a;
+  --amber-l: #f0a058;
+  --gold:    #e8b84a;
+  --red:     #c0392b;
+  --ink:     #1a2e3a;
+  --good:    #1e7a6e;
+  --warn:    #e07b2a;
+  --bad:     #c0392b;
+  --border:  rgba(30,122,110,0.15);
+  --text:    #2c3e50;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream); color:var(--ink); min-height:100vh; overflow-x:hidden; }
@@ -38,7 +40,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   position:absolute; top:0; left:0; right:0; z-index:10;
   display:flex; align-items:center; justify-content:space-between;
   padding: max(1rem, env(safe-area-inset-top, 1rem)) 2rem 0.75rem;
-  background:rgba(14,26,20,0.55);
+  background:rgba(13,37,53,0.60);
   backdrop-filter:blur(8px);
   border-bottom:1px solid rgba(139,181,160,0.12);
 }
@@ -53,33 +55,32 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .logo-wave span:nth-child(1) { width:18px; }
 .logo-wave span:nth-child(2) { width:14px; }
 .logo-wave span:nth-child(3) { width:18px; }
-.logo-name { font-family:'Lora',serif; font-size:1.2rem; font-weight:700; color:var(--cream); }
-.logo-region { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--mist); opacity:0.7; margin-left:0.25rem; }
-.land-date { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; color:var(--mist); opacity:0.7; }
+.logo-name { font-family:'Nunito', sans-serif; font-size:1.2rem; font-weight:700; color:var(--cream); }
+.logo-region { font-family:'JetBrains Mono', monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--mist); opacity:0.7; margin-left:0.25rem; }
+.land-date { font-family:'JetBrains Mono', monospace; font-size:0.65rem; letter-spacing:0.1em; color:var(--mist); opacity:0.7; }
 
 /* HERO — river photo */
 .hero-photo {
   position:relative;
-  height:320px;
+  height:240px;
   overflow:hidden;
   flex-shrink:0;
 }
 .hero-photo-bg {
   position:absolute; inset:0;
-  /* Layered CSS river — convincing water texture */
   background:
     repeating-linear-gradient(
       87deg,
-      rgba(58,107,120,0) 0px, rgba(58,107,120,0.06) 2px, rgba(58,107,120,0) 4px
+      rgba(30,160,150,0) 0px, rgba(30,160,150,0.05) 2px, rgba(30,160,150,0) 4px
     ),
     repeating-linear-gradient(
       93deg,
-      rgba(45,74,50,0) 0px, rgba(45,74,50,0.04) 3px, rgba(45,74,50,0) 6px
+      rgba(46,143,168,0) 0px, rgba(46,143,168,0.04) 3px, rgba(46,143,168,0) 6px
     ),
-    radial-gradient(ellipse 120% 80% at 30% 60%, rgba(38,90,75,0.5) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 60% at 75% 40%, rgba(30,60,80,0.4) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 50%, rgba(20,50,35,0.3) 0%, transparent 70%),
-    linear-gradient(175deg, #1a3828 0%, #0e2218 25%, #162e28 50%, #0a1e18 75%, #0e2018 100%);
+    radial-gradient(ellipse 120% 80% at 30% 60%, rgba(20,120,140,0.5) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 75% 40%, rgba(13,80,120,0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, rgba(10,70,90,0.3) 0%, transparent 70%),
+    linear-gradient(175deg, #0d3d4a 0%, #0a2d3d 25%, #0e3d48 50%, #082535 75%, #0d2f40 100%);
   animation: river-drift 12s ease-in-out infinite alternate;
 }
 @keyframes river-drift {
@@ -125,7 +126,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   overflow:hidden;
 }
 .hero-copy h1 {
-  font-family:'Lora',serif;
+  font-family:'Nunito', sans-serif;
   font-size:clamp(2rem,5vw,3.2rem);
   font-weight:700;
   color:var(--cream);
@@ -144,8 +145,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 /* FORM CARD */
 .form-card {
   background:var(--white);
-  border-radius:12px;
-  box-shadow:0 4px 40px rgba(14,26,20,0.1), 0 1px 4px rgba(14,26,20,0.06);
+  border-radius:18px;
+  box-shadow:0 6px 48px rgba(30,122,110,0.12), 0 2px 8px rgba(30,122,110,0.08);
   margin:0 2rem 3rem;
   padding:2rem 2rem 2rem;
   display:flex;
@@ -159,12 +160,12 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .form-top { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
 .field-group { display:flex; flex-direction:column; gap:0.45rem; }
 .field-lbl {
-  font-family:'DM Mono',monospace;
-  font-size:0.58rem;
-  letter-spacing:0.15em;
+  font-family:'Outfit', sans-serif;
+  font-size:0.7rem;
+  font-weight:700;
+  letter-spacing:0.08em;
   text-transform:uppercase;
   color:var(--sage);
-  opacity:0.8;
 }
 .field-input {
   border:1.5px solid rgba(45,74,50,0.18);
@@ -188,7 +189,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   display:flex; align-items:center; justify-content:space-between;
 }
 .river-sublbl {
-  font-family:'DM Mono',monospace;
+  font-family:'JetBrains Mono', monospace;
   font-size:0.58rem;
   letter-spacing:0.15em;
   text-transform:uppercase;
@@ -220,14 +221,14 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .river-chip.active .rc-time { color:var(--mist); }
 .river-chip.active .rc-loc { color:rgba(139,181,160,0.7); }
 .rc-time {
-  font-family:'DM Mono',monospace;
+  font-family:'JetBrains Mono', monospace;
   font-size:0.58rem;
   letter-spacing:0.08em;
   color:var(--sage);
   margin-bottom:0.3rem;
 }
 .rc-name {
-  font-family:'Lora',serif;
+  font-family:'Nunito', sans-serif;
   font-size:0.88rem;
   font-weight:600;
   line-height:1.2;
@@ -245,7 +246,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   display:flex; align-items:center; justify-content:space-between;
 }
 .clear-all {
-  font-family:'DM Mono',monospace;
+  font-family:'Outfit',sans-serif;font-weight:600;
   font-size:0.58rem;
   letter-spacing:0.08em;
   color:var(--sage);
@@ -262,8 +263,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   gap:0.5rem;
 }
 .tech-chip {
-  border:1.5px solid rgba(45,74,50,0.18);
-  border-radius:8px;
+  border:1.5px solid rgba(30,122,110,0.18);
+  border-radius:12px;
   padding:0.85rem 0.5rem 0.65rem;
   cursor:pointer;
   transition:all 0.15s;
@@ -281,7 +282,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tc-icon { width:28px; height:28px; display:flex; align-items:center; justify-content:center; }
 .tc-icon svg { width:24px; height:24px; stroke:var(--sage); fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; transition:stroke 0.15s; }
 .tc-lbl {
-  font-family:'DM Mono',monospace;
+  font-family:'JetBrains Mono', monospace;
   font-size:0.52rem;
   letter-spacing:0.08em;
   text-transform:uppercase;
@@ -358,12 +359,12 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .res-logo-wave { display:flex; flex-direction:column; gap:2px; }
 .res-logo-wave span { display:block; height:1.5px; background:var(--mist); border-radius:2px; opacity:0.7; }
 .res-logo-wave span:nth-child(1){width:16px;} .res-logo-wave span:nth-child(2){width:12px;} .res-logo-wave span:nth-child(3){width:16px;}
-.res-logo-name { font-family:'Lora',serif; font-size:1.1rem; font-weight:700; font-style:italic; color:var(--cream); }
+.res-logo-name { font-family:'Nunito', sans-serif; font-size:1.1rem; font-weight:700; font-style:italic; color:var(--cream); }
 .res-center { text-align:center; padding:0.8rem 2rem; border-left:1px solid rgba(139,181,160,0.15); border-right:1px solid rgba(139,181,160,0.15); }
-.res-center-lbl { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--mist); opacity:0.5; }
-.res-center-val { font-family:'DM Mono',monospace; font-size:0.8rem; font-weight:500; color:var(--cream); margin-top:0.1rem; }
+.res-center-lbl { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--mist); opacity:0.5; }
+.res-center-val { font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:500; color:var(--cream); margin-top:0.1rem; }
 .res-right { text-align:right; }
-.back-btn { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--mist); background:transparent; border:1px solid rgba(139,181,160,0.2); padding:0.4rem 0.85rem; border-radius:4px; cursor:pointer; transition:all 0.15s; }
+.back-btn { font-family:'Outfit',sans-serif; font-size:0.75rem;font-weight:600; letter-spacing:.01em; text-transform:none; color:var(--mist); background:transparent; border:1px solid rgba(139,181,160,0.2); padding:0.4rem 0.85rem; border-radius:4px; cursor:pointer; transition:all 0.15s; }
 .back-btn:hover { border-color:var(--mist); color:var(--cream); }
 
 /* summary strip */
@@ -371,37 +372,37 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .sum-item { padding:0 1.5rem; border-right:1px solid rgba(139,181,160,0.12); }
 .sum-item:first-child { padding-left:0; }
 .sum-item:last-child { border-right:none; }
-.sum-lbl { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--mist); opacity:0.5; margin-bottom:0.3rem; }
-.sum-val { font-family:'Lora',serif; font-size:1rem; font-weight:600; font-style:italic; line-height:1.2; }
+.sum-lbl { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--mist); opacity:0.5; margin-bottom:0.3rem; }
+.sum-val { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; font-style:italic; line-height:1.2; }
 .sum-val.good { color:#6dbf8a; } .sum-val.warn { color:var(--amber-l); } .sum-val.bad { color:#e07070; }
 .sum-note { font-size:0.68rem; color:var(--mist); opacity:0.5; margin-top:0.2rem; }
 
 /* section label */
 .sec-label { background:var(--cream); border-bottom:1px solid var(--border); padding:1.2rem 2rem; display:flex; align-items:center; gap:1rem; border-top:2px solid var(--fern); margin-top:1px; }
-.sec-num { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; font-style:italic; color:var(--amber); line-height:1; flex-shrink:0; }
-.sec-label h3 { font-family:'Lora',serif; font-size:1rem; font-weight:600; color:var(--moss); }
+.sec-num { font-family:'Nunito', sans-serif; font-size:1.5rem; font-weight:700; font-style:italic; color:var(--amber); line-height:1; flex-shrink:0; }
+.sec-label h3 { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; color:var(--moss); }
 .sec-label p { font-size:0.75rem; color:var(--sage); margin-top:0.1rem; }
 
 /* conditions grid */
 .cgrid { display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:2px solid var(--border); background:var(--white); }
 .col { padding:1.75rem 2rem; border-right:1px solid var(--border); }
 .col:last-child { border-right:none; }
-.col-lbl { font-family:'DM Mono',monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--sage); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+.col-lbl { font-family:'JetBrains Mono', monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--sage); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
 .bnum-wrap { display:flex; align-items:baseline; gap:0.3rem; margin-bottom:0.2rem; }
-.bnum { font-family:'Lora',serif; font-size:3rem; font-weight:700; line-height:1; color:var(--moss); }
-.bnum-u { font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--sage); }
+.bnum { font-family:'Nunito', sans-serif; font-size:3rem; font-weight:700; line-height:1; color:var(--moss); }
+.bnum-u { font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--sage); }
 .bnum-l { font-size:0.72rem; color:var(--sage); line-height:1.4; margin-bottom:0.75rem; }
-.trd { font-family:'DM Mono',monospace; font-size:0.7rem; margin-left:0.3rem; }
+.trd { font-family:'JetBrains Mono', monospace; font-size:0.7rem; margin-left:0.3rem; }
 .trd.up{color:var(--good);} .trd.down{color:var(--bad);} .trd.stable{color:var(--warn);}
 .gw { margin-bottom:1.1rem; }
 .gh { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.4rem; }
 .gn { font-size:0.77rem; font-weight:500; color:var(--moss); }
-.gv { font-family:'DM Mono',monospace; font-size:0.88rem; color:var(--moss); }
+.gv { font-family:'JetBrains Mono', monospace; font-size:0.88rem; color:var(--moss); }
 .gt { height:5px; background:rgba(45,74,50,0.1); border-radius:10px; overflow:hidden; margin-bottom:0.25rem; }
 .gf { height:100%; border-radius:10px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
 .gf.good{background:var(--good);} .gf.warn{background:var(--warn);} .gf.bad{background:var(--bad);}
-.gr { display:flex; justify-content:space-between; font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--sage); opacity:0.6; }
-.gs { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; margin-top:0.2rem; font-weight:500; }
+.gr { display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:0.54rem; color:var(--sage); opacity:0.6; }
+.gs { font-family:'JetBrains Mono', monospace; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; margin-top:0.2rem; font-weight:500; }
 .gs.good{color:var(--good);} .gs.warn{color:var(--warn);} .gs.bad{color:var(--bad);}
 .cl { list-style:none; display:flex; flex-direction:column; gap:0.55rem; }
 .cl li { display:flex; align-items:flex-start; gap:0.55rem; font-size:0.77rem; line-height:1.45; color:var(--moss); }
@@ -410,7 +411,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .divr { border:none; border-top:1px solid var(--border); margin:1rem 0; }
 .routine { display:flex; flex-direction:column; gap:0.85rem; }
 .rs { display:grid; grid-template-columns:22px 1fr; gap:0.6rem; align-items:start; }
-.rn { font-family:'Lora',serif; font-size:1.2rem; font-weight:700; color:var(--amber); line-height:1; font-style:italic; }
+.rn { font-family:'Nunito', sans-serif; font-size:1.2rem; font-weight:700; color:var(--amber); line-height:1; font-style:italic; }
 .rt { font-size:0.77rem; font-weight:500; margin-bottom:0.15rem; color:var(--moss); }
 .rd { font-size:0.7rem; color:var(--sage); line-height:1.45; }
 
@@ -418,26 +419,26 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .mgrid { display:grid; grid-template-columns:repeat(3,1fr); background:var(--white); border-bottom:2px solid var(--border); }
 .mc { padding:1.5rem 2rem; border-right:1px solid var(--border); }
 .mc:last-child { border-right:none; }
-.mpr { font-family:'DM Mono',monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.5rem; }
+.mpr { font-family:'JetBrains Mono', monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.5rem; }
 .mpr.p1{color:var(--good);} .mpr.p2{color:var(--warn);} .mpr.p3{color:var(--sage);}
-.mn { font-family:'Lora',serif; font-size:1.15rem; font-weight:600; margin-bottom:0.4rem; color:var(--moss); }
+.mn { font-family:'Nunito', sans-serif; font-size:1.15rem; font-weight:600; margin-bottom:0.4rem; color:var(--moss); }
 .md { font-size:0.76rem; color:var(--sage); line-height:1.55; margin-bottom:0.75rem; }
-.mcond { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--sage); opacity:0.75; line-height:1.5; }
+.mcond { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); opacity:0.75; line-height:1.5; }
 .mcond span { display:block; padding:0.15rem 0; border-top:1px solid var(--border); }
-.rnote { display:inline-block; margin-top:0.6rem; font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--warn); border:1px solid rgba(184,115,51,0.35); padding:0.15rem 0.4rem; border-radius:4px; }
+.rnote { display:inline-block; margin-top:0.6rem; font-family:'JetBrains Mono', monospace; font-size:0.54rem; color:var(--warn); border:1px solid rgba(184,115,51,0.35); padding:0.15rem 0.4rem; border-radius:4px; }
 
 /* baits */
 .bsec { border-bottom:2px solid var(--border); padding:1.75rem 2rem; background:var(--cream); }
 .btabs { display:flex; border:1.5px solid var(--border); width:fit-content; margin-bottom:1.25rem; border-radius:6px; overflow:hidden; }
-.btab { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.4rem 1rem; cursor:pointer; border-right:1px solid var(--border); transition:background 0.15s,color 0.15s; background:transparent; border-top:none; border-bottom:none; border-left:none; color:var(--sage); }
+.btab { font-family:'Outfit',sans-serif;font-weight:600; font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.4rem 1rem; cursor:pointer; border-right:1px solid var(--border); transition:background 0.15s,color 0.15s; background:transparent; border-top:none; border-bottom:none; border-left:none; color:var(--sage); }
 .btab:last-child { border-right:none; }
 .btab.active { background:var(--moss); color:var(--cream); }
 .btab:hover:not(.active) { background:rgba(45,74,50,0.06); }
-.bgrid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid var(--border); border-radius:8px; overflow:hidden; }
+.bgrid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; }
 .bi { padding:1rem 1.25rem; background:var(--white); border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
-.brank { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; color:rgba(45,74,50,0.08); float:right; line-height:1; margin-left:0.5rem; font-style:italic; }
+.brank { font-family:'Nunito', sans-serif; font-size:1.5rem; font-weight:700; color:rgba(45,74,50,0.08); float:right; line-height:1; margin-left:0.5rem; font-style:italic; }
 .bname { font-size:0.84rem; font-weight:500; margin-bottom:0.2rem; color:var(--moss); }
-.bdet { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--sage); line-height:1.5; }
+.bdet { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); line-height:1.5; }
 .bcond { font-size:0.7rem; color:var(--sage); margin-top:0.35rem; font-style:italic; line-height:1.4; opacity:0.8; }
 .bpanel{display:none;} .bpanel.active{display:block;}
 
@@ -458,46 +459,46 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 @media(max-width:900px){ .agrid { grid-template-columns:1fr; } .agrid-map { display:none; } }
 .ac { padding:1.25rem 1.5rem; background:var(--white); }
 .act { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem; }
-.aname { font-family:'Lora',serif; font-size:1rem; font-weight:600; line-height:1.2; color:var(--moss); }
-.acrowd { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.15rem 0.45rem; border:1px solid currentColor; border-radius:4px; white-space:nowrap; flex-shrink:0; margin-left:0.5rem; }
+.aname { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; line-height:1.2; color:var(--moss); }
+.acrowd { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.15rem 0.45rem; border:1px solid currentColor; border-radius:4px; white-space:nowrap; flex-shrink:0; margin-left:0.5rem; }
 .acrowd.low{color:var(--good);} .acrowd.med{color:var(--warn);} .acrowd.high{color:var(--bad);}
-.aloc { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--sage); margin-bottom:0.55rem; opacity:0.7; }
+.aloc { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); margin-bottom:0.55rem; opacity:0.7; }
 .adesc { font-size:0.76rem; color:var(--sage); line-height:1.55; margin-bottom:0.6rem; }
 .atags { display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.5rem; }
-.atag { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.15rem 0.4rem; background:rgba(45,74,50,0.07); color:var(--sage); border-radius:4px; }
+.atag { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.15rem 0.4rem; background:rgba(45,74,50,0.07); color:var(--sage); border-radius:4px; }
 .abest { font-size:0.7rem; color:var(--sage); font-style:italic; line-height:1.4; margin-bottom:0.5rem; opacity:0.75; }
-.afnote { font-family:'DM Mono',monospace; font-size:0.58rem; padding:0.25rem 0.5rem; border-left:2px solid var(--sage); color:var(--water); line-height:1.4; }
+.afnote { font-family:'JetBrains Mono', monospace; font-size:0.58rem; padding:0.25rem 0.5rem; border-left:2px solid var(--sage); color:var(--water); line-height:1.4; }
 
 /* dam */
 .dam { background:var(--moss); color:var(--cream); padding:1.5rem 2rem; display:grid; grid-template-columns:auto 1fr; gap:1.5rem; align-items:start; border-bottom:2px solid rgba(255,255,255,0.06); }
 .dam-icon { width:46px; height:46px; border:1px solid rgba(139,181,160,0.2); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
-.dlbl { font-family:'DM Mono',monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); opacity:0.8; margin-bottom:0.4rem; }
-.dam h3 { font-family:'Lora',serif; font-size:1rem; font-weight:600; margin-bottom:0.35rem; }
+.dlbl { font-family:'JetBrains Mono', monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); opacity:0.8; margin-bottom:0.4rem; }
+.dam h3 { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; margin-bottom:0.35rem; }
 .dam p { font-size:0.76rem; opacity:0.55; line-height:1.6; max-width:600px; }
 .dlinks { display:flex; gap:1rem; margin-top:0.75rem; flex-wrap:wrap; }
-.dl { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(212,169,74,0.35); padding-bottom:0.1rem; transition:opacity 0.2s; }
+.dl { font-family:'JetBrains Mono', monospace; font-size:0.6rem; color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(212,169,74,0.35); padding-bottom:0.1rem; transition:opacity 0.2s; }
 .dl:hover { opacity:0.7; }
 
 /* species */
 .ssec { padding:1.5rem 2rem; border-bottom:2px solid var(--border); background:var(--cream); }
 .sshdr { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:1rem; }
-.sshdr h3 { font-family:'Lora',serif; font-size:1rem; font-weight:600; color:var(--moss); }
-.sshdr span { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--sage); opacity:0.6; letter-spacing:0.08em; text-transform:uppercase; }
+.sshdr h3 { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; color:var(--moss); }
+.sshdr span { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); opacity:0.6; letter-spacing:0.08em; text-transform:uppercase; }
 .srail { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); border:1.5px solid var(--border); border-radius:8px; overflow:hidden; }
 .sc { padding:0.85rem 1rem; background:var(--white); cursor:pointer; transition:background 0.15s; border-right:1px solid var(--border); }
 .sc:last-child{border-right:none;} .sc:hover{background:rgba(45,74,50,0.04);} .sc.active{background:var(--moss);color:var(--cream);}
-.stag { font-family:'DM Mono',monospace; font-size:0.5rem; letter-spacing:0.1em; text-transform:uppercase; opacity:0.4; margin-bottom:0.3rem; }
-.sname { font-family:'Lora',serif; font-size:0.88rem; font-weight:600; font-style:italic; line-height:1.2; }
+.stag { font-family:'JetBrains Mono', monospace; font-size:0.5rem; letter-spacing:0.1em; text-transform:uppercase; opacity:0.4; margin-bottom:0.3rem; }
+.sname { font-family:'Nunito', sans-serif; font-size:0.88rem; font-weight:600; font-style:italic; line-height:1.2; }
 .slat { font-size:0.58rem; opacity:0.4; margin-top:0.15rem; }
-.sst { margin-top:0.5rem; font-family:'DM Mono',monospace; font-size:0.54rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; }
+.sst { margin-top:0.5rem; font-family:'JetBrains Mono', monospace; font-size:0.54rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; }
 .sst.on{color:var(--good);} .sc.active .sst.on{color:var(--foam);} .sst.soon{color:var(--warn);} .sst.wip{color:#999;}
 
 /* footer */
 .res-footer { padding:1.25rem 2rem; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); background:var(--cream); }
-.res-footer p { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--sage); opacity:0.5; letter-spacing:0.05em; }
-.res-flogo { font-family:'Lora',serif; font-size:0.9rem; font-weight:700; font-style:italic; color:var(--sage); opacity:0.3; }
+.res-footer p { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); opacity:0.5; letter-spacing:0.05em; }
+.res-flogo { font-family:'Nunito', sans-serif; font-size:0.9rem; font-weight:700; font-style:italic; color:var(--sage); opacity:0.3; }
 
-.err { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--warn); }
+.err { font-family:'JetBrains Mono', monospace; font-size:0.62rem; color:var(--warn); }
 .fi { opacity:0; transform:translateY(8px); animation:fu 0.45s ease forwards; }
 @keyframes fu { to { opacity:1; transform:translateY(0); } }
 .fi:nth-child(1){animation-delay:.04s} .fi:nth-child(2){animation-delay:.1s} .fi:nth-child(3){animation-delay:.16s}
@@ -517,24 +518,24 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 .regs-panel{margin-top:.85rem;border:1px solid rgba(45,74,50,.15);border-radius:6px;overflow:hidden;font-size:.72rem;}
 .regs-header{display:flex;align-items:center;gap:.6rem;background:var(--fern);color:var(--cream);padding:.45rem .75rem;}
-.regs-zone{font-family:"DM Mono",monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.15);padding:.1rem .4rem;border-radius:3px;flex-shrink:0;}
-.regs-title{font-family:"DM Mono",monospace;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;flex:1;opacity:.85;}
-.regs-link{font-family:"DM Mono",monospace;font-size:.55rem;color:var(--gold-light);text-decoration:none;opacity:.8;flex-shrink:0;}
+.regs-zone{font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.15);padding:.1rem .4rem;border-radius:3px;flex-shrink:0;}
+.regs-title{font-family:'JetBrains Mono', monospace;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;flex:1;opacity:.85;}
+.regs-link{font-family:'JetBrains Mono', monospace;font-size:.55rem;color:var(--gold-light);text-decoration:none;opacity:.8;flex-shrink:0;}
 .regs-link:hover{opacity:1;}
 .regs-species-list{background:var(--white);border-bottom:1px solid rgba(45,74,50,.1);}
 .reg-row{padding:.45rem .75rem;border-bottom:1px solid rgba(45,74,50,.07);display:grid;grid-template-columns:120px 1fr 90px;gap:.4rem;align-items:start;}
 .reg-row:last-child{border-bottom:none;}
 .reg-species{font-weight:500;color:var(--moss);font-size:.72rem;}
 .reg-season{color:var(--sage);font-size:.68rem;line-height:1.4;}
-.reg-limit{font-family:"DM Mono",monospace;font-size:.62rem;color:var(--fern);font-weight:500;text-align:right;}
+.reg-limit{font-family:'JetBrains Mono', monospace;font-size:.62rem;color:var(--fern);font-weight:500;text-align:right;}
 .reg-note{grid-column:1/-1;font-size:.65rem;color:var(--sage);font-style:italic;line-height:1.4;margin-top:.15rem;opacity:.85;}
 .regs-specials{background:rgba(45,74,50,.04);padding:.5rem .75rem;display:flex;flex-direction:column;gap:.3rem;}
 .reg-special{font-size:.65rem;color:var(--moss);line-height:1.4;padding:.2rem 0;border-bottom:1px solid rgba(45,74,50,.07);}
 .reg-special:last-child{border-bottom:none;}
-.map-legend-lbl{font-family:"DM Mono",monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.4rem;padding:0 .6rem;}
+.map-legend-lbl{font-family:'JetBrains Mono', monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.4rem;padding:0 .6rem;}
 
-.species-btn-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;}
-.species-btn{display:flex;flex-direction:column;align-items:center;gap:.3rem;background:rgba(255,255,255,0.04);border:1.5px solid rgba(139,181,160,0.2);border-radius:8px;padding:.5rem .25rem .4rem;cursor:pointer;transition:all .15s;color:var(--mist);}
+.species-btn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;}
+.species-btn{display:flex;flex-direction:column;align-items:center;gap:.3rem;background:rgba(255,255,255,0.04);border:1.5px solid rgba(139,181,160,0.2);border-radius:8px;padding:.5rem .2rem;cursor:pointer;transition:all .15s;color:var(--mist);}
 .species-btn:hover{border-color:rgba(139,181,160,0.5);background:rgba(255,255,255,0.07);color:var(--cream);}
 .species-btn.active{border-color:var(--amber);background:rgba(200,131,58,0.14);color:var(--cream);}
 .species-btn-icon{width:44px;height:24px;display:flex;align-items:center;justify-content:center;}
@@ -542,12 +543,12 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .species-btn.active .species-btn-icon svg{stroke:var(--amber-l);}
 .species-btn-img{width:44px;height:26px;border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .species-btn-img svg{width:48px;height:30px;}
-.species-btn-name{font-family:"DM Mono",monospace;font-size:.46rem;letter-spacing:.03em;text-transform:uppercase;text-align:center;line-height:1.3;}
+.species-btn-name{font-family:'Outfit',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.01em;text-transform:none;text-align:center;line-height:1.3;}
 .bi-img-wrap{width:100%;height:86px;overflow:hidden;border-radius:4px;margin-bottom:.55rem;background:rgba(45,74,50,0.06);display:flex;align-items:center;justify-content:center;}
 .bi-img-wrap img{width:100%;height:100%;object-fit:cover;}
 .bi-img-ph{display:flex;flex-direction:column;align-items:center;opacity:.3;}
 .bi-img-ph svg{width:28px;height:16px;color:var(--sage);}
-@media(max-width:700px){.species-btn-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:700px){.species-btn-grid{grid-template-columns:repeat(4,1fr);}}
 .sc-absent { opacity: 0.38; filter: grayscale(0.6); }
 
 /* SPECIES RAIL - SEASONAL */
@@ -569,14 +570,14 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .sc-species.active .seg-slow   { background:rgba(255,255,255,.15); }
 .sc-species.active .seg-absent { background:rgba(255,255,255,.08); }
 .season-bar-labels { display:flex; justify-content:space-between; margin-top:.25rem; }
-.season-bar-labels span { font-family:'DM Mono',monospace; font-size:.48rem; color:var(--sage); opacity:.6; }
+.season-bar-labels span { font-family:'JetBrains Mono', monospace; font-size:.48rem; color:var(--sage); opacity:.6; }
 .sc-species.active .season-bar-labels span { color:var(--mist); opacity:.5; }
 @media(max-width:900px){ .srail { grid-template-columns:repeat(3,1fr); } }
 @media(max-width:600px){ .srail { grid-template-columns:1fr 1fr; } }
 
 /* MODE TOGGLE */
 .mode-toggle{display:flex;gap:0;background:rgba(45,74,50,.08);border-radius:8px;padding:3px;margin-bottom:1.25rem;}
-.mode-btn{flex:1;padding:.45rem .75rem;border:none;border-radius:6px;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:none;color:var(--sage);transition:all .18s;}
+.mode-btn{flex:1;padding:.6rem .75rem;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;letter-spacing:.01em;text-transform:none;cursor:pointer;background:none;color:var(--sage);transition:all .18s;}
 .mode-btn.active{background:var(--white);color:var(--moss);box-shadow:0 1px 4px rgba(0,0,0,.10);}
 
 /* BEGINNER MODE — hide river picker */
@@ -588,12 +589,12 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 /* TOP PICK BAND */
 .tpband{background:var(--moss);color:var(--cream);padding:1.5rem 2rem;border-bottom:1px solid rgba(139,181,160,.12);}
 .tpband-inner{max-width:1100px;margin:0 auto;}
-.tp-eyebrow{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;opacity:.55;margin-bottom:.5rem;}
-.tp-headline{font-family:'Lora',serif;font-size:1.45rem;font-weight:700;line-height:1.25;margin-bottom:.6rem;}
+.tp-eyebrow{font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;opacity:.55;margin-bottom:.5rem;}
+.tp-headline{font-family:'Nunito', sans-serif;font-size:1.45rem;font-weight:700;line-height:1.25;margin-bottom:.6rem;}
 .tp-headline em{font-style:normal;color:var(--gold-light);}
 .tp-why{font-size:.85rem;font-weight:300;line-height:1.6;opacity:.88;max-width:680px;margin-bottom:1rem;}
 .tp-chips{display:flex;flex-wrap:wrap;gap:.5rem;}
-.tp-chip{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:.28rem .7rem;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.05em;}
+.tp-chip{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:.28rem .7rem;font-family:'JetBrains Mono', monospace;font-size:.6rem;letter-spacing:.05em;}
 .tp-chip.warn{background:rgba(232,168,90,.15);border-color:rgba(232,168,90,.3);color:var(--amber-l);}
 .tp-chip.good{background:rgba(109,191,138,.12);border-color:rgba(109,191,138,.25);color:#7dcf96;}
 .tp-chip.bad{background:rgba(224,112,112,.12);border-color:rgba(224,112,112,.25);color:#e09090;}
@@ -601,24 +602,24 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 /* RIVER RANKER (beginner mode results) */
 
 .rrank-inner{max-width:1100px;margin:0 auto;}
-.rrank-lbl{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.9rem;}
+.rrank-lbl{font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.9rem;}
 .rrank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
 .rrank-card{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:.85rem 1rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
 .rrank-card:hover{border-color:var(--fern);box-shadow:0 2px 8px rgba(45,74,50,.1);}
 .rrank-card.rr-top{border-color:var(--fern);box-shadow:0 2px 10px rgba(45,74,50,.12);}
-.rrank-num{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;color:var(--sage);opacity:.55;margin-bottom:.2rem;}
-.rrank-name{font-family:'Lora',serif;font-size:.95rem;font-weight:600;color:var(--moss);margin-bottom:.15rem;}
-.rrank-drive{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--sage);margin-bottom:.5rem;}
+.rrank-num{font-family:'JetBrains Mono', monospace;font-size:.52rem;letter-spacing:.1em;color:var(--sage);opacity:.55;margin-bottom:.2rem;}
+.rrank-name{font-family:'Nunito', sans-serif;font-size:.95rem;font-weight:600;color:var(--moss);margin-bottom:.15rem;}
+.rrank-drive{font-family:'JetBrains Mono', monospace;font-size:.58rem;color:var(--sage);margin-bottom:.5rem;}
 .rrank-verdict{font-size:.72rem;color:var(--text);line-height:1.4;}
-.rrank-badge{display:inline-block;margin-top:.4rem;font-family:'DM Mono',monospace;font-size:.52rem;padding:.15rem .45rem;border-radius:10px;letter-spacing:.05em;}
+.rrank-badge{display:inline-block;margin-top:.4rem;font-family:'JetBrains Mono', monospace;font-size:.52rem;padding:.15rem .45rem;border-radius:10px;letter-spacing:.05em;}
 .rrank-badge.good{background:rgba(109,191,138,.15);color:#3a8a50;}
 .rrank-badge.warn{background:rgba(232,168,90,.15);color:#a07020;}
 .rrank-badge.bad{background:rgba(224,112,112,.12);color:#a04040;}
 
 .acard-recommended{border-color:var(--fern)!important;box-shadow:0 2px 12px rgba(45,74,50,.15);}
-.acard-rec-badge{display:inline-block;background:var(--fern);color:var(--cream);font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .5rem;border-radius:10px;margin-bottom:.5rem;}
+.acard-rec-badge{display:inline-block;background:var(--fern);color:var(--cream);font-family:'JetBrains Mono', monospace;font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .5rem;border-radius:10px;margin-bottom:.5rem;}
 .tech-family-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.25rem;}
-.tech-family-btn{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .4rem;background:var(--white);cursor:pointer;text-align:center;transition:all .15s;font-size:.78rem;font-family:'Lora',serif;font-weight:600;color:var(--moss);}
+.tech-family-btn{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .4rem;background:var(--white);cursor:pointer;text-align:center;transition:all .15s;font-size:.88rem;font-family:'Nunito', sans-serif;font-weight:600;color:var(--moss);}
 .tech-family-btn.active{border-color:var(--fern);background:rgba(45,74,50,.08);}
 .travel-row{padding:.75rem 0 .25rem;}
 
@@ -627,33 +628,33 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .gear-card { background:var(--white); border:1.5px solid var(--border); border-radius:10px; padding:1.25rem 1.5rem; margin:0 2rem 1.5rem; }
 .gear-header { display:flex; gap:.85rem; align-items:center; margin-bottom:1rem; }
 .gear-icon { font-size:1.4rem; line-height:1; }
-.gear-eyebrow { font-family:'DM Mono',monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.2rem; }
-.gear-title { font-family:'Lora',serif; font-size:1rem; font-weight:600; color:var(--moss); }
+.gear-eyebrow { font-family:'JetBrains Mono', monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.2rem; }
+.gear-title { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; color:var(--moss); }
 .gear-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:.75rem; }
 .gear-item { background:var(--off); border-radius:8px; padding:.7rem .85rem; }
-.gear-item-lbl { font-family:'DM Mono',monospace; font-size:.5rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage); opacity:.65; margin-bottom:.25rem; }
+.gear-item-lbl { font-family:'JetBrains Mono', monospace; font-size:.5rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage); opacity:.65; margin-bottom:.25rem; }
 .gear-item-val { font-size:.82rem; color:var(--text); font-weight:500; line-height:1.4; }
 .gear-item-note { font-size:.68rem; color:var(--sage); margin-top:.2rem; font-style:italic; }
 
 
 /* TECHNIQUE & GEAR ACCORDION */
-.tgsec { background:var(--white); border:1.5px solid var(--border); border-radius:10px; overflow:hidden; margin:0 2rem 1.5rem; }
+.tgsec { background:var(--white); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; margin:0 2rem 1.5rem; }
 .tg-item { border-bottom:1px solid var(--border); }
 .tg-item:last-child { border-bottom:none; }
 .tg-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; user-select:none; transition:background .12s; }
 .tg-header:hover { background:rgba(45,74,50,.03); }
 .tg-item.tg-open .tg-header { background:rgba(45,74,50,.04); }
 .tg-header-left { flex:1; }
-.tg-label { font-family:'DM Mono',monospace; font-size:.5rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); margin-bottom:.2rem; }
-.tg-name { font-family:'Lora',serif; font-size:1.05rem; font-weight:600; color:var(--moss); }
+.tg-label { font-family:'JetBrains Mono', monospace; font-size:.5rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); margin-bottom:.2rem; }
+.tg-name { font-family:'Nunito', sans-serif; font-size:1.05rem; font-weight:600; color:var(--moss); }
 .tg-chevron { font-size:1rem; color:var(--sage); margin-left:.75rem; transition:transform .2s; }
 .tg-body { padding:0 1.25rem 1.25rem; }
 .tg-body-collapsed { display:none; }
 .tg-desc { font-size:.88rem; color:var(--text); line-height:1.6; margin-bottom:.75rem; }
 .tg-cond { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1rem; }
-.tg-cond span { font-family:'DM Mono',monospace; font-size:.6rem; background:var(--off); padding:.2rem .5rem; border-radius:4px; color:var(--sage); }
+.tg-cond span { font-family:'JetBrains Mono', monospace; font-size:.6rem; background:var(--off); padding:.2rem .5rem; border-radius:4px; color:var(--sage); }
 .tg-gear { margin:1rem 0; }
-.tg-gear-lbl { font-family:'DM Mono',monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.65rem; }
+.tg-gear-lbl { font-family:'JetBrains Mono', monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.65rem; }
 .tg-baits { margin-top:1.25rem; border-top:1px solid var(--border); padding-top:1rem; }
 
 
@@ -796,7 +797,7 @@ select:focus-visible, input:focus-visible {
 }
 
 .skip-link{position:absolute;top:-40px;left:0;background:var(--moss);color:var(--cream);padding:.5rem 1rem;border-radius:0 0 6px 0;font-size:.9rem;z-index:9999;text-decoration:none;}.skip-link:focus{top:0;}
-.logo-region, .land-date, .mode-btn, .river-sublbl, .rc-time,
+.logo-region, .land-date, .river-sublbl, .rc-time,
 .sec-num, .vsig, .acrowd, .atag, .bi-img-ph, .brank,
 .sum-method, .sum-window, .gs, .g-unit, .v-meta-lbl {
   font-size: max(11px, 0.688rem) !important;
@@ -804,10 +805,10 @@ select:focus-visible, input:focus-visible {
 
 /* SPECIES BUTTON ACCESSIBILITY FIX */
 .species-btn-name {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.72rem !important;   /* was .46rem = 7.36px — now 11.5px */
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem !important; font-weight: 700;   /* was .46rem = 7.36px — now 11.5px */
   letter-spacing: .02em;
-  text-transform: uppercase;
+  text-transform: none;
   text-align: center;
   line-height: 1.4;
   color: rgba(247, 245, 241, 0.85) !important;  /* bright cream — readable on dark moss */
@@ -857,9 +858,9 @@ select:focus-visible, input:focus-visible {
   color: var(--moss) !important;
   font-size: 0.75rem !important;
   font-weight: 400;            /* regular — not a heading */
-  font-family: 'DM Mono', monospace;
+  font-family: 'Outfit', sans-serif;
   letter-spacing: .04em;
-  text-transform: uppercase;
+  text-transform: none;
   text-align: center;
   line-height: 1.4;
 }
@@ -891,7 +892,7 @@ select:focus-visible, input:focus-visible {
   padding: .75rem 1rem 0 1rem;
 }
 .regs-glossary-title {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .6rem;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -905,7 +906,7 @@ select:focus-visible, input:focus-visible {
   align-items: baseline;
 }
 .rg-term {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .7rem;
   color: var(--moss);
   font-weight: 600;
@@ -940,7 +941,7 @@ select:focus-visible, input:focus-visible {
 
 /* TOP PICK DRIVE TIME */
 .tp-drive-time {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .75rem;
   color: var(--fern);
   font-weight: 600;
@@ -990,7 +991,7 @@ select:focus-visible, input:focus-visible {
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .72rem;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1000,7 +1001,7 @@ select:focus-visible, input:focus-visible {
 .rrank-toggle-btn:hover { color: var(--moss); }
 .rrank-toggle-chev { font-size: .8rem; transition: transform .15s; }
 .rrank-inner { padding: 0 1.5rem 1.5rem; }
-.rrank-lbl { font-size: .72rem; color: var(--sage); margin-bottom: .75rem; font-family: 'DM Mono', monospace; letter-spacing: .04em; }
+.rrank-lbl { font-size: .72rem; color: var(--sage); margin-bottom: .75rem; font-family: 'JetBrains Mono', monospace; letter-spacing: .04em; }
 .rrank-grid { display: flex; flex-direction: column; gap: .5rem; }
 .rrank-card {
   display: flex;
@@ -1014,10 +1015,10 @@ select:focus-visible, input:focus-visible {
   transition: border-color .15s, box-shadow .15s;
 }
 .rrank-card:hover { border-color: var(--fern); box-shadow: 0 2px 8px rgba(45,74,50,.1); }
-.rrank-num { font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--sage); min-width: 1.2rem; }
-.rrank-name { font-family: 'Lora', serif; font-size: .9rem; font-weight: 600; color: var(--moss); flex: 1; }
-.rrank-drive { font-family: 'DM Mono', monospace; font-size: .62rem; color: var(--sage); white-space: nowrap; }
-.rrank-badge { font-family: 'DM Mono', monospace; font-size: .55rem; letter-spacing: .06em; text-transform: uppercase; padding: .15rem .4rem; border-radius: 8px; white-space: nowrap; }
+.rrank-num { font-family: 'JetBrains Mono', monospace; font-size: .6rem; color: var(--sage); min-width: 1.2rem; }
+.rrank-name { font-family: 'Nunito', sans-serif; font-size: .9rem; font-weight: 600; color: var(--moss); flex: 1; }
+.rrank-drive { font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--sage); white-space: nowrap; }
+.rrank-badge { font-family: 'JetBrains Mono', monospace; font-size: .55rem; letter-spacing: .06em; text-transform: uppercase; padding: .15rem .4rem; border-radius: 8px; white-space: nowrap; }
 .rrank-badge.good { background: rgba(45,74,50,.1); color: var(--fern); }
 .rrank-badge.warn { background: rgba(210,160,60,.12); color: #a07820; }
 .rrank-badge.bad  { background: rgba(180,60,60,.1);  color: #a03030; }
@@ -1036,15 +1037,15 @@ select:focus-visible, input:focus-visible {
 .stocking-badge.past { background: rgba(100,100,120,.06); color: var(--sage); }
 
 .stocking-species {
-  font-family: 'Lora', serif; font-size: .9rem; font-weight: 600; color: var(--moss);
+  font-family: 'Nunito', sans-serif; font-size: .9rem; font-weight: 600; color: var(--moss);
   flex: 1;
 }
 .stocking-detail {
-  font-family: 'DM Mono', monospace; font-size: .62rem; color: var(--sage);
+  font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--sage);
   white-space: nowrap;
 }
 .stocking-badge {
-  font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .06em;
+  font-family: 'JetBrains Mono', monospace; font-size: .58rem; letter-spacing: .06em;
   text-transform: uppercase; padding: .18rem .45rem; border-radius: 8px;
   white-space: nowrap; flex-shrink: 0;
 }
@@ -1066,10 +1067,10 @@ select:focus-visible, input:focus-visible {
     padding: 1.5rem 1.25rem;
   }
 
-  /* Date + Location — stack vertically */
+  /* Date + Location — side by side on mobile */
   .form-top {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
   }
 
   /* CTA button — full width */
@@ -1150,9 +1151,7 @@ select:focus-visible, input:focus-visible {
 .land-header {
   padding-top: max(0.75rem, env(safe-area-inset-top));
 }
-.hero-photo {
-  min-height: 280px;
-}
+
 /* Ensure hero copy doesn't get hidden behind status bar on iOS */
 .hero-copy {
   bottom: 2rem;
@@ -1160,9 +1159,15 @@ select:focus-visible, input:focus-visible {
   right: 1.5rem;
 }
 @media (max-width: 600px) {
+  .hero-photo { height: 160px !important; }
+  .hero-copy {
+    bottom: 1rem;
+    left: 1.25rem;
+    right: 1.25rem;
+  }
   .hero-copy h1 {
-    font-size: 2rem;
-    line-height: 1.2;
+    font-size: 1.6rem;
+    line-height: 1.15;
   }
   .land-header {
     padding: max(0.75rem, env(safe-area-inset-top)) 1.25rem 0.75rem;
@@ -1182,7 +1187,7 @@ select:focus-visible, input:focus-visible {
 
 /* ── CONFIDENCE BADGE ────────────────────────────────────────────────────── */
 .tp-confidence {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .05em;
@@ -1192,8 +1197,8 @@ select:focus-visible, input:focus-visible {
   display: inline-block;
   margin: .4rem 0 .75rem;
 }
-.conf-excellent { background: rgba(45,74,50,.15); color: #2a5e30; }
-.conf-good      { background: rgba(60,120,60,.1);  color: #3a7a3a; }
+.conf-excellent { background: rgba(30,122,110,.15); color: #0e6b5e; }
+.conf-good      { background: rgba(30,122,110,.1);  color: #1e7a6e; }
 .conf-marginal  { background: rgba(180,140,30,.12); color: #8a6800; }
 .conf-tough     { background: rgba(180,60,60,.1);  color: #a03030; }
 
@@ -1203,20 +1208,19 @@ select:focus-visible, input:focus-visible {
 /* ── DEFAULT RIVER PREVIEW (landing) ─────────────────────────────────────── */
 #default-preview {
   display: none;
-  background: var(--white);
-  border-radius: 12px;
-  box-shadow: 0 4px 40px rgba(14,26,20,0.1), 0 1px 4px rgba(14,26,20,0.06);
-  padding: 1.25rem 1.25rem 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+  margin-top: .25rem;
 }
 .dp-label {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--moss);
   font-weight: 600;
   margin-bottom: .85rem;
-  padding: 0 .1rem;
+  padding: 0;
 }
 .dp-grid {
   display: grid;
@@ -1226,7 +1230,7 @@ select:focus-visible, input:focus-visible {
 .dp-card {
   background: var(--white);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: .6rem .75rem;
   cursor: pointer;
   transition: border-color .15s;
@@ -1236,7 +1240,7 @@ select:focus-visible, input:focus-visible {
 }
 .dp-card:active { border-color: var(--fern); }
 .dp-name {
-  font-family: 'Lora', serif;
+  font-family: 'Nunito', sans-serif;
   font-size: .85rem;
   font-weight: 700;
   color: var(--moss);
@@ -1249,25 +1253,24 @@ select:focus-visible, input:focus-visible {
   gap: .25rem;
 }
 .dp-species {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .6rem;
   color: var(--sage);
   opacity: .85;
 }
 .dp-conf {
-  font-family: 'DM Mono', monospace;
-  font-size: .55rem;
-  font-weight: 600;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  padding: .15rem .4rem;
-  border-radius: 10px;
+  font-size: .75rem;
+  font-weight: 400;
+  letter-spacing: .06em;
+  padding: .1rem .3rem;
+  border-radius: 8px;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 
 .dp-source {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .55rem;
   color: var(--sage);
   opacity: .7;
@@ -1321,7 +1324,6 @@ select:focus-visible, input:focus-visible {
 .default-preview-wrap {
   width: 100%;
   box-sizing: border-box;
-  padding: 0 1rem 2.5rem;
 }
 /* preview box styles moved to #default-preview rule */
 
@@ -1347,7 +1349,7 @@ select:focus-visible, input:focus-visible {
 /* CONDITIONS CARD — matches tgsec box style */
 .cond-card {
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   margin: 0 2rem 1.5rem;
   background: var(--white);
@@ -1404,7 +1406,7 @@ select:focus-visible, input:focus-visible {
   background: none;
   border: none;
   border-top: 1px solid var(--border);
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: .65rem;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1419,6 +1421,141 @@ select:focus-visible, input:focus-visible {
 /* Steelhead species button — silver-blue palette */
 .sb-steelhead { filter: hue-rotate(180deg) saturate(0.6); }
 
+
+/* ── DRIVE WORTHINESS VERDICT ───────────────────────────────────────────── */
+#tp-drive-time {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.drive-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: .03em;
+}
+.drive-verdict {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: .2rem .6rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.verdict-yes   { background: rgba(60,180,80,.25);  color: #7dda8a; }
+.verdict-maybe { background: rgba(210,170,0,.2);   color: #e8c84a; }
+.verdict-no    { background: rgba(220,80,80,.2);   color: #f08080; }
+
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 1.25rem 1.25rem 1.5rem;
+    gap: 1.25rem;
+    top: -30px;
+  }
+  .hero-photo { height: 160px; }
+  .hero-copy h1 { font-size: 1.75rem; line-height: 1.15; }
+  .mode-toggle { margin-bottom: 0; }
+}
+
+
+
+.sp-season-toggle {
+  display: inline-block;
+  margin-top: .35rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .04em;
+  color: var(--sage);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .2rem 0;
+  opacity: .75;
+  transition: opacity .15s;
+}
+.sp-season-toggle:hover { opacity: 1; }
+
+#tech-family-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; }
+.method-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .4rem;
+}
+.method-row .tech-family-btn {
+  min-height: unset;
+  font-size: .88rem;
+  padding: .55rem .25rem;
+  gap: .25rem;
+}
+.method-row .tc-icon { font-size: .8rem; }
+.method-row .tc-icon svg { width: 18px; height: 18px; }
+
+
+@media (max-width: 600px) {
+  .species-btn-name {
+    font-size: .6rem !important;
+    letter-spacing: .01em !important;
+    text-transform: none !important;
+  }
+  .species-btn-img { width: 44px !important; height: 28px !important; }
+}
+
+
+.sp-any-link {
+  font-family: 'Outfit', sans-serif;
+  font-size: .65rem;
+  font-weight: 600;
+  color: var(--sage);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: .15rem .5rem;
+  cursor: pointer;
+  transition: all .15s;
+}
+.sp-any-link:hover, .sp-any-link.active-any {
+  color: var(--fern);
+  border-color: var(--fern);
+}
+
+
+/* ── DESKTOP MAX WIDTH ───────────────────────────────────────────────────── */
+@media (min-width: 900px) {
+  /* Hero photo spans full width but content is centred */
+  .hero-copy {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    padding: 0 2rem;
+    box-sizing: border-box;
+  }
+
+  /* Form card — centred, capped width */
+  .form-card {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+  }
+
+  /* River preview — inside form-card, no extra constraints */
+}
+
+@media (min-width: 1200px) {
+  .form-card {
+    max-width: 1040px;
+  }
+  .hero-copy {
+    max-width: 1040px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1431,7 +1568,7 @@ select:focus-visible, input:focus-visible {
   <header class="land-header">
     <div class="logo-wrap">
       <div class="logo-wave"><span></span><span></span><span></span></div>
-      <span class="logo-name">StreamCast</span>
+      <span class="logo-name">HereFishyFishy</span>
       <span class="logo-region">South Ontario</span>
     </div>
     <div class="land-date" id="land-date"></div>
@@ -1440,8 +1577,8 @@ select:focus-visible, input:focus-visible {
   <div class="hero-photo">
     <div class="hero-photo-bg"></div>
     <div class="hero-copy">
-      <h1>Find where the fish are today.</h1>
-      <p style="margin-bottom:1.5rem">Tell us where you are and what you want to catch &mdash; StreamCast picks the best nearby river, tells you what&rsquo;s biting, and exactly how to fish it today.</p>
+      <h1>Find your fish.</h1>
+      
     </div>
   </div>
 
@@ -1450,14 +1587,10 @@ select:focus-visible, input:focus-visible {
     <!-- Mode toggle -->
     <div class="mode-wrap">
     <div class="mode-toggle" id="mode-toggle">
-      <button class="mode-btn active" id="mode-btn-beginner">🎣 Recommend me a spot</button>
-      <button class="mode-btn" id="mode-btn-expert">🗺️ I know where I'm going</button>
+      <button class="mode-btn active" id="mode-btn-beginner">🎣 Find my spot</button>
+      <button class="mode-btn" id="mode-btn-expert">🗺️ I know where to go</button>
     </div>
-    <div class="mode-descs" style="display:flex;flex-direction:row;gap:0;margin-top:.4rem;">
-      <p class="mode-desc active" id="mode-desc-beginner" style="flex:1;font-size:.68rem;color:var(--sage);text-align:center;line-height:1.4;margin:0;padding:0 .25rem;opacity:1;color:var(--moss);font-weight:500;">We pick the best river for today's conditions.</p>
-      <p class="mode-desc" id="mode-desc-expert" style="flex:1;font-size:.68rem;color:var(--sage);text-align:center;line-height:1.4;margin:0;padding:0 .25rem;opacity:.6;">You choose the river — we check if it's worth the drive.</p>
-    </div>
-    </div>
+    
 
     <!-- Date + Location -->
     <div class="form-top">
@@ -1528,15 +1661,15 @@ select:focus-visible, input:focus-visible {
     <!-- Placeholder shown before location is entered -->
     <div id="river-placeholder" class="expert-only" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0;opacity:0.45">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a7a52" stroke-width="1.5" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-      <span style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.08em;color:#4a7a52">Enter your location to see nearby rivers</span>
+      <span style="font-family:'JetBrains Mono', monospace;font-size:0.62rem;letter-spacing:0.08em;color:#4a7a52">Enter your location to see nearby rivers</span>
     </div>
 
     <!-- Techniques -->
     <div class="tech-section">
       <!-- Beginner mode: technique family buttons -->
       <div class="beginner-only">
-        <div class="field-lbl" style="margin-bottom:.65rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
-        <div id="tech-family-grid">
+        <div class="field-lbl" style="margin-top:1.1rem;margin-bottom:.65rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
+        <div class="method-row">
           <button class="tech-family-btn active" data-family=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
           <button class="tech-family-btn" data-family="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
           <button class="tech-family-btn" data-family="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
@@ -1580,11 +1713,11 @@ select:focus-visible, input:focus-visible {
     <div class="beginner-only travel-row">
       <div class="field-lbl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
         <label for="travel-range">TRAVEL TIME</label>
-        <span id="travel-lbl" style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
+        <span id="travel-lbl" style="font-family:'JetBrains Mono', monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
       </div>
       <input type="range" id="travel-range" min="20" max="180" step="10" value="60"
              style="width:100%;accent-color:var(--fern);cursor:pointer">
-      <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono', monospace;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
         <span>20 min</span><span>1 hr</span><span>2 hr</span><span>3 hr</span>
       </div>
       </div><!-- /expert-only -->
@@ -1593,13 +1726,10 @@ select:focus-visible, input:focus-visible {
     <!-- Species + CTA -->
     <div class="form-bottom">
       <div class="field-group" style="flex:1">
-        <label class="field-lbl">Target Species <span style="opacity:.5;font-size:.5rem">(optional)</span></label>
+        <label class="field-lbl" style="text-transform:uppercase;letter-spacing:.08em;">TARGET SPECIES <span style="opacity:.5;font-size:.5rem;text-transform:none;letter-spacing:0">(optional)</span></label>
         <input type="hidden" id="species-sel" value="">
         <div class="species-btn-grid">
-          <button class="species-btn active" data-value="" data-label="Any Species">
-            <div class="species-btn-icon"><svg viewBox="0 0 40 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M30 11 C26 5,18 3,10 5 C5 7,2 10,2 11 C2 12,5 15,10 17 C18 19,26 17,30 11Z"/><path d="M30 11 L37 7 L35 11 L37 15 Z"/><circle cx="7" cy="10.5" r="1.2" fill="currentColor"/></svg></div>
-            <span class="species-btn-name">Any Species</span>
-          </button>
+          
           <button class="species-btn" data-value="brown" data-label="Brown Trout">
             <div class="species-btn-img" style="background:linear-gradient(135deg,#8b6914,#c8963a,#8b6914)">
               <svg viewBox="0 0 50 28" fill="none"><path d="M38 14 C34 7,24 4,14 7 C8 9,3 13,3 14 C3 15,8 19,14 21 C24 24,34 21,38 14Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"/><path d="M38 14 L46 9 L44 14 L46 19 Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"/><circle cx="10" cy="13" r="1.4" fill="rgba(255,255,255,0.85)"/><circle cx="20" cy="10" r="1.1" fill="rgba(139,49,20,0.55)"/><circle cx="26" cy="13" r="1" fill="rgba(139,49,20,0.5)"/><circle cx="23" cy="17" r="0.9" fill="rgba(139,49,20,0.45)"/></svg>
@@ -1653,6 +1783,7 @@ select:focus-visible, input:focus-visible {
   </div>
 
 </div>
+</div>
 <!-- END LANDING -->
 
 <!-- ============ RESULTS PAGE ============ -->
@@ -1660,7 +1791,7 @@ select:focus-visible, input:focus-visible {
   <header class="res-header">
     <div class="res-logo-wrap">
       <div class="res-logo-wave"><span></span><span></span><span></span></div>
-      <div class="res-logo-name">StreamCast</div>
+      <div class="res-logo-name">HereFishyFishy</div>
     </div>
     <div class="res-center">
       <div class="res-center-lbl">Viewing</div>
@@ -1676,9 +1807,9 @@ select:focus-visible, input:focus-visible {
   <div id="species-banner" class="fi" style="background:var(--moss);border-bottom:1px solid rgba(139,181,160,0.15);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;">
     <div id="species-banner-fish" style="width:44px;height:26px;border-radius:4px;background:rgba(139,181,160,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
     <div>
-      <div style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.55;margin-bottom:.15rem">Target Species</div>
-      <div id="species-display" style="font-family:'Lora',serif;font-size:1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
-      <div id="species-season-badge" style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.15rem;opacity:.8"></div>
+      <div style="font-family:'JetBrains Mono', monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.55;margin-bottom:.15rem">Target Species</div>
+      <div id="species-display" style="font-family:'Nunito', sans-serif;font-size:1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
+      <div id="species-season-badge" style="font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.15rem;opacity:.8"></div>
     </div>
     <!-- hidden stubs for JS compat -->
     <span id="plain-summary" style="display:none"></span>
@@ -1696,7 +1827,7 @@ select:focus-visible, input:focus-visible {
 
   <div class="tpband" id="tpband" style="display:none">
     <div class="tpband-inner">
-      <div class="tp-eyebrow">StreamCast Recommendation</div>
+      <div class="tp-eyebrow">HereFishyFishy Pick</div>
       <div class="tp-headline" id="tp-headline">Loading…</div>
       <div class="tp-drive-time" id="tp-drive-time" style="display:none"></div>
       <div class="tp-confidence" id="tp-confidence" style="display:none"></div>
@@ -1716,7 +1847,7 @@ select:focus-visible, input:focus-visible {
       <div class="agrid-map" id="access-map">
         <div class="map-placeholder">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase">Map loads with access points</div>
+          <div style="font-family:'JetBrains Mono', monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase">Map loads with access points</div>
         </div>
       </div>
     </div>
@@ -1730,7 +1861,7 @@ select:focus-visible, input:focus-visible {
       <div class="col-lbl" id="flow-gauge-lbl">Flow<span class="col-status-dot" id="flow-dot"></span></div>
       <div id="flow-gauge-link" style="margin-bottom:.75rem;display:none">
         <a id="flow-gauge-anchor" href="#" target="_blank" 
-           style="font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.06em;color:var(--water);text-decoration:none;border-bottom:1px solid rgba(58,107,120,0.4);padding-bottom:1px;">
+           style="font-family:'JetBrains Mono', monospace;font-size:.58rem;letter-spacing:.06em;color:var(--water);text-decoration:none;border-bottom:1px solid rgba(58,107,120,0.4);padding-bottom:1px;">
           &#8599; Check live gauge
         </a>
       </div>
@@ -1765,7 +1896,7 @@ select:focus-visible, input:focus-visible {
       </div>
       <hr class="divr">
       <div class="col-lbl" style="margin-top:0">Best Window Today</div>
-      <div id="twin" style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500;color:var(--moss)">—</div>
+      <div id="twin" style="font-family:'JetBrains Mono', monospace;font-size:.85rem;font-weight:500;color:var(--moss)">—</div>
       <div id="tnote" style="font-size:.72rem;color:var(--sage);margin-top:.25rem;line-height:1.4"></div>
     </div>
 
@@ -1938,7 +2069,7 @@ select:focus-visible, input:focus-visible {
 
   <div class="res-footer">
     <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
-    <div class="res-flogo">StreamCast</div>
+    <div class="res-flogo">HereFishyFishy</div>
   
 </div>
 
@@ -1946,6 +2077,41 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2256,7 +2422,7 @@ var RIVER_CONFIG = {
     lat: 43.51, lng: -79.82,
     sweetMin: 2, sweetMax: 8,
     flowLow: 0.5, flowHigh: 15,
-    species: ["Brown Trout", "Rainbow Trout", "Brook Trout", "Chinook Salmon"],
+    species: ["Brown Trout", "Rainbow Trout", "Steelhead", "Brook Trout", "Chinook Salmon"],
     routine: [{ t: "Check Conservation Halton notices", d: "Halton manages flood control on Bronte. Check for any active warnings at conservationhalton.ca before heading out." },
       { t: "Time your visit for spring or fall runs", d: "Bronte\u2019s best fishing is during steelhead and salmon migrations. Spring (March\u2013April) and fall (October\u2013November) are peak season." },
       { t: "Respect the waterfall boundary at Lowville Park", d: "A large waterfall in Lowville Park blocks migratory fish. ALL the best salmon and steelhead fishing is below the falls \u2014 this is where to focus." }
@@ -2286,7 +2452,7 @@ var RIVER_CONFIG = {
     lat: 43.88, lng: -79.73,
     sweetMin: 3, sweetMax: 12,
     flowLow: 1, flowHigh: 20,
-    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Chinook Salmon"],
+    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Steelhead", "Chinook Salmon"],
     routine: [{ t: "Know the falls and fish ladders", d: "Several dams and falls on the Humber limit migratory fish movement. Focus your efforts on the reaches the fish can actually reach." },
       { t: "Upstream rain in the Oak Ridges Moraine = rising flows within hours", d: "The Moraine drains quickly. A rain event north of Bolton will hit the gauge within 2\u20134 hours and can transform the creek rapidly." },
       { t: "Upper Humber for brook trout, lower for migratory species", d: "The upper Humber above Mono is classic brook trout water. The lower Humber near Toronto gets fall salmon and spring steelhead." }
@@ -2346,7 +2512,7 @@ var RIVER_CONFIG = {
     lat: 43.87, lng: -79.12,
     sweetMin: 2, sweetMax: 10,
     flowLow: 0.5, flowHigh: 18,
-    species: ["Rainbow Trout", "Brown Trout", "Brook Trout", "Chinook Salmon"],
+    species: ["Rainbow Trout", "Steelhead", "Brown Trout", "Brook Trout", "Chinook Salmon"],
     routine: [{ t: "Know the Whitevale Dam barrier", d: "A dam at Whitevale blocks migratory fish on the West Duffins. ALL steelhead and salmon fishing is below the dam. Above it: brook trout only." },
       { t: "Check TRCA conditions before driving", d: "Toronto Region Conservation Authority manages Duffins. Check trca.ca for any closures or active flood warnings before heading out." },
       { t: "Target early morning during fall salmon runs", d: "Duffins Creek is a well-known salmon and steelhead river close to Toronto. Can be very crowded on weekends during runs \u2014 arrive at dawn." }
@@ -2375,7 +2541,7 @@ var RIVER_CONFIG = {
     lat: 43.95, lng: -78.30,
     sweetMin: 2, sweetMax: 12,
     flowLow: 0.5, flowHigh: 20,
-    species: ["Rainbow Trout", "Brown Trout", "Chinook Salmon", "Coho Salmon"],
+    species: ["Rainbow Trout", "Steelhead", "Brown Trout", "Chinook Salmon", "Coho Salmon"],
     routine: [{ t: "Check the Ganaraska Region Conservation Authority", d: "GRCA (not to be confused with the Grand River CA) manages the Ganny watershed. They track run timing and can advise on current conditions." },
       { t: "Time your trip for the October Chinook run", d: "Port Hope\u2019s main draw is the fall Chinook salmon run \u2014 one of the most accessible in Ontario. Fish stack up in the lower river from late September through October." },
       { t: "Fish the upper reaches for resident trout in summer", d: "Above the lower migratory section, the upper Ganaraska holds resident brown trout and some brook trout in cooler, more forested water." }
@@ -2404,7 +2570,7 @@ var RIVER_CONFIG = {
     lat: 44.37, lng: -80.50,
     sweetMin: 3, sweetMax: 12,
     flowLow: 1, flowHigh: 20,
-    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Chinook Salmon"],
+    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Steelhead", "Chinook Salmon"],
     routine: [{ t: "Check Grey Sauble Conservation Authority", d: "GSCA manages the Beaver watershed. Check gsca.ca for any active flood advisories or special conditions." },
       { t: "Target the Kimberley stretch first \u2014 it\u2019s the crown jewel", d: "The Beaver through Kimberley is arguably the best wild brown trout water in Ontario. Pools and riffles through a stunning valley. Go early on weekends." },
       { t: "Summer fishing is legitimate here \u2014 cold springs keep temps in check", d: "Unlike most southern Ontario rivers, the Beaver stays fishable into summer due to cold spring inputs. Check water temp and fish early morning in July\u2013August." }
@@ -2434,7 +2600,7 @@ var RIVER_CONFIG = {
     lat: 44.15, lng: -81.02,
     sweetMin: 10, sweetMax: 30,
     flowLow: 5, flowHigh: 60,
-    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Chinook Salmon", "Coho Salmon"],
+    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Steelhead", "Chinook Salmon", "Coho Salmon"],
     routine: [{ t: "Consider a drift boat or canoe for the best water", d: "The Saugeen\u2019s best water is only accessible by boat. Float fishing is a legitimate strategy \u2014 many guides offer drift trips that access water no walk-in angler reaches." },
       { t: "Check Saugeen Valley Conservation Authority", d: "SVCA manages the watershed. They publish flow and run reports especially during steelhead and salmon seasons." },
       { t: "Plan around major salmon and steelhead runs", d: "The Saugeen receives exceptional Chinook, Coho, and steelhead runs from Lake Huron. September\u2013November and March\u2013April are peak seasons. Book accommodation well in advance." }
@@ -2461,7 +2627,7 @@ var RIVER_CONFIG = {
     gauge: "02HB005", gaugeName: "Sixteen Mile Creek at Milton (02HB005)",
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB005",
     lat: 43.48, lng: -79.72, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
-    species: ["Rainbow Trout","Brown Trout","Chinook Salmon"],
+    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon"],
     routine: [{t:"Check Conservation Halton notices",d:"Halton manages Sixteen Mile Creek. Check conservationhalton.ca for flood warnings or seasonal closures before heading out."},
       {t:"Target fall and spring for migratory fish",d:"Best fishing is during steelhead runs (March\u2013April) and Chinook salmon (October\u2013November). Summer holds some resident browns."},
       {t:"Know your access points \u2014 many sections are private",d:"Public access is limited. Stick to TRCA/Conservation Halton managed areas and road allowances at bridge crossings."}
@@ -2479,7 +2645,7 @@ var RIVER_CONFIG = {
     gauge: "02HC019", gaugeName: "Rouge River near Markham (02HC022)",
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC022",
     lat: 43.86, lng: -79.18, sweetMin: 2, sweetMax: 10, flowLow: 0.5, flowHigh: 18,
-    species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
+    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon","Coho Salmon"],
     routine: [{t:"Check TRCA conditions before driving",d:"Toronto Region Conservation Authority manages the Rouge. Check trca.ca for conditions and any seasonal closures."},
       {t:"Target fall salmon and spring steelhead",d:"The Rouge receives Chinook, Coho, and steelhead from Lake Ontario. Fall (Sept\u2013Nov) and spring (Mar\u2013Apr) are peak seasons."},
       {t:"Use Rouge National Urban Park access for best water",d:"The park provides managed public access to quality stretches. Check pc.gc.ca for current access restrictions."}
@@ -2496,7 +2662,7 @@ var RIVER_CONFIG = {
     gauge: null, gaugeName: "Wilmot Creek near Newcastle (02HD009)",
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD009",
     lat: 43.92, lng: -78.58, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
-    species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
+    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon","Coho Salmon"],
     routine: [{t:"Check Ganaraska Region Conservation Authority",d:"GRCA manages Wilmot Creek. Check grca.on.ca for advisories or seasonal closures."},
       {t:"Time your trip for fall salmon and spring steelhead",d:"Wilmot gets excellent Chinook and Coho (Oct\u2013Nov) and steelhead (Mar\u2013Apr) runs from Lake Ontario."},
       {t:"Fish below Highway 2 bridge for best access",d:"The lower reaches near Newcastle give the best migratory fish access via road allowances at bridge crossings."}
@@ -2513,7 +2679,7 @@ var RIVER_CONFIG = {
     gauge: "02HD006", gaugeName: "Bowmanville Creek at Bowmanville (02HD006)",
     gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD006",
     lat: 43.91, lng: -78.68, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
-    species: ["Rainbow Trout","Brown Trout","Chinook Salmon","Coho Salmon"],
+    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon","Coho Salmon"],
     routine: [{t:"Check Central Lake Ontario Conservation (CLOCA)",d:"CLOCA manages the Bowmanville watershed. Their website has flood advisories and access information."},
       {t:"Time for fall salmon and spring steelhead",d:"Chinook and Coho (Oct\u2013Nov) and steelhead (Mar\u2013Apr) from Lake Ontario are the primary draw."},
       {t:"Access at the main downtown bridge is the classic spot",d:"The pool below the main Bowmanville bridge is the most accessible location. Arrive early on fall weekends."}
@@ -2593,7 +2759,7 @@ var RIVER_CONFIG = {
       icon: "\U0001f4e1",
       label: "Data \u00b7 Environment Canada Water Office",
       title: "Check live flow data for this river",
-      desc: "For rivers not yet in the StreamCast database, check the Environment Canada Water Office for the nearest active gauge. Real-time data is updated hourly.",
+      desc: "For rivers not yet in the HereFishyFishy database, check the Environment Canada Water Office for the nearest active gauge. Real-time data is updated hourly.",
       links: [
         { text: "Water Office Search", url: "https://wateroffice.ec.gc.ca/search/real_time_e.html" },
         { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
@@ -4565,7 +4731,7 @@ function updateMapPin(spotIdx) {
       '<iframe src="' + osmUrl + '" style="width:100%;height:340px;border:none;display:block" loading="lazy"></iframe>'
       + '<div id="map-gm-cta" style="padding:.75rem 1rem;">'
       + '<a id="map-gm-link" href="' + gmUrl + '" target="_blank" rel="noopener" '
-      + 'style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--fern);color:#fff;border-radius:8px;padding:.65rem 1rem;font-family:\'DM Mono\',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;font-weight:600;box-shadow:0 2px 8px rgba(45,74,50,.3);transition:opacity .15s">'
+      + 'style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--fern);color:#fff;border-radius:8px;padding:.65rem 1rem;font-family:\'DM Mono\',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:none;text-decoration:none;font-weight:600;box-shadow:0 2px 8px rgba(45,74,50,.3);transition:opacity .15s">'
       + '\uD83D\uDCCD Navigate to ' + spotName + '</a>'
       + '</div>'
       + '<div class="map-pin-list" style="background:var(--deep);padding:.6rem .75rem;max-height:120px;overflow-y:auto" id="map-legend">'
@@ -4777,8 +4943,8 @@ function renderSpeciesRail(cfg) {
 
   title.textContent = "Species on the " + riverName;
 
-  var allSpecies = ["Brown Trout","Rainbow Trout","Brook Trout","Chinook Salmon","Coho Salmon"];
-  var speciesFilterMap = {brown:"Brown Trout",rainbow:"Rainbow Trout",brook:"Brook Trout",chinook:"Chinook Salmon",coho:"Coho Salmon"};
+  var allSpecies = ["Brown Trout","Rainbow Trout","Steelhead","Brook Trout","Chinook Salmon","Coho Salmon"];
+  var speciesFilterMap = {brown:"Brown Trout",rainbow:"Rainbow Trout",steelhead:"Steelhead",brook:"Brook Trout",chinook:"Chinook Salmon",coho:"Coho Salmon"};
   var _spm2={brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var targetSpeciesArr=selectedSpecies.map(function(k){return _spm2[k];}).filter(Boolean);
 
@@ -5091,18 +5257,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       );
       _topScore += _liveBonus;
     }
-    // Add live conditions bonus to score (flow, temp, sky all available at this point)
-    var _liveCfg = getRiverConfig(selectedRiver);
-    if (_liveCfg && flow != null) {
-      _topScore += liveConditionsScore(
-        flow, _liveCfg.sweetMin, _liveCfg.sweetMax,
-        _liveCfg.flowLow || _liveCfg.sweetMin * 0.3,
-        _liveCfg.flowHigh || _liveCfg.sweetMax * 3,
-        weatherOk ? wt : null, weatherOk ? cloudPct : null
-      );
-    }
+    // (live conditions already applied above)
     var _conf = scoreToConfidence(_topScore);
-    _confEl.textContent = 'Conditions: ' + _conf.label;
+    var _confWords = {3:'Excellent',2:'Good',1:'Marginal',0:'Tough'};
+    _confEl.textContent = _conf.label + '  ' + (_confWords[_conf.stars] || '');
     _confEl.className = 'tp-confidence ' + _conf.cls;
     _confEl.style.display = 'inline-block';
   }
@@ -5119,10 +5277,28 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _driveEl = document.getElementById('tp-drive-time');
   if (_driveEl && _topRiver && _topRiver.driveTime) {
     var _dt = _topRiver.driveTime;
-    var _dtStr = _dt < 60 ? _dt + ' min drive' : (_dt === 60 ? '1 hr drive' : Math.floor(_dt/60) + ' hr ' + (_dt%60 ? _dt%60 + ' min' : '') + ' drive');
+    var _dtStr = _dt < 60 ? _dt + ' min' : (_dt === 60 ? '1 hr' : Math.floor(_dt/60) + ' hr ' + (_dt%60 ? _dt%60 + ' min' : ''));
     var _lk = window._beginnerLocKey || '';
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
-    _driveEl.textContent = '🚗 ' + _dtStr + ' from ' + _lkLabel;
+
+    // Drive worthiness verdict — combines score and distance
+    var _worthIt, _verdictCls;
+    if (_topScore >= 10 && _dt <= 60) {
+      _worthIt = '\u2713 Worth the drive'; _verdictCls = 'verdict-yes';
+    } else if (_topScore >= 6 && _dt <= 90) {
+      _worthIt = '\u2713 Worth the drive'; _verdictCls = 'verdict-yes';
+    } else if (_topScore >= 6 && _dt <= 150) {
+      _worthIt = '\u2713 Conditions good — long drive though'; _verdictCls = 'verdict-maybe';
+    } else if (_topScore >= 2 && _dt <= 60) {
+      _worthIt = '\u007e Marginal conditions — short drive, your call'; _verdictCls = 'verdict-maybe';
+    } else if (_topScore < 2) {
+      _worthIt = '\u2715 Tough day — consider staying local'; _verdictCls = 'verdict-no';
+    } else {
+      _worthIt = '\u007e Long drive for current conditions'; _verdictCls = 'verdict-maybe';
+    }
+
+    _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
+      + '<span class="drive-verdict ' + _verdictCls + '">' + _worthIt + '</span>';
     _driveEl.style.display = 'block';
   }
     'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
@@ -5970,11 +6146,58 @@ function applyBaitShowMore(panel, showCount) {
   panel.appendChild(btn);
 }
 
+
+// ── SPECIES GRID — collapse out-of-season species ────────────────────────────
+function updateSpeciesGrid() {
+  var grid = document.querySelector('.species-btn-grid');
+  if (!grid) return;
+
+  var OUT_OF_SEASON = ['chinook', 'coho', 'steelhead']; // migratory — check dynamically
+  // Dynamically check which are absent right now
+  var absent = [];
+  var speciesKeyMap = { chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead' };
+  Object.keys(speciesKeyMap).forEach(function(key) {
+    var w = getCurrentSeason(speciesKeyMap[key]);
+    if (w && w.quality === 'absent') absent.push(key);
+  });
+
+  if (!absent.length) return; // all in season — show everything
+
+  // Hide absent species buttons
+  var hiddenBtns = [];
+  absent.forEach(function(key) {
+    var btn = grid.querySelector('.species-btn[data-value="' + key + '"]');
+    if (btn) { btn.style.display = 'none'; hiddenBtns.push(btn); }
+  });
+
+  // Add "Out of season ▸" toggle if not already there
+  if (hiddenBtns.length && !document.getElementById('sp-season-toggle')) {
+    var toggle = document.createElement('button');
+    toggle.id = 'sp-season-toggle';
+    toggle.className = 'sp-season-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    var labels = absent.map(function(k) {
+      return speciesKeyMap[k].replace(' Salmon','').replace(' Trout','');
+    }).join(', ');
+    toggle.textContent = labels + ' — out of season ▸';
+    grid.parentNode.insertBefore(toggle, grid.nextSibling);
+
+    toggle.addEventListener('click', function() {
+      var expanded = toggle.getAttribute('aria-expanded') === 'true';
+      hiddenBtns.forEach(function(btn) { btn.style.display = expanded ? 'none' : ''; });
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      toggle.textContent = expanded
+        ? labels + ' — out of season ▸'
+        : labels + ' — out of season ▾';
+    });
+  }
+}
+
 function scoreToConfidence(score) {
-  if (score >= 10) return { label: 'Excellent',  cls: 'conf-excellent' };
-  if (score >= 6)  return { label: 'Good',       cls: 'conf-good'      };
-  if (score >= 2)  return { label: 'Marginal',   cls: 'conf-marginal'  };
-  return              { label: 'Tough',      cls: 'conf-tough'     };
+  if (score >= 10) return { label: '\u2605\u2605\u2605', stars: 3, cls: 'conf-excellent' };
+  if (score >= 6)  return { label: '\u2605\u2605\u2606', stars: 2, cls: 'conf-good'      };
+  if (score >= 2)  return { label: '\u2605\u2606\u2606', stars: 1, cls: 'conf-marginal'  };
+  return              { label: '\u2606\u2606\u2606', stars: 0, cls: 'conf-tough'     };
 }
 
 function rrankBadge(score) {
@@ -6128,6 +6351,42 @@ function renderDefaultPreview() {
 
 // Render default preview after all JS is parsed
 renderDefaultPreview();
+updateSpeciesGrid();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -6167,6 +6426,41 @@ renderDefaultPreview();
 
 
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
