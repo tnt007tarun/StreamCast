@@ -1556,6 +1556,39 @@ select:focus-visible, input:focus-visible {
   }
 }
 
+
+/* ── RIVER PAGE DESKTOP WIDTH CONSTRAINT ───────────────────────────────── */
+@media (min-width: 900px) {
+  /* All content blocks — match tpband-inner 1100px */
+  .cond-card,
+  .tgsec,
+  #tg-section,
+  #stocking-section,
+  #species-section,
+  .rrank-section {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  /* Access section — slightly wider for map */
+  .asec {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* sec-label stays full-width as visual divider — override any inherited constraint */
+  .sec-label {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* tpband already constrained via tpband-inner */
+}
+
 </style>
 </head>
 <body>
@@ -2077,6 +2110,9 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
+
 
 
 
@@ -4601,7 +4637,7 @@ async function renderResults(){
     document.getElementById("flbl").textContent=fd+(flowAt?" \u00b7 Obs: "+flowAt.slice(0,16).replace("T"," "):"");
     document.getElementById("fgv").textContent=flow+" m\u00b3/s";
     var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh*1.1)+"%";fb.className="gf "+fc;
-    document.getElementById("fstat").textContent=clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
+    document.getElementById("fstat").innerHTML=clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
     var _fd=document.getElementById("flow-dot");
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
     document.getElementById("fcl").innerHTML=[
@@ -4615,7 +4651,7 @@ async function renderResults(){
     document.getElementById("ftrend").textContent="";
     document.getElementById("flbl").textContent="Live data unavailable — use the gauge link. You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
     document.getElementById("fgv").textContent="\u2014";
-    document.getElementById("fstat").textContent="CHECK GAUGE";document.getElementById("fstat").className="gs warn";
+    document.getElementById("fstat").innerHTML='<span class="status-dot dot-warn"></span>CHECK GAUGE';document.getElementById("fstat").className="gs warn";
     document.getElementById("fcl").innerHTML="<li><span class=\"ci warn\">\u25b3</span><span>Check the gauge link above for current flow before heading out.</span></li>";
   }
 
@@ -5851,7 +5887,7 @@ function methodToBaitTab(methodName) {
   if (/dry fly|dry-fly|caddis|comparadun|parachute|wulff/i.test(m)) return 'dries';
   if (/streamer|sculpin|woolly|clouser|articulated|minnow/i.test(m)) return 'streamers';
   if (/nymph|midge|hatch|euro|tight.?line|subsurface/i.test(m)) return 'nymphs';
-  if (/float|bait|roe|bead|centrepin|drift.*bait|stationary/i.test(m)) return 'float';
+  if (/float|bait|roe|bead|centrepin|drift|stationary/i.test(m)) return 'float';
   if (/spinner|spoon|lure|jig|crankbait|plug|kastmaster|rapala|mepps/i.test(m)) return 'lures';
   // fallback by family
   if (/fly/i.test(m)) return 'nymphs';
@@ -6425,7 +6461,13 @@ updateSpeciesGrid();
 
 
 
+
+
+
 </script>
+
+
+
 
 
 
