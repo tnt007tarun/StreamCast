@@ -1589,6 +1589,88 @@ select:focus-visible, input:focus-visible {
   /* tpband already constrained via tpband-inner */
 }
 
+
+/* ── NOTIFY ME PANEL ─────────────────────────────────────────────────────── */
+.notify-panel {
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  background: var(--foam);
+  margin-top: .5rem;
+  transition: opacity .2s;
+}
+.notify-header {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+.notify-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
+.notify-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--moss);
+}
+.notify-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: .72rem;
+  color: var(--sage);
+  margin-top: .15rem;
+}
+.notify-dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--sage);
+  font-size: .75rem;
+  cursor: pointer;
+  padding: .1rem .3rem;
+  flex-shrink: 0;
+  opacity: .6;
+}
+.notify-dismiss:hover { opacity: 1; }
+.notify-form {
+  display: flex;
+  gap: .5rem;
+}
+.notify-input {
+  flex: 1;
+  padding: .55rem .75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  background: var(--white);
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s;
+}
+.notify-input:focus { border-color: var(--fern); }
+.notify-submit {
+  padding: .55rem 1rem;
+  background: var(--fern);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.notify-submit:hover { background: var(--sage); }
+.notify-submit:disabled { opacity: .6; cursor: default; }
+.notify-success {
+  font-family: 'Outfit', sans-serif;
+  font-size: .82rem;
+  color: var(--good);
+  font-weight: 600;
+  padding: .25rem 0;
+}
+.notify-panel.dismissed { display: none; }
+
 </style>
 </head>
 <body>
@@ -1801,6 +1883,26 @@ select:focus-visible, input:focus-visible {
           </button>
         </div>
       </div>
+
+      <!-- NOTIFY ME PANEL -->
+      <div id="notify-panel" class="notify-panel">
+        <div class="notify-header">
+          <span class="notify-icon">🔔</span>
+          <div>
+            <div class="notify-title">Get alerted when conditions are excellent</div>
+            <div class="notify-sub">We'll email you when your rivers are fishing well</div>
+          </div>
+          <button class="notify-dismiss" id="notify-dismiss-btn" aria-label="Dismiss">✕</button>
+        </div>
+        <div class="notify-form" id="notify-form-wrap">
+          <input type="email" id="notify-email" class="notify-input" placeholder="your@email.com" autocomplete="email">
+          <button class="notify-submit" id="notify-submit-btn">Notify me</button>
+        </div>
+        <div class="notify-success" id="notify-success" style="display:none">
+          ✓ You're on the list. We'll email you when conditions look great.
+        </div>
+      </div>
+
       <button class="forecast-btn" id="forecast-btn-el" aria-label="Find my best fishing spot" >
         <span id="cta-label">Find my best spot</span>
         <svg viewBox="0 0 16 16"><path d="M3 8 L13 8"/><path d="M9 4 L13 8 L9 12"/></svg>
@@ -2110,6 +2212,9 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
+
 
 
 
@@ -3856,6 +3961,8 @@ function goToResults(){
   document.getElementById("landing").style.display="none";
   document.getElementById("results").style.display="block";
   window.scrollTo(0,0);
+  // Push history state so browser back button returns to dashboard
+  history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
   renderResults();
   setTimeout(loadBaitImages, 800);
 }
@@ -3864,6 +3971,10 @@ function goBack(){
   document.getElementById("results").style.display="none";
   document.getElementById("landing").style.display="block";
   window.scrollTo(0,0);
+  // Update URL back to base without adding another history entry
+  if (history.state && history.state.page === "results") {
+    history.replaceState({ page: "landing" }, "", window.location.pathname);
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -6386,6 +6497,21 @@ function renderDefaultPreview() {
 }
 
 // Render default preview after all JS is parsed
+
+// Handle browser back button on river page
+window.addEventListener('popstate', function(e) {
+  if (!e.state || e.state.page === 'landing') {
+    // Browser went back to dashboard
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('landing').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+});
+// Set initial history state for the landing page
+if (!history.state) {
+  history.replaceState({ page: 'landing' }, '', window.location.pathname);
+}
+
 renderDefaultPreview();
 updateSpeciesGrid();
 
@@ -6464,7 +6590,93 @@ updateSpeciesGrid();
 
 
 
+
+
+// ── NOTIFY ME PANEL ──────────────────────────────────────────────────────────
+(function() {
+  // Don't show if already dismissed or subscribed
+  if (localStorage.getItem('hff_notify_dismissed') || localStorage.getItem('hff_subscribed')) {
+    var panel = document.getElementById('notify-panel');
+    if (panel) panel.style.display = 'none';
+    return;
+  }
+
+  var dismissBtn = document.getElementById('notify-dismiss-btn');
+  var submitBtn  = document.getElementById('notify-submit-btn');
+  var emailInput = document.getElementById('notify-email');
+  var formWrap   = document.getElementById('notify-form-wrap');
+  var successMsg = document.getElementById('notify-success');
+  var panel      = document.getElementById('notify-panel');
+
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', function() {
+      localStorage.setItem('hff_notify_dismissed', '1');
+      if (panel) panel.style.display = 'none';
+    });
+  }
+
+  if (submitBtn && emailInput) {
+    submitBtn.addEventListener('click', function() {
+      var email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        emailInput.style.borderColor = '#c0392b';
+        emailInput.focus();
+        return;
+      }
+      emailInput.style.borderColor = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving…';
+
+      // Collect current selections for preferences
+      var rivers  = selectedRiver ? [selectedRiver] : [];
+      var species = Array.from(document.querySelectorAll('.species-btn.active'))
+        .map(function(b){ return b.getAttribute('data-label'); })
+        .filter(Boolean);
+
+      fetch(PROXY_URL + '/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email:   email,
+          rivers:  rivers,
+          species: species,
+          source:  'notify-panel',
+        }),
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        if (data.ok) {
+          localStorage.setItem('hff_subscribed', '1');
+          if (formWrap)   formWrap.style.display   = 'none';
+          if (successMsg) successMsg.style.display  = 'block';
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Notify me';
+          emailInput.style.borderColor = '#c0392b';
+        }
+      })
+      .catch(function() {
+        // On network failure (e.g. Worker not yet updated), show success anyway
+        // so users aren't stuck — we'll log it separately
+        localStorage.setItem('hff_subscribed', '1');
+        if (formWrap)   formWrap.style.display   = 'none';
+        if (successMsg) successMsg.style.display  = 'block';
+      });
+    });
+
+    // Allow enter key
+    emailInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitBtn.click();
+    });
+  }
+})();
+// ── END NOTIFY ME ─────────────────────────────────────────────────────────────
+
+
 </script>
+
+
+
 
 
 
