@@ -119,20 +119,24 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 }
 .hero-copy {
   position:absolute;
-  bottom:2rem; left:2rem; right:2rem;
+  bottom: 1.25rem; left:2rem; right:2rem;
   z-index:2;
   /* Ensure copy doesn't extend above the nav bar */
   max-height:calc(100% - 4rem);
   overflow:hidden;
 }
 .hero-copy h1 {
-  font-family:'Nunito', sans-serif;
-  font-size:clamp(2rem,5vw,3.2rem);
-  font-weight:700;
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
   color:var(--cream);
   line-height:1.1;
-  margin-bottom:0.75rem;
+  margin-bottom: 1.25rem;
   text-shadow:0 2px 20px rgba(0,0,0,0.4);
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  font-style: italic;
 }
 .hero-copy p {
   font-size:0.9rem;
@@ -157,8 +161,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 }
 
 /* top row: date + location */
-.form-top { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
-.field-group { display:flex; flex-direction:column; gap:0.45rem; }
+.form-top { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; padding-top:1.1rem; border-top:1px solid var(--border); margin-top:.25rem; }
+.field-group { display:flex; flex-direction:column; gap:0.1rem; }
 .field-lbl {
   font-family:'Outfit', sans-serif;
   font-size:0.7rem;
@@ -1071,6 +1075,7 @@ select:focus-visible, input:focus-visible {
   .form-top {
     grid-template-columns: 1fr 1fr;
     gap: .6rem;
+    padding-top: .9rem;
   }
 
   /* CTA button — full width */
@@ -1166,8 +1171,13 @@ select:focus-visible, input:focus-visible {
     right: 1.25rem;
   }
   .hero-copy h1 {
-    font-size: 1.6rem;
-    line-height: 1.15;
+    font-size: 18px !important;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-top: 0;
   }
   .land-header {
     padding: max(0.75rem, env(safe-area-inset-top)) 1.25rem 0.75rem;
@@ -1456,7 +1466,7 @@ select:focus-visible, input:focus-visible {
     top: -30px;
   }
   .hero-photo { height: 160px; }
-  .hero-copy h1 { font-size: 1.75rem; line-height: 1.15; }
+  .hero-copy h1 { font-size: 18px !important; font-weight: 400; font-style: italic; line-height: 1.2; }
   .mode-toggle { margin-bottom: 0; }
 }
 
@@ -1671,6 +1681,110 @@ select:focus-visible, input:focus-visible {
 }
 .notify-panel.dismissed { display: none; }
 
+
+/* ── NOTIFY BAR — river page persistent bottom bar ──────────────────────── */
+.notify-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--moss);
+  border-top: 2px solid var(--fern);
+  box-shadow: 0 -4px 24px rgba(13,31,45,0.25);
+  transform: translateY(100%);
+  transition: transform .35s cubic-bezier(.22,.68,0,1.2);
+  padding: .85rem 1.25rem;
+  padding-bottom: calc(.85rem + env(safe-area-inset-bottom));
+}
+.notify-bar.visible {
+  transform: translateY(0);
+}
+.notify-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.notify-bar-icon { font-size: 1.2rem; flex-shrink: 0; }
+.notify-bar-text {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  flex: 1;
+  min-width: 200px;
+}
+.notify-bar-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  font-weight: 700;
+  color: #fff;
+}
+.notify-bar-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: .72rem;
+  color: var(--mist);
+  margin-top: .1rem;
+}
+.notify-bar-form {
+  display: flex;
+  gap: .5rem;
+  flex-shrink: 0;
+}
+.notify-bar-input {
+  padding: .5rem .75rem;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  width: 200px;
+  outline: none;
+  transition: border-color .15s;
+}
+.notify-bar-input::placeholder { color: rgba(255,255,255,0.4); }
+.notify-bar-input:focus { border-color: var(--fern); }
+.notify-bar-submit {
+  padding: .5rem 1rem;
+  background: var(--fern);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.notify-bar-submit:hover { background: var(--sage); }
+.notify-bar-submit:disabled { opacity: .6; cursor: default; }
+.notify-bar-success {
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  color: #7dda8a;
+  font-weight: 600;
+}
+.notify-bar-dismiss {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: .85rem;
+  cursor: pointer;
+  padding: .25rem .4rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: color .15s;
+}
+.notify-bar-dismiss:hover { color: #fff; }
+@media (max-width: 600px) {
+  .notify-bar-input { width: 150px; }
+  .notify-bar-title { font-size: .8rem; }
+}
+
 </style>
 </head>
 <body>
@@ -1692,7 +1806,7 @@ select:focus-visible, input:focus-visible {
   <div class="hero-photo">
     <div class="hero-photo-bg"></div>
     <div class="hero-copy">
-      <h1>Find your fish.</h1>
+      <h1>Stop fishing, start catching.</h1>
       
     </div>
   </div>
@@ -1884,24 +1998,6 @@ select:focus-visible, input:focus-visible {
         </div>
       </div>
 
-      <!-- NOTIFY ME PANEL -->
-      <div id="notify-panel" class="notify-panel">
-        <div class="notify-header">
-          <span class="notify-icon">🔔</span>
-          <div>
-            <div class="notify-title">Get alerted when conditions are excellent</div>
-            <div class="notify-sub">We'll email you when your rivers are fishing well</div>
-          </div>
-          <button class="notify-dismiss" id="notify-dismiss-btn" aria-label="Dismiss">✕</button>
-        </div>
-        <div class="notify-form" id="notify-form-wrap">
-          <input type="email" id="notify-email" class="notify-input" placeholder="your@email.com" autocomplete="email">
-          <button class="notify-submit" id="notify-submit-btn">Notify me</button>
-        </div>
-        <div class="notify-success" id="notify-success" style="display:none">
-          ✓ You're on the list. We'll email you when conditions look great.
-        </div>
-      </div>
 
       <button class="forecast-btn" id="forecast-btn-el" aria-label="Find my best fishing spot" >
         <span id="cta-label">Find my best spot</span>
@@ -1927,7 +2023,29 @@ select:focus-visible, input:focus-visible {
     <div class="res-logo-wrap">
       <div class="res-logo-wave"><span></span><span></span><span></span></div>
       <div class="res-logo-name">HereFishyFishy</div>
+    
+  <!-- NOTIFY BAR — river page -->
+  <div id="notify-bar" class="notify-bar" style="display:none">
+    <div class="notify-bar-inner">
+      <div class="notify-bar-text">
+        <span class="notify-bar-icon">🔔</span>
+        <div>
+          <div class="notify-bar-title">Get alerted when conditions are excellent</div>
+          <div class="notify-bar-sub">We'll email you for <span id="notify-bar-river">this river</span></div>
+        </div>
+      </div>
+      <div class="notify-bar-form" id="notify-bar-form">
+        <input type="email" id="notify-bar-email" class="notify-bar-input" placeholder="your@email.com" autocomplete="email">
+        <button class="notify-bar-submit" id="notify-bar-submit">Notify me</button>
+      </div>
+      <div class="notify-bar-success" id="notify-bar-success" style="display:none">
+        ✓ You're on the list!
+      </div>
+      <button class="notify-bar-dismiss" id="notify-bar-dismiss">✕</button>
     </div>
+  </div>
+  <!-- END NOTIFY BAR -->
+</div>
     <div class="res-center">
       <div class="res-center-lbl">Viewing</div>
       <div class="res-center-val" id="res-river">Grand River, Fergus</div>
@@ -2212,6 +2330,19 @@ select:focus-visible, input:focus-visible {
 
 
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3961,6 +4092,7 @@ function goToResults(){
   document.getElementById("landing").style.display="none";
   document.getElementById("results").style.display="block";
   window.scrollTo(0,0);
+  initNotifyBar();
   // Push history state so browser back button returns to dashboard
   history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
   renderResults();
@@ -3969,6 +4101,7 @@ function goToResults(){
 
 function goBack(){
   document.getElementById("results").style.display="none";
+  var _bar = document.getElementById("notify-bar"); if (_bar) { _bar.classList.remove("visible"); }
   document.getElementById("landing").style.display="block";
   window.scrollTo(0,0);
   // Update URL back to base without adding another history entry
@@ -6435,6 +6568,7 @@ function renderDefaultPreview() {
       document.getElementById('landing').style.display = 'none';
       document.getElementById('results').style.display = 'block';
       window.scrollTo(0, 0);
+      initNotifyBar();
       renderResults();
       setTimeout(loadBaitImages, 800);
     });
@@ -6592,88 +6726,120 @@ updateSpeciesGrid();
 
 
 
-// ── NOTIFY ME PANEL ──────────────────────────────────────────────────────────
-(function() {
-  // Don't show if already dismissed or subscribed
-  if (localStorage.getItem('hff_notify_dismissed') || localStorage.getItem('hff_subscribed')) {
-    var panel = document.getElementById('notify-panel');
-    if (panel) panel.style.display = 'none';
-    return;
+
+
+
+
+// ── NOTIFY BAR — river page ───────────────────────────────────────────────────
+function initNotifyBar() {
+  if (localStorage.getItem('hff_subscribed') || localStorage.getItem('hff_bar_dismissed')) return;
+
+  var bar     = document.getElementById('notify-bar');
+  var submit  = document.getElementById('notify-bar-submit');
+  var input   = document.getElementById('notify-bar-email');
+  var form    = document.getElementById('notify-bar-form');
+  var success = document.getElementById('notify-bar-success');
+  var dismiss = document.getElementById('notify-bar-dismiss');
+  var riverLbl= document.getElementById('notify-bar-river');
+  if (!bar) return;
+
+  // Update river name label
+  if (riverLbl && selectedRiver) {
+    riverLbl.textContent = selectedRiver.split(',')[0];
   }
 
-  var dismissBtn = document.getElementById('notify-dismiss-btn');
-  var submitBtn  = document.getElementById('notify-submit-btn');
-  var emailInput = document.getElementById('notify-email');
-  var formWrap   = document.getElementById('notify-form-wrap');
-  var successMsg = document.getElementById('notify-success');
-  var panel      = document.getElementById('notify-panel');
+  // Show bar after user scrolls 300px
+  bar.style.display = 'block';
+  var shown = false;
+  function onScroll() {
+    if (!shown && window.scrollY > 300) {
+      shown = true;
+      bar.classList.add('visible');
+      window.removeEventListener('scroll', onScroll);
+    }
+  }
+  window.addEventListener('scroll', onScroll);
 
-  if (dismissBtn) {
-    dismissBtn.addEventListener('click', function() {
-      localStorage.setItem('hff_notify_dismissed', '1');
-      if (panel) panel.style.display = 'none';
+  // Dismiss
+  if (dismiss) {
+    dismiss.addEventListener('click', function() {
+      bar.classList.remove('visible');
+      localStorage.setItem('hff_bar_dismissed', '1');
+      setTimeout(function(){ bar.style.display = 'none'; }, 400);
     });
   }
 
-  if (submitBtn && emailInput) {
-    submitBtn.addEventListener('click', function() {
-      var email = emailInput.value.trim();
+  // Submit
+  if (submit && input) {
+    submit.addEventListener('click', function() {
+      var email = input.value.trim();
       if (!email || !email.includes('@')) {
-        emailInput.style.borderColor = '#c0392b';
-        emailInput.focus();
+        input.style.borderColor = '#c0392b';
+        input.focus();
         return;
       }
-      emailInput.style.borderColor = '';
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Saving…';
+      input.style.borderColor = '';
+      submit.disabled = true;
+      submit.textContent = 'Saving…';
 
-      // Collect current selections for preferences
-      var rivers  = selectedRiver ? [selectedRiver] : [];
+      var rivers  = selectedRiver ? [selectedRiver.split(',')[0]] : [];
       var species = Array.from(document.querySelectorAll('.species-btn.active'))
-        .map(function(b){ return b.getAttribute('data-label'); })
-        .filter(Boolean);
+        .map(function(b){ return b.getAttribute('data-label'); }).filter(Boolean);
 
       fetch(PROXY_URL + '/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email:   email,
-          rivers:  rivers,
-          species: species,
-          source:  'notify-panel',
-        }),
+        body: JSON.stringify({ email: email, rivers: rivers, species: species, source: 'river-bar' }),
       })
       .then(function(r){ return r.json(); })
       .then(function(data) {
-        if (data.ok) {
-          localStorage.setItem('hff_subscribed', '1');
-          if (formWrap)   formWrap.style.display   = 'none';
-          if (successMsg) successMsg.style.display  = 'block';
-        } else {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Notify me';
-          emailInput.style.borderColor = '#c0392b';
-        }
+        localStorage.setItem('hff_subscribed', '1');
+        if (form)    form.style.display    = 'none';
+        if (success) success.style.display = 'block';
+        setTimeout(function() {
+          bar.classList.remove('visible');
+          setTimeout(function(){ bar.style.display = 'none'; }, 400);
+        }, 2500);
       })
       .catch(function() {
-        // On network failure (e.g. Worker not yet updated), show success anyway
-        // so users aren't stuck — we'll log it separately
         localStorage.setItem('hff_subscribed', '1');
-        if (formWrap)   formWrap.style.display   = 'none';
-        if (successMsg) successMsg.style.display  = 'block';
+        if (form)    form.style.display    = 'none';
+        if (success) success.style.display = 'block';
       });
     });
 
-    // Allow enter key
-    emailInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') submitBtn.click();
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submit.click();
     });
   }
-})();
-// ── END NOTIFY ME ─────────────────────────────────────────────────────────────
+}
+// ── END NOTIFY BAR ────────────────────────────────────────────────────────────
+
+
+
+
+
+
+
+
+
+
 
 
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
