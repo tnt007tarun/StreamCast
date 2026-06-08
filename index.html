@@ -62,7 +62,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 /* HERO — river photo */
 .hero-photo {
   position:relative;
-  height:240px;
+  height:260px;
   overflow:hidden;
   flex-shrink:0;
 }
@@ -119,7 +119,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 }
 .hero-copy {
   position:absolute;
-  bottom: 1.25rem; left:2rem; right:2rem;
+  bottom: 2rem; left:2rem; right:2rem;
   z-index:2;
   /* Ensure copy doesn't extend above the nav bar */
   max-height:calc(100% - 4rem);
@@ -157,7 +157,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   flex-direction:column;
   gap:1.75rem;
   position:relative;
-  top:-40px;
+  top:-20px;
 }
 
 /* top row: date + location */
@@ -1785,6 +1785,22 @@ select:focus-visible, input:focus-visible {
   .notify-bar-title { font-size: .8rem; }
 }
 
+
+/* ── HERO SUBTEXT ─────────────────────────────────────────────────────────── */
+.hero-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 400;
+  font-style: normal;
+  color: rgba(255,255,255,0.7);
+  margin: 0.5rem 0 0;
+  line-height: 1.4;
+  text-align: center;
+}
+@media (max-width: 600px) {
+  .hero-sub { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -1806,7 +1822,8 @@ select:focus-visible, input:focus-visible {
   <div class="hero-photo">
     <div class="hero-photo-bg"></div>
     <div class="hero-copy">
-      <h1>Stop fishing, start catching.</h1>
+      <h1>Discover where to fish today.</h1>
+    <h3 class="hero-sub">Get personalized fishing spot recommendations, techniques, and gear based on current conditions</h3>
       
     </div>
   </div>
@@ -2367,216 +2384,26 @@ select:focus-visible, input:focus-visible {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
 // Set this to your deployed Worker URL after running: npx wrangler deploy
 // Example: "https://streamcast-proxy.YOUR-SUBDOMAIN.workers.dev"
 // Leave as null to use direct EC API calls (works on pages.dev, may CORS on localhost)
 var RIVER_STOCKING = {"Credit River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 3975, "qtyStr": "4k", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Coho Salmon", "year": 2024, "stage": "Fingerlings", "quantity": 45000, "qtyStr": "45k", "primeYear": 2026, "status": "now", "label": "Fall 2026 run"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 193759, "qtyStr": "194k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 120018, "qtyStr": "120k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2017, "stage": "Yearlings", "quantity": 1100, "qtyStr": "1k", "primeYear": 2018, "status": "past", "label": "Class of 2017 — established fish"}], "Grand River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 272, "qtyStr": "272", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 300, "qtyStr": "300", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 6, "qtyStr": "6", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Humber River": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 30135, "qtyStr": "30k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brook Trout", "year": 2023, "stage": "Yearlings", "quantity": 5603, "qtyStr": "6k", "primeYear": 2024, "status": "past", "label": "Class of 2023 — established fish"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 302, "qtyStr": "302", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Bronte Creek": [{"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 54474, "qtyStr": "54k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 80047, "qtyStr": "80k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}], "Rouge River": [{"species": "Rainbow Trout", "year": 2024, "stage": "Fingerlings", "quantity": 16000, "qtyStr": "16k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}], "Beaver River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 1200, "qtyStr": "1k", "primeYear": 2026, "status": "now", "label": "Prime this season"}], "Saugeen River": [{"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 50, "qtyStr": "50", "primeYear": 2025, "status": "past", "label": "Class of 2025 — established fish"}], "Bowmanville Creek": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 31261, "qtyStr": "31k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2023, "stage": "Fingerlings", "quantity": 40000, "qtyStr": "40k", "primeYear": 2025, "status": "past", "label": "Class of 2023 — established fish"}]};
 
-
 var DEFAULT_RIVERS = [
-  { name:'Credit River',    gauge:'02HB001', sweetMin:5,  sweetMax:15, lat:43.78, lng:-79.97 },
-  { name:'Grand River',     gauge:'02GA016', sweetMin:8,  sweetMax:12, lat:43.703,lng:-80.274},
-  { name:'Humber River',    gauge:'02HC025', sweetMin:3,  sweetMax:12, lat:43.88, lng:-79.73 },
-  { name:'Bronte Creek',    gauge:'02HB022', sweetMin:2,  sweetMax:8,  lat:43.51, lng:-79.82 },
-  { name:'Duffins Creek',   gauge:'02HC019', sweetMin:2,  sweetMax:10, lat:43.87, lng:-79.12 },
-  { name:'Ganaraska River', gauge:'02HD012', sweetMin:2,  sweetMax:12, lat:43.95, lng:-78.30 },
+  { name:'Upper Credit River', gauge:'02HB001', sweetMin:5,  sweetMax:15, lat:43.870,lng:-80.010 },
+  { name:'Upper Grand River (Tailwater)', gauge:'02GA016', sweetMin:8, sweetMax:12, lat:43.703,lng:-80.274 },
+  { name:'Lower Humber River', gauge:'02HC025', sweetMin:3,  sweetMax:12, lat:43.640,lng:-79.480 },
+  { name:'Bronte Creek',       gauge:'02HB022', sweetMin:2,  sweetMax:8,  lat:43.51, lng:-79.82 },
+  { name:'Duffins Creek',      gauge:'02HC019', sweetMin:2,  sweetMax:10, lat:43.87, lng:-79.12 },
+  { name:'Ganaraska River',    gauge:'02HD012', sweetMin:2,  sweetMax:12, lat:43.95, lng:-78.30 },
 ];
+
+// ── ANALYTICS HELPER ───────────────────────────────────────────────────────
+function track(event, props) {
+  try { if (typeof plausible === "function") plausible(event, { props: props || {} }); } catch(e) {}
+}
+// ── END ANALYTICS HELPER ────────────────────────────────────────────────────
 
 var PROXY_URL = "https://streamcast-proxy.tnt-tarun.workers.dev";
 
@@ -2584,25 +2411,6 @@ var PROXY_URL = "https://streamcast-proxy.tnt-tarun.workers.dev";
 var appMode = 'beginner'; // 'beginner' | 'expert'
 var selectedTechFamily = []; // array of: 'spin', 'float', 'fly' (empty = any)
 var nearbyRivers = []; // populated when location entered
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const LAT_DEFAULT = 43.703, LNG_DEFAULT = -80.274;
@@ -2622,397 +2430,815 @@ const TEMP_MIN = 8, TEMP_MAX = 14, TEMP_STRESS = 18;
 //   species: primary target species list
 
 var RIVER_CONFIG = {
-  "Grand River": {
-    gauge: "02GA016",
-    gaugeName: "Grand River below Shand Dam (02GA016)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA016",
-    lat: 43.703, lng: -80.274,
-    sweetMin: 8, sweetMax: 12,
-    flowLow: 6, flowHigh: 20,
-    species: ["Brown Trout", "Rainbow Trout", "Brook Trout"],
-    routine: [{ t: "Check GRCA for Shand Dam operation notices", d: "Dam releases control flow independently of rain. Planned releases change everything." },
-      { t: "Review 48-hr upstream rain", d: "Rain fills Belwood Lake, triggers releases \u2014 rising flow + slight colour tint means prime conditions 24\u201348 hrs after." },
-      { t: "Make your go/no-go call", d: "If two of three factors (flow, temp, sky) are wrong, reschedule. Browns will wait." }
-    ],
-    dam: {
-      icon: "\U0001f3d7",
-      label: "Key Variable \u00b7 Shand Dam / Belwood Lake",
-      title: "The factor most anglers underestimate",
-      desc: "The Grand below Shand is managed water. Dam releases control flow independently of rainfall and bring cold water from depth \u2014 why the Grand holds browns through summer at all. Always check dam operations before you drive.",
-      links: [
-        { text: "Grand River below Shand Dam (02GA016)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA016" },
-        { text: "GRCA Conditions", url: "https://www.grandriver.ca/en/our-watershed/Flood-Forecasting-and-Warning.aspx" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Fergus Pool \u2014 Below Dam", crowd: "med", crowdLabel: "Med. Pressure", loc: "Fergus, ON \u00b7 Below Shand Dam", desc: "Closest tailwater to the dam. Cold, consistent flows year-round from depth-draw releases \u2014 prime summer water when other rivers are too warm.", tags: ["Tailwater","Cold Summer","Fly + Lure"], best: "Best in any flow, any season. Rising flow after a dam release is exceptional." },
-      { name: "Elora Gorge", crowd: "high", crowdLabel: "High Pressure", loc: "Elora, ON \u00b7 Below gorge on river-right", desc: "Deep pools, limestone walls, predictable brown trout habitat. Heavy weekend pressure. Gorge walls create shadow even on sunny days \u2014 a genuine advantage at midday.", tags: ["Deep Pools","Fly Only","Walk-in"], best: "Best at 6\u201312 m\u00b3/s. Go early or mid-week." },
-      { name: "Irvine Creek Confluence", crowd: "low", crowdLabel: "Low Pressure", loc: "Elora, ON \u00b7 Where Irvine Creek meets the Grand", desc: "Underutilized. Confluence concentrates baitfish and large browns. Most anglers don\u2019t walk past the gorge \u2014 access via Wellington County trail system.", tags: ["Confluence","Low Pressure","Streamer Water"], best: "Best at 8\u201315 m\u00b3/s when both streams are running well." },
-      { name: "Lover\u2019s Lane Hole", crowd: "med", crowdLabel: "Med. Pressure", loc: "Fergus, ON \u00b7 Off Lover\u2019s Lane road allowance", desc: "Deep pool with gravel tailout \u2014 textbook brown trout habitat. Good with streamers in the morning, nymphs mid-day, and dry fly action in summer evenings.", tags: ["Deep Pool","All Methods","Evening Dry Fly"], best: "Best at 6\u201310 m\u00b3/s. Pool definition improves as flows drop." },
-      { name: "Belwood Lake Outflow", crowd: "low", crowdLabel: "Low Pressure", loc: "Near Shand Dam \u00b7 Road allowance access", desc: "Immediate outflow below Shand Dam. Cold year-round. Within an hour of a release increase, fish stack up aggressively in the current seam.", tags: ["Dam Outflow","Release-Timed","Low Traffic"], best: "Best within 24 hrs of a dam release increase." },
-      { name: "Elora Gorge Conservation Area", crowd: "high", crowdLabel: "Fee + High", loc: "Elora, ON \u00b7 GRCA managed access", desc: "Managed access with day-use fee. Interior sections slightly less pressured. The upstream end near the lookout bridge consistently holds large fish.", tags: ["Fee Required","Managed","Large Fish"], best: "Best at 8\u201312 m\u00b3/s. Gorge walls provide all-day shadow." }
+
+  "Upper Grand River (Tailwater)": {
+    gauge:"02GA016", gaugeName:"Grand River below Shand Dam",
+    sweetMin:8, sweetMax:12, flowLow:3, flowHigh:25,
+    lat:43.700, lng:-80.280,
+    loc:"Below Shand Dam through Elora Gorge to West Montrose",
+    driveTime:{ toronto:73,mississauga:51,brampton:41,oakville:53,burlington:55,milton:37,hamilton:58,guelph:17,cambridge:37,kitchener:32,waterloo:32,orangeville:28,markham:76,"richmond hill":69,vaughan:62,ajax:100,pickering:94,"north york":68,scarborough:80,etobicoke:61,oshawa:113,whitby:107,bowmanville:127,clarington:134,newcastle:135,cobourg:168,"port hope":157,barrie:88,collingwood:87,"owen sound":107 },
+    species:["Brown Trout","Rainbow Trout"],
+    active:true,
+    regs:[],
+    methods:["fly","spin","float"],
+    access:[
+      {name:"Fergus Pool — Below Shand Dam",loc:"Fergus, ON · Below Shand Dam",crowd:"med",desc:"Closest tailwater to the dam. Cold, consistent flows year-round from depth-draw releases — prime summer water when other rivers are too warm."},
+      {name:"Elora Gorge",loc:"Elora, ON · Below gorge on river-right",crowd:"high",desc:"Deep pools, limestone walls, predictable brown trout habitat. Heavy weekend pressure. Gorge walls create shadow even on sunny days — a genuine advantage at midday."},
+      {name:"Racquet Club",loc:"Elora, ON · North of Quarry CA on Wellington Rd 18",crowd:"low",desc:"North of Elora on Wellington Rd 18. Turn right at the next road after the Quarry Conservation Area. Park here and follow the steep trail down to the river — can be slippery during wet weather."},
+      {name:"The Trestle",loc:"Elora, ON · Wellington Rd 18",crowd:"low",desc:"Past the railway trestle on Wellington Rd 18. Look for a sharp right turn — a marked trail and stairs lead down to the river."},
+      {name:"The Cedars",loc:"Elora, ON · Via Fergus or Hydro Wires",crowd:"low",desc:"Access from Fergus or the Hydro Wires — either wade upstream from the Hydro Wires or cross the river in Fergus and follow Wellington Rd 18."},
+      {name:"2nd Line Bridge",loc:"Elora, ON · Wellington Rd 18 to 2nd Line",crowd:"low",desc:"Continue north on Wellington Rd 18 and turn left onto 2nd Line. Limited roadside parking, and the river is a short walk away."},
+      {name:"Musselman's Gate",loc:"North of Inverhaugh · Wellington Rd 21",crowd:"low",desc:"North of Inverhaugh on Wellington Rd 21. Cross the hill and take the second road on the left to reach the access point."},
+      {name:"Irvine Creek Confluence",loc:"Elora, ON · Where Irvine Creek meets the Grand",crowd:"low",desc:"Underutilized. Confluence concentrates baitfish and large browns. Most anglers don't walk past the gorge — access via Wellington County trail system."},
+      {name:"Lover's Lane Hole",loc:"Fergus, ON · Off Lover's Lane road allowance",crowd:"med",desc:"Deep pool with gravel tailout — textbook brown trout habitat. Good with streamers in the morning, nymphs mid-day, and dry fly action in summer evenings."},
+      {name:"Belwood Lake Outflow",loc:"Near Shand Dam · Road allowance access",crowd:"low",desc:"Immediate outflow below Shand Dam. Cold year-round. Within an hour of a release increase, fish stack up aggressively in the current seam."},
+      {name:"Elora Gorge Conservation Area",loc:"Elora, ON · GRCA managed access",crowd:"high",desc:"Managed access with day-use fee. Interior sections slightly less pressured. The upstream end near the lookout bridge consistently holds large fish."}
+    ]
+  },
+  "Middle Grand River": {
+    gauge:"02GA016", gaugeName:"Grand River below Shand Dam",
+    sweetMin:8, sweetMax:15, flowLow:3, flowHigh:30,
+    lat:43.420, lng:-80.320,
+    loc:"Waterloo through Cambridge, Paris, Brantford",
+    driveTime:{ toronto:80,mississauga:56,brampton:52,oakville:50,burlington:42,milton:36,hamilton:40,guelph:15,cambridge:6,kitchener:14,waterloo:17,orangeville:57,markham:90,"richmond hill":85,vaughan:78,ajax:112,pickering:107,"north york":80,scarborough:92,etobicoke:67,oshawa:125,whitby:120,bowmanville:139,clarington:146,newcastle:147,cobourg:179,"port hope":169,barrie:116,collingwood:117,"owen sound":134 },
+    species:["Brown Trout","Rainbow Trout"],
+    active:false,
+    regs:[],
+    methods:["spin","float"],
+    access:[]
+  },
+  "Lower Grand River": {
+    gauge:"02GA016", gaugeName:"Grand River below Shand Dam",
+    sweetMin:10, sweetMax:30, flowLow:5, flowHigh:60,
+    lat:43.000, lng:-79.900,
+    loc:"Caledonia through Dunnville to Lake Erie",
+    driveTime:{ toronto:83,mississauga:67,brampton:75,oakville:53,burlington:36,milton:56,hamilton:28,guelph:65,cambridge:51,kitchener:68,waterloo:71,orangeville:101,markham:103,"richmond hill":102,vaughan:96,ajax:115,pickering:111,"north york":91,scarborough:98,etobicoke:74,oshawa:127,whitby:123,bowmanville:137,clarington:144,newcastle:144,cobourg:172,"port hope":163,barrie:151,collingwood:165,"owen sound":188 },
+    species:["Steelhead"],
+    active:true,
+    regs:[],
+    methods:["float","spin"],
+    access:[
+      {name:"Caledonia — Argyle Street Access",loc:"Caledonia, ON · Argyle Street bridge",crowd:"low",desc:"Good access to the lower Grand. Spring and fall steelhead runs from Lake Erie. Best fished from a kayak for this wider section of river."},
+      {name:"Dunnville — Lower Grand",loc:"Dunnville, ON · Near Lake Erie mouth",crowd:"med",desc:"Near the mouth of the Grand at Lake Erie. Major steelhead staging area in spring and fall. Some access from shoreline but boat is preferred for best results."}
+    ]
+  },
+  "Upper Credit River": {
+    gauge:"02HB001", gaugeName:"Credit River near Cataract",
+    sweetMin:5, sweetMax:15, flowLow:1, flowHigh:25,
+    lat:43.870, lng:-80.010,
+    loc:"Headwaters to Norval Dam (Erin, Mono, Orangeville)",
+    driveTime:{ toronto:57,mississauga:42,brampton:28,oakville:51,burlington:61,milton:39,hamilton:67,guelph:40,cambridge:60,kitchener:59,waterloo:59,orangeville:8,markham:53,"richmond hill":45,vaughan:39,ajax:77,pickering:72,"north york":48,scarborough:60,etobicoke:47,oshawa:89,whitby:84,bowmanville:103,clarington:110,newcastle:111,cobourg:144,"port hope":134,barrie:62,collingwood:70,"owen sound":105 },
+    species:["Brown Trout","Rainbow Trout","Brook Trout"],
+    active:true,
+    regs: [],
+    methods: [],
+    access:[
+      {name:"Upper Credit Conservation Area",loc:"Caledon, ON · CVC managed · above Orangeville",crowd:"low",desc:"CVC-designated coldwater fishery on the upper Credit headwaters. Wild brook trout in the main river and feeder creeks. Catch-and-release only. Quieter than Belfountain — bring waders as bank access is limited."},
+      {name:"Belfountain Conservation Area",loc:"Belfountain, ON · Above the falls",crowd:"med",desc:"Picturesque gorge setting above a small dam. Good dry fly water in low flows. The pool below the dam holds resident brown trout year-round. CVC managed — day-use fee applies."},
+      {name:"Forks of the Credit Provincial Park",loc:"Cataract, ON · Niagara Escarpment gorge",crowd:"med",desc:"Spectacular gorge section below the Cataract waterfalls. Wild brown trout in pools below the escarpment. Catch-and-release only in most sections. Hike-in required to the best water."},
+      {name:"Belfountain to Inglewood Reach",loc:"Between Belfountain and Inglewood",crowd:"low",desc:"Walk-in access only along this productive section. Fewer anglers, quality fish. Brown trout and rainbow trout throughout. Road allowance access at several bridge crossings."}
+    ]
+  },
+  "Middle Credit River": {
+    gauge:"02HB001", gaugeName:"Credit River near Cataract",
+    sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
+    lat:43.660, lng:-79.880,
+    loc:"Norval Dam to Streetsville Dam",
+    driveTime:{ toronto:42,mississauga:20,brampton:10,oakville:26,burlington:37,milton:15,hamilton:44,guelph:32,cambridge:47,kitchener:53,waterloo:55,orangeville:33,markham:48,"richmond hill":42,vaughan:35,ajax:70,pickering:65,"north york":38,scarborough:50,etobicoke:29,oshawa:83,whitby:78,bowmanville:97,clarington:105,newcastle:105,cobourg:138,"port hope":128,barrie:80,collingwood:95,"owen sound":129 },
+    species:["Steelhead","Chinook Salmon","Coho Salmon"],
+    active:true,
+    regs:[{rule:"Check OMNR regs for this section — some areas closed during salmon season",icon:"📋"}],
+    methods:["float"],
+    access:[
+      {name:"Norval Conservation Area",loc:"Norval, ON · Below Norval Dam",crowd:"med",desc:"Access below the Norval Dam where migratory fish begin to concentrate. Good float fishing for steelhead in spring and fall salmon runs. Do not fish closer to the dam per MNR regulations."},
+      {name:"Streetsville Road Allowances",loc:"Streetsville, ON · Multiple road allowances",crowd:"low",desc:"Several road allowance access points through this reach. Quieter than the lower river access points."}
+    ]
+  },
+  "Lower Credit River": {
+    gauge:"02HB001", gaugeName:"Credit River near Cataract",
+    sweetMin:5, sweetMax:30, flowLow:1, flowHigh:60,
+    lat:43.560, lng:-79.720,
+    loc:"Streetsville Dam to Port Credit / Lake Ontario",
+    driveTime:{ toronto:31,mississauga:7,brampton:14,oakville:10,burlington:26,milton:14,hamilton:35,guelph:42,cambridge:51,kitchener:62,waterloo:64,orangeville:49,markham:44,"richmond hill":41,vaughan:34,ajax:63,pickering:58,"north york":33,scarborough:43,etobicoke:18,oshawa:76,whitby:71,bowmanville:89,clarington:97,newcastle:97,cobourg:129,"port hope":119,barrie:90,collingwood:109,"owen sound":145 },
+    species:["Steelhead","Chinook Salmon","Coho Salmon"],
+    active:true,
+    regs:[{rule:"Check OMNR regs — this section has specific rules around the river mouth",icon:"📋"}],
+    methods:["float","spin"],
+    access:[
+      {name:"Erindale Park",loc:"Mississauga, ON · Erindale",crowd:"med",desc:"Popular access point with parking. Good pool and run structure. Steelhead and salmon stack here during peak migrations."},
+      {name:"Credit River Mouth — Port Credit",loc:"Mississauga, ON · Port Credit Harbour",crowd:"high",desc:"The river mouth at Port Credit Harbour. Very accessible but heavily pressured during peak salmon season. Best early morning on weekdays. Check water temps at the port for favourable conditions — lower surface temps increase fish activity."}
+    ]
+  },
+  'Bronte Creek — Lower Estuary & Mouth': {
+    gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
+    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    lat:43.434, lng:-79.716,
+    loc:'Lake Ontario to Lakeshore Road West — Bronte Harbour',
+    driveTime:{'toronto':37,'north york':43,'scarborough':51,'etobicoke':26,'markham':55,'richmond hill':53,'vaughan':47,'ajax':71,'pickering':66,'mississauga':18,'brampton':27,'oakville':4,'burlington':13,'milton':16,'hamilton':23,'guelph':44,'cambridge':48,'kitchener':61,'waterloo':64,'orangeville':60,'oshawa':83,'whitby':79,'bowmanville':96,'clarington':103,'newcastle':103,'cobourg':134,'port hope':124,'barrie':104,'collingwood':122,'owen sound':156},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'Generally open year-round. Standard FMZ limits and dates for trout and salmon apply.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Bronte Harbour / Pier',loc:'Bronte Harbour · Oakville, ON',crowd:'high',desc:'The staging area for fall salmon and spring steelhead entering from Lake Ontario. Pier fishing with spoons and crankbaits intercepts chrome fish before they push upriver. Very popular — expect crowds on fall weekends.'},
+      {name:'Petro-Canada Park (Petro Park)',loc:'Bronte · Below Lakeshore Road West',crowd:'high',desc:'One of the most heavily fished spots on the creek. Deep pools below Lakeshore Road hold staging fish throughout the run season. Float fishing with roe and beads most productive.'},
+      {name:'Below Lakeshore Road West',loc:'Lakeshore Road West · Creek access',crowd:'med',desc:'Access point between the harbour and the mid-section. Good run and pool structure. Slightly less pressure than the pier or Petro Park.'}
+    ]
+  },
+  'Bronte Creek — Mid-Section & Provincial Park': {
+    gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
+    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    lat:43.465, lng:-79.735,
+    loc:'Lakeshore Road West to Highway 407 — Bronte Creek Provincial Park',
+    driveTime:{'toronto':37,'north york':41,'scarborough':50,'etobicoke':24,'markham':53,'richmond hill':51,'vaughan':44,'ajax':70,'pickering':65,'mississauga':15,'brampton':24,'oakville':4,'burlington':16,'milton':13,'hamilton':25,'guelph':41,'cambridge':47,'kitchener':60,'waterloo':62,'orangeville':57,'oshawa':83,'whitby':78,'bowmanville':95,'clarington':103,'newcastle':103,'cobourg':134,'port hope':124,'barrie':100,'collingwood':118,'owen sound':152},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'Closed Jan 1 to Friday before 4th Saturday in April. Open 4th Saturday in April through Dec 31 for migratory species.',icon:'📋'}],
+    methods:['float','fly'],
+    access:[
+      {name:'Bronte Creek Provincial Park',loc:'Burloak Drive · Oakville, ON · Ontario Parks managed',crowd:'med',desc:'Access via the Half Moon Valley Trail down into the shale bedrock valley. Deep, narrow holding water for migratory fish. Day-use fee applies. Popular for fly-fishing and centrepin. The valley trail hike filters out casual anglers — expect better fish-to-angler ratios than the lower section.'},
+      {name:'Lions Valley Park',loc:'Lions Valley Park · Oakville, ON',crowd:'med',desc:'Good public access to quality mid-section water. Pool and run structure holds salmon and steelhead. Resident brown trout and smallmouth bass in warmer months. Less pressure than the Provincial Park entrance on peak weekends.'},
+      {name:'Lowville Park',loc:'Lowville, ON · Lowville Park Road',crowd:'high',desc:'The pool immediately below Lowville Falls concentrates fish during migrations. Very popular with centrepin and float fishermen. Can be crowded during peak runs, but fish are reliably present.'}
+    ]
+  },
+  'Bronte Creek — Upper Headwaters': {
+    gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
+    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    lat:43.530, lng:-79.800,
+    loc:'Upstream of Lowville to Progreston / Carlisle — Niagara Escarpment',
+    driveTime:{'toronto':38,'north york':39,'scarborough':50,'etobicoke':25,'markham':51,'richmond hill':48,'vaughan':40,'ajax':70,'pickering':65,'mississauga':14,'brampton':17,'oakville':11,'burlington':22,'milton':7,'hamilton':30,'guelph':35,'cambridge':44,'kitchener':55,'waterloo':57,'orangeville':48,'oshawa':83,'whitby':78,'bowmanville':96,'clarington':104,'newcastle':104,'cobourg':136,'port hope':126,'barrie':94,'collingwood':110,'owen sound':143},
+    species:['Brook Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'Inland stream — open 4th Saturday in April to September 30. C&R and tackle restrictions may apply. Verify OMNR regs for specific tributaries.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Progreston Area — Road Allowances',loc:'Progreston, ON · Road allowance crossings',crowd:'low',desc:'Classic inland trout fishery in cool, spring-fed water near the Niagara Escarpment. Native brook trout and resident brown trout. Light spinning gear or dry fly fishing suits this narrow, intimate water. Minimal pressure compared to the lower sections.'},
+      {name:'Carlisle Reach',loc:'Carlisle, ON · Upper creek',crowd:'low',desc:'Quieter, cooler water above the migratory barrier. Brook trout habitat at its finest on the Bronte system. Road allowance access at bridge crossings. The gauge station at Carlisle (02HB022) is located here — flow readings most applicable to this section.'}
     ]
   },
 
-  "Credit River": {
-    gauge: "02HB001",
-    gaugeName: "Credit River near Cataract (02HB001)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB001",
-    lat: 43.78, lng: -79.97,
-    sweetMin: 5, sweetMax: 15,
-    flowLow: 3, flowHigh: 25,
-    species: ["Brown Trout", "Rainbow Trout", "Steelhead", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [{ t: "Review CVC (Credit Valley Conservation) notices", d: "CVC manages flood control and can issue flow warnings. Check cvc.ca for any active advisories before heading out." },
-      { t: "Check for recent rain in Orangeville / Caledon", d: "The Credit headwaters above Orangeville respond quickly to rain. A moderate rain 24 hrs prior means rising flows and slightly stained, productive water." },
-      { t: "Check regulations for your specific reach", d: "Many upper Credit sections are catch-and-release only. Special regulations apply around Forks of the Credit Provincial Park. Always verify OMNR rules." }
+
+  "Lower Humber River": {
+    gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
+    sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
+    lat:43.640, lng:-79.480,
+    loc:"South of Lakeshore Blvd to Lake Ontario (Humber Bay)",
+    driveTime:{ toronto:11,mississauga:14,brampton:22,oakville:25,burlington:42,milton:34,hamilton:52,guelph:61,cambridge:72,kitchener:82,waterloo:84,orangeville:57,markham:26,"richmond hill":26,vaughan:21,ajax:43,pickering:37,"north york":14,scarborough:23,etobicoke:3,oshawa:56,whitby:51,bowmanville:69,clarington:76,newcastle:76,cobourg:108,"port hope":98,barrie:83,collingwood:109,"owen sound":152 },
+    species:["Brown Trout","Steelhead","Chinook Salmon"],
+    active:true,
+    regs:[{rule:"TRCA managed — check catch regulations for this section",icon:"📋"}],
+    methods:["float","spin"],
+    access:[
+      {name:"Humber River Mouth — Humber Bay Park",loc:"Etobicoke / Toronto · Lakeshore Blvd",crowd:"high",desc:"The gathering point for migratory fish entering the Humber. Very accessible with parking. Most fishing pressure in the system. Arrive before dawn during peak salmon and steelhead runs."},
+      {name:"Humber Valley Heritage Trail — Lower",loc:"Etobicoke / North York · TRCA managed",crowd:"high",desc:"Urban lower Humber through Toronto. Receives large salmon and steelhead runs in fall and spring. Heavy pressure during peak runs. TRCA managed with catch regulations."}
+    ]
+  },
+  "Lower-Mid Humber (Old Mill to Eglinton)": {
+    gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
+    sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
+    lat:43.670, lng:-79.490,
+    loc:"Old Mill area north to Eglinton Avenue (Etienne Brulé Park)",
+    driveTime:{ toronto:11,mississauga:15,brampton:21,oakville:27,burlington:45,milton:35,hamilton:54,guelph:61,cambridge:73,kitchener:82,waterloo:84,orangeville:54,markham:23,"richmond hill":23,vaughan:18,ajax:42,pickering:36,"north york":12,scarborough:21,etobicoke:5,oshawa:55,whitby:49,bowmanville:68,clarington:75,newcastle:76,cobourg:108,"port hope":98,barrie:79,collingwood:106,"owen sound":149 },
+    species:["Steelhead","Chinook Salmon"],
+    active:true,
+    regs:[{rule:"TRCA managed — check regulations",icon:"📋"}],
+    methods:["float","spin"],
+    access:[
+      {name:"Etienne Brûlé Park",loc:"Etobicoke · Old Mill area",crowd:"med",desc:"Good park access to the lower-mid Humber. Steelhead and salmon push into this section. Trail access along the river for several kilometres north."},
+      {name:"Scarlett Mills Park",loc:"North York · Eglinton Avenue",crowd:"med",desc:"Popular access point at the upper end of this section. Good pool structure where fish hold during migration runs."}
+    ]
+  },
+  "Middle Humber (Black Creek to Woodbridge)": {
+    gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
+    sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
+    lat:43.760, lng:-79.530,
+    loc:"Highway 401 to Woodbridge and Kleinburg",
+    driveTime:{ toronto:22,mississauga:28,brampton:18,oakville:38,burlington:55,milton:43,hamilton:62,guelph:58,cambridge:74,kitchener:79,waterloo:80,orangeville:43,markham:28,"richmond hill":22,vaughan:12,ajax:49,pickering:44,"north york":18,scarborough:30,etobicoke:18,oshawa:63,whitby:57,bowmanville:76,clarington:83,newcastle:84,cobourg:117,"port hope":107,barrie:68,collingwood:96,"owen sound":139 },
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  "Upper Humber River (Headwaters)": {
+    gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
+    sweetMin:2, sweetMax:8, flowLow:0.5, flowHigh:15,
+    lat:43.870, lng:-79.730,
+    loc:"Above Highway 407 to Oak Ridges Moraine / Niagara Escarpment",
+    driveTime:{ toronto:38,mississauga:31,brampton:20,oakville:44,burlington:59,milton:40,hamilton:67,guelph:54,cambridge:72,kitchener:75,waterloo:76,orangeville:29,markham:31,"richmond hill":23,vaughan:18,ajax:55,pickering:50,"north york":28,scarborough:38,etobicoke:32,oshawa:68,whitby:62,bowmanville:81,clarington:89,newcastle:89,cobourg:123,"port hope":112,barrie:56,collingwood:78,"owen sound":121 },
+    species:["Brown Trout","Rainbow Trout","Brook Trout"],
+    active:true,
+    regs:[{rule:"Some sections strictly catch-and-release — verify OMNR regs before fishing",icon:"📋"}],
+    methods:["fly","float"],
+    access:[
+      {name:"Upper Humber — Mono / Orangeville Area",loc:"Mono Township · Above Bolton",crowd:"low",desc:"The most pristine section of the Humber. Wild brook trout in cold, spring-fed water. Forested banks, minimal angling pressure. Road allowance access at bridge crossings."},
+      {name:"Humber River — Bolton Reach",loc:"Bolton, ON · Various road access points",crowd:"med",desc:"Good transition water between the small upper creek and the larger lower river. Brown trout and brook trout resident, steelhead and salmon in season. Multiple access points at bridge crossings."}
+    ]
+  },
+  'Nottawasaga River — Headwaters (Niagara Escarpment)': {
+    gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
+    sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
+    lat:44.130, lng:-79.950,
+    loc:'Niagara Escarpment and Hockley Valley — upstream of Alliston',
+    driveTime:{'toronto':70,'north york':58,'scarborough':66,'etobicoke':65,'markham':56,'richmond hill':48,'vaughan':47,'ajax':79,'pickering':74,'mississauga':63,'brampton':51,'oakville':75,'burlington':88,'milton':67,'hamilton':95,'guelph':68,'cambridge':88,'kitchener':85,'waterloo':85,'orangeville':25,'oshawa':88,'whitby':83,'bowmanville':101,'clarington':107,'newcastle':108,'cobourg':140,'port hope':130,'barrie':35,'collingwood':45,'owen sound':90},
+    species:['Rainbow Trout','Brown Trout','Brook Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 — vast majority of this section is private land. Access only via Bruce Trail or public road allowances. Strictly enforce no trespassing.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Bruce Trail Access Points — Upper Notty',loc:'Hockley Valley · Bruce Trail corridor',crowd:'low',desc:'Technical cold-water fishing in bouldery runs and small pools. The Bruce Trail provides the only reliable public access through an otherwise private-land dominated section. Resident rainbow, brown, and brook trout. Highly technical — stealth, light tackle, and patience required. The fish here have not seen as much pressure as sections downstream.'},
+      {name:'Hockley Valley Road Allowances',loc:'Hockley Valley · Road allowance crossings',crowd:'low',desc:'Limited bridge crossing access above Alliston. Cold, clean, clear water straight off the Niagara Escarpment. Best in spring before run-off warms the lower river and in fall when temperatures drop. Respect all posted no-trespassing signs strictly.'}
+    ]
+  },
+  'Nottawasaga River — Middle Section (Alliston to Angus)': {
+    gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
+    sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
+    lat:44.150, lng:-79.900,
+    loc:'Alliston through Angus — extended steelhead water, Pine and Boyne River confluences',
+    driveTime:{'toronto':69,'north york':57,'scarborough':65,'etobicoke':65,'markham':54,'richmond hill':46,'vaughan':46,'ajax':76,'pickering':72,'mississauga':64,'brampton':52,'oakville':76,'burlington':90,'milton':69,'hamilton':97,'guelph':71,'cambridge':91,'kitchener':89,'waterloo':89,'orangeville':29,'oshawa':85,'whitby':80,'bowmanville':98,'clarington':104,'newcastle':105,'cobourg':137,'port hope':127,'barrie':31,'collingwood':45,'owen sound':93},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[
+      {rule:'Boyne River to Pine River: Rainbow Trout CATCH AND RELEASE ONLY, open all year.',icon:'🔁'},
+      {rule:'Sanctuary areas (Essa Township/Nicholson Dam): Closed Jan 1 to Friday before 2nd Saturday in May, and Oct 1–Dec 31.',icon:'🚫'},
+      {rule:'Water often coloured after rain — adjust tactics accordingly.',icon:'💧'}
     ],
-    dam: {
-      icon: "\U0001f30a",
-      label: "Key Variable \u00b7 Island Lake Reservoir",
-      title: "Upstream reservoir affects flow in the upper Credit",
-      desc: "Island Lake Conservation Area (CVC) stores water above the upper Credit. CVC manages outflow which can affect conditions in the Belfountain-Cataract reach. The Credit is otherwise largely free-flowing and responds more naturally to rainfall than dam-managed rivers.",
-      links: [
-        { text: "Credit River Gauge (02HB028)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB028" },
-        { text: "CVC Flood Forecasting", url: "https://cvc.ca/flood-forecasting-warning/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" },
-        { text: "Credit River Anglers Assoc.", url: "https://www.creditriveranglers.com/" }
-      ]
-    },
-    access: [
-      { name: "Belfountain Conservation Area", crowd: "med", crowdLabel: "Med. Pressure", loc: "Belfountain, ON \u00b7 Above the falls", desc: "Picturesque gorge setting above a small dam. Good dry fly water in low flows. The pool below the dam holds resident brown trout year-round. CVC managed \u2014 day-use fee applies.", tags: ["Conservation Area","Fee Required","Dry Fly Water"], best: "Best at 3\u201310 m\u00b3/s in spring and fall." },
-      { name: "Forks of the Credit Provincial Park", crowd: "med", crowdLabel: "Med. Pressure", loc: "Cataract, ON \u00b7 Niagara Escarpment gorge", desc: "Spectacular gorge section below the Cataract waterfalls. Wild brown trout in pools below the escarpment. Catch-and-release only in most sections. Hike-in required to the best water.", tags: ["Provincial Park","C&R Only","Gorge Water","Hike-in"], best: "Spring and fall best. Summer midday fishing tough due to low flows." },
-      { name: "Upper Credit Conservation Area", crowd: "low", crowdLabel: "Low Pressure", loc: "Caledon, ON \u00b7 CVC managed \u00b7 above Orangeville", desc: "CVC-designated coldwater fishery on the upper Credit headwaters. Wild brook trout in the main river and feeder creeks. Catch-and-release only. Quieter than Belfountain or Forks \u2014 bring waders as bank access is limited.", tags: ["Conservation Area","Brook Trout","C&R Only","Lower Pressure"], best: "Best in spring (April\u2013May) and fall (September\u2013October). Brook trout active in cool, clear flows." },
-      { name: "Belfountain to Inglewood Reach", crowd: "low", crowdLabel: "Low Pressure", loc: "Between Belfountain and Inglewood", desc: "Walk-in access only along this productive section. Fewer anglers, quality fish. Brown trout and rainbow trout throughout. Road allowance access at several bridge crossings.", tags: ["Walk-in","Brown Trout","Rainbow Trout","Road Allowance"], best: "Best in spring and fall. Access at bridge crossings only." }
+    methods:['float','spin'],
+    access:[
+      {name:'Alliston — Main River Access',loc:'Alliston, ON · Town access points',crowd:'med',desc:'Beginning of the extended-season steelhead water. Sandy and clay-based terrain can colour the water after heavy rains — a characteristic of the Notty mid-section. Drift boats and canoes are commonly used to cover water. Steelhead and Chinook push through here in season.'},
+      {name:'Pine River Confluence',loc:'Pine River meets Nottawasaga · Below Alliston',crowd:'med',desc:'The Pine River is a vital spawning tributary. Fish concentrate at the confluence during peak runs. Note: between Boyne River and Pine River is catch-and-release only for rainbow trout — no harvest. Check posted signs carefully.'},
+      {name:'Boyne River Confluence',loc:'Boyne River meets Nottawasaga · Angus area',crowd:'med',desc:'The Boyne is another major spawning tributary with its own fish runs. Below this confluence opens to the standard limit zone for rainbow trout (S-2, C-1). The Angus area has good drift access for float fishermen.'},
+      {name:'Nicholson Dam / Essa Township Sanctuary',loc:'Essa Township · Nicholson Dam area',crowd:'low',desc:'SANCTUARY area — closed Jan 1 to Friday before the 2nd Saturday in May, and Oct 1–Dec 31. When open, this is productive water for steelhead and brown trout. Check current year dates before fishing — regulations are strictly enforced.'}
+    ]
+  },
+  'Nottawasaga River — Lower Section (Boyne to Wasaga Beach)': {
+    gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
+    sweetMin:8, sweetMax:30, flowLow:2, flowHigh:60,
+    lat:44.300, lng:-79.980,
+    loc:'Below Boyne River confluence to Wasaga Beach — Georgian Bay mouth',
+    driveTime:{'toronto':86,'north york':73,'scarborough':80,'etobicoke':82,'markham':69,'richmond hill':62,'vaughan':62,'ajax':89,'pickering':86,'mississauga':81,'brampton':69,'oakville':93,'burlington':107,'milton':85,'hamilton':114,'guelph':85,'cambridge':105,'kitchener':100,'waterloo':100,'orangeville':42,'oshawa':97,'whitby':92,'bowmanville':109,'clarington':115,'newcastle':116,'cobourg':146,'port hope':136,'barrie':24,'collingwood':28,'owen sound':80},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'Pine River to Georgian Bay: Rainbow Trout open all year, limit S-2 C-1, no size limit. Salmon peak August–September.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'McKinnon Road Access Point',loc:'McKinnon Road · Lower Nottawasaga',crowd:'med',desc:'One of the most well-known access points on the lower Notty. Good drift water for steelhead and Chinook. The lower section is wider and more accessible than upstream — popular with drift boat and pontoon boat anglers covering long stretches.'},
+      {name:'Wasaga Beach — River Mouth (Georgian Bay)',loc:'Wasaga Beach · Georgian Bay estuary',crowd:'high',desc:'The mouth of the Nottawasaga where it enters Georgian Bay. Chinook salmon peak here in August–September before pushing upstream. Steelhead return in spring. The wide, sandy-bottomed lower river transitions to the warm-water fishery with northern pike, musky, and bass in the slower sections near the bay.'}
     ]
   },
 
-  "Bronte Creek": {
-    gauge: "02HB022",
-    gaugeName: "Bronte Creek at Carlisle (02HB022)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB022",
-    lat: 43.51, lng: -79.82,
-    sweetMin: 2, sweetMax: 8,
-    flowLow: 0.5, flowHigh: 15,
-    species: ["Brown Trout", "Rainbow Trout", "Steelhead", "Brook Trout", "Chinook Salmon"],
-    routine: [{ t: "Check Conservation Halton notices", d: "Halton manages flood control on Bronte. Check for any active warnings at conservationhalton.ca before heading out." },
-      { t: "Time your visit for spring or fall runs", d: "Bronte\u2019s best fishing is during steelhead and salmon migrations. Spring (March\u2013April) and fall (October\u2013November) are peak season." },
-      { t: "Respect the waterfall boundary at Lowville Park", d: "A large waterfall in Lowville Park blocks migratory fish. ALL the best salmon and steelhead fishing is below the falls \u2014 this is where to focus." }
-    ],
-    dam: {
-      icon: "\U0001f4a7",
-      label: "Key Feature \u00b7 Lowville Falls Natural Barrier",
-      title: "The falls define where to fish",
-      desc: "A large natural waterfall in Lowville Park blocks migratory salmon and steelhead from moving upstream. All the best migratory fishing is concentrated below this point. The upper sections above the falls hold resident brook trout and brown trout in more intimate water.",
-      links: [
-        { text: "Bronte Creek Gauge (02HB025)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB025" },
-        { text: "Conservation Halton", url: "https://conservationhalton.ca/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Bronte Creek Provincial Park \u2014 Lower", crowd: "med", crowdLabel: "Med. Pressure", loc: "Oakville, ON \u00b7 QEW / Burloak Drive", desc: "Managed access to the lower creek below Lowville Falls. Day-use fee applies. This is the prime section for fall salmon and spring steelhead. The park provides good wading access.", tags: ["Provincial Park","Fee Required","Steelhead","Salmon"], best: "Spring steelhead (March\u2013May), fall salmon (October\u2013November). Summer slow." },
-      { name: "Lowville Park \u2014 Below Falls", crowd: "high", crowdLabel: "High Pressure", loc: "Burlington, ON \u00b7 Lowville Park", desc: "The pool immediately below the falls concentrates fish during migrations. Very popular with centrepin and float fishermen. Can be crowded during peak runs, but fish are there.", tags: ["Steelhead","Salmon","Float Fishing","Crowded in Season"], best: "Fall salmon and spring steelhead only. Fish below the falls, never above." },
-      { name: "Upper Bronte \u2014 Above Falls", crowd: "low", crowdLabel: "Low Pressure", loc: "Waterdown area \u00b7 Various access points", desc: "Above the falls, smaller water with resident brook trout and brown trout. Entirely different fishery \u2014 more intimate, no salmon or steelhead. Good for summer dry fly action.", tags: ["Brook Trout","Brown Trout","Summer Fishing","Dry Fly"], best: "Summer dry fly and small stream nymphing. Early morning in July\u2013August." }
+  'Duffins Creek — Lower Section': {
+    gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
+    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    lat:43.843, lng:-79.065,
+    loc:'Lake Ontario to Highway 2 — Ajax / Pickering',
+    driveTime:{'toronto':30,'north york':28,'scarborough':17,'etobicoke':42,'markham':21,'richmond hill':29,'vaughan':35,'ajax':4,'pickering':2,'mississauga':53,'brampton':57,'oakville':64,'burlington':80,'milton':73,'hamilton':90,'guelph':98,'cambridge':111,'kitchener':120,'waterloo':121,'orangeville':81,'oshawa':17,'whitby':11,'bowmanville':30,'clarington':38,'newcastle':38,'cobourg':71,'port hope':61,'barrie':77,'collingwood':114,'owen sound':166},
+    species:['Steelhead','Chinook Salmon','Coho Salmon'],
+    active:true,
+    regs:[{rule:'Extended fall trout season Oct–Dec 31 in segments south of CNR track. Standard FMZ limits apply.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook and Coho runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
+      {name:'Duffins Creek Marsh',loc:'Ajax / Pickering · Duffins Creek marsh',crowd:'med',desc:'Estuary section holds staging fish before they push upstream. Good for casting spoons and crankbaits at chrome fish. Smallmouth bass and pike year-round for warmwater anglers.'},
+      {name:'Below CNR Railway Line',loc:'South of CNR tracks · Lower Duffins',crowd:'med',desc:'Extended fall season applies south of the CNR track (Oct–Dec 31). Check boundary markers carefully. Good pool and run structure for float fishing.'}
+    ]
+  },
+  'Duffins Creek — Middle Section': {
+    gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
+    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    lat:43.870, lng:-79.058,
+    loc:'Highway 2 to the Dams — Greenwood Conservation Area / Whitevale',
+    driveTime:{'toronto':33,'north york':30,'scarborough':19,'etobicoke':45,'markham':22,'richmond hill':30,'vaughan':35,'ajax':4,'pickering':4,'mississauga':55,'brampton':58,'oakville':66,'burlington':83,'milton':75,'hamilton':92,'guelph':100,'cambridge':113,'kitchener':121,'waterloo':123,'orangeville':81,'oshawa':15,'whitby':10,'bowmanville':29,'clarington':37,'newcastle':37,'cobourg':70,'port hope':60,'barrie':75,'collingwood':113,'owen sound':165},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Rainbow Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'Fishing near Whitevale Dam and barrier north of Church Street strictly prohibited — fish sanctuaries. Check posted signs.',icon:'🚫'}],
+    methods:['float','fly','spin'],
+    access:[
+      {name:'Greenwood Conservation Area',loc:'Greenwood, ON · TRCA managed',crowd:'med',desc:'Deep valley lands with excellent holding water. Migratory salmon and steelhead push through in season. Resident rainbow and brown trout in cooler upper pools. TRCA managed with day-use fee.'},
+      {name:'Whitevale — Below Dam',loc:'Whitevale, ON · Below Whitevale Dam',crowd:'high',desc:'Fish concentrate below the dam before the sanctuary zone. The dam separates migratory salmonids from resident trout upstream. Do not fish within the sanctuary boundary — posted signs and wardens present.'},
+      {name:'Church Street Access',loc:'Church Street · Whitevale area',crowd:'low',desc:'Access below the sanctuary barrier. Quieter than the main Whitevale pool. Good for resident brown trout and early steelhead runners.'}
+    ]
+  },
+  'Duffins Creek — Upper Reaches': {
+    gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
+    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    lat:43.940, lng:-79.040,
+    loc:'Above the Dams to Oak Ridges Moraine — Glen Major / West Duffins Headwaters',
+    driveTime:{'toronto':39,'north york':35,'scarborough':25,'etobicoke':51,'markham':25,'richmond hill':32,'vaughan':38,'ajax':10,'pickering':12,'mississauga':61,'brampton':63,'oakville':72,'burlington':89,'milton':80,'hamilton':99,'guelph':104,'cambridge':118,'kitchener':126,'waterloo':127,'orangeville':82,'oshawa':14,'whitby':9,'bowmanville':27,'clarington':34,'newcastle':35,'cobourg':68,'port hope':58,'barrie':70,'collingwood':110,'owen sound':163},
+    species:['Brook Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'Cold-water habitat — baitfish collection severely restricted. Redside dace present. Check FMZ regs for specific tributary rules.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Glen Major — Seaton Hiking Trail',loc:'Glen Major · Trans Canada / Seaton Trail',crowd:'low',desc:'Cool tributary water on the Oak Ridges Moraine. Native brook trout in forested sections. Trail access keeps pressure low. Light dry fly or nymph fishing works well in this intimate water.'},
+      {name:'West Duffins Headwaters',loc:'West Duffins · Headwater tributaries',crowd:'low',desc:'Most pristine section of the Duffins system. Spring-fed cool water with sensitive native brook trout. Baitfish collection prohibited — redside dace habitat. Catch-and-release strongly recommended even where not required.'}
     ]
   },
 
-  "Humber River": {
-    gauge: "02HC025",
-    gaugeName: "Humber River at Elder Mills (02HC025)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC025",
-    lat: 43.88, lng: -79.73,
-    sweetMin: 3, sweetMax: 12,
-    flowLow: 1, flowHigh: 20,
-    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Steelhead", "Chinook Salmon"],
-    routine: [{ t: "Know the falls and fish ladders", d: "Several dams and falls on the Humber limit migratory fish movement. Focus your efforts on the reaches the fish can actually reach." },
-      { t: "Upstream rain in the Oak Ridges Moraine = rising flows within hours", d: "The Moraine drains quickly. A rain event north of Bolton will hit the gauge within 2\u20134 hours and can transform the creek rapidly." },
-      { t: "Upper Humber for brook trout, lower for migratory species", d: "The upper Humber above Mono is classic brook trout water. The lower Humber near Toronto gets fall salmon and spring steelhead." }
-    ],
-    dam: {
-      icon: "\U0001f333",
-      label: "Key Feature \u00b7 Oak Ridges Moraine Headwaters",
-      title: "Cold spring-fed headwaters above Bolton",
-      desc: "The upper Humber above Bolton is fed by cold groundwater from the Oak Ridges Moraine, which is why it holds wild brook trout year-round. This is the healthiest section for resident trout. The lower Humber through Toronto is more urban but still receives significant salmon and steelhead runs.",
-      links: [
-        { text: "Humber Gauge (02HC017)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC017" },
-        { text: "Toronto Region Conservation", url: "https://trca.ca/conservation/watershed-management/humber-river/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Upper Humber \u2014 Mono / Orangeville Area", crowd: "low", crowdLabel: "Low Pressure", loc: "Mono Township \u00b7 Above Bolton", desc: "The most pristine section of the Humber. Wild brook trout in cold, spring-fed water. Forested banks, minimal angling pressure. Road allowance access at bridge crossings.", tags: ["Brook Trout","Wild Fish","Low Pressure","Walk-in"], best: "Spring (April\u2013June) and fall (September\u2013October). Summer mornings only." },
-      { name: "Humber River \u2014 Bolton Reach", crowd: "med", crowdLabel: "Med. Pressure", loc: "Bolton, ON \u00b7 Various road access points", desc: "Good transition water between the small upper creek and the larger lower river. Brown trout and brook trout resident, steelhead and salmon in season. Multiple access points at bridge crossings.", tags: ["Brown Trout","Brook Trout","Road Access","Steelhead in Season"], best: "Year-round for residents. Spring and fall for migratory fish." },
-      { name: "Humber Valley Heritage Trail \u2014 Lower", crowd: "high", crowdLabel: "High Pressure", loc: "Etobicoke / North York \u00b7 TRCA managed", desc: "Urban lower Humber through Toronto. Receives large salmon and steelhead runs in fall and spring. Heavy pressure during peak runs. TRCA managed with catch regulations.", tags: ["Salmon","Steelhead","Urban","TRCA Managed"], best: "Fall Chinook (September\u2013November), spring steelhead (March\u2013April) only." }
+  'Ganaraska River — Lower (Lake to CNR Bridge)': {
+    gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
+    sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
+    lat:43.940, lng:-78.305,
+    loc:'Lake Ontario to CNR railway bridge — Port Hope harbour',
+    driveTime:{'toronto':87,'north york':89,'scarborough':77,'etobicoke':101,'markham':81,'richmond hill':89,'vaughan':95,'ajax':57,'pickering':62,'mississauga':112,'brampton':117,'oakville':120,'burlington':135,'milton':132,'hamilton':143,'guelph':158,'cambridge':170,'kitchener':180,'waterloo':181,'orangeville':140,'oshawa':44,'whitby':50,'bowmanville':30,'clarington':23,'newcastle':22,'cobourg':11,'port hope':1,'barrie':118,'collingwood':160,'owen sound':216},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'Open year-round. Standard FMZ 17 limits apply. Extended fall season Oct 15–Dec 31 in sanctuary section upstream.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Port Hope Harbour — River Mouth',loc:'Port Hope, ON · Lake Ontario harbour',crowd:'high',desc:'Staging area for spring steelhead and fall Chinook entering from Lake Ontario. Drift spawn sacks under floats, cast spoons or spinners for chrome fish. Heavy pressure during peak runs — arrive before dawn on fall weekends.'},
+      {name:'Below CNR Railway Bridge',loc:'Port Hope · South of CNR tracks',crowd:'high',desc:'The first holding water above the harbour. Excellent pool structure for drifting roe under a float. Spring Brown Trout and Steelhead stack here before pushing through. Open year-round on this section.'}
+    ]
+  },
+  'Ganaraska River — Port Hope Sanctuary': {
+    gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
+    sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
+    lat:43.945, lng:-78.300,
+    loc:'Jocelyn Street Bridge to CNR Bridge — through Port Hope',
+    driveTime:{'toronto':88,'north york':89,'scarborough':77,'etobicoke':101,'markham':82,'richmond hill':89,'vaughan':95,'ajax':57,'pickering':63,'mississauga':112,'brampton':118,'oakville':120,'burlington':135,'milton':132,'hamilton':144,'guelph':159,'cambridge':170,'kitchener':180,'waterloo':182,'orangeville':140,'oshawa':45,'whitby':50,'bowmanville':31,'clarington':23,'newcastle':23,'cobourg':11,'port hope':1,'barrie':118,'collingwood':161,'owen sound':216},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'SANCTUARY Sep 1–Oct 14 (closed). Open Oct 15–Dec 31 for extended fall season. Check posted signs throughout.',icon:'🚫'}],
+    methods:['float','fly'],
+    access:[
+      {name:'Jocelyn Street Bridge Access',loc:'Jocelyn Street · Port Hope',crowd:'med',desc:'Lower boundary of the sanctuary section. Good pool and run structure. Open Oct 15 through December for the extended fall season. During open periods this stretch holds excellent numbers of Chinook and Coho waiting below Corbetts Dam.'},
+      {name:'Port Hope Town Section — Sanctuary Area',loc:'Port Hope · Through town',crowd:'high',desc:'When open (Oct 15–Dec 31), this downtown stretch offers surprisingly good fishing with fish stacked below the dam upstream. Fly fishing and centrepin work well in the deeper pools. Respect the Sep 1–Oct 14 closure — wardens patrol this section.'}
+    ]
+  },
+  'Ganaraska River — Corbetts Dam (Closed Year-Round)': {
+    gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
+    sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
+    lat:43.950, lng:-78.298,
+    loc:'Highway 401 to Jocelyn Street Bridge — Corbetts Dam and Fishway',
+    driveTime:{'toronto':88,'north york':89,'scarborough':77,'etobicoke':101,'markham':82,'richmond hill':89,'vaughan':95,'ajax':57,'pickering':63,'mississauga':112,'brampton':118,'oakville':121,'burlington':136,'milton':133,'hamilton':144,'guelph':159,'cambridge':170,'kitchener':180,'waterloo':182,'orangeville':140,'oshawa':45,'whitby':51,'bowmanville':31,'clarington':24,'newcastle':23,'cobourg':10,'port hope':0,'barrie':118,'collingwood':161,'owen sound':216},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:false,
+    regs:[{rule:'CLOSED TO FISHING ALL YEAR. Fish sanctuary protecting migrating salmon and trout at Corbetts Dam and fishway.',icon:'🚫'}],
+    methods:[],
+    access:[]
+  },
+  'Ganaraska River — Upper & Conservation Areas': {
+    gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
+    sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
+    lat:43.980, lng:-78.290,
+    loc:'North of Highway 401 — Ganaraska Millennium CA, Sylvan Glen CA, Thurne Parks',
+    driveTime:{'toronto':90,'north york':91,'scarborough':79,'etobicoke':103,'markham':83,'richmond hill':90,'vaughan':96,'ajax':59,'pickering':64,'mississauga':114,'brampton':119,'oakville':123,'burlington':138,'milton':134,'hamilton':147,'guelph':160,'cambridge':172,'kitchener':182,'waterloo':184,'orangeville':141,'oshawa':46,'whitby':52,'bowmanville':32,'clarington':25,'newcastle':24,'cobourg':10,'port hope':3,'barrie':118,'collingwood':160,'owen sound':216},
+    species:['Steelhead','Rainbow Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — strictly obey posted property lines and GRCA rules. Spring Rainbow run popular here.',icon:'📋'}],
+    methods:['fly','float'],
+    access:[
+      {name:'Ganaraska Millennium Conservation Area',loc:'North of Hwy 401 · GRCA managed',crowd:'med',desc:'Upper section popular during spring Rainbow Trout runs. Less pressure than downtown Port Hope. Fly fishing and drifting natural baits work well. GRCA managed — respect all posted property lines and regulations.'},
+      {name:'Sylvan Glen Conservation Area',loc:'Sylvan Glen · Upper Ganaraska',crowd:'high',desc:'Quieter upper water with good pool structure. Spring Rainbow Trout push up from below during high flows. Forested banks and clear water — ideal dry fly and nymph water once the heavy spring flows drop.'},
+      {name:'Thurne Parks',loc:'Thurne · Upper Ganaraska valley',crowd:'low',desc:'Good access to upper holding water. Less frequented than the conservation areas. Best during peak spring Rainbow run when water is slightly off-colour and fish are actively pushing upstream.'}
     ]
   },
 
-  "Nottawasaga River": {
-    gauge: "02ED101",
-    gaugeName: "Nottawasaga River near Angus (02ED101)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02ED101",
-    lat: 44.19, lng: -79.88,
-    sweetMin: 6, sweetMax: 18,
-    flowLow: 3, flowHigh: 35,
-    species: ["Brown Trout", "Rainbow Trout", "Steelhead", "Brook Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [{ t: "Call the Angus bait shop or check Nottawasaga Valley CA reports", d: "Local outfitters near Alliston and Angus are the best real-time source. They fish it daily and will tell you exactly what\u2019s happening." },
-      { t: "Check for upstream rain from Georgian Bay watersheds", d: "The Notty\u2019s upper tributaries drain the Collingwood highlands. Heavy rain north of Barrie will raise the Alliston reach within 6\u20138 hours." },
-      { t: "Time for steelhead and salmon runs in the lower river", d: "Below Alliston, the Nottawasaga receives significant steelhead (spring) and Chinook/Coho (fall) runs from Georgian Bay. Timing the run is everything." }
-    ],
-    dam: {
-      icon: "\U0001f30e",
-      label: "Key Feature \u00b7 Alliston / Angus Reach",
-      title: "One of Ontario\u2019s best all-around trout rivers",
-      desc: "The Nottawasaga is a large, productive river with excellent habitat for resident and migratory trout. Multiple tributaries (Mad River, Pine River, Boyne River) add cold water and hold their own populations. The lower river below Alliston gets strong Georgian Bay runs of steelhead and salmon.",
-      links: [
-        { text: "Nottawasaga Gauge (02ED101)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02ED101" },
-        { text: "Nottawasaga Valley Conservation", url: "https://nvca.on.ca/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Alliston \u2014 Main Reach", crowd: "med", crowdLabel: "Med. Pressure", loc: "Alliston, ON \u00b7 Multiple road access points", desc: "The most commonly fished section of the Notty. Good sized water with defined pools, runs, and riffles. Brown trout resident year-round, steelhead and salmon in season. Multiple access points via road allowances.", tags: ["Brown Trout","Steelhead","Float Fishing","Road Access"], best: "Spring steelhead and fall salmon exceptional. Summer dry fly in evenings." },
-      { name: "Mad River Confluence", crowd: "low", crowdLabel: "Low Pressure", loc: "Near Rosemont \u00b7 Where Mad River meets Notty", desc: "The Mad River adds cold water from the Collingwood highlands. The confluence creates a temperature and food source mixing zone that concentrates fish, especially in summer when main stem warms.", tags: ["Confluence","Brown Trout","Cold Water","Summer"], best: "Summer is when this spot shines \u2014 cold Mad River water draws fish to the junction." },
-      { name: "Lower Nottawasaga \u2014 Migratory Section", crowd: "high", crowdLabel: "High Pressure (in season)", loc: "Below Alliston toward Georgian Bay", desc: "The lower river receives major runs of Chinook and Coho salmon in fall and steelhead in spring from Georgian Bay. This section can be very crowded during peak migrations but the fishing is exceptional.", tags: ["Salmon","Steelhead","Georgian Bay Runs","Seasonal"], best: "Fall: Chinook September\u2013November. Spring: Steelhead March\u2013May." }
+
+  "Lower Beaver River (Thornbury)": {
+    gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
+    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    lat:44.563, lng:-80.457,
+    loc:"Thornbury Dam to Georgian Bay",
+    driveTime:{ toronto:131,mississauga:123,brampton:110,oakville:133,burlington:144,milton:122,hamilton:149,guelph:112,cambridge:131,kitchener:121,waterloo:119,orangeville:75,markham:116,"richmond hill":108,vaughan:108,ajax:136,pickering:132,"north york":119,scarborough:127,etobicoke:126,oshawa:143,whitby:138,bowmanville:154,clarington:160,newcastle:161,cobourg:190,"port hope":180,barrie:62,collingwood:20,"owen sound":38 },
+    species:["Steelhead","Chinook Salmon"],
+    active:true,
+    regs:[{rule:"Extended fall season for trout and salmon — verify OMNR regs",icon:"📋"}],
+    methods:["float","spin"],
+    access:[
+      {name:"Thornbury — Lower River / Harbour",loc:"Thornbury, ON · Georgian Bay mouth",crowd:"high",desc:"The lower Beaver near Thornbury receives strong Georgian Bay steelhead and salmon runs. The river mouth and lower pools are extremely popular during peak migrations. Outside of run season, smaller resident browns inhabit this section."},
+      {name:"Thornbury Fishway",loc:"Thornbury, ON · Fish ladder at dam",crowd:"high",desc:"The fish ladder concentrates migrating fish. Extremely productive during peak runs. Heavy fishing pressure — arrive before dawn on fall weekends."}
+    ]
+  },
+  "Middle Beaver River (Clarksburg to Heathcote)": {
+    gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
+    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    lat:44.520, lng:-80.430,
+    loc:"Clarksburg to Heathcote",
+    driveTime:{ toronto:126,mississauga:118,brampton:105,oakville:128,burlington:139,milton:117,hamilton:144,guelph:107,cambridge:126,kitchener:116,waterloo:114,orangeville:70,markham:111,"richmond hill":104,vaughan:103,ajax:131,pickering:128,"north york":114,scarborough:122,etobicoke:121,oshawa:139,whitby:134,bowmanville:150,clarington:156,newcastle:157,cobourg:186,"port hope":177,barrie:59,collingwood:17,"owen sound":40 },
+    species:["Brown Trout","Steelhead"],
+    active:true,
+    regs:[],
+    methods:["fly","float","spin"],
+    access:[
+      {name:"Below Kimberley — Mid-Beaver",loc:"Between Kimberley and Thornbury",crowd:"low",desc:"Less explored than the village reach. Walk-in access required for most of this section which keeps pressure low. Large brown trout, some reach trophy size in the deeper pools."}
+    ]
+  },
+  "Beaver River Swamp (Heathcote to Kimberley)": {
+    gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:44.500, lng:-80.415,
+    loc:"Heathcote to Kimberley — slow warm water",
+    driveTime:{ toronto:124,mississauga:116,brampton:103,oakville:126,burlington:137,milton:115,hamilton:142,guelph:105,cambridge:124,kitchener:114,waterloo:112,orangeville:68,markham:109,"richmond hill":102,vaughan:101,ajax:130,pickering:126,"north york":112,scarborough:120,etobicoke:119,oshawa:137,whitby:132,bowmanville:149,clarington:154,newcastle:155,cobourg:185,"port hope":175,barrie:57,collingwood:16,"owen sound":41 },
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  "Upper Beaver River (Kimberley)": {
+    gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
+    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
+    lat:44.490, lng:-80.400,
+    loc:"Kimberley village up to Hogs Falls / Headwaters",
+    driveTime:{ toronto:122,mississauga:114,brampton:101,oakville:124,burlington:135,milton:113,hamilton:140,guelph:103,cambridge:123,kitchener:113,waterloo:111,orangeville:66,markham:108,"richmond hill":100,vaughan:99,ajax:128,pickering:124,"north york":110,scarborough:118,etobicoke:117,oshawa:135,whitby:130,bowmanville:147,clarington:152,newcastle:153,cobourg:183,"port hope":173,barrie:56,collingwood:14,"owen sound":43 },
+    species:["Brown Trout","Rainbow Trout","Brook Trout"],
+    active:true,
+    regs:[],
+    methods:["fly","float"],
+    access:[
+      {name:"Kimberley — Village Reach",loc:"Kimberley, ON · Main village access",crowd:"med",desc:"The centrepiece of Beaver River fishing. Classic limestone pools and riffles through the village. Prolific hatches — sulphurs, caddis, PMDs — bring large browns to the surface. Multiple road allowance access points."}
+    ]
+  },
+  'Saugeen River — Headwaters & Upper Tributaries': {
+    gauge:'02FC016', gaugeName:'Saugeen River above Durham',
+    sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
+    lat:44.100, lng:-80.750,
+    loc:'Rocky Saugeen, North Saugeen, South Saugeen, Beatty Saugeen — above Hanover',
+    driveTime:{'toronto':120,'north york':111,'scarborough':122,'etobicoke':110,'markham':113,'richmond hill':105,'vaughan':101,'ajax':138,'pickering':133,'mississauga':103,'brampton':90,'oakville':108,'burlington':112,'milton':93,'hamilton':115,'guelph':72,'cambridge':87,'kitchener':73,'waterloo':71,'orangeville':55,'oshawa':149,'whitby':143,'bowmanville':162,'clarington':169,'newcastle':170,'cobourg':202,'port hope':192,'barrie':88,'collingwood':60,'owen sound':53},
+    species:['Brook Trout','Brown Trout','Rainbow Trout'],
+    active:true,
+    regs:[{rule:'FMZ 18 — check specific tributary regulations. Rocky Saugeen is particularly sensitive — practice C&R and minimize disturbance.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Rocky Saugeen — Public Access',loc:'Rocky Saugeen River · Durham area',crowd:'low',desc:'Highly regarded spring-fed tributary with excellent resident brown trout. Beautiful clear water, careful wading essential. The Rocky Saugeen is the premier cold-water tributary on the system. Stealth and light tackle mandatory — these fish are educated and easily spooked.'},
+      {name:'North Saugeen River',loc:'North Saugeen · Above main stem junction',crowd:'low',desc:'Smaller, winding cold-water with brook and brown trout. Best accessed from road allowances at bridge crossings. Fly fishing and light spinning. Less known than the Rocky Saugeen but holds quality fish in cooler sections.'},
+      {name:'South Saugeen River',loc:'South Saugeen · Above Hanover',crowd:'low',desc:'Similar character to the North Saugeen — intimate brook trout and brown trout water. Good in spring before temperatures rise. Access from municipal road bridges.'}
+    ]
+  },
+  'Saugeen River — Middle Main Stem (Hanover to Paisley)': {
+    gauge:'02FC016', gaugeName:'Saugeen River above Durham',
+    sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
+    lat:44.220, lng:-81.000,
+    loc:'Hanover through Walkerton to Paisley — warm-water bass and pike fishery',
+    driveTime:{'toronto':143,'north york':134,'scarborough':144,'etobicoke':133,'markham':135,'richmond hill':127,'vaughan':123,'ajax':159,'pickering':155,'mississauga':126,'brampton':113,'oakville':131,'burlington':135,'milton':116,'hamilton':137,'guelph':94,'cambridge':108,'kitchener':92,'waterloo':90,'orangeville':78,'oshawa':170,'whitby':164,'bowmanville':183,'clarington':190,'newcastle':191,'cobourg':222,'port hope':212,'barrie':103,'collingwood':68,'owen sound':38},
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  'Saugeen River — Lower Main Stem (Paisley to Southampton)': {
+    gauge:'02FC016', gaugeName:'Saugeen River above Durham',
+    sweetMin:10, sweetMax:40, flowLow:3, flowHigh:80,
+    lat:44.400, lng:-81.200,
+    loc:"Paisley to Southampton — Lake Huron mouth, Denny's Dam, major migratory runs",
+    driveTime:{'toronto':166,'north york':156,'scarborough':166,'etobicoke':156,'markham':157,'richmond hill':148,'vaughan':145,'ajax':180,'pickering':175,'mississauga':150,'brampton':137,'oakville':156,'burlington':160,'milton':140,'hamilton':162,'guelph':119,'cambridge':132,'kitchener':117,'waterloo':114,'orangeville':101,'oshawa':190,'whitby':184,'bowmanville':202,'clarington':208,'newcastle':210,'cobourg':241,'port hope':231,'barrie':117,'collingwood':77,'owen sound':27},
+    species:['Steelhead','Chinook Salmon'],
+    active:true,
+    regs:[{rule:"FMZ 18 — one of the largest steelhead and Chinook salmon runs in the Great Lakes. Check OMNR regs for seasonal limits and closures near Denny's Dam.",icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:"Denny's Dam",loc:'Lower Saugeen · Below dam',crowd:'high',desc:"The focal point of the lower Saugeen. One of the most famous steelhead and Chinook salmon spots in Ontario. Fish concentrate below the dam before the ladder. Heavy pressure during peak runs — arrive before dawn. Marks the upper limit for the main migratory push."},
+      {name:'Southampton — Lake Huron Mouth',loc:'Southampton, ON · Lake Huron',crowd:'high',desc:'Staging area for incoming steelhead and Chinook before they push upstream. Cast spoons and spinners for chrome fish off the pier or from shore during peak runs. Chinook and Coho peak August through October, steelhead in spring.'},
+      {name:'Lower Saugeen Drift Sections',loc:"Below Paisley to Denny's Dam · Various access",crowd:'med',desc:'Float fishing with centrepin and drift boats are preferred for covering this wide, powerful river. Multiple access points. Smallmouth bass year-round in deeper pools and shoal areas between migratory runs.'}
     ]
   },
 
-  "Duffins Creek": {
-    gauge: "02HC022",
-    gaugeName: "Duffins Creek above Pickering (02HC019)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC019",
-    lat: 43.87, lng: -79.12,
-    sweetMin: 2, sweetMax: 10,
-    flowLow: 0.5, flowHigh: 18,
-    species: ["Rainbow Trout", "Steelhead", "Brown Trout", "Brook Trout", "Chinook Salmon"],
-    routine: [{ t: "Know the Whitevale Dam barrier", d: "A dam at Whitevale blocks migratory fish on the West Duffins. ALL steelhead and salmon fishing is below the dam. Above it: brook trout only." },
-      { t: "Check TRCA conditions before driving", d: "Toronto Region Conservation Authority manages Duffins. Check trca.ca for any closures or active flood warnings before heading out." },
-      { t: "Target early morning during fall salmon runs", d: "Duffins Creek is a well-known salmon and steelhead river close to Toronto. Can be very crowded on weekends during runs \u2014 arrive at dawn." }
-    ],
-    dam: {
-      icon: "\U0001f6ab",
-      label: "Key Feature \u00b7 Whitevale Dam Barrier",
-      title: "The dam defines two completely different fisheries",
-      desc: "A dam at Whitevale divides Duffins into two distinct fisheries. Below the dam: excellent salmon and steelhead runs from Lake Ontario. Above the dam: wild brook trout (and some brown trout) in clean, cold tributary water. Never confuse the two sections when planning your trip.",
-      links: [
-        { text: "Duffins Gauge (02HC030)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC030" },
-        { text: "TRCA Watershed", url: "https://trca.ca/conservation/watershed-management/duffins-creek/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Lower Duffins \u2014 Ajax / Pickering Reach", crowd: "high", crowdLabel: "High Pressure", loc: "Ajax / Pickering \u00b7 Multiple TRCA access points", desc: "The most productive reach for migratory fish. Multiple TRCA access points below Whitevale Dam. Salmon and steelhead concentrate in pools throughout this section. Can be very crowded on fall weekends.", tags: ["Salmon","Steelhead","TRCA Access","Crowded in Season"], best: "Fall Chinook (September\u2013October), spring steelhead (March\u2013April)." },
-      { name: "Above Whitevale Dam \u2014 West Duffins", crowd: "low", crowdLabel: "Low Pressure", loc: "Whitevale area \u00b7 Above the dam", desc: "Small, clean water above the dam. Wild brook trout fishing in forested sections. Completely different character from the lower river \u2014 intimate, technical, zero crowds.", tags: ["Brook Trout","Wild Fish","Low Pressure","Small Stream"], best: "Spring and summer for brook trout. Early morning essential in July\u2013August." }
+  'Sixteen Mile Creek — Lower Reaches & Oakville Harbour': {
+    gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
+    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    lat:43.440, lng:-79.672,
+    loc:'Lake Ontario mouth to Lakeshore Road — Oakville Harbour',
+    driveTime:{'toronto':34,'north york':40,'scarborough':49,'etobicoke':23,'markham':52,'richmond hill':51,'vaughan':45,'ajax':68,'pickering':63,'mississauga':16,'brampton':27,'oakville':3,'burlington':16,'milton':19,'hamilton':25,'guelph':47,'cambridge':51,'kitchener':65,'waterloo':67,'orangeville':62,'oshawa':80,'whitby':76,'bowmanville':93,'clarington':100,'newcastle':100,'cobourg':131,'port hope':121,'barrie':103,'collingwood':123,'owen sound':157},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — standard trout and salmon seasonal dates apply.',icon:'📋'}],
+    methods:['spin','float'],
+    access:[
+      {name:'Lakeside Park — Creek Mouth',loc:'Lakeside Park · Oakville Harbour',crowd:'high',desc:'The migratory entry point for spring steelhead and fall Chinook entering from Lake Ontario. Rocky banks and harbour breakwalls hold staging fish. Cast spoons and spinners for chrome fish before they push upstream. Heavy fall salmon pressure — arrive before dawn on weekends.'},
+      {name:'Tannery Park',loc:'Tannery Park · Lower Sixteen Mile Creek',crowd:'med',desc:'Access to the lower creek just above the harbour. Good smallmouth bass fishing year-round along the rocky banks. Steelhead and salmon push through this section during peak migrations. Float fishing with roe or beads works well in the deeper runs.'}
     ]
   },
-
-  "Ganaraska River": {
-    gauge: "02HD012",
-    gaugeName: "Ganaraska River above Dale (02HD012)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD012",
-    lat: 43.95, lng: -78.30,
-    sweetMin: 2, sweetMax: 12,
-    flowLow: 0.5, flowHigh: 20,
-    species: ["Rainbow Trout", "Steelhead", "Brown Trout", "Chinook Salmon", "Coho Salmon"],
-    routine: [{ t: "Check the Ganaraska Region Conservation Authority", d: "GRCA (not to be confused with the Grand River CA) manages the Ganny watershed. They track run timing and can advise on current conditions." },
-      { t: "Time your trip for the October Chinook run", d: "Port Hope\u2019s main draw is the fall Chinook salmon run \u2014 one of the most accessible in Ontario. Fish stack up in the lower river from late September through October." },
-      { t: "Fish the upper reaches for resident trout in summer", d: "Above the lower migratory section, the upper Ganaraska holds resident brown trout and some brook trout in cooler, more forested water." }
-    ],
-    dam: {
-      icon: "\U0001f41f",
-      label: "Key Feature \u00b7 Port Hope \u2014 Lake Ontario Mouth",
-      title: "One of the most accessible salmon rivers in Ontario",
-      desc: "The Ganaraska empties into Lake Ontario at Port Hope, and is one of the closest significant salmon rivers to Toronto. The lower river is stocked and receives strong natural runs of Chinook salmon, Coho, and steelhead. Port Hope has a strong angling culture built around these runs.",
-      links: [
-        { text: "Ganaraska Gauge (02HD006)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD006" },
-        { text: "Ganaraska Region Conservation", url: "https://grca.on.ca/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Port Hope \u2014 Lower River", crowd: "high", crowdLabel: "High (in season)", loc: "Port Hope, ON \u00b7 Riverwalk Park and below", desc: "The main event for salmon season. The lower Ganaraska through Port Hope is extremely accessible with parking and a riverwalk. Fish stack in pools and the river mouth during fall runs. Very crowded October weekends.", tags: ["Chinook Salmon","Coho","Steelhead","Accessible"], best: "Fall salmon peak: late September to mid-October. Spring steelhead: March\u2013April." },
-      { name: "Ganaraska Forest Reach \u2014 Upper", crowd: "low", crowdLabel: "Low Pressure", loc: "Above Port Hope \u00b7 Ganaraska Forest access", desc: "The upper river flows through the Ganaraska Forest \u2014 one of the largest reforested areas in Canada. Quieter water with resident brown trout, excellent dry fly water in summer. Remote feel despite being 90 minutes from Toronto.", tags: ["Brown Trout","Dry Fly","Forest Setting","Remote"], best: "May\u2013June and September\u2013October for resident brown trout." }
+  'Sixteen Mile Creek — Middle Reaches & Main Valley': {
+    gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
+    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    lat:43.470, lng:-79.685,
+    loc:'Rebecca Street to Dundas Street — Lions Valley Park, central Oakville',
+    driveTime:{'toronto':33,'north york':38,'scarborough':47,'etobicoke':21,'markham':50,'richmond hill':49,'vaughan':42,'ajax':66,'pickering':62,'mississauga':13,'brampton':24,'oakville':0,'burlington':18,'milton':16,'hamilton':27,'guelph':45,'cambridge':51,'kitchener':64,'waterloo':66,'orangeville':58,'oshawa':79,'whitby':74,'bowmanville':92,'clarington':99,'newcastle':99,'cobourg':130,'port hope':120,'barrie':100,'collingwood':119,'owen sound':154},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 seasonal dates. Heavy fall rains trigger salmon and steelhead runs — conditions can change quickly.',icon:'📋'}],
+    methods:['float','fly'],
+    access:[
+      {name:'Lions Valley Park',loc:'Lions Valley Park · Central Oakville',crowd:'high',desc:'The most popular access point on Sixteen Mile Creek. Deep shale-bottom valley pools provide excellent holding water for migratory salmon and steelhead. Float fishing with centrepin dominates here. Heavy pressure during peak runs — the valley trail hike filters out casual anglers somewhat.'},
+      {name:'Rebecca Street to Dundas Street Reach',loc:'Central Oakville valley · Road access points',crowd:'med',desc:'Multiple access points through the valley between Rebecca and Dundas Streets. Deep holding pools and shale-bedrock runs hold fish throughout the migratory season. Resident smallmouth bass year-round in the deeper pools.'}
     ]
   },
-
-  "Beaver River": {
-    gauge: "02FB009",
-    gaugeName: "Beaver River near Clarksburg (02FB009)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02FB009",
-    lat: 44.37, lng: -80.50,
-    sweetMin: 3, sweetMax: 12,
-    flowLow: 1, flowHigh: 20,
-    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Steelhead", "Chinook Salmon"],
-    routine: [{ t: "Check Grey Sauble Conservation Authority", d: "GSCA manages the Beaver watershed. Check gsca.ca for any active flood advisories or special conditions." },
-      { t: "Target the Kimberley stretch first \u2014 it\u2019s the crown jewel", d: "The Beaver through Kimberley is arguably the best wild brown trout water in Ontario. Pools and riffles through a stunning valley. Go early on weekends." },
-      { t: "Summer fishing is legitimate here \u2014 cold springs keep temps in check", d: "Unlike most southern Ontario rivers, the Beaver stays fishable into summer due to cold spring inputs. Check water temp and fish early morning in July\u2013August." }
-    ],
-    dam: {
-      icon: "\u2745",
-      label: "Key Feature \u00b7 Kimberley \u2014 The Crown Jewel Reach",
-      title: "Ontario\u2019s premier wild brown trout river",
-      desc: "The Beaver River through Kimberley and south toward Thornbury is widely considered the finest wild brown trout fishery in Ontario. Cold spring-fed water, limestone geology, and prolific insect hatches support exceptional dry fly fishing. The river also receives steelhead and salmon runs from Georgian Bay in season.",
-      links: [
-        { text: "Beaver River Gauge (02ED007)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02ED007" },
-        { text: "Grey Sauble Conservation", url: "https://www.gsca.on.ca/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Kimberley \u2014 Village Reach", crowd: "med", crowdLabel: "Med. Pressure", loc: "Kimberley, ON \u00b7 Main village access", desc: "The centrepiece of Beaver River fishing. Classic limestone pools and riffles through the village. Prolific hatches \u2014 sulphurs, caddis, PMDs \u2014 bring large browns to the surface. Multiple road allowance access points.", tags: ["Brown Trout","Dry Fly","Limestone","Hatch-driven"], best: "May\u2013September dry fly. Evening hatches June\u2013August can be exceptional." },
-      { name: "Below Kimberley \u2014 Mid-Beaver", crowd: "low", crowdLabel: "Low Pressure", loc: "Between Kimberley and Thornbury", desc: "Less explored than the village reach. Walk-in access required for most of this section which keeps pressure low. Large brown trout, some reach trophy size in the deeper pools.", tags: ["Brown Trout","Walk-in","Large Fish","Low Pressure"], best: "Spring and fall best. Summer evenings for hatch fishing." },
-      { name: "Thornbury \u2014 Lower River / Harbour", crowd: "high", crowdLabel: "High (in season)", loc: "Thornbury, ON \u00b7 Georgian Bay mouth", desc: "The lower Beaver near Thornbury receives strong Georgian Bay steelhead and salmon runs. The river mouth and lower pools are extremely popular during peak migrations. Outside of run season, smaller resident browns inhabit this section.", tags: ["Steelhead","Salmon","Georgian Bay","Seasonal"], best: "Fall salmon (September\u2013November), spring steelhead (March\u2013May)." }
+  'Sixteen Mile Creek — Upper West Branch (Trout)': {
+    gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
+    sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
+    lat:43.530, lng:-79.750,
+    loc:'North of Highway 407 — West Branch, cold-water trout habitat',
+    driveTime:{'toronto':34,'north york':37,'scarborough':47,'etobicoke':21,'markham':48,'richmond hill':45,'vaughan':38,'ajax':67,'pickering':62,'mississauga':11,'brampton':17,'oakville':8,'burlington':22,'milton':11,'hamilton':31,'guelph':39,'cambridge':48,'kitchener':59,'waterloo':61,'orangeville':50,'oshawa':80,'whitby':75,'bowmanville':93,'clarington':100,'newcastle':101,'cobourg':132,'port hope':122,'barrie':93,'collingwood':111,'owen sound':146},
+    species:['Brook Trout','Brown Trout','Rainbow Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — cold-water tributary regulations may apply. Check OMNR for West Branch specific rules.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'West Branch — Road Allowance Crossings',loc:'West Branch · North Oakville / Milton border',crowd:'low',desc:'Cold-water habitat supporting resident brook, brown, and rainbow trout. The West Branch maintains cooler temperatures than the main creek, making it the only section with viable year-round trout habitat. Access via road allowances at bridge crossings. Light tackle and stealth required.'},
+      {name:'Upper West Branch Tributaries',loc:'West Branch headwaters · Milton area',crowd:'low',desc:'Small stream fishing for resident trout in spring-fed water. The least pressured section of the entire Sixteen Mile Creek system. Brook trout in the coldest, most shaded sections.'}
     ]
   },
-
-  "Saugeen River": {
-    gauge: "02FC016",
-    gaugeName: "Saugeen River above Durham (02FC016)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02FC016",
-    lat: 44.15, lng: -81.02,
-    sweetMin: 10, sweetMax: 30,
-    flowLow: 5, flowHigh: 60,
-    species: ["Brown Trout", "Brook Trout", "Rainbow Trout", "Steelhead", "Chinook Salmon", "Coho Salmon"],
-    routine: [{ t: "Consider a drift boat or canoe for the best water", d: "The Saugeen\u2019s best water is only accessible by boat. Float fishing is a legitimate strategy \u2014 many guides offer drift trips that access water no walk-in angler reaches." },
-      { t: "Check Saugeen Valley Conservation Authority", d: "SVCA manages the watershed. They publish flow and run reports especially during steelhead and salmon seasons." },
-      { t: "Plan around major salmon and steelhead runs", d: "The Saugeen receives exceptional Chinook, Coho, and steelhead runs from Lake Huron. September\u2013November and March\u2013April are peak seasons. Book accommodation well in advance." }
-    ],
-    dam: {
-      icon: "\U0001f30a",
-      label: "Key Feature \u00b7 Durham to Walkerton Reach",
-      title: "Ontario\u2019s finest multi-species river",
-      desc: "The Saugeen from Durham through Walkerton and beyond to Lake Huron is arguably Ontario\u2019s most diverse trout fishery. Wild brook trout, resident brown trout, and massive runs of steelhead and Pacific salmon from Lake Huron. Scenic river through farmland and forest with excellent habitat throughout.",
-      links: [
-        { text: "Saugeen Gauge (02GB001)", url: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GB001" },
-        { text: "Saugeen Valley Conservation", url: "https://www.svca.on.ca/" },
-        { text: "OMNR Regulations", url: "https://www.ontario.ca/page/sport-fishing-ontario" }
-      ]
-    },
-    access: [
-      { name: "Durham Reach \u2014 Upper Saugeen", crowd: "low", crowdLabel: "Low Pressure", loc: "Durham, ON \u00b7 Saugeen Conservation Area", desc: "Wild brook trout water in the upper sections. Beautiful forest-lined pools. Conservation area provides excellent access and camping. Smaller water with technical dry fly fishing in spring and fall.", tags: ["Brook Trout","Brown Trout","Conservation Area","Camping"], best: "Spring and early summer for brook trout. Excellent dry fly May\u2013June." },
-      { name: "Walkerton \u2014 Main Reach", crowd: "med", crowdLabel: "Med. Pressure", loc: "Walkerton, ON \u00b7 Multiple access points", desc: "The premier wade fishing reach of the Saugeen. Larger water with classic pool-riffle-run sequences. Brown trout, brook trout, steelhead and salmon all seasonally present. Multiple access points at bridge crossings.", tags: ["Brown Trout","Steelhead","Salmon","Float + Wade"], best: "All season for residents. Spring and fall for migratory runs from Lake Huron." },
-      { name: "Lower Saugeen \u2014 Paisley to Mouth", crowd: "high", crowdLabel: "High (in season)", loc: "Paisley / Southampton area", desc: "The lower river near Southampton and Port Elgin receives massive Lake Huron runs. Float fishing and canoe trips work best here due to the river size. Can be extremely crowded during peak salmon season.", tags: ["Salmon","Steelhead","Float Fishing","Large Water"], best: "Fall: September\u2013November Chinook and Coho. Spring: March\u2013May steelhead." }
+  'Sixteen Mile Creek — Upper Middle/East Branches': {
+    gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
+    sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
+    lat:43.545, lng:-79.790,
+    loc:'North of Highway 407 — Middle and East branches, Mill Pond, warmwater fishery',
+    driveTime:{'toronto':37,'north york':38,'scarborough':48,'etobicoke':23,'markham':49,'richmond hill':46,'vaughan':39,'ajax':69,'pickering':64,'mississauga':12,'brampton':15,'oakville':12,'burlington':24,'milton':8,'hamilton':32,'guelph':36,'cambridge':46,'kitchener':56,'waterloo':58,'orangeville':47,'oshawa':82,'whitby':77,'bowmanville':95,'clarington':102,'newcastle':103,'cobourg':135,'port hope':125,'barrie':92,'collingwood':109,'owen sound':143},
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  'Rouge River — Marsh & Mouth (Lake Ontario)': {
+    gauge:'02HC022', gaugeName:'Rouge River near Markham',
+    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    lat:43.803, lng:-79.134,
+    loc:'Lake Ontario mouth — Rouge Beach, Pickering / Scarborough',
+    driveTime:{'toronto':23,'north york':22,'scarborough':10,'etobicoke':36,'markham':17,'richmond hill':25,'vaughan':29,'ajax':10,'pickering':5,'mississauga':46,'brampton':51,'oakville':57,'burlington':74,'milton':66,'hamilton':83,'guelph':92,'cambridge':104,'kitchener':113,'waterloo':115,'orangeville':76,'oshawa':23,'whitby':18,'bowmanville':37,'clarington':44,'newcastle':45,'cobourg':78,'port hope':67,'barrie':77,'collingwood':113,'owen sound':163},
+    species:['Steelhead','Chinook Salmon'],
+    active:true,
+    regs:[{rule:'FMZ 17 — standard trout and salmon limits. Check seasonal dates for migratory species.',icon:'📋'}],
+    methods:['spin','float'],
+    access:[
+      {name:'Rouge Beach — River Mouth',loc:'Rouge Beach Park · Pickering / Scarborough border',crowd:'high',desc:'Entry point for migratory Chinook, steelhead, and brown trout from Lake Ontario. Casting spoons and spinners around the rocks and under railway bridges near the mouth is highly productive during seasonal runs. Spring pike fishing in the shallow marsh areas with shiners or crankbaits.'},
+      {name:'CNR Railway Bridge Area',loc:'Below CNR bridge · Lower Rouge',crowd:'high',desc:'Fish concentrate below structural barriers near the mouth during migration runs. Good holding water for steelhead in spring and Chinook in fall. Heavy pressure on peak run weekends — arrive early.'},
+      {name:'Rouge Marsh',loc:'Rouge Beach · Marsh habitat',crowd:'med',desc:'Warmwater and pike fishery only — not a productive spot for trout or salmon. Shallow marshy areas hold excellent spring pike, largemouth bass, black crappie, and white bass year-round. Cast crankbaits and swimbaits along the weedy edges. For salmon and steelhead, head to the river mouth or CNR bridge area instead.'}
     ]
   },
-
-  "Sixteen Mile Creek": {
-    gauge: "02HB005", gaugeName: "Sixteen Mile Creek at Milton (02HB005)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB005",
-    lat: 43.48, lng: -79.72, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
-    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon"],
-    routine: [{t:"Check Conservation Halton notices",d:"Halton manages Sixteen Mile Creek. Check conservationhalton.ca for flood warnings or seasonal closures before heading out."},
-      {t:"Target fall and spring for migratory fish",d:"Best fishing is during steelhead runs (March\u2013April) and Chinook salmon (October\u2013November). Summer holds some resident browns."},
-      {t:"Know your access points \u2014 many sections are private",d:"Public access is limited. Stick to TRCA/Conservation Halton managed areas and road allowances at bridge crossings."}
-    ],
-    dam: {icon:"\ud83d\udca7",label:"Key Feature \u00b7 Oakville Creek Fishery",title:"A small but productive Lake Ontario tributary",
-      desc:"Sixteen Mile Creek flows from Milton through Oakville into Lake Ontario. It receives spring steelhead and fall salmon runs and holds resident brown trout in its cooler upper sections.",
-      links:[{text:"Sixteen Mile Creek Gauge (02HB007)",url:"https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HB007"},{text:"Conservation Halton",url:"https://conservationhalton.ca/"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Lions Valley Park",crowd:"med",crowdLabel:"Med. Pressure",loc:"Oakville, ON \u00b7 Regional Road 25",desc:"One of the best public access points on Sixteen Mile Creek. Good pool and run habitat below the park. Steelhead and salmon concentrate here during runs.",tags:["Public Access","Steelhead","Salmon"],best:"Spring steelhead (Mar\u2013Apr) and fall salmon (Oct\u2013Nov)."},
-      {name:"Sixteen Mile Creek \u2014 Joshua Creek Reach",crowd:"low",crowdLabel:"Low Pressure",loc:"Oakville, ON \u00b7 Upper sections",desc:"Quieter sections above the main pressure points. Resident brown trout in cooler water. More walking required.",tags:["Brown Trout","Low Pressure","Walk-in"],best:"Summer mornings for resident browns."},
-      {name:"Bronte Harbour \u2014 Creek Mouth",crowd:"high",crowdLabel:"High (in season)",loc:"Oakville, ON \u00b7 Bronte Harbour",desc:"The river mouth at Bronte Harbour. Very accessible but heavily pressured during peak migrations. Best on weekday mornings.",tags:["Creek Mouth","Salmon","Steelhead"],best:"Fall salmon (Oct\u2013Nov), spring steelhead (Mar\u2013Apr)."}
+  'Rouge River — Mid-Section (Rouge National Urban Park)': {
+    gauge:'02HC022', gaugeName:'Rouge River near Markham',
+    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    lat:43.835, lng:-79.142,
+    loc:'Highway 2 (Kingston Road) north through Rouge National Urban Park and Toronto Zoo',
+    driveTime:{'toronto':26,'north york':23,'scarborough':11,'etobicoke':37,'markham':15,'richmond hill':24,'vaughan':29,'ajax':10,'pickering':4,'mississauga':48,'brampton':51,'oakville':58,'burlington':76,'milton':68,'hamilton':85,'guelph':92,'cambridge':105,'kitchener':114,'waterloo':115,'orangeville':75,'oshawa':23,'whitby':17,'bowmanville':36,'clarington':44,'newcastle':44,'cobourg':77,'port hope':67,'barrie':74,'collingwood':110,'owen sound':161},
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'Parks Canada managed — Rouge National Urban Park. Respect all park regulations. Check FMZ 17 seasonal dates.',icon:'📋'}],
+    methods:['float','fly'],
+    access:[
+      {name:'Rouge National Urban Park — Main Access',loc:'Rouge National Urban Park · Parks Canada',crowd:'med',desc:'Cool to cold-water fishery best known for migratory salmon and steelhead runs in fall and spring. Target deeper pools and runs below structural barriers. Parks Canada managed — respect all posted regulations within park boundaries.'},
+      {name:'Kingston Road (Hwy 2) Bridge Area',loc:'Kingston Road bridge · Lower mid-section',crowd:'med',desc:'Access at the southern boundary of the mid-section. Transition zone between the warm marsh and the cooler mid-river. Fish push through this zone on their way upstream. Float fishing with roe or beads under a centrepin setup works well.'},
+      {name:'Toronto Zoo Valley',loc:'Behind Toronto Zoo · Rouge valley',crowd:'low',desc:'Less accessible than the main park entry points, which keeps pressure lower. Deep valley pools hold steelhead and salmon during runs. The tree canopy and valley walls create shaded, cooler water even in summer.'}
     ]
   },
-  "Rouge River": {
-    gauge: "02HC019", gaugeName: "Rouge River near Markham (02HC022)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC022",
-    lat: 43.86, lng: -79.18, sweetMin: 2, sweetMax: 10, flowLow: 0.5, flowHigh: 18,
-    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon","Coho Salmon"],
-    routine: [{t:"Check TRCA conditions before driving",d:"Toronto Region Conservation Authority manages the Rouge. Check trca.ca for conditions and any seasonal closures."},
-      {t:"Target fall salmon and spring steelhead",d:"The Rouge receives Chinook, Coho, and steelhead from Lake Ontario. Fall (Sept\u2013Nov) and spring (Mar\u2013Apr) are peak seasons."},
-      {t:"Use Rouge National Urban Park access for best water",d:"The park provides managed public access to quality stretches. Check pc.gc.ca for current access restrictions."}
-    ],
-    dam: {icon:"\ud83c\udf33",label:"Key Feature \u00b7 Rouge National Urban Park",title:"Canada\u2019s largest urban national park holds real fish",
-      desc:"The Rouge flows through Rouge National Urban Park. Despite being surrounded by urban development it supports Chinook, Coho, and steelhead runs from Lake Ontario plus resident brown trout.",
-      links:[{text:"Rouge Gauge (02HC019)",url:"https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HC019"},{text:"TRCA",url:"https://trca.ca/"},{text:"Rouge National Urban Park",url:"https://www.pc.gc.ca/en/pn-np/on/rouge"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Rouge National Urban Park \u2014 Main Access",crowd:"med",crowdLabel:"Med. Pressure",loc:"Scarborough / Markham \u00b7 Park entrances",desc:"Best managed access to quality Rouge River water. Multiple entry points. Good pool and run structure with salmon and steelhead in season.",tags:["National Park","Salmon","Steelhead","Managed"],best:"Fall salmon (Sept\u2013Nov), spring steelhead (Mar\u2013Apr)."},
-      {name:"Glen Rouge Area",crowd:"low",crowdLabel:"Low Pressure",loc:"Scarborough \u00b7 Kingston Road area",desc:"Access near the campground gives good water with less pressure. Resident brown trout plus seasonal runs.",tags:["Brown Trout","Lower Pressure"],best:"Year-round for resident fish."}
+  'Rouge River — Upper & Milne Dam (Markham)': {
+    gauge:'02HC022', gaugeName:'Rouge River near Markham',
+    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    lat:43.880, lng:-79.250,
+    loc:'Northern tributaries and Milne Dam Conservation Park — Markham',
+    driveTime:{'toronto':26,'north york':18,'scarborough':12,'etobicoke':35,'markham':7,'richmond hill':15,'vaughan':21,'ajax':18,'pickering':13,'mississauga':44,'brampton':45,'oakville':56,'burlington':74,'milton':63,'hamilton':83,'guelph':86,'cambridge':101,'kitchener':108,'waterloo':109,'orangeville':66,'oshawa':30,'whitby':24,'bowmanville':44,'clarington':51,'newcastle':52,'cobourg':85,'port hope':75,'barrie':65,'collingwood':101,'owen sound':151},
+    species:['Rainbow Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — urban watershed. Check TRCA rules for Milne Dam Conservation Park. Heavily influenced by urban development.',icon:'📋'}],
+    methods:['spin','fly'],
+    access:[
+      {name:'Milne Dam Conservation Park',loc:'Milne Dam · Markham, ON · TRCA managed',crowd:'med',desc:'Resident rainbow and brown trout in the tailwater below Milne Dam. Slower, urban-influenced water but surprisingly productive for trout anglers in spring. The dam creates a barrier concentrating fish. Largemouth and smallmouth bass also present throughout.'},
+      {name:'Toogood Pond Area',loc:'Toogood Pond · Unionville, Markham',crowd:'med',desc:'Slower, warmer impoundment water. Resident largemouth bass are the main draw, but rainbow trout are present, especially in spring before water warms. Highly accessible urban fishery — good entry point for newer anglers.'}
     ]
   },
-  "Wilmot Creek": {
-    gauge: null, gaugeName: "Wilmot Creek near Newcastle (02HD009)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD009",
-    lat: 43.92, lng: -78.58, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
-    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon","Coho Salmon"],
-    routine: [{t:"Check Ganaraska Region Conservation Authority",d:"GRCA manages Wilmot Creek. Check grca.on.ca for advisories or seasonal closures."},
-      {t:"Time your trip for fall salmon and spring steelhead",d:"Wilmot gets excellent Chinook and Coho (Oct\u2013Nov) and steelhead (Mar\u2013Apr) runs from Lake Ontario."},
-      {t:"Fish below Highway 2 bridge for best access",d:"The lower reaches near Newcastle give the best migratory fish access via road allowances at bridge crossings."}
-    ],
-    dam: {icon:"\ud83d\udc1f",label:"Key Feature \u00b7 Lake Ontario Tributary",title:"Small stream, big fish \u2014 in season",
-      desc:"Wilmot Creek is a small but productive Lake Ontario tributary near Newcastle. Its primary draw is seasonal runs of salmon and steelhead from Lake Ontario.",
-      links:[{text:"Bowmanville Gauge proxy (02HD013)",url:"https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD013"},{text:"Ganaraska Region Conservation",url:"https://grca.on.ca/"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Wilmot Creek \u2014 Lower Reach",crowd:"med",crowdLabel:"Med. Pressure",loc:"Newcastle, ON \u00b7 Below Highway 2",desc:"Primary fishing area. Access at Highway 2 bridge and downstream toward Lake Ontario. Fish stack in pools during migratory runs.",tags:["Salmon","Steelhead","Road Access"],best:"Fall Chinook/Coho (Oct\u2013Nov), spring steelhead (Mar\u2013Apr)."},
-      {name:"Wilmot Creek \u2014 Upper Sections",crowd:"low",crowdLabel:"Low Pressure",loc:"Above Highway 2 \u00b7 Road allowances",desc:"Small stream fishing for resident brown trout. Much quieter than the lower run.",tags:["Brown Trout","Small Stream","Low Pressure"],best:"Summer and early fall for resident browns."}
+  'Wilmot Creek — Mouth & Marsh (Lake Ontario)': {
+    gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.890, lng:-78.594,
+    loc:'Sir Samuel Wilmot Nature Area — Lake Ontario mouth, Cobbledick Road',
+    driveTime:{'toronto':64,'north york':65,'scarborough':53,'etobicoke':78,'markham':58,'richmond hill':66,'vaughan':72,'ajax':34,'pickering':39,'mississauga':88,'brampton':94,'oakville':97,'burlington':113,'milton':109,'hamilton':121,'guelph':135,'cambridge':147,'kitchener':156,'waterloo':158,'orangeville':117,'oshawa':21,'whitby':27,'bowmanville':8,'clarington':5,'newcastle':4,'cobourg':34,'port hope':24,'barrie':101,'collingwood':142,'owen sound':197},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — standard trout and salmon limits apply. Sir Samuel Wilmot Nature Area — provincially significant wetland, respect all posted regulations.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Sir Samuel Wilmot Nature Area',loc:'Cobbledick Road · South of CN tracks · Clarington',crowd:'high',desc:'The marsh and creek mouth where Wilmot Creek enters Lake Ontario through a provincially significant wetland. Excellent staging area for fall Chinook and Coho before they push upstream, and spring steelhead. Also holds northern pike, crappie, sunfish, and large carp year-round. Heavy pressure during peak fall salmon runs.'},
+      {name:'Cobbledick Road Crossing',loc:'Cobbledick Road · Near lake shore',crowd:'high',desc:'The main vehicle access point to the lower creek and marsh area. Trail access into the nature area from here. First riverine water fish enter — concentrates migrating fish early in the run before they disperse upstream.'}
     ]
   },
-  "Bowmanville Creek": {
-    gauge: "02HD006", gaugeName: "Bowmanville Creek at Bowmanville (02HD006)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD006",
-    lat: 43.91, lng: -78.68, sweetMin: 1, sweetMax: 6, flowLow: 0.3, flowHigh: 12,
-    species: ["Rainbow Trout", "Steelhead","Brown Trout","Chinook Salmon","Coho Salmon"],
-    routine: [{t:"Check Central Lake Ontario Conservation (CLOCA)",d:"CLOCA manages the Bowmanville watershed. Their website has flood advisories and access information."},
-      {t:"Time for fall salmon and spring steelhead",d:"Chinook and Coho (Oct\u2013Nov) and steelhead (Mar\u2013Apr) from Lake Ontario are the primary draw."},
-      {t:"Access at the main downtown bridge is the classic spot",d:"The pool below the main Bowmanville bridge is the most accessible location. Arrive early on fall weekends."}
-    ],
-    dam: {icon:"\ud83d\udc1f",label:"Key Feature \u00b7 Lake Ontario Tributary",title:"Durham Region\u2019s accessible salmon creek",
-      desc:"Bowmanville Creek is one of the more accessible Durham Region tributaries. The lower creek receives good fall Chinook and Coho runs and spring steelhead.",
-      links:[{text:"Bowmanville Gauge (02HD013)",url:"https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02HD013"},{text:"CLOCA",url:"https://www.cloca.com/"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Main Street Bridge Pool",crowd:"high",crowdLabel:"High (in season)",loc:"Bowmanville, ON \u00b7 Downtown",desc:"The classic spot. Pool below Main Street bridge concentrates fish during migrations. Very accessible but heavily pressured on fall weekends. Arrive before dawn.",tags:["Salmon","Steelhead","Accessible"],best:"Fall Chinook (Oct\u2013Nov), spring steelhead (Mar\u2013Apr)."},
-      {name:"Upstream Reach \u2014 Above Town",crowd:"low",crowdLabel:"Low Pressure",loc:"Above Bowmanville \u00b7 Road allowances",desc:"Less known and less pressured than the main pool. Some resident brown trout plus migrants in season.",tags:["Brown Trout","Low Pressure"],best:"Resident fish spring and summer."}
+  'Wilmot Creek — Lower River (to CN Rail Tracks)': {
+    gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.900, lng:-78.592,
+    loc:'Mouth to CN railway tracks — gravel runs and holding pools',
+    driveTime:{'toronto':65,'north york':66,'scarborough':54,'etobicoke':78,'markham':58,'richmond hill':66,'vaughan':72,'ajax':34,'pickering':39,'mississauga':89,'brampton':94,'oakville':98,'burlington':113,'milton':109,'hamilton':122,'guelph':135,'cambridge':147,'kitchener':157,'waterloo':159,'orangeville':117,'oshawa':21,'whitby':27,'bowmanville':8,'clarington':4,'newcastle':3,'cobourg':34,'port hope':24,'barrie':101,'collingwood':142,'owen sound':196},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — heavy pressure during peak runs. Respect other anglers and practice C&R where possible.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Nature Preserve Trails — Lower Creek',loc:'Cobbledick Road · Nature preserve trail access',crowd:'high',desc:'Gravel runs, shallows, and holding pools — the first riverine water above the marsh. One of the first sections fish reach so pressure is heavy during peak runs. Brown trout and steelhead actively pursued here during their respective runs. Float fishing with roe and beads dominates.'},
+      {name:'CN Railway Track Crossing',loc:'CN Rail bridge · Lower Wilmot Creek',crowd:'med',desc:'The CN railway crossing marks the upper boundary of this section. Good pool structure below the bridge. Slightly less pressure than the very lowest water near the marsh, but still popular during peak season.'}
     ]
   },
-  "Speed River": {
-    gauge: "02GA015", gaugeName: "Speed River below Guelph (02GA015)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA015",
-    lat: 43.55, lng: -80.25, sweetMin: 3, sweetMax: 12, flowLow: 1, flowHigh: 20,
-    species: ["Brown Trout","Rainbow Trout","Brook Trout"],
-    routine: [{t:"Check Grand River Conservation Authority",d:"The Speed is a Grand River tributary managed by GRCA. Check grandriver.ca for notices or advisories."},
-      {t:"Fish the Hanlon Creek confluence for concentrated fish",d:"Cold tributary water draws fish in summer when the main river warms."},
-      {t:"Urban river \u2014 check access carefully",d:"The Speed flows through Guelph. Many sections have public trail access but private land limits some stretches."}
-    ],
-    dam: {icon:"\ud83c\udf3f",label:"Key Feature \u00b7 Spring-Fed Guelph Reach",title:"Underrated urban brown trout fishery",
-      desc:"The Speed River through Guelph is an underrated brown trout fishery. Cold spring inputs keep water temperatures fishable later into summer than most urban rivers.",
-      links:[{text:"Speed River Gauge (02GA034)",url:"https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA034"},{text:"GRCA",url:"https://www.grandriver.ca/"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Riverside Park \u2014 Main Reach",crowd:"low",crowdLabel:"Low Pressure",loc:"Guelph, ON \u00b7 Riverside Park",desc:"Good public access through Riverside Park. Underused despite holding quality brown trout. Pools and runs with good habitat throughout.",tags:["Brown Trout","Public Park","Low Pressure"],best:"Spring and fall best. Summer evenings for dry fly."},
-      {name:"Watson Road to Gordon Street Reach",crowd:"low",crowdLabel:"Low Pressure",loc:"Guelph, ON \u00b7 South end",desc:"Less-explored section south of downtown. Trail access along much of this reach. Brown trout with few other anglers.",tags:["Brown Trout","Trail Access","Very Low Pressure"],best:"Year-round for resident browns."}
+  'Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)': {
+    gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
+    sweetMin:1, sweetMax:4, flowLow:0.2, flowHigh:8,
+    lat:43.915, lng:-78.585,
+    loc:'Newcastle — wooded corridor with riffles and holding pools',
+    driveTime:{'toronto':66,'north york':67,'scarborough':55,'etobicoke':79,'markham':59,'richmond hill':67,'vaughan':73,'ajax':35,'pickering':40,'mississauga':90,'brampton':95,'oakville':99,'burlington':115,'milton':110,'hamilton':124,'guelph':136,'cambridge':148,'kitchener':158,'waterloo':160,'orangeville':118,'oshawa':22,'whitby':28,'bowmanville':8,'clarington':2,'newcastle':1,'cobourg':33,'port hope':23,'barrie':100,'collingwood':142,'owen sound':196},
+    species:['Steelhead','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — water levels can be shallow depending on seasonal rainfall. Check conditions before making the trip.',icon:'📋'}],
+    methods:['float','fly'],
+    access:[
+      {name:'Newcastle — Highway 401 to Highway 2 Reach',loc:'Newcastle, ON · Wooded valley corridor',crowd:'low',desc:'Residential borders give way to a defined wooded corridor with fast riffles and holding pools. Resident brown trout and migrating steelhead. Significantly less pressure than the lower stretches — worth the walk for anglers seeking a quieter experience. Water can get shallow in low-flow periods.'}
     ]
   },
-  "Eramosa River": {
-    gauge: "02GA029", gaugeName: "Eramosa River above Guelph (02GA029)",
-    gaugeUrl: "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA029",
-    lat: 43.60, lng: -80.12, sweetMin: 2, sweetMax: 8, flowLow: 0.5, flowHigh: 15,
-    species: ["Brown Trout","Brook Trout"],
-    routine: [{t:"Plan around Rockwood Conservation Area",d:"The Eramosa flows through Rockwood CA which provides excellent managed access. Day-use fee applies."},
-      {t:"This river fishes well year-round \u2014 even summer",d:"Cold spring inputs keep the Eramosa cool even in July. Often stays under 16\u00b0C when surrounding rivers are too warm."},
-      {t:"Wild brook trout in the upper reaches",d:"The upper Eramosa above Rockwood holds wild brook trout in addition to brown trout."}
-    ],
-    dam: {icon:"\u2745",label:"Key Feature \u00b7 Limestone Spring-Fed Fishery",title:"One of Ontario\u2019s most cold-stable trout rivers",
-      desc:"The Eramosa is fed by cold limestone springs, making it one of the most temperature-stable rivers in Southern Ontario. It stays fishable well into summer when other rivers are stressful for trout.",
-      links:[{text:"Eramosa Gauge (02GA047)",url:"https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=02GA047"},{text:"Rockwood Conservation Area",url:"https://conservationhalton.ca/parks-trails/rockwood-conservation-area/"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Rockwood Conservation Area",crowd:"med",crowdLabel:"Med. Pressure",loc:"Rockwood, ON \u00b7 Conservation Halton",desc:"Excellent access to prime Eramosa water. Limestone potholes and pools create exceptional habitat. Day-use fee applies.",tags:["Conservation Area","Fee Required","Brown Trout","Limestone Pools"],best:"Spring through fall. Summer genuinely productive due to cold springs."},
-      {name:"Eramosa \u2014 Above Rockwood",crowd:"low",crowdLabel:"Low Pressure",loc:"Upper Eramosa \u00b7 Road allowances",desc:"Smaller water above Rockwood with wild brook trout in addition to brown trout. Almost no angling pressure.",tags:["Brook Trout","Brown Trout","No Pressure"],best:"Year-round. Spring exceptional for dry fly brook trout."}
+  'Wilmot Creek — Upper Watershed & Orono Crown Lands': {
+    gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
+    sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
+    lat:43.960, lng:-78.575,
+    loc:'North of Highway 2 — Orono Crown Lands, cold-water headwaters',
+    driveTime:{'toronto':69,'north york':69,'scarborough':57,'etobicoke':82,'markham':61,'richmond hill':68,'vaughan':74,'ajax':37,'pickering':42,'mississauga':93,'brampton':97,'oakville':102,'burlington':118,'milton':113,'hamilton':127,'guelph':139,'cambridge':151,'kitchener':160,'waterloo':162,'orangeville':119,'oshawa':24,'whitby':29,'bowmanville':10,'clarington':3,'newcastle':4,'cobourg':32,'port hope':22,'barrie':98,'collingwood':140,'owen sound':195},
+    species:['Brook Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — cold-water sensitive habitat. Orono Crown Lands provide public access. Check for specific tributary restrictions.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Orono Crown Lands',loc:'Orono, ON · Crown Land access',crowd:'low',desc:'The upper three-quarters of the Wilmot watershed feature cold-water, shaded stream conditions supporting sustained brook trout and brown trout populations. Crown Land designation provides public access in the Orono area. Light tackle and fly fishing for resident trout. Minimal angling pressure compared to the lower sections.'},
+      {name:'Upper Wilmot Tributaries',loc:'Above Orono · Headwater tributaries',crowd:'low',desc:'Spring-fed cool water with native brook trout. Best in early season before temperatures rise. The least pressured section of the entire Wilmot system.'}
     ]
   },
-  "Black Creek": {
-    gauge: null, gaugeName: "No active gauge \u2014 contact Grey Sauble CA",
-    gaugeUrl: "https://www.gsca.on.ca/",
-    lat: 44.40, lng: -79.68, sweetMin: 1, sweetMax: 5, flowLow: 0.2, flowHigh: 10,
-    species: ["Brown Trout","Brook Trout","Rainbow Trout"],
-    routine: [{t:"Target early morning in summer",d:"Black Creek stays cool due to spring inputs but can warm midday. Fish before 9 AM in July and August."},
-      {t:"Check for hatches \u2014 this creek produces good dry fly action",d:"Prolific caddis and mayfly hatches in May and June. Evening dry fly can be exceptional."},
-      {t:"Keep it low-impact \u2014 this is fragile small-stream habitat",d:"Small and sensitive. Wade carefully, handle fish quickly, and practice catch-and-release especially for brook trout."}
-    ],
-    dam: {icon:"\ud83d\udd0e",label:"Key Feature \u00b7 Barrie Area Cold-Water Creek",title:"Small stream gem north of Barrie",
-      desc:"Black Creek is a cold spring-fed small stream near Barrie holding wild brook trout in its upper sections and brown trout throughout. A quiet alternative when larger rivers are blown out.",
-      links:[{text:"Grey Sauble Conservation Authority",url:"https://www.gsca.on.ca/"},{text:"OMNR Regulations",url:"https://www.ontario.ca/page/sport-fishing-ontario"}]},
-    access: [
-      {name:"Black Creek \u2014 Lower Reach",crowd:"low",crowdLabel:"Low Pressure",loc:"Near Barrie \u00b7 Road allowance access",desc:"Access via road allowances at bridge crossings. Brown trout and some rainbow trout. Very little angling pressure.",tags:["Brown Trout","Low Pressure","Road Allowance"],best:"Spring and fall. Summer mornings only."},
-      {name:"Black Creek \u2014 Upper Brook Trout Water",crowd:"low",crowdLabel:"Very Low Pressure",loc:"Upper sections \u00b7 Above Barrie",desc:"Wild brook trout in cold forested water. Tiny stream fishing \u2014 3-4 weight rod at most. Almost no angling pressure.",tags:["Brook Trout","Wild Fish","Tiny Stream"],best:"May\u2013June dry fly. Sept\u2013Oct fall brook trout."}
+  'Bowmanville Creek — River Mouth & Piers': {
+    gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
+    sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
+    lat:43.893, lng:-78.685,
+    loc:'Lake Ontario mouth · Darlington / Bowmanville Marina',
+    driveTime:{'toronto':58,'north york':59,'scarborough':47,'etobicoke':71,'markham':51,'richmond hill':59,'vaughan':65,'ajax':27,'pickering':32,'mississauga':82,'brampton':87,'oakville':91,'burlington':107,'milton':102,'hamilton':116,'guelph':128,'cambridge':140,'kitchener':150,'waterloo':151,'orangeville':110,'oshawa':14,'whitby':20,'bowmanville':2,'clarington':8,'newcastle':8,'cobourg':41,'port hope':31,'barrie':95,'collingwood':136,'owen sound':190},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 — check OMNR regs for seasonal closures near the pier and creek mouth',icon:'📋'}],
+    methods:['spin','float'],
+    access:[
+      {name:'Bowmanville Marina Pier',loc:'Bowmanville Marina · Lake Ontario',crowd:'med',desc:'Staging area for incoming salmon in late summer and fall, and steelhead in spring. Cast off the pier with spoons, crankbaits, or spawn sacks. Action can be explosive during peak staging.'},
+      {name:'Creek Mouth — East Bank',loc:'South of CNR railway bridge · East bank',crowd:'high',desc:'Classic river mouth access. Bottom fishing with spawn sacks and beads or casting spoons. Heavy pressure on fall weekends during peak Chinook runs — arrive before dawn.'}
+    ]
+  },
+  'Lower Bowmanville Creek': {
+    gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
+    sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
+    lat:43.900, lng:-78.685,
+    loc:'Lake Ontario to Baseline Road',
+    driveTime:{'toronto':58,'north york':59,'scarborough':47,'etobicoke':71,'markham':51,'richmond hill':59,'vaughan':65,'ajax':27,'pickering':32,'mississauga':82,'brampton':87,'oakville':92,'burlington':107,'milton':103,'hamilton':116,'guelph':128,'cambridge':140,'kitchener':150,'waterloo':152,'orangeville':110,'oshawa':14,'whitby':20,'bowmanville':2,'clarington':8,'newcastle':8,'cobourg':41,'port hope':31,'barrie':94,'collingwood':136,'owen sound':190},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 — year-round fishing south of CNR railway bridge. Check boundary markers.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Baseline Road Bridge — Parking Lot',loc:'Baseline Road · East of Highway 57',crowd:'high',desc:'Most popular access on the lower creek. Deep pools and shallow runs hold fish through fall and spring runs. Float fishing with centrepin or spinning setup. Drift roe bags, jigs, or worms as fish push upstream.'},
+      {name:'CNR Railway Bridge — South Side',loc:'South of CNR bridge · Lower creek',crowd:'med',desc:'Open year-round south of the railway bridge. Good pool structure. Salmon in fall, steelhead in spring. Less crowded than the Baseline Rd lot.'}
+    ]
+  },
+  'Middle Bowmanville Creek (Fish Ladder)': {
+    gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
+    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
+    lat:43.907, lng:-78.683,
+    loc:'Baseline Road to Goodyear / Vanstone Dam (Fish Ladder)',
+    driveTime:{'toronto':59,'north york':59,'scarborough':47,'etobicoke':72,'markham':51,'richmond hill':59,'vaughan':65,'ajax':27,'pickering':33,'mississauga':83,'brampton':88,'oakville':92,'burlington':108,'milton':103,'hamilton':117,'guelph':129,'cambridge':141,'kitchener':150,'waterloo':152,'orangeville':110,'oshawa':14,'whitby':20,'bowmanville':1,'clarington':7,'newcastle':8,'cobourg':41,'port hope':30,'barrie':94,'collingwood':135,'owen sound':190},
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    active:true,
+    regs:[{rule:'Fishing strictly prohibited at the fish ladder and dam — sanctuary signs posted. FMZ 16 applies.',icon:'🚫'}],
+    methods:['float','fly'],
+    access:[
+      {name:'Bowmanville Valley Trail Access',loc:'Bowmanville Valley Trail · Middle creek',crowd:'high',desc:'Fish concentrate in pools below the Goodyear Dam waiting to pass the fish ladder. Heavy pressure during peak fall runs. Respect sanctuary signs — wardens patrol regularly during salmon season.'},
+      {name:'Goodyear Dam Lower Pools',loc:'Below Vanstone / Goodyear Dam',crowd:'high',desc:'Fish stall before ascending the fish ladder. Productive for centrepin and fly fishing in the pools below. Do not fish within the sanctuary boundary marked with posted signs.'}
+    ]
+  },
+  'Upper Bowmanville Creek': {
+    gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
+    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    lat:43.930, lng:-78.680,
+    loc:'Above Goodyear Dam to Oak Ridges Moraine headwaters',
+    driveTime:{'toronto':60,'north york':60,'scarborough':48,'etobicoke':73,'markham':52,'richmond hill':59,'vaughan':65,'ajax':28,'pickering':33,'mississauga':84,'brampton':89,'oakville':94,'burlington':110,'milton':104,'hamilton':119,'guelph':130,'cambridge':142,'kitchener':151,'waterloo':153,'orangeville':110,'oshawa':15,'whitby':21,'bowmanville':2,'clarington':6,'newcastle':7,'cobourg':40,'port hope':30,'barrie':93,'collingwood':134,'owen sound':189},
+    species:['Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 — critical spawning habitat. Check for seasonal closures and C&R requirements above the dam.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Upper Creek — Road Allowance Crossings',loc:'Above Goodyear Dam · Various bridge crossings',crowd:'low',desc:'Narrow, shallow, cool water with resident Brown Trout. Fly fishing with dry flies and nymphs or light spinning with small spinners. Critical spawning habitat — handle fish carefully and check for closures.'},
+      {name:'Oak Ridges Moraine Headwaters',loc:'Upper watershed · Headwater tributaries',crowd:'low',desc:'Most pristine section of the Bowmanville system. Small stream fishing for resident Brown Trout. Minimal pressure, forested banks, spring-fed cool water. Road allowance access at bridge crossings.'}
+    ]
+  },
+  'Speed River — Upper (Above Guelph Lake)': {
+    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.640, lng:-80.220,
+    loc:'Wellington County rural reaches flowing into Guelph Lake reservoir',
+    driveTime:{'toronto':68,'north york':65,'scarborough':77,'etobicoke':56,'markham':73,'richmond hill':67,'vaughan':60,'ajax':97,'pickering':91,'mississauga':46,'brampton':36,'oakville':46,'burlington':47,'milton':30,'hamilton':50,'guelph':11,'cambridge':31,'kitchener':30,'waterloo':30,'orangeville':32,'oshawa':110,'whitby':104,'bowmanville':123,'clarington':131,'newcastle':131,'cobourg':164,'port hope':154,'barrie':91,'collingwood':93,'owen sound':115},
+    species:['Brook Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 — cold-water trout habitat. Check OMNR and GRCA regulations for Wellington County tributaries.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Wellington County Road Bridge Crossings',loc:'Upper Speed River · Wellington County rural',crowd:'low',desc:'Cool, spring-fed, clear water with quality brook and brown trout habitat. Fly fishing and light spinning tackle work best in these tight, rural stretches. Access via road allowances at bridge crossings throughout Wellington County. Smallmouth bass and white sucker also present in the slower sections.'},
+      {name:'Guelph Lake Reservoir Inflow',loc:'Upper Speed near Guelph Lake · GRCA managed',crowd:'low',desc:'The upper river as it approaches the Guelph Lake reservoir. GRCA managed conservation land provides some access. Cold tributary water holds resident trout before they enter the warmer reservoir. Best in spring and fall when temperatures are optimal.'}
+    ]
+  },
+  'Speed River — Middle (Guelph Lake to Downtown Guelph)': {
+    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.570, lng:-80.250,
+    loc:'Guelph Lake reservoir through Riverside Park to downtown Guelph',
+    driveTime:{'toronto':71,'north york':69,'scarborough':81,'etobicoke':58,'markham':78,'richmond hill':72,'vaughan':65,'ajax':101,'pickering':96,'mississauga':48,'brampton':40,'oakville':46,'burlington':44,'milton':29,'hamilton':45,'guelph':3,'cambridge':23,'kitchener':23,'waterloo':24,'orangeville':40,'oshawa':114,'whitby':108,'bowmanville':128,'clarington':135,'newcastle':136,'cobourg':169,'port hope':158,'barrie':99,'collingwood':101,'owen sound':121},
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  'Speed River — Lower (Guelph to Cambridge Confluence)': {
+    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.430, lng:-80.310,
+    loc:'Southern Guelph through Puslinch and Hespeler to Grand River confluence — Cambridge',
+    driveTime:{'toronto':79,'north york':79,'scarborough':91,'etobicoke':66,'markham':89,'richmond hill':84,'vaughan':77,'ajax':111,'pickering':106,'mississauga':55,'brampton':51,'oakville':49,'burlington':42,'milton':35,'hamilton':40,'guelph':13,'cambridge':7,'kitchener':15,'waterloo':17,'orangeville':56,'oshawa':124,'whitby':119,'bowmanville':137,'clarington':145,'newcastle':145,'cobourg':178,'port hope':167,'barrie':115,'collingwood':116,'owen sound':133},
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  'Eramosa River — Upper Headwaters (Above Rockwood)': {
+    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:8,
+    lat:43.615, lng:-80.148,
+    loc:'Above Rockwood to headwaters — cold water, road bridge access',
+    driveTime:{'toronto':63,'north york':60,'scarborough':72,'etobicoke':50,'markham':69,'richmond hill':63,'vaughan':56,'ajax':92,'pickering':86,'mississauga':40,'brampton':31,'oakville':40,'burlington':42,'milton':23,'hamilton':45,'guelph':11,'cambridge':30,'kitchener':32,'waterloo':34,'orangeville':33,'oshawa':105,'whitby':99,'bowmanville':119,'clarington':126,'newcastle':127,'cobourg':160,'port hope':149,'barrie':91,'collingwood':96,'owen sound':120},
+    species:['Brook Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 seasonal dates apply. Access from municipal road bridges only — most of this section flows through private land.',icon:'📋'}],
+    methods:['fly','spin'],
+    access:[
+      {name:'Municipal Road Bridge Crossings — Upper',loc:'Above Rockwood · Road allowances',crowd:'low',desc:'Wild brook and brown trout in cold, clear water. Wading from road allowances at bridge crossings is the only legitimate access through private land. Stealth required — tight quarters, clear water, spooky fish. Light tackle or dry fly fishing works best.'},
+      {name:'Headwaters Tributaries',loc:'Upper Eramosa watershed',crowd:'low',desc:'Most pristine section of the system. Native brook trout in spring-fed tributaries. Very limited access — road allowances only. Fish carefully and release everything.'}
+    ]
+  },
+  'Eramosa River — Mid-Section (Rockwood to Eden Mills)': {
+    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.595, lng:-80.195,
+    loc:'Rockwood Conservation Area to Eden Mills — limestone bluffs and glacial potholes',
+    driveTime:{'toronto':67,'north york':64,'scarborough':76,'etobicoke':54,'markham':73,'richmond hill':67,'vaughan':60,'ajax':96,'pickering':91,'mississauga':43,'brampton':36,'oakville':42,'burlington':43,'milton':26,'hamilton':45,'guelph':7,'cambridge':27,'kitchener':28,'waterloo':29,'orangeville':36,'oshawa':109,'whitby':103,'bowmanville':123,'clarington':130,'newcastle':131,'cobourg':164,'port hope':153,'barrie':95,'collingwood':98,'owen sound':120},
+    species:['Rainbow Trout','Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 16 seasonal dates apply. GRCA managed at Rockwood Conservation Area — day-use fee required.',icon:'📋'}],
+    methods:['spin','fly','float'],
+    access:[
+      {name:'Rockwood Conservation Area',loc:'Rockwood, ON · GRCA managed',crowd:'high',desc:'Famous for steep limestone bluffs, glacial potholes, and the Rockwood millpond. MNR stocks both rainbow and brown trout here annually — excellent spring fishing. Day-use fee applies. Also holds northern pike and smallmouth bass in slower water pockets.'},
+      {name:'Eden Mills — Lower Mid-Section',loc:'Eden Mills, ON · Village access',crowd:'med',desc:'Scenic village section with good pool structure. Stocked trout move through from Rockwood. Northern pike and smallmouth bass present in slower water. Accessible from village road allowances.'}
+    ]
+  },
+  'Eramosa River — Lower Stretches (Eden Mills to Guelph)': {
+    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
+    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    lat:43.565, lng:-80.225,
+    loc:'Eden Mills to Guelph — warm water bass and pike fishery',
+    driveTime:{'toronto':70,'north york':67,'scarborough':79,'etobicoke':56,'markham':76,'richmond hill':71,'vaughan':63,'ajax':99,'pickering':94,'mississauga':46,'brampton':39,'oakville':44,'burlington':42,'milton':27,'hamilton':44,'guelph':3,'cambridge':23,'kitchener':24,'waterloo':26,'orangeville':40,'oshawa':112,'whitby':107,'bowmanville':126,'clarington':134,'newcastle':134,'cobourg':167,'port hope':157,'barrie':99,'collingwood':101,'owen sound':122},
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  'Black Creek — Upper Reaches (Vaughan to North York)': {
+    gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
+    sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
+    lat:43.760, lng:-79.490,
+    loc:'North of Finch Avenue — Downsview, York University area, naturalized ravines',
+    driveTime:{'toronto':16,'north york':6,'scarborough':18,'etobicoke':15,'markham':16,'richmond hill':14,'vaughan':8,'ajax':38,'pickering':33,'mississauga':22,'brampton':23,'oakville':35,'burlington':53,'milton':40,'hamilton':62,'guelph':64,'cambridge':78,'kitchener':86,'waterloo':87,'orangeville':50,'oshawa':51,'whitby':45,'bowmanville':65,'clarington':72,'newcastle':73,'cobourg':106,'port hope':95,'barrie':70,'collingwood':98,'owen sound':143},
+    species:['Brown Trout'],
+    active:true,
+    regs:[{rule:'FMZ 17 — urban waterway, flashy conditions. Water levels can surge rapidly after rain — check conditions before visiting.',icon:'📋'}],
+    methods:['spin','fly'],
+    access:[
+      {name:'Black Creek Parkland — Upper',loc:'North York · Black Creek Parkland',crowd:'low',desc:'Naturalized ravines and wooded parklands with undercut stream banks and riffle-pool sequences. Brown trout present along with smallmouth bass, rock bass, and carp. A surprising urban fishery for those willing to explore. Best in early spring before water temperatures rise.'},
+      {name:'Downsview Park Area',loc:'Downsview · Near York University',crowd:'low',desc:'More naturalized upper section with some good structure. Brown trout are the primary draw for trout anglers. Access via parkland trails. Flashy conditions — avoid after heavy rain when the creek becomes chocolate-coloured and rises quickly.'}
+    ]
+  },
+  'Black Creek — Concrete Channel (Central North York)': {
+    gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
+    sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
+    lat:43.720, lng:-79.490,
+    loc:'Wilson Avenue to Eglinton Avenue — flood control concrete channel',
+    driveTime:{'toronto':13,'north york':8,'scarborough':19,'etobicoke':11,'markham':19,'richmond hill':18,'vaughan':13,'ajax':39,'pickering':34,'mississauga':19,'brampton':21,'oakville':31,'burlington':49,'milton':38,'hamilton':58,'guelph':62,'cambridge':75,'kitchener':84,'waterloo':86,'orangeville':52,'oshawa':52,'whitby':47,'bowmanville':66,'clarington':73,'newcastle':74,'cobourg':107,'port hope':96,'barrie':74,'collingwood':102,'owen sound':146},
+    species:[],
+    active:false,
+    regs:[],
+    methods:[],
+    access:[]
+  },
+  'Black Creek — Lower Watershed & Humber Confluence': {
+    gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
+    sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
+    lat:43.670, lng:-79.500,
+    loc:'South of Eglinton Avenue — Smythe Park to Humber River junction, Etobicoke',
+    driveTime:{'toronto':12,'north york':12,'scarborough':22,'etobicoke':5,'markham':24,'richmond hill':23,'vaughan':18,'ajax':42,'pickering':37,'mississauga':14,'brampton':20,'oakville':26,'burlington':44,'milton':34,'hamilton':53,'guelph':60,'cambridge':72,'kitchener':82,'waterloo':83,'orangeville':54,'oshawa':55,'whitby':50,'bowmanville':69,'clarington':76,'newcastle':77,'cobourg':109,'port hope':99,'barrie':79,'collingwood':106,'owen sound':149},
+    species:['Steelhead','Chinook Salmon'],
+    active:true,
+    regs:[{rule:'FMZ 17 — highly accessible urban fishery. Migratory fish push up from the Humber during spring and fall runs.',icon:'📋'}],
+    methods:['float','spin'],
+    access:[
+      {name:'Smythe Park',loc:'Smythe Park · Etobicoke near Eglinton',crowd:'med',desc:'Where the creek regains its natural banks with deep pools, overhanging vegetation, and natural structure. Migratory steelhead and Chinook push up from the Humber during spring and fall runs. Brown bullhead, pumpkinseed, panfish, and carp year-round. Highly accessible urban spot.'},
+      {name:'Humber Marshes — Black Creek Confluence',loc:'Humber Marshes · Black Creek meets Humber River',crowd:'med',desc:'The confluence of Black Creek and the main Humber River. Fish moving up the Humber system enter Black Creek here during migrations. Good pool and slack-water structure at the junction. Accessible from the Humber Valley trail system.'}
     ]
   },
 
@@ -3042,7 +3268,6 @@ var RIVER_CONFIG = {
     ]
   }
 };
-
 
 // ── REGULATIONS DATA (2026 Ontario Fishing Regulations) ─────────────────────
 var RIVER_REGS = {
@@ -3513,7 +3738,6 @@ function getRiverRegs(riverName) {
   return RIVER_REGS[name] || null;
 }
 
-
 // ── ACCESS POINT COORDINATES ─────────────────────────────────────────────────
 var ACCESS_COORDS = {
   "Grand River": [
@@ -3594,7 +3818,6 @@ var ACCESS_COORDS = {
   ]
 };
 
-
 // ── FLOW NOTES (extracted from config for syntax safety) ─────────────────────
 function getAccessFlowNote(riverName, spotIndex, flow) {
   if(flow == null) return "Check the gauge link below for current flow.";
@@ -3653,16 +3876,12 @@ function getAccessFlowNote(riverName, spotIndex, flow) {
   return riverNotes[Math.min(spotIndex, riverNotes.length-1)] || "Check current conditions.";
 }
 
-
 // ── GET CONFIG FOR SELECTED RIVER ─────────────────────────────────────────────
 function getRiverConfig(riverName) {
   if (!riverName) return RIVER_CONFIG["default"];
   var name = riverName.split(",")[0].trim();
   // Exact match only against known operational config keys (not RIVER_REGS)
-  var validKeys = ["Grand River","Credit River","Bronte Creek","Humber River",
-    "Nottawasaga River","Duffins Creek","Ganaraska River","Beaver River","Saugeen River",
-    "Sixteen Mile Creek","Rouge River","Wilmot Creek","Bowmanville Creek",
-    "Speed River","Eramosa River","Black Creek"];
+  var validKeys = ["Upper Credit River","Middle Credit River","Lower Credit River","Upper Grand River (Tailwater)","Middle Grand River","Lower Grand River","Lower Humber River","Lower-Mid Humber (Old Mill to Eglinton)","Upper Humber River (Headwaters)","Lower Beaver River (Thornbury)","Middle Beaver River (Clarksburg to Heathcote)","Beaver River Swamp (Heathcote to Kimberley)","Upper Beaver River (Kimberley)","Bronte Creek — Lower Estuary & Mouth","Bronte Creek — Mid-Section & Provincial Park","Bronte Creek — Upper Headwaters","Duffins Creek — Lower Section","Duffins Creek — Middle Section","Duffins Creek — Upper Reaches","Ganaraska River — Lower (Lake to CNR Bridge)","Ganaraska River — Port Hope Sanctuary","Ganaraska River — Corbetts Dam (Closed Year-Round)","Ganaraska River — Upper & Conservation Areas","Sixteen Mile Creek — Lower Reaches & Oakville Harbour","Sixteen Mile Creek — Middle Reaches & Main Valley","Sixteen Mile Creek — Upper West Branch (Trout)","Sixteen Mile Creek — Upper Middle/East Branches","Rouge River — Marsh & Mouth (Lake Ontario)","Rouge River — Mid-Section (Rouge National Urban Park)","Rouge River — Upper & Milne Dam (Markham)","Nottawasaga River — Headwaters (Niagara Escarpment)","Nottawasaga River — Middle Section (Alliston to Angus)","Nottawasaga River — Lower Section (Boyne to Wasaga Beach)","Saugeen River","Wilmot Creek — Mouth & Marsh (Lake Ontario)","Wilmot Creek — Lower River (to CN Rail Tracks)","Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)","Wilmot Creek — Upper Watershed & Orono Crown Lands","Bowmanville Creek","Speed River — Upper (Above Guelph Lake)","Speed River — Middle (Guelph Lake to Downtown Guelph)","Speed River — Lower (Guelph to Cambridge Confluence)","Eramosa River","Black Creek — Upper Reaches (Vaughan to North York)","Black Creek — Concrete Channel (Central North York)","Black Creek — Lower Watershed & Humber Confluence"];
   // Exact match
   if (validKeys.indexOf(name) !== -1 && RIVER_CONFIG[name] && RIVER_CONFIG[name].lat !== undefined) {
     return RIVER_CONFIG[name];
@@ -3709,7 +3928,7 @@ function renderRiverUI(cfg) {
         '<a href="'+_rLinks[d]+'" target="_blank" rel="noopener" style="color:var(--fern)">'+d+'</a>');
     }); return t;
   }
-  steps.innerHTML = cfg.routine.map(function(s, i) {
+  steps.innerHTML = (cfg.routine||[]).map(function(s, i) {
     return '<div class="rs"><div class="rn">' + (i+1) + '</div>' +
            '<div><div class="rt">' + s.t + '</div><div class="rd">' + _linkify(s.d) + '</div></div></div>';
   }).join("");
@@ -3734,7 +3953,7 @@ function renderRiverUI(cfg) {
   }
   // Build access cards
   grid.innerHTML = _accessSorted.map(function(a, idx) {
-    var tags = a.tags.map(function(t) { return '<span class="atag">' + t + '</span>'; }).join("");
+    var tags = (a.tags||[]).map(function(t) { return '<span class="atag">' + t + '</span>'; }).join("");
 
     // Filter regs to selected species only
     var regsHtml = "";
@@ -3809,7 +4028,7 @@ function renderRiverUI(cfg) {
       return '<div class="ac acard-recommended" data-spot-idx="' + idx + '">' +
         recBadge +
         '<div class="act"><div class="aname">' + a.name + '</div>' +
-        '<div class="acrowd ' + a.crowd + '">' + a.crowdLabel + '</div></div>' +
+        '<div class="acrowd ' + a.crowd + '">' + (a.crowdLabel && a.crowdLabel !== 'Varies' ? a.crowdLabel : a.crowd === 'low' ? 'Low pressure' : a.crowd === 'med' ? 'Med. pressure' : a.crowd === 'high' ? 'High pressure' : (a.crowd || '')) + '</div></div>' +
         '<div class="aloc">' + a.loc + '</div>' +
         detailHtml +
       '</div>';
@@ -3821,7 +4040,7 @@ function renderRiverUI(cfg) {
             '<div class="aloc">' + a.loc + '</div>' +
           '</div>' +
           '<div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0">' +
-            '<div class="acrowd ' + a.crowd + '">' + a.crowdLabel + '</div>' +
+            '<div class="acrowd ' + a.crowd + '">' + (a.crowdLabel && a.crowdLabel !== 'Varies' ? a.crowdLabel : a.crowd === 'low' ? 'Low pressure' : a.crowd === 'med' ? 'Med. pressure' : a.crowd === 'high' ? 'High pressure' : (a.crowd || '')) + '</div>' +
             '<span class="ac-chevron">'+ '\u25b8' +'</span>' +
           '</div>' +
         '</div>' +
@@ -3854,7 +4073,7 @@ function renderRiverUI(cfg) {
     document.getElementById("dam-lbl").textContent = cfg.dam.label;
     document.getElementById("dam-title").textContent = cfg.dam.title;
     document.getElementById("dam-desc").textContent = cfg.dam.desc;
-    document.getElementById("dam-links").innerHTML = cfg.dam.links.map(function(l) {
+    document.getElementById("dam-links").innerHTML = (cfg.dam&&cfg.dam.links||[]).map(function(l) {
       return '<a class="dl" href="' + l.url + '" target="_blank">' + l.text + '</a>';
     }).join("");
   }
@@ -3871,23 +4090,59 @@ function updateAccessFlowNotes(cfg, flow) {
 
 // ── LOCATION / RIVER SELECTION (from landing page) ────────────────────────────
 var RIVERS_DB = [
-  { name:"Credit River",    loc:"Belfountain\u2013Cataract", times:{toronto:35,mississauga:25,brampton:20,milton:30,oakville:30,burlington:40,hamilton:50,guelph:45} },
-  { name:"Bronte Creek",    loc:"Lowville\u2013Waterdown",   times:{toronto:45,mississauga:35,brampton:35,milton:25,oakville:20,burlington:25,hamilton:40,guelph:50} },
-  { name:"Grand River",     loc:"Fergus\u2013Elora",         times:{toronto:90,mississauga:80,brampton:65,milton:50,oakville:80,burlington:70,hamilton:60,guelph:30,cambridge:25,kitchener:20,waterloo:25,orangeville:55} },
-  { name:"Humber River",    loc:"Bolton\u2013Caledon",       times:{toronto:40,mississauga:45,brampton:25,milton:45,oakville:50,vaughan:30,richmondhill:40} },
-  { name:"Sixteen Mile Creek",loc:"Oakville\u2013Milton",    times:{toronto:40,mississauga:30,brampton:30,milton:20,oakville:10,burlington:20} },
-  { name:"Nottawasaga River",loc:"Alliston\u2013Angus",      times:{toronto:80,mississauga:85,brampton:70,milton:80,barrie:30,orangeville:40,guelph:70} },
-  { name:"Beaver River",    loc:"Thornbury\u2013Kimberley",  times:{toronto:120,mississauga:125,brampton:110,milton:115,barrie:60,collingwood:25,orangeville:80} },
-  { name:"Saugeen River",   loc:"Durham\u2013Walkerton",     times:{toronto:165,mississauga:160,brampton:150,milton:155,guelph:130,orangeville:120,owensound:70} },
-  { name:"Duffins Creek",   loc:"Ajax\u2013Pickering",       times:{toronto:35,scarborough:20,markham:25,ajax:10,pickering:15,oshawa:30,whitby:25,richmondhill:35} },
-  { name:"Rouge River",     loc:"Markham\u2013Scarborough",  times:{toronto:25,scarborough:15,markham:10,pickering:20,richmondhill:30,ajax:25} },
-  { name:"Ganaraska River", loc:"Port Hope",                  times:{toronto:100,scarborough:85,oshawa:55,ajax:70,cobourg:20,porthope:5} },
-  { name:"Wilmot Creek",    loc:"Newcastle",                  times:{toronto:90,scarborough:75,oshawa:35,ajax:55,whitby:45,newcastle:5} },
-  { name:"Bowmanville Creek",loc:"Bowmanville",               times:{toronto:95,scarborough:80,oshawa:40,ajax:60,bowmanville:5,clarington:10} },
-  { name:"Speed River",     loc:"Guelph",                     times:{toronto:90,mississauga:80,brampton:65,milton:50,guelph:5,cambridge:30,kitchener:25} },
-  { name:"Eramosa River",   loc:"Rockwood\u2013Guelph",      times:{toronto:95,mississauga:85,brampton:70,milton:55,guelph:10,cambridge:35} },
-  { name:"Black Creek",     loc:"Barrie Area",                times:{toronto:100,barrie:15,collingwood:50,innisfil:25} }
-];
+    { name:"Ganaraska River — Lower (Lake to CNR Bridge)", gauge:"02HD012", sweetMin:2, sweetMax:12, lat:43.940, lng:-78.305 },
+    { name:"Ganaraska River — Port Hope Sanctuary",        gauge:"02HD012", sweetMin:2, sweetMax:12, lat:43.945, lng:-78.300 },
+    { name:"Ganaraska River — Corbetts Dam (Closed Year-Round)", gauge:"02HD012", sweetMin:2, sweetMax:12, lat:43.950, lng:-78.298 },
+    { name:"Ganaraska River — Upper & Conservation Areas", gauge:"02HD012", sweetMin:1, sweetMax:8,  lat:43.980, lng:-78.290 },
+    { name:"Duffins Creek — Lower Section",  gauge:"02HC022", sweetMin:2,   sweetMax:10, lat:43.843, lng:-79.065 },
+    { name:"Duffins Creek — Middle Section", gauge:"02HC022", sweetMin:2,   sweetMax:10, lat:43.870, lng:-79.058 },
+    { name:"Duffins Creek — Upper Reaches",  gauge:"02HC022", sweetMin:0.5, sweetMax:4,  lat:43.940, lng:-79.040 },
+    { name:"Bronte Creek — Lower Estuary & Mouth",           gauge:"02HB022", sweetMin:2,   sweetMax:10, lat:43.434, lng:-79.716 },
+    { name:"Bronte Creek — Mid-Section & Provincial Park",   gauge:"02HB022", sweetMin:2,   sweetMax:10, lat:43.465, lng:-79.735 },
+    { name:"Bronte Creek — Upper Headwaters",                gauge:"02HB022", sweetMin:0.5, sweetMax:4,  lat:43.530, lng:-79.800 },
+    { name:"Bowmanville Creek — River Mouth & Piers", gauge:"02HD006", sweetMin:1,   sweetMax:8,  lat:43.893, lng:-78.685 },
+    { name:"Lower Bowmanville Creek",                 gauge:"02HD006", sweetMin:1,   sweetMax:8,  lat:43.900, lng:-78.685 },
+    { name:"Middle Bowmanville Creek (Fish Ladder)",  gauge:"02HD006", sweetMin:1,   sweetMax:6,  lat:43.907, lng:-78.683 },
+    { name:"Upper Bowmanville Creek",                 gauge:"02HD006", sweetMin:0.5, sweetMax:4,  lat:43.930, lng:-78.680 },
+    { name:"Upper Credit River",       gauge:"02HB001", sweetMin:5,  sweetMax:15, lat:43.870, lng:-80.010 },
+    { name:"Middle Credit River",      gauge:"02HB001", sweetMin:5,  sweetMax:20, lat:43.660, lng:-79.880 },
+    { name:"Lower Credit River",       gauge:"02HB001", sweetMin:5,  sweetMax:30, lat:43.560, lng:-79.720 },
+    { name:"Upper Grand River (Tailwater)", gauge:"02GA016", sweetMin:8, sweetMax:12, lat:43.700, lng:-80.280 },
+    { name:"Middle Grand River",       gauge:"02GA016", sweetMin:8,  sweetMax:15, lat:43.420, lng:-80.320 },
+    { name:"Lower Grand River",        gauge:"02GA016", sweetMin:10, sweetMax:30, lat:43.000, lng:-79.900 },
+    { name:"Lower Humber River",       gauge:"02HC025", sweetMin:3,  sweetMax:12, lat:43.640, lng:-79.480 },
+    { name:"Lower-Mid Humber (Old Mill to Eglinton)", gauge:"02HC025", sweetMin:3, sweetMax:12, lat:43.670, lng:-79.490 },
+    { name:"Upper Humber River (Headwaters)", gauge:"02HC025", sweetMin:2, sweetMax:8, lat:43.870, lng:-79.730 },
+    { name:"Lower Beaver River (Thornbury)", gauge:"02FB009", sweetMin:2, sweetMax:10, lat:44.563, lng:-80.457 },
+    { name:"Middle Beaver River (Clarksburg to Heathcote)", gauge:"02FB009", sweetMin:2, sweetMax:10, lat:44.520, lng:-80.430 },
+    { name:"Upper Beaver River (Kimberley)", gauge:"02FB009", sweetMin:1, sweetMax:6, lat:44.490, lng:-80.400 },
+  { name:"Sixteen Mile Creek — Lower Reaches & Oakville Harbour", gauge:"02HB005", sweetMin:1,   sweetMax:6, lat:43.440, lng:-79.672 },
+    { name:"Sixteen Mile Creek — Middle Reaches & Main Valley",      gauge:"02HB005", sweetMin:1,   sweetMax:6, lat:43.470, lng:-79.685 },
+    { name:"Sixteen Mile Creek — Upper West Branch (Trout)",         gauge:"02HB005", sweetMin:0.5, sweetMax:3, lat:43.530, lng:-79.750 },
+    { name:"Sixteen Mile Creek — Upper Middle/East Branches",        gauge:"02HB005", sweetMin:0.5, sweetMax:3, lat:43.545, lng:-79.790 },
+  { name:"Nottawasaga River — Headwaters (Niagara Escarpment)", gauge:"02ED101", sweetMin:5, sweetMax:20, lat:44.130, lng:-79.950 },
+    { name:"Nottawasaga River — Middle Section (Alliston to Angus)",        gauge:"02ED101", sweetMin:5, sweetMax:20, lat:44.150, lng:-79.900 },
+    { name:"Nottawasaga River — Lower Section (Boyne to Wasaga Beach)",     gauge:"02ED101", sweetMin:8, sweetMax:30, lat:44.300, lng:-79.980 },
+  { name:"Saugeen River — Headwaters & Upper Tributaries",            gauge:"02FC016", sweetMin:8,  sweetMax:25, lat:44.100, lng:-80.750 },
+    { name:"Saugeen River — Middle Main Stem (Hanover to Paisley)",    gauge:"02FC016", sweetMin:8,  sweetMax:25, lat:44.220, lng:-81.000 },
+    { name:"Saugeen River — Lower Main Stem (Paisley to Southampton)", gauge:"02FC016", sweetMin:10, sweetMax:40, lat:44.400, lng:-81.200 },
+  { name:"Rouge River — Marsh & Mouth (Lake Ontario)",              gauge:"02HC022", sweetMin:1,   sweetMax:6, lat:43.803, lng:-79.134 },
+    { name:"Rouge River — Mid-Section (Rouge National Urban Park)",  gauge:"02HC022", sweetMin:1,   sweetMax:6, lat:43.835, lng:-79.142 },
+    { name:"Rouge River — Upper & Milne Dam (Markham)",              gauge:"02HC022", sweetMin:0.5, sweetMax:4, lat:43.880, lng:-79.250 },
+  { name:"Wilmot Creek — Mouth & Marsh (Lake Ontario)",          gauge:"02HD009", sweetMin:1,   sweetMax:5, lat:43.890, lng:-78.594 },
+    { name:"Wilmot Creek — Lower River (to CN Rail Tracks)",        gauge:"02HD009", sweetMin:1,   sweetMax:5, lat:43.900, lng:-78.592 },
+    { name:"Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)",     gauge:"02HD009", sweetMin:1,   sweetMax:4, lat:43.915, lng:-78.585 },
+    { name:"Wilmot Creek — Upper Watershed & Orono Crown Lands",   gauge:"02HD009", sweetMin:0.5, sweetMax:3, lat:43.960, lng:-78.575 },
+  { name:"Speed River — Upper (Above Guelph Lake)",              gauge:"02GA029", sweetMin:1, sweetMax:5, lat:43.640, lng:-80.220 },
+    { name:"Speed River — Middle (Guelph Lake to Downtown Guelph)", gauge:"02GA029", sweetMin:1, sweetMax:5, lat:43.570, lng:-80.250 },
+    { name:"Speed River — Lower (Guelph to Cambridge Confluence)",  gauge:"02GA029", sweetMin:1, sweetMax:5, lat:43.430, lng:-80.310 },
+  { name:"Eramosa River — Upper Headwaters (Above Rockwood)",      gauge:"02GA029", sweetMin:1, sweetMax:5, lat:43.615, lng:-80.148 },
+    { name:"Eramosa River — Mid-Section (Rockwood to Eden Mills)",   gauge:"02GA029", sweetMin:1, sweetMax:5, lat:43.595, lng:-80.195 },
+    { name:"Eramosa River — Lower Stretches (Eden Mills to Guelph)", gauge:"02GA029", sweetMin:1, sweetMax:5, lat:43.565, lng:-80.225 },
+  { name:"Black Creek — Upper Reaches (Vaughan to North York)", gauge:"02HC025", sweetMin:1, sweetMax:6, lat:43.760, lng:-79.490 },
+    { name:"Black Creek — Concrete Channel (Central North York)",  gauge:"02HC025", sweetMin:1, sweetMax:6, lat:43.720, lng:-79.490 },
+    { name:"Black Creek — Lower Watershed & Humber Confluence",    gauge:"02HC025", sweetMin:1, sweetMax:6, lat:43.670, lng:-79.500 }
+  ];
 
 var LOC_MAP = {
   "toronto":"toronto","northyork":"toronto","etobicoke":"toronto",
@@ -3930,8 +4185,18 @@ function resolveLocation(input) {
 function getRivers(locKey, maxMinutes) {
   var max = maxMinutes || 180;
   return RIVERS_DB
-    .filter(function(r){ return r.times[locKey] !== undefined && r.times[locKey] <= max; })
-    .sort(function(a,b){ return a.times[locKey] - b.times[locKey]; })
+    .filter(function(r){
+      var cfg = RIVER_CONFIG[r.name];
+      if (cfg && cfg.active === false) return false;
+      var t = (r.times && r.times[locKey]) || (cfg && cfg.driveTime && cfg.driveTime[locKey]);
+      return t !== undefined && t <= max;
+    })
+    .sort(function(a,b){
+    var cfgA = RIVER_CONFIG[a.name], cfgB = RIVER_CONFIG[b.name];
+    var tA = (a.times && a.times[locKey]) || (cfgA && cfgA.driveTime && cfgA.driveTime[locKey]) || 999;
+    var tB = (b.times && b.times[locKey]) || (cfgB && cfgB.driveTime && cfgB.driveTime[locKey]) || 999;
+    return tA - tB;
+  })
     .slice(0, 6);
 }
 
@@ -3986,9 +4251,9 @@ function updateRivers(val) {
   lbl.textContent="Rivers near "+titleCase(val.trim());
 
   chips.innerHTML=rivers.map(function(r,i){
-    var drive=fmtDrive(r.times[loc]);
+    var _cfg_r=RIVER_CONFIG[r.name]; var drive=fmtDrive((r.times&&r.times[loc])||(_cfg_r&&_cfg_r.driveTime&&_cfg_r.driveTime[loc])||60);
     var active=i===0?" active":"";
-    var safeLoc=r.loc.replace(/–/g,"-");
+    var safeLoc=(r.loc||"").replace(/–/g,"-");
     return '<div class="river-chip'+active+'" data-rname="'+r.name+'" data-rloc="'+safeLoc+'">' +
       '<div class="rc-time">'+drive+'</div>' +
       '<div class="rc-name">'+r.name+'</div>' +
@@ -4001,7 +4266,7 @@ function updateRivers(val) {
     });
   });
 
-  selectedRiver=rivers[0].name+", "+rivers[0].loc.replace(/\u2013/g,"-");
+  selectedRiver=rivers[0].name+(rivers[0].loc?", "+rivers[0].loc.replace(/\u2013/g,"-"):"");
   document.getElementById("res-river").textContent=selectedRiver;
   sec.style.display="block";
 }
@@ -4017,6 +4282,12 @@ function toggleTech(el){el.classList.toggle("active");}
 function clearTech(){document.querySelectorAll(".tech-chip").forEach(function(c){c.classList.remove("active");});}
 
 function goToResults(){
+  // Track search
+  (function(){
+    var _loc = (document.getElementById('loc-input-field')||{}).value || 'unknown';
+    var _spp = Array.from(document.querySelectorAll('.species-btn.active')).map(function(b){ return b.getAttribute('data-label'); }).filter(Boolean).join(',') || 'any';
+    track('Search', { location: _loc, species: _spp });
+  })();
   // Resolve location — needed in both beginner and expert mode
   var locInp = document.getElementById('loc-input-field');
   var locKey = resolveLocation(locInp ? locInp.value : '');
@@ -4059,7 +4330,7 @@ function goToResults(){
   if(appMode === 'beginner') { // always re-rank in beginner mode to respect species selection
       var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
     var rivers = getRivers(locKey, _maxMin);
-    rivers.forEach(function(r){ r.driveTime = r.times[locKey]||60; });
+    rivers.forEach(function(r){ var _cfg=RIVER_CONFIG[r.name]; r.driveTime=(r.times&&r.times[locKey])||(_cfg&&_cfg.driveTime&&_cfg.driveTime[locKey])||60; });
     var _tripDate = document.getElementById('trip-date').value||new Date().toISOString().slice(0,10);
     var ranked = rankRivers(rivers, selectedSpecies, _tripDate);
     // If species selected, prefer a river that actually has it over the closest one
@@ -4075,7 +4346,7 @@ function goToResults(){
       if (withSpecies.length > 0) bestPick = withSpecies[0];
     }
     if (bestPick) {
-      selectedRiver = bestPick.name + ', ' + bestPick.loc.replace(/–/g,'-');
+      selectedRiver = bestPick.name + (bestPick.loc ? ', ' + bestPick.loc.replace(/–/g,'-') : '');
       document.getElementById('res-river').textContent = selectedRiver;
       window._beginnerLocKey = locKey;
     }
@@ -4093,6 +4364,11 @@ function goToResults(){
   document.getElementById("results").style.display="block";
   window.scrollTo(0,0);
   initNotifyBar();
+  // Track river page view
+  (function(){
+    var _rv = selectedRiver ? selectedRiver.split(",")[0].trim() : "unknown";
+    track("River Viewed", { river: _rv });
+  })();
   // Push history state so browser back button returns to dashboard
   history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
   renderResults();
@@ -4100,6 +4376,7 @@ function goToResults(){
 }
 
 function goBack(){
+  track('Back to Search', {});
   document.getElementById("results").style.display="none";
   var _bar = document.getElementById("notify-bar"); if (_bar) { _bar.classList.remove("visible"); }
   document.getElementById("landing").style.display="block";
@@ -4334,8 +4611,6 @@ async function fetchFlow(gaugeId) {
     return null;
   }
 }
-
-
 
 // ── METHODS ───────────────────────────────────────────────────────────────────
 function updateMethods(fc,tc,sc,flow,wt){
@@ -4668,7 +4943,6 @@ async function renderResults(){
   // Species display
   document.getElementById("species-display").textContent = selectedSpeciesLabel;
 
-
   // ── SPECIES SEASONAL CHECK ───────────────────────────────────────────────
   // Get current seasonal status for the selected species on this river
   var _sm2={"brown":"Brown Trout","rainbow":"Rainbow Trout","brook":"Brook Trout","chinook":"Chinook Salmon","coho":"Coho Salmon"};
@@ -4687,7 +4961,6 @@ async function renderResults(){
       if(targetNames.length===1)targetName=n;
     }
   });
-
 
   // Species season badge in header
   var badge = document.getElementById("species-season-badge");
@@ -5047,8 +5320,6 @@ function updateMapPin(spotIdx) {
   }
 }
 
-
-
 // ── SPECIES RAIL ─────────────────────────────────────────────────────────────
 // ── SEASONAL DATA ─────────────────────────────────────────────────────────────
 // Months are 0-indexed (0=Jan, 11=Dec). Each entry:
@@ -5298,8 +5569,6 @@ function renderSpeciesRail(cfg) {
   }).join("");
 }
 
-
-
 // ── MODE TOGGLE ───────────────────────────────────────────────────────────────
 function setMode(mode) {
   appMode = mode;
@@ -5477,6 +5746,18 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Headline
   var riverShort = selectedRiver ? selectedRiver.split(',')[0] : 'this river';
   var spotName = bestSpot ? bestSpot.name.split('\u2014')[0].trim() : riverShort;
+  // Prepend parent river name to spotName if the access point name doesn't already include it
+  (function() {
+    var _riverFull = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _parentRiver = _riverFull.indexOf(' — ') !== -1
+      ? _riverFull.split(' — ')[0].trim()
+      : _riverFull;
+    // Only prepend if spotName doesn't already mention the parent river
+    if (_parentRiver && spotName &&
+        spotName.toLowerCase().indexOf(_parentRiver.toLowerCase().split(' ')[0]) === -1) {
+      spotName = _parentRiver + ' — ' + spotName;
+    }
+  })();
   var headlineSpecies = targetName || 'Trout';
 
   // Build method phrase (must come before headline)
@@ -5556,7 +5837,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   }
   var _driveEl = document.getElementById('tp-drive-time');
   if (_driveEl && _topRiver && _topRiver.driveTime) {
-    var _dt = _topRiver.driveTime;
+    var _dt = _topRiver.driveTime || (RIVER_CONFIG[_topRiver.name] && RIVER_CONFIG[_topRiver.name].driveTime && RIVER_CONFIG[_topRiver.name].driveTime[window._beginnerLocKey || '']) || null;
     var _dtStr = _dt < 60 ? _dt + ' min' : (_dt === 60 ? '1 hr' : Math.floor(_dt/60) + ' hr ' + (_dt%60 ? _dt%60 + ' min' : ''));
     var _lk = window._beginnerLocKey || '';
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
@@ -5632,10 +5913,22 @@ function renderRiverRanker(locKey, maxMinutes) {
 
   // Attach drive times
   rivers.forEach(function(r) {
-    r.driveTime = r.times[locKey] || 60;
+    var _cfg2=RIVER_CONFIG[r.name]; r.driveTime=(r.times&&r.times[locKey])||(_cfg2&&_cfg2.driveTime&&_cfg2.driveTime[locKey])||60;
   });
 
   nearbyRivers = rivers;
+
+  // Track nearby river clicks
+  (function(){
+    var _g = document.getElementById('rrank-grid');
+    if (_g && !_g._trackWired) {
+      _g._trackWired = true;
+      _g.addEventListener('click', function(e) {
+        var _item = e.target.closest('[data-river-name]');
+        if (_item) track('Nearby River Clicked', { river: _item.getAttribute('data-river-name') || 'unknown' });
+      });
+    }
+  })();
 
   var dateStr = document.getElementById('trip-date').value || new Date().toISOString().slice(0,10);
   var ranked = rankRivers(rivers, selectedSpecies, dateStr);
@@ -5649,7 +5942,7 @@ function renderRiverRanker(locKey, maxMinutes) {
     var notesHtml  = r.notes.map(function(n){ return '<span style="color:var(--sage);font-size:.68rem">'+n+'</span>'; }).join(' \u00b7 ');
     var warnHtml   = r.warnings.slice(0,1).map(function(w){ return '<span style="color:#c07040;font-size:.65rem">\u26a0\ufe0f '+w+'</span>'; }).join('');
 
-    return '<div class="rrank-card'+(isTop?' rr-top':'')+ '" data-river-name="'+r.name+'" data-river-loc="'+r.loc.replace(/\u2013/g,'-')+'">' +
+    return '<div class="rrank-card'+(isTop?' rr-top':'')+ '" data-river-name="'+r.name+'" data-river-loc="'+(r.loc||'').replace(/\u2013/g,'-')+'">' +
       '<div class="rrank-num">'+(i+1)+(isTop?' \u2014 Top Pick':'')+'</div>' +
       '<div class="rrank-name">'+r.name+'</div>' +
       '<div class="rrank-drive">'+fmtDrive(r.driveTime)+' away</div>' +
@@ -5674,7 +5967,6 @@ function renderRiverRanker(locKey, maxMinutes) {
 
   section.style.display = 'block';
 }
-
 
 // ── REGULATIONS FILTER & SUMMARISER ─────────────────────────────────────────
 // Returns a single plain-English sentence (or null) summarising ACTIVE
@@ -5878,7 +6170,6 @@ function filterAndSummariseRegs(regs, tripDateStr, selectedSpeciesArr) {
   return parts.join(" ");
 }
 
-
 // ── SPECIES RECOMMENDATION (when none selected) ──────────────────────────────
 function recommendSpecies(cfg) {
   // Score each species on the river and return ranked list with reasons
@@ -5930,8 +6221,6 @@ function recommendSpecies(cfg) {
 
   return scored.sort(function(a, b){ return b.score - a.score; });
 }
-
-
 
 var BAIT_IMAGES = {
   'Hare\'s Ear Nymph': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNDAiIGZpbGw9IiNmNWYwZTgiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjE2IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzRhN2E1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zdHlsZT0iaXRhbGljIj5IYXJlJiMzOTtzIEVhciBOeW1waDwvdGV4dD4KICA8IS0tIEhvb2sgLS0+CiAgPHBhdGggZD0iTSAxNTUgNzAgUSAxNjUgNzAgMTY1IDgwIFEgMTY1IDk1IDE1MCA5NSBRIDE0MCA5NSAxMzggODgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhhN2E2MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8IS0tIEJlYWQgaGVhZCAtLT4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSI2OCIgcj0iOSIgZmlsbD0iI2M4OTYzYSIgc3Ryb2tlPSIjYTA3MDMwIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSI2NSIgcj0iMyIgZmlsbD0iI2U4Yjg2MCIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSBCb2R5IC0tPgogIDxlbGxpcHNlIGN4PSIxMDciIGN5PSI3NCIgcng9IjIyIiByeT0iOSIgZmlsbD0iI2I4YTg4MiIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuOCIvPgogIDwhLS0gUmliYmluZyAtLT4KICA8bGluZSB4MT0iOTUiIHkxPSI2NiIgeDI9IjkyIiB5Mj0iODIiIHN0cm9rZT0iI2M4OTYzYSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjciLz4KICA8bGluZSB4MT0iMTAzIiB5MT0iNjUiIHgyPSIxMDAiIHkyPSI4MyIgc3Ryb2tlPSIjYzg5NjNhIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNyIvPgogIDxsaW5lIHgxPSIxMTEiIHkxPSI2NSIgeDI9IjEwOSIgeTI9IjgzIiBzdHJva2U9IiNjODk2M2EiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC43Ii8+CiAgPGxpbmUgeDE9IjExOSIgeTE9IjY2IiB4Mj0iMTE4IiB5Mj0iODMiIHN0cm9rZT0iI2M4OTYzYSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjciLz4KICA8IS0tIFRob3JheCAtIHNoYWdnaWVyIC0tPgogIDxlbGxpcHNlIGN4PSIxMzIiIGN5PSI3MyIgcng9IjEwIiByeT0iMTAiIGZpbGw9IiM4YTdhNWEiIHN0cm9rZT0iIzZhNWEzYSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIEhhcmUgZHViYmluZyBmaWJlcnMgLS0+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjYzIiB4Mj0iMTIyIiB5Mj0iNTgiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTMzIiB5MT0iNjIiIHgyPSIxMzAiIHkyPSI1NiIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDxsaW5lIHgxPSIxMzgiIHkxPSI2MyIgeDI9IjEzOCIgeTI9IjU3IiBzdHJva2U9IiM5YThhNmEiIHN0cm9rZS13aWR0aD0iMC43Ii8+CiAgPGxpbmUgeDE9IjEyOCIgeTE9IjgzIiB4Mj0iMTIyIiB5Mj0iOTAiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjciLz4KICA8bGluZSB4MT0iMTMzIiB5MT0iODQiIHgyPSIxMzAiIHkyPSI5MSIgc3Ryb2tlPSIjOWE4YTZhIiBzdHJva2Utd2lkdGg9IjAuNyIvPgogIDwhLS0gVGFpbCAtLT4KICA8bGluZSB4MT0iODQiIHkxPSI3MyIgeDI9IjcwIiB5Mj0iNjgiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODQiIHkxPSI3NSIgeDI9IjY4IiB5Mj0iNzMiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8bGluZSB4MT0iODQiIHkxPSI3NyIgeDI9IjcwIiB5Mj0iODAiIHN0cm9rZT0iIzlhOGE2YSIgc3Ryb2tlLXdpZHRoPSIwLjgiLz4KICA8IS0tIFNpemUgdGV4dCAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjEyOCIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiBmaWxsPSIjNmE1YTNhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jMTImIzgyMTE7MTYgIMK3ICBHb2xkIGJlYWQgIMK3ICBOYXR1cmFsPC90ZXh0Pgo8L3N2Zz4=',
@@ -5990,7 +6279,6 @@ function autoSelectBaitTab() {
   if (btn) showTab(tab, btn);
 }
 
-
 // ── LOAD BAIT IMAGES ─────────────────────────────────────────────────────────
 function loadBaitImages() {
   document.querySelectorAll('.bi[data-bait-name]').forEach(function(el) {
@@ -6004,7 +6292,6 @@ function loadBaitImages() {
     });
   });
 }
-
 
 // ── GEAR SETUP RECOMMENDATIONS ────────────────────────────────────────────────
 function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
@@ -6094,7 +6381,6 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   if (tgGear) tgGear.style.display = 'block';
 }
 
-
 // ── ACCORDION TOGGLE ──────────────────────────────────────────────────────────
 function toggleTG(id) {
   var item  = document.getElementById(id);
@@ -6122,7 +6408,6 @@ function toggleTG(id) {
     if (hdr2) hdr2.setAttribute('aria-expanded', 'true');
   }
 }
-
 
 // ── BAIT TAB MAPPING ─────────────────────────────────────────────────────────
 // Returns the best bait tab for a given method name
@@ -6197,7 +6482,6 @@ function populateMethodBaits(methodName, btabsId, bpanelsId) {
   });
 }
 
-
 function toggleRranker() {
   var inner = document.getElementById('rrank-inner');
   var btn   = document.getElementById('rrank-toggle-btn');
@@ -6224,7 +6508,6 @@ function toggleAcard(summaryEl) {
     if (!isNaN(spotIdx) && spotIdx >= 0) updateMapPin(spotIdx);
   }
 }
-
 
 // ── STOCKING SECTION ──────────────────────────────────────────────────────────
 function renderStockingSection(riverName) {
@@ -6267,20 +6550,6 @@ function renderStockingSection(riverName) {
   grid.innerHTML = html;
   sec.style.display = 'block';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ── LURE PANEL ADAPTER ────────────────────────────────────────────────────────
 // Re-ranks lure bait cards based on selected species and conditions
@@ -6341,16 +6610,6 @@ function adaptLurePanel(species, conditions) {
   });
 }
 
-
-
-
-
-
-
-
-
-
-
 // ── CONFIDENCE SCORE ──────────────────────────────────────────────────────────
 
 // ── LIVE CONDITIONS SCORING ───────────────────────────────────────────────────
@@ -6395,7 +6654,6 @@ async function fetchLandingWeather(lat, lng) {
   } catch(e) { return null; }
 }
 
-
 // ── BAIT SHOW MORE ────────────────────────────────────────────────────────────
 function applyBaitShowMore(panel, showCount) {
   var grid = panel.querySelector('.bgrid');
@@ -6425,7 +6683,6 @@ function applyBaitShowMore(panel, showCount) {
   });
   panel.appendChild(btn);
 }
-
 
 // ── SPECIES GRID — collapse out-of-season species ────────────────────────────
 function updateSpeciesGrid() {
@@ -6485,7 +6742,6 @@ function rrankBadge(score) {
   return '<span class="rrank-badge conf-badge ' + c.cls + '">' + c.label + '</span>';
 }
 
-
 // ── DEFAULT RIVER PREVIEW (landing page, no city selected) ───────────────────
 function renderDefaultPreview() {
   var el = document.getElementById('default-preview');
@@ -6509,7 +6765,7 @@ function renderDefaultPreview() {
 
     var score = bestQ === 'peak' ? 10 : bestQ === 'good' ? 6 : bestQ === 'slow' ? 2 : 0;
     var conf  = scoreToConfidence(score);
-    var drive = dbEntry.times['toronto'] || 60;
+    var drive = (dbEntry.times && dbEntry.times['toronto']) || (cfg && cfg.driveTime && cfg.driveTime['toronto']) || 60;
     var driveStr = drive < 60 ? drive + ' min' : (drive === 60 ? '1 hr' : Math.floor(drive/60) + ' hr ' + (drive%60||''));
     var speciesLabel = bestSp ? bestSp.replace(' Trout','').replace(' Salmon','') : (cfg.species||[])[0]||'';
 
@@ -6649,87 +6905,6 @@ if (!history.state) {
 renderDefaultPreview();
 updateSpeciesGrid();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ── NOTIFY BAR — river page ───────────────────────────────────────────────────
 function initNotifyBar() {
   if (localStorage.getItem('hff_subscribed') || localStorage.getItem('hff_bar_dismissed')) return;
@@ -6794,6 +6969,7 @@ function initNotifyBar() {
       .then(function(r){ return r.json(); })
       .then(function(data) {
         localStorage.setItem('hff_subscribed', '1');
+        track('Email Signup', { river: (document.getElementById('notify-bar-river')||{}).textContent || 'unknown' });
         if (form)    form.style.display    = 'none';
         if (success) success.style.display = 'block';
         setTimeout(function() {
@@ -6826,7 +7002,84 @@ function initNotifyBar() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
