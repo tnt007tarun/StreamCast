@@ -1816,6 +1816,7 @@ select:focus-visible, input:focus-visible {
   .hero-sub { display: none; }
 }
 
+
 </style>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
@@ -1915,11 +1916,31 @@ select:focus-visible, input:focus-visible {
 
     <!-- Rivers near location — expert mode only -->
     <div class="river-section expert-only" id="river-section" style="display:none">
-      <div class="river-lbl-row">
-        <div class="river-sublbl" id="rivers-lbl">Nearby Rivers</div>
+      <div id="river-parent-picker">
+        <label class="field-lbl" style="display:block;margin-bottom:0.4rem">RIVER</label>
+        <select id="expert-river-select" class="field-input" style="width:100%">
+          <option value="">— Select a river —</option>
+          <option value="Beaver River">Beaver River</option>
+          <option value="Black Creek">Black Creek</option>
+          <option value="Bowmanville Creek">Bowmanville Creek</option>
+          <option value="Bronte Creek">Bronte Creek</option>
+          <option value="Credit River">Credit River</option>
+          <option value="Duffins Creek">Duffins Creek</option>
+          <option value="Eramosa River">Eramosa River</option>
+          <option value="Ganaraska River">Ganaraska River</option>
+          <option value="Grand River">Grand River</option>
+          <option value="Humber River">Humber River</option>
+          <option value="Nottawasaga River">Nottawasaga River</option>
+          <option value="Rouge River">Rouge River</option>
+          <option value="Saugeen River">Saugeen River</option>
+          <option value="Sixteen Mile Creek">Sixteen Mile Creek</option>
+          <option value="Speed River">Speed River</option>
+          <option value="Wilmot Creek">Wilmot Creek</option>
+        </select>
       </div>
-      <div class="river-chips" id="river-chips">
-        <!-- populated by JS -->
+      <div id="river-section-picker" style="display:none;margin-top:0.75rem">
+        <label class="field-lbl" style="display:block;margin-bottom:0.4rem">SECTION</label>
+        <div class="river-chips" id="river-chips"></div>
       </div>
     </div>
 
@@ -1943,35 +1964,12 @@ select:focus-visible, input:focus-visible {
       </div>
       <!-- Expert mode: granular chips -->
       <div class="expert-only">
-      <div class="tech-lbl-row">
-        <div class="field-lbl">Available Techniques</div>
-        <button class="clear-all" id="clear-tech-btn">Clear all</button>
-      </div>
-      <div class="tech-chips">
-        <div class="tech-chip" data-tech="Dry Fly">
-          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/><path d="M18 18 C18 20 17 21 16 21 C15 21 14 20 14 19"/></svg></div>
-          <div class="tc-lbl">Dry Fly</div>
-        </div>
-        <div class="tech-chip" data-tech="Nymphing">
-          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="11"/><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M10 15 C8 17 8 19 10 19"/><path d="M14 15 C16 17 16 19 14 19"/></svg></div>
-          <div class="tc-lbl">Nymphing</div>
-        </div>
-        <div class="tech-chip" data-tech="Float / Centrepin">
-          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
-          <div class="tc-lbl">Float / Centrepin</div>
-        </div>
-        <div class="tech-chip" data-tech="Spin / Lure">
-          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/><path d="M20 6 L22 8 L20 10 L18 8 Z" fill="currentColor" stroke="none"/></svg></div>
-          <div class="tc-lbl">Spin / Lure</div>
-        </div>
-        <div class="tech-chip" data-tech="Bait Fishing">
-          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6 C6 10 10 10 10 14 C10 18 6 18 6 16"/><path d="M10 14 C12 12 14 13 14 15 C14 18 11 19 10 17"/><path d="M17 8 C17 10 16 13 15 14"/><path d="M17 8 C19 8 20 10 19 12 C18 14 16 14 15 14"/></svg></div>
-          <div class="tc-lbl">Bait Fishing</div>
-        </div>
-        <div class="tech-chip" data-tech="Streamers">
-          <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 C6 10 9 10 11 12 C13 14 15 14 18 12"/><path d="M11 12 L14 8 M11 12 L14 16 M11 12 L8 8"/><path d="M18 12 C20 12 21 13 21 15 C21 17 20 18 18 18 C17 18 17 17 18 16"/></svg></div>
-          <div class="tc-lbl">Streamers</div>
-        </div>
+      <div class="field-lbl" style="margin-bottom:0.5rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
+      <div class="method-row" id="expert-method-tiles">
+        <button class="tech-family-btn active" data-value=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
+        <button class="tech-family-btn" data-value="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
+        <button class="tech-family-btn" data-value="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
+        <button class="tech-family-btn" data-value="fly"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/></svg></div>Fly Fishing</button>
       </div>
 
     <!-- Travel time slider (beginner mode only) -->
@@ -2432,6 +2430,57 @@ function track(event, props) {
 }
 // ── END ANALYTICS HELPER ────────────────────────────────────────────────────
 
+
+var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle Beaver River (Clarksburg to Heathcote)", "Upper Beaver River (Kimberley)"], "Black Creek": ["Black Creek — Upper Reaches (Vaughan to North York)", "Black Creek — Lower Watershed & Humber Confluence"], "Bowmanville Creek": ["Bowmanville Creek — River Mouth & Piers", "Lower Bowmanville Creek", "Middle Bowmanville Creek (Fish Ladder)", "Upper Bowmanville Creek"], "Bronte Creek": ["Bronte Creek — Lower Estuary & Mouth", "Bronte Creek — Mid-Section & Provincial Park", "Bronte Creek — Upper Headwaters"], "Credit River": ["Upper Credit River", "Middle Credit River", "Lower Credit River"], "Duffins Creek": ["Duffins Creek — Lower Section", "Duffins Creek — Middle Section", "Duffins Creek — Upper Reaches"], "Eramosa River": ["Eramosa River — Upper Headwaters (Above Rockwood)", "Eramosa River — Mid-Section (Rockwood to Eden Mills)"], "Ganaraska River": ["Ganaraska River — Lower (Lake to CNR Bridge)", "Ganaraska River — Port Hope Sanctuary", "Ganaraska River — Upper & Conservation Areas"], "Grand River": ["Upper Grand River (Tailwater)", "Lower Grand River"], "Humber River": ["Lower Humber River", "Lower-Mid Humber (Old Mill to Eglinton)", "Upper Humber River (Headwaters)"], "Nottawasaga River": ["Nottawasaga River — Headwaters (Niagara Escarpment)", "Nottawasaga River — Middle Section (Alliston to Angus)", "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)"], "Rouge River": ["Rouge River — Marsh & Mouth (Lake Ontario)", "Rouge River — Mid-Section (Rouge National Urban Park)", "Rouge River — Upper & Milne Dam (Markham)"], "Saugeen River": ["Saugeen River — Headwaters & Upper Tributaries", "Saugeen River — Lower Main Stem (Paisley to Southampton)"], "Sixteen Mile Creek": ["Sixteen Mile Creek — Lower Reaches & Oakville Harbour", "Sixteen Mile Creek — Middle Reaches & Main Valley", "Sixteen Mile Creek — Upper West Branch (Trout)"], "Speed River": ["Speed River — Upper (Above Guelph Lake)"], "Wilmot Creek": ["Wilmot Creek — Mouth & Marsh (Lake Ontario)", "Wilmot Creek — Lower River (to CN Rail Tracks)", "Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)", "Wilmot Creek — Upper Watershed & Orono Crown Lands"]};
+
+
+// ── EXPERT MODE ───────────────────────────────────────────────────────────────
+function initExpertMode() {
+  var sel = document.getElementById('expert-river-select');
+  if (sel && !sel._wired) {
+    sel._wired = true;
+    sel.addEventListener('change', function() {
+      var river = this.value;
+      var secPicker = document.getElementById('river-section-picker');
+      var chips = document.getElementById('river-chips');
+      if (!river || !RIVER_SECTIONS[river]) { secPicker.style.display='none'; selectedRiver=null; return; }
+      var sections = RIVER_SECTIONS[river];
+      if (sections.length === 1) {
+        selectedRiver = sections[0];
+        document.getElementById('res-river').textContent = selectedRiver;
+        secPicker.style.display = 'none'; return;
+      }
+      chips.innerHTML = sections.map(function(s, idx) {
+        var label = s.indexOf(' — ') !== -1 ? s.split(' — ')[1] : s;
+        return '<div class="river-chip'+(idx===0?' active':'')+'" data-rname="'+s+'">' +
+               '<div class="rc-name">'+label+'</div></div>';
+      }).join('');
+      chips.querySelectorAll('.river-chip').forEach(function(el) {
+        el.addEventListener('click', function() {
+          chips.querySelectorAll('.river-chip').forEach(function(c){c.classList.remove('active');});
+          this.classList.add('active');
+          selectedRiver = this.getAttribute('data-rname');
+          document.getElementById('res-river').textContent = selectedRiver;
+        });
+      });
+      selectedRiver = sections[0];
+      document.getElementById('res-river').textContent = selectedRiver;
+      secPicker.style.display = 'block';
+    });
+  }
+  var tiles = document.querySelectorAll('#expert-method-tiles .tech-family-btn');
+  tiles.forEach(function(tile) {
+    if (tile._wired) return; tile._wired = true;
+    tile.addEventListener('click', function() {
+      tiles.forEach(function(t){t.classList.remove('active');}); this.classList.add('active');
+    });
+  });
+}
+function getExpertMethod() {
+  var a = document.querySelector('#expert-method-tiles .tech-family-btn.active');
+  return a ? (a.getAttribute('data-value') || 'any') : 'any';
+}
+// ── END EXPERT MODE ───────────────────────────────────────────────────────────
 var PROXY_URL = "https://streamcast-proxy.tnt-tarun.workers.dev";
 
 // ── MODE STATE ────────────────────────────────────────────────────────────────
@@ -4130,12 +4179,15 @@ function renderRiverUI(cfg) {
   // Show gauge link in flow column
   var glinkWrap = document.getElementById("flow-gauge-link");
   var glinkAnchor = document.getElementById("flow-gauge-anchor");
-  if (glinkWrap && glinkAnchor && cfg.gaugeUrl) {
-    glinkAnchor.href = cfg.gaugeUrl;
-    glinkAnchor.textContent = "\u2197 " + cfg.gaugeName;
-    glinkWrap.style.display = "block";
-  } else if (glinkWrap) {
-    glinkWrap.style.display = cfg.gauge ? "block" : "none";
+  if (glinkWrap && glinkAnchor) {
+    var _gUrl = cfg.gaugeUrl || (cfg.gauge ? "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=" + cfg.gauge : null);
+    if (_gUrl) {
+      glinkAnchor.href = _gUrl;
+      glinkAnchor.textContent = "\u2197 " + (cfg.gaugeName || cfg.gauge);
+      glinkWrap.style.display = "block";
+    } else {
+      glinkWrap.style.display = "none";
+    }
   }
   var srLbl=document.getElementById("sweet-range-lbl");
   var srAxis=document.getElementById("sweet-range-axis");
@@ -5818,6 +5870,11 @@ function setMode(mode) {
     if (descB) { descB.style.opacity='1'; descB.style.fontWeight='500'; descB.style.color='var(--moss)'; }
     if (descE) { descE.style.opacity='.6'; descE.style.fontWeight='normal'; descE.style.color='var(--sage)'; }
     if (cta) cta.textContent = 'Find my best spot';
+    // Restore location field and travel slider
+    var locCellB = document.getElementById('loc-input-field') ? document.getElementById('loc-input-field').closest('.field-group') : null;
+    if (locCellB) locCellB.style.display = '';
+    var travelSecB = document.getElementById('travel-range');
+    if (travelSecB && travelSecB.parentElement) travelSecB.parentElement.style.display = '';
   } else {
     card.classList.add('mode-expert');
     card.classList.remove('mode-beginner');
@@ -5826,6 +5883,20 @@ function setMode(mode) {
     if (descB) { descB.style.opacity='.6'; descB.style.fontWeight='normal'; descB.style.color='var(--sage)'; }
     if (descE) { descE.style.opacity='1'; descE.style.fontWeight='500'; descE.style.color='var(--moss)'; }
     if (cta) cta.textContent = 'Get Forecast';
+    initExpertMode();
+    // Show river section, hide location + travel slider in expert mode
+    var rsec = document.getElementById('river-section');
+    if (rsec) rsec.style.display = 'block';
+    var ph = document.getElementById('river-placeholder');
+    if (ph) ph.style.display = 'none';
+    // Hide location field and travel time slider
+    var locGroup = document.getElementById('loc-input-field');
+    if (locGroup && locGroup.parentElement) locGroup.parentElement.style.display = 'none';
+    var travelSec = document.getElementById('travel-range');
+    if (travelSec && travelSec.closest) { var ts = travelSec.closest('.beginner-only, [class*="travel"], div'); if(ts && ts.id !== 'landing') ts.style.display = 'none'; }
+    // Also hide the form-top grid (date+location row) partially — hide just location cell
+    var locCell = document.getElementById('loc-input-field') ? document.getElementById('loc-input-field').closest('.field-group') : null;
+    if (locCell) locCell.style.display = 'none';
   }
 }
 
@@ -6068,7 +6139,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     if (_dt2) _topRiver = { driveTime: _dt2 };
   }
   var _driveEl = document.getElementById('tp-drive-time');
-  if (_driveEl && _topRiver && _topRiver.driveTime) {
+  if (_driveEl && appMode !== 'expert' && _topRiver && _topRiver.driveTime) {
     var _dt = _topRiver.driveTime || (RIVER_CONFIG[_topRiver.name] && RIVER_CONFIG[_topRiver.name].driveTime && RIVER_CONFIG[_topRiver.name].driveTime[window._beginnerLocKey || '']) || null;
     var _dtStr = _dt < 60 ? _dt + ' min' : (_dt === 60 ? '1 hr' : Math.floor(_dt/60) + ' hr ' + (_dt%60 ? _dt%60 + ' min' : ''));
     var _lk = window._beginnerLocKey || '';
@@ -6519,6 +6590,7 @@ function loadBaitImages() {
     if (!ph || !name) return;
     fetchBaitImage(name).then(function(src) {
       if (src) {
+        ph.style.opacity = '1';
         ph.innerHTML = '<img src="' + src + '" alt="' + name + '" style="width:100%;height:100%;object-fit:contain;border-radius:4px;">';
       }
     });
@@ -7268,6 +7340,11 @@ function initNotifyBar() {
 
 
 </script>
+
+
+
+
+
 
 
 
