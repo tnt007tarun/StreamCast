@@ -176,7 +176,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 }
 
 /* top row: date + location */
-.form-top { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; padding-top:1.1rem; border-top:1px solid var(--border); margin-top:.25rem; }
+.form-top { display:grid; grid-template-columns:140px 1fr; gap:5px; padding-top:1.1rem; border-top:1px solid var(--border); margin-top:.25rem; }
 .field-group { display:flex; flex-direction:column; gap:0.1rem; }
 .field-lbl {
   font-family:'Outfit', sans-serif;
@@ -195,6 +195,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   font-size:0.95rem;
   font-weight:400;
   padding:0.7rem 0.9rem;
+  height:48px;
+  box-sizing:border-box;
   outline:none;
   transition:border-color 0.2s;
   color-scheme:light;
@@ -526,7 +528,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .fi:nth-child(10){animation-delay:.58s} .fi:nth-child(11){animation-delay:.64s}
 
 @media(max-width:900px){
-  .form-top{grid-template-columns:1fr 1fr;}
+  .form-top{grid-template-columns:140px 1fr;}
   .tech-chips{grid-template-columns:repeat(3,1fr);}
   .cgrid,.mgrid{grid-template-columns:1fr;}
   .col,.mc{border-right:none;border-bottom:1px solid var(--border);}
@@ -563,7 +565,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .species-btn-img{width:44px;height:26px;border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .species-btn-img svg{width:48px;height:30px;}
 .species-btn-name{font-family:'Outfit',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.01em;text-transform:none;text-align:center;line-height:1.3;}
-.bi-img-wrap{width:100%;height:86px;overflow:hidden;border-radius:4px;margin-bottom:.55rem;background:rgba(45,74,50,0.06);display:flex;align-items:center;justify-content:center;}
+.bi-img-wrap{width:100%;height:140px;overflow:hidden;border-radius:4px;margin-bottom:.55rem;background:rgba(45,74,50,0.06);display:flex;align-items:center;justify-content:center;}
 .bi-img-wrap img{width:100%;height:100%;object-fit:cover;}
 .bi-img-ph{display:flex;flex-direction:column;align-items:center;opacity:.3;}
 .bi-img-ph svg{width:28px;height:16px;color:var(--sage);}
@@ -1088,8 +1090,8 @@ select:focus-visible, input:focus-visible {
 
   /* Date + Location — side by side on mobile */
   .form-top {
-    grid-template-columns: 1fr 1fr;
-    gap: .6rem;
+    grid-template-columns: 140px 1fr;
+    gap: 5px;
     padding-top: .9rem;
   }
 
@@ -1817,6 +1819,11 @@ select:focus-visible, input:focus-visible {
 }
 
 
+
+
+
+
+
 </style>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
@@ -1854,7 +1861,7 @@ select:focus-visible, input:focus-visible {
     <div class="mode-wrap">
     <div class="mode-toggle" id="mode-toggle">
       <button class="mode-btn active" id="mode-btn-beginner">🎣 Find my spot</button>
-      <button class="mode-btn" id="mode-btn-expert">🗺️ I know where to go</button>
+      <button class="mode-btn" id="mode-btn-expert">🗺️ Check by river</button>
     </div>
     
 
@@ -1912,32 +1919,16 @@ select:focus-visible, input:focus-visible {
           </optgroup>
         </select>
       </div>
+      <div class="field-group" id="river-field-group" style="display:none">
+        <label class="field-lbl" for="expert-river-select">River</label>
+        <select id="expert-river-select" class="field-input">
+          <option value="">— Select a river —</option>
+        </select>
+      </div>
     </div>
 
     <!-- Rivers near location — expert mode only -->
     <div class="river-section expert-only" id="river-section" style="display:none">
-      <div id="river-parent-picker">
-        <label class="field-lbl" style="display:block;margin-bottom:0.4rem">RIVER</label>
-        <select id="expert-river-select" class="field-input" style="width:100%">
-          <option value="">— Select a river —</option>
-          <option value="Beaver River">Beaver River</option>
-          <option value="Black Creek">Black Creek</option>
-          <option value="Bowmanville Creek">Bowmanville Creek</option>
-          <option value="Bronte Creek">Bronte Creek</option>
-          <option value="Credit River">Credit River</option>
-          <option value="Duffins Creek">Duffins Creek</option>
-          <option value="Eramosa River">Eramosa River</option>
-          <option value="Ganaraska River">Ganaraska River</option>
-          <option value="Grand River">Grand River</option>
-          <option value="Humber River">Humber River</option>
-          <option value="Nottawasaga River">Nottawasaga River</option>
-          <option value="Rouge River">Rouge River</option>
-          <option value="Saugeen River">Saugeen River</option>
-          <option value="Sixteen Mile Creek">Sixteen Mile Creek</option>
-          <option value="Speed River">Speed River</option>
-          <option value="Wilmot Creek">Wilmot Creek</option>
-        </select>
-      </div>
       <div id="river-section-picker" style="display:none;margin-top:0.75rem">
         <label class="field-lbl" style="display:block;margin-bottom:0.4rem">SECTION</label>
         <div class="river-chips" id="river-chips"></div>
@@ -2438,6 +2429,8 @@ var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle
 function initExpertMode() {
   var sel = document.getElementById('expert-river-select');
   if (sel && !sel._wired) {
+    // Populate options
+    if (sel.options.length <= 1) { sel.add(new Option('Beaver River','Beaver River'));sel.add(new Option('Black Creek','Black Creek'));sel.add(new Option('Bowmanville Creek','Bowmanville Creek'));sel.add(new Option('Bronte Creek','Bronte Creek'));sel.add(new Option('Credit River','Credit River'));sel.add(new Option('Duffins Creek','Duffins Creek'));sel.add(new Option('Eramosa River','Eramosa River'));sel.add(new Option('Ganaraska River','Ganaraska River'));sel.add(new Option('Grand River','Grand River'));sel.add(new Option('Humber River','Humber River'));sel.add(new Option('Nottawasaga River','Nottawasaga River'));sel.add(new Option('Rouge River','Rouge River'));sel.add(new Option('Saugeen River','Saugeen River'));sel.add(new Option('Sixteen Mile Creek','Sixteen Mile Creek'));sel.add(new Option('Speed River','Speed River'));sel.add(new Option('Wilmot Creek','Wilmot Creek')); }
     sel._wired = true;
     sel.addEventListener('change', function() {
       var river = this.value;
@@ -5873,8 +5866,12 @@ function setMode(mode) {
     // Restore location field and travel slider
     var locCellB = document.getElementById('loc-input-field') ? document.getElementById('loc-input-field').closest('.field-group') : null;
     if (locCellB) locCellB.style.display = '';
+    var riverFGB = document.getElementById('river-field-group');
+    if (riverFGB) riverFGB.style.display = 'none';
     var travelSecB = document.getElementById('travel-range');
     if (travelSecB && travelSecB.parentElement) travelSecB.parentElement.style.display = '';
+    var rsecB = document.getElementById('river-section');
+    if (rsecB) rsecB.style.display = 'none';
   } else {
     card.classList.add('mode-expert');
     card.classList.remove('mode-beginner');
@@ -5892,6 +5889,8 @@ function setMode(mode) {
     // Hide location field and travel time slider
     var locGroup = document.getElementById('loc-input-field');
     if (locGroup && locGroup.parentElement) locGroup.parentElement.style.display = 'none';
+    var riverFG = document.getElementById('river-field-group');
+    if (riverFG) riverFG.style.display = '';
     var travelSec = document.getElementById('travel-range');
     if (travelSec && travelSec.closest) { var ts = travelSec.closest('.beginner-only, [class*="travel"], div'); if(ts && ts.id !== 'landing') ts.style.display = 'none'; }
     // Also hide the form-top grid (date+location row) partially — hide just location cell
@@ -6591,7 +6590,7 @@ function loadBaitImages() {
     fetchBaitImage(name).then(function(src) {
       if (src) {
         ph.style.opacity = '1';
-        ph.innerHTML = '<img src="' + src + '" alt="' + name + '" style="width:100%;height:100%;object-fit:contain;border-radius:4px;">';
+        ph.innerHTML = '<img src="' + src + '" alt="' + name + '" style="width:100%;height:100%;object-fit:contain;border-radius:4px;padding:4px;">';
       }
     });
   });
@@ -7340,6 +7339,15 @@ function initNotifyBar() {
 
 
 </script>
+
+
+
+
+
+
+
+
+
 
 
 
