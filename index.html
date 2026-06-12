@@ -1830,6 +1830,10 @@ select:focus-visible, input:focus-visible {
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","x3jmju83ap");
   </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","x3jmju83ap");
+  </script>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -2319,6 +2323,9 @@ select:focus-visible, input:focus-visible {
 
 
 
+  <!-- SALMON STAGING CARD (mouth sections only) -->
+  <div id="staging-card-slot"></div>
+
   <!-- STOCKING SECTION -->
   <div class="ssec fi" id="stocking-section" style="display:none">
     <div class="sec-label fi">
@@ -2474,6 +2481,242 @@ function getExpertMethod() {
   return a ? (a.getAttribute('data-value') || 'any') : 'any';
 }
 // ── END EXPERT MODE ───────────────────────────────────────────────────────────
+
+// ── SALMON STAGING (June–July lake staging near river mouths) ─────────────────
+var STAGING_ZONES = {
+  "Lower Credit River":                                       {key:"credit",     lat:43.560, lng:-79.720, sLat:43.530, sLng:-79.720, lake:"Lake Ontario"},
+  "Lower Humber River":                                       {key:"humber",     lat:43.640, lng:-79.480, sLat:43.610, sLng:-79.470, lake:"Lake Ontario"},
+  "Ganaraska River — Lower (Lake to CNR Bridge)":             {key:"ganaraska",  lat:43.940, lng:-78.305, sLat:43.915, sLng:-78.290, lake:"Lake Ontario"},
+  "Bowmanville Creek — River Mouth & Piers":                  {key:"bowmanville",lat:43.893, lng:-78.692, sLat:43.870, sLng:-78.685, lake:"Lake Ontario"},
+  "Wilmot Creek — Mouth & Marsh (Lake Ontario)":              {key:"wilmot",     lat:43.912, lng:-78.598, sLat:43.888, sLng:-78.590, lake:"Lake Ontario"},
+  "Bronte Creek — Lower Estuary & Mouth":                     {key:"bronte",     lat:43.393, lng:-79.723, sLat:43.370, sLng:-79.715, lake:"Lake Ontario"},
+  "Sixteen Mile Creek — Lower Reaches & Oakville Harbour":    {key:"sixteen",    lat:43.440, lng:-79.672, sLat:43.415, sLng:-79.665, lake:"Lake Ontario"},
+  "Rouge River — Marsh & Mouth (Lake Ontario)":              {key:"rouge",      lat:43.803, lng:-79.134, sLat:43.780, sLng:-79.125, lake:"Lake Ontario"},
+  "Duffins Creek — Lower Section":                            {key:"duffins",    lat:43.835, lng:-79.075, sLat:43.810, sLng:-79.060, lake:"Lake Ontario"},
+  "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)":{key:"nottawasaga",lat:44.333, lng:-79.878, sLat:44.355, sLng:-79.890, lake:"Georgian Bay"}
+};
+
+// Migratory species that stage in the lake before fall runs
+var STAGING_SPECIES = ["Chinook Salmon", "Coho Salmon", "Steelhead"];
+
+// Is this date within the staging window? (mid-June through late July; ramps toward fall)
+// River timing groups for salmon staging + run (by mouth key).
+// Eastern rivers run cooler and earlier; Bronte is the latest.
+var STAGING_GROUP = {
+  bowmanville: 'east', wilmot: 'east', ganaraska: 'east',
+  duffins: 'centralEarly',
+  humber: 'central', credit: 'central', rouge: 'central', sixteen: 'central', nottawasaga: 'central',
+  bronte: 'late'
+};
+
+// Returns a fractional "month" value, e.g. July 15 -> 6.5
+function _mfrac(month, day) { return month + (Math.min(day,30) / 30); }
+
+// Salmon (Chinook/Coho) staging + run phase, group-aware.
+// Each group defines: stageStart (lake staging begins), runStart (fish enter river),
+// runPeak (main push), runEnd (tapering off). Values are fractional months (0-indexed).
+function getSalmonPhase(groupKey, month, day) {
+  var m = _mfrac(month, day);
+  var G = {
+    // eastern: stage Jul 1, run can trigger late Jul, big push mid-late Aug
+    east:         { stageStart: 6.0, runStart: 6.8, runPeak: 7.5, runEnd: 9.3 },
+    // duffins: a few weeks ahead of west — stage mid-Jul, run early Sep
+    centralEarly: { stageStart: 6.5, runStart: 8.0, runPeak: 8.4, runEnd: 9.7 },
+    // central/west: stage late Jul, run mid-late Sep
+    central:      { stageStart: 6.8, runStart: 8.4, runPeak: 8.7, runEnd: 10.0 },
+    // bronte: ~2 weeks behind central
+    late:         { stageStart: 7.0, runStart: 8.9, runPeak: 9.2, runEnd: 10.3 }
+  };
+  var g = G[groupKey] || G.central;
+  if (m < g.stageStart) return {active:false, intensity:0, label:"", mode:"none"};
+  if (m < g.runStart) {
+    // Lake staging window — fish stacking near the mouth
+    var sFrac = (m - g.stageStart) / (g.runStart - g.stageStart); // 0..1
+    var inten = 0.25 + 0.55 * sFrac; // ramps 0.25 -> 0.8
+    return {active:true, intensity:Math.round(inten*100)/100,
+            label: sFrac < 0.5 ? "Early staging" : "Staging building", mode:"stage"};
+  }
+  if (m < g.runEnd) {
+    // In-river run window
+    var peakDist = Math.abs(m - g.runPeak);
+    var inten2 = m < g.runPeak ? 0.8 + 0.2 * ((m - g.runStart) / (g.runPeak - g.runStart))
+                                : 1.0 - 0.6 * ((m - g.runPeak) / (g.runEnd - g.runPeak));
+    inten2 = Math.max(0.3, Math.min(1.0, inten2));
+    return {active:true, intensity:Math.round(inten2*100)/100,
+            label: m < g.runPeak ? "Run starting" : (m < g.runPeak + 0.5 ? "Peak run" : "Run tapering"),
+            mode:"run"};
+  }
+  return {active:false, intensity:0, label:"", mode:"none"};
+}
+
+// Steelhead phase — separate from salmon. Fall run follows the salmon, winter trickle,
+// spring is the main push (temperature-gated on lake surface temp 5-10°C at mouths).
+// lakeTemp may be null; if so we fall back to calendar-only for spring.
+function getSteelheadPhase(month, day, lakeTemp) {
+  var m = _mfrac(month, day);
+  // Fall run: late Sept - Oct, following salmon
+  if (m >= 8.7 && m < 10.3) return {active:true, intensity:0.6, label:"Fall run", mode:"run"};
+  // Winter trickle: Nov - Feb
+  if (m >= 10.3 || m < 2.0)  return {active:true, intensity:0.3, label:"Winter holdovers", mode:"run"};
+  // Spring push: early Mar - early May, gated on warming water
+  if (m >= 2.0 && m < 4.4) {
+    // Temperature gate: steelhead stage/run when surface warms into ~5-12°C
+    if (lakeTemp != null) {
+      if (lakeTemp >= 5 && lakeTemp <= 12) return {active:true, intensity:0.9, label:"Spring run", mode:"stage"};
+      if (lakeTemp > 12 && lakeTemp <= 15) return {active:true, intensity:0.45, label:"Spring run winding down", mode:"run"};
+      if (lakeTemp > 15) return {active:false, intensity:0, label:"", mode:"none"}; // too warm — run over
+      return {active:true, intensity:0.25, label:"Pre-run — water still cold", mode:"stage"}; // too cold yet
+    }
+    // No temp data — calendar estimate: peak spring mid-Mar to mid-Apr
+    if (m >= 2.3 && m < 4.0) return {active:true, intensity:0.8, label:"Spring run", mode:"stage"};
+    return {active:true, intensity:0.4, label:"Spring run building", mode:"stage"};
+  }
+  return {active:false, intensity:0, label:"", mode:"none"};
+}
+
+// Compute staging likelihood from lake temp + wind + cloud + seasonal intensity
+function computeStagingScore(lakeTempC, windDir, windSpeed, cloudPct, intensity, mouthFaces) {
+  var score = intensity; // base seasonal driver (0–0.8)
+  var factors = [];
+
+  // Lake surface temp — staging fish hold in a thermal band ~10–17°C near mouths
+  if (lakeTempC != null) {
+    if (lakeTempC >= 10 && lakeTempC <= 17) { score += 0.25; factors.push("surface temp in staging band"); }
+    else if (lakeTempC > 17 && lakeTempC <= 20) { score += 0.10; factors.push("surface temp slightly warm"); }
+    else if (lakeTempC > 20) { score -= 0.10; factors.push("surface temp warm — fish holding deeper"); }
+    else if (lakeTempC < 10) { score += 0.05; factors.push("cool surface — fish may be shallow"); }
+  }
+
+  // Onshore wind concentrates baitfish + cooler water toward the mouth
+  if (windDir != null && mouthFaces != null) {
+    var diff = Math.abs(((windDir - mouthFaces + 540) % 360) - 180);
+    if (diff < 60 && windSpeed >= 10) { score += 0.15; factors.push("onshore wind stacking bait at the mouth"); }
+    else if (diff < 90 && windSpeed >= 8) { score += 0.08; factors.push("some onshore push"); }
+    else if (diff > 130 && windSpeed >= 15) { score -= 0.08; factors.push("offshore wind flattening the bite"); }
+  }
+
+  // Overcast pushes staging fish shallower / more catchable near surface
+  if (cloudPct != null) {
+    if (cloudPct >= 70) { score += 0.12; factors.push("overcast — fish holding higher in the column"); }
+    else if (cloudPct <= 20) { score -= 0.05; factors.push("bright sun — fish sounding deeper"); }
+  }
+
+  score = Math.max(0, Math.min(1, score));
+  return {score: score, factors: factors};
+}
+
+// Fetch cached lake temps from worker (daily ERDDAP/GLSEA cache); graceful fallback
+var _lakeTempCache = null;
+function fetchLakeTemps() {
+  if (_lakeTempCache !== null) return Promise.resolve(_lakeTempCache);
+  return fetch(PROXY_URL + "/lake-temps")
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){ _lakeTempCache = (d && d.temps) ? d.temps : (d || {}); return _lakeTempCache; })
+    .catch(function(){ _lakeTempCache = {}; return _lakeTempCache; });
+}
+
+// Render the Lake Staging card for a mouth section during the staging window
+function renderStagingCard(sectionName, weather) {
+  var container = document.getElementById("staging-card-slot");
+  if (container) container.innerHTML = "";  // clear any prior card
+  var zone = STAGING_ZONES[sectionName];
+  if (!zone || !container) return;
+
+  var _di = document.getElementById("trip-date");
+  var now = (_di && _di.value) ? new Date(_di.value + "T12:00:00") : new Date();
+  var month = now.getMonth(), day = now.getDate();
+
+  // What species is the user targeting?
+  var _spLbl = (typeof selectedSpeciesLabel !== "undefined" && selectedSpeciesLabel) ? selectedSpeciesLabel : "";
+  var _isAny = (!_spLbl || _spLbl === "Any Species");
+  var wantsSalmon    = _isAny || /Chinook|Coho/i.test(_spLbl);
+  var wantsSteelhead = _isAny || /Steelhead/i.test(_spLbl);
+  if (!wantsSalmon && !wantsSteelhead) return;
+
+  var groupKey = STAGING_GROUP[zone.key] || 'central';
+  var mouthFaces = zone.lake === "Georgian Bay" ? 0 : 180;
+
+  fetchLakeTemps().then(function(temps){
+    var lakeTemp = (temps && temps[zone.key] != null) ? temps[zone.key] : null;
+    var cloudPct = weather && weather.cloudPct != null ? weather.cloudPct : null;
+    var windDir  = weather && weather.windDir  != null ? weather.windDir  : null;
+    var windSpd  = weather && weather.windSpeed!= null ? weather.windSpeed : null;
+
+    // Decide which fish story to tell. Prefer salmon in summer/fall, steelhead otherwise.
+    var salmonPhase = wantsSalmon ? getSalmonPhase(groupKey, month, day) : {active:false};
+    var steelPhase  = wantsSteelhead ? getSteelheadPhase(month, day, lakeTemp) : {active:false};
+
+    // Choose the dominant active phase (higher intensity wins when both active)
+    var which, phase, species;
+    if (salmonPhase.active && (!steelPhase.active || salmonPhase.intensity >= steelPhase.intensity)) {
+      which = 'salmon'; phase = salmonPhase; species = 'Salmon';
+    } else if (steelPhase.active) {
+      which = 'steelhead'; phase = steelPhase; species = 'Steelhead';
+    } else {
+      return; // nothing active — no card
+    }
+
+    var res = computeStagingScore(lakeTemp, windDir, windSpd, cloudPct, phase.intensity, mouthFaces);
+    var pct = Math.round(res.score * 100);
+    var rating = pct >= 65 ? "Strong" : pct >= 40 ? "Fair" : "Slow";
+    var ratingColor = pct >= 65 ? "#6dbf8a" : pct >= 40 ? "#e8a85a" : "#b0b0b0";
+
+    var tempLine = lakeTemp != null
+      ? Math.round(lakeTemp * 10)/10 + "°C surface (" + zone.lake + ")"
+      : "Surface temp unavailable — using seasonal estimate";
+
+    var factorsHtml = res.factors.length
+      ? '<ul style="margin:.5rem 0 0;padding-left:1.1rem;font-size:.82rem;color:#cfe6e6;line-height:1.5">' +
+        res.factors.map(function(f){ return "<li>" + f + "</li>"; }).join("") + '</ul>'
+      : '';
+
+    // Mode-specific guidance copy
+    var guidance, headerLabel;
+    if (which === 'salmon') {
+      if (phase.mode === 'stage') {
+        headerLabel = phase.label + " — staging";
+        guidance = "Chinook and Coho aren't in the river yet — they're staging in the lake near this mouth. Target the pier, beach, and rivermouth, especially on overcast days with onshore wind.";
+      } else {
+        headerLabel = phase.label + " — in river";
+        guidance = "Salmon are pushing into the river. Fish the lower river, pools, and holding water — early morning and after rain are best. Fresh fish move on rising water.";
+      }
+    } else {
+      // steelhead
+      if (phase.label.indexOf("Pre-run") !== -1) {
+        headerLabel = "Steelhead — pre-run";
+        guidance = "Water's still too cold for the spring push. A few fish may stage at the mouth, but the run kicks off once the surface warms into the 5–10°C band. Watch for the first warm spell.";
+      } else if (phase.label.indexOf("Spring") !== -1) {
+        headerLabel = phase.label;
+        guidance = "Steelhead stage and run in spring as the water warms into the 5–10°C band. Target the mouth and lower river — they move on warming, stable water.";
+      } else if (phase.label === "Fall run") {
+        headerLabel = "Steelhead fall run";
+        guidance = "Steelhead are following the salmon in. Fish behind spawning salmon with eggs and beads in the lower and mid river.";
+      } else {
+        headerLabel = "Steelhead — winter";
+        guidance = "A few steelhead hold over through winter. Slow, deep presentations in the lower river on milder days. The main push comes in spring.";
+      }
+    }
+
+    var icon = which === 'steelhead' ? '🐟' : '🌊';
+    var titleTag = which === 'steelhead' ? 'STEELHEAD REPORT' : 'LAKE STAGING REPORT';
+
+    container.innerHTML =
+      '<div class="staging-card" style="background:linear-gradient(135deg,#0d3b4a,#13556a);color:#eaf4f4;border-radius:12px;padding:1.1rem 1.25rem;margin:1rem 0">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">' +
+          '<div style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7">' + icon + ' ' + titleTag + '</div>' +
+          '<div style="font-weight:700;color:' + ratingColor + '">' + rating + ' · ' + pct + '%</div>' +
+        '</div>' +
+        '<div style="margin-top:.5rem;font-size:.95rem;font-weight:600">' + headerLabel + ' — ' + zone.lake.replace("Lake ","") + '</div>' +
+        '<div style="font-size:.82rem;opacity:.85;margin-top:.15rem">' + tempLine + '</div>' +
+        factorsHtml +
+        '<div style="margin-top:.7rem;font-size:.78rem;opacity:.7;line-height:1.5">' + guidance + '</div>' +
+      '</div>';
+  });
+}
+// ── END STAGING ───────────────────────────────────────────────────────────────
+
+
+
 var PROXY_URL = "https://streamcast-proxy.tnt-tarun.workers.dev";
 
 // ── MODE STATE ────────────────────────────────────────────────────────────────
@@ -4515,7 +4758,7 @@ function updateRivers(val) {
   }
 
   placeholder.style.display="none";
-  lbl.textContent="Rivers near "+titleCase(val.trim());
+  if(lbl) lbl.textContent="Rivers near "+titleCase(val.trim());
 
   chips.innerHTML=rivers.map(function(r,i){
     var _cfg_r=RIVER_CONFIG[r.name]; var drive=fmtDrive((r.times&&r.times[loc])||(_cfg_r&&_cfg_r.driveTime&&_cfg_r.driveTime[loc])||60);
@@ -4771,14 +5014,14 @@ async function fetchWeather(cfg){
   var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
   var today=new Date().toISOString().slice(0,10);
   if(dateStr===today){
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover&timezone=America%2FToronto&forecast_days=1");
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m&timezone=America%2FToronto&forecast_days=1");
     var d=await r.json();
-    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover};
+    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m};
   } else {
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
     var d=await r.json();
     var avg=(d.daily.temperature_2m_max[0]+d.daily.temperature_2m_min[0])/2;
-    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0]};
+    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null)};
   }
 }
 
@@ -5184,16 +5427,19 @@ async function renderResults(){
   var _vhrd=document.getElementById("vhead"); if(_vhrd) _vhrd.textContent="Reading conditions\u2026";
   var _vsig=document.getElementById("vsig"); if(_vsig){_vsig.className="vsig"; _vsig.textContent="\u2026";}
 
-  var airTemp=null, cloudPct=null, weatherOk=false;
+  var airTemp=null, cloudPct=null, weatherOk=false, _stagingWeather=null;
   try{
     var wx=await fetchWeather(cfg);
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
       airTemp=wx.airTemp; cloudPct=wx.cloudPct; weatherOk=true;
+      _stagingWeather = {cloudPct:wx.cloudPct, windDir:wx.windDir, windSpeed:wx.windSpeed};
     }
   } catch(e){ console.warn("Weather failed",e); }
   // Fall back to seasonal-typical only if the fetch genuinely failed
   if(!weatherOk){ airTemp=12; cloudPct=50; }
   var wt=waterTempEst(airTemp);
+  // Salmon staging card (mouth sections, staging species, in-season)
+  try { if (typeof renderStagingCard==="function" && selectedRiver && STAGING_ZONES[selectedRiver]) { renderStagingCard(selectedRiver, _stagingWeather); } } catch(e){ console.warn("staging card",e); }
 
   var flow=null,trend="stable",flowAt=null;
   // Debug: show gauge and isToday in panel
@@ -7335,6 +7581,22 @@ function initNotifyBar() {
 
 
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
