@@ -2119,7 +2119,8 @@ select:focus-visible, input:focus-visible {
     </div>
   </div>
 
-
+  <!-- SALMON STAGING CARD — directly below hero so it's most relevant -->
+  <div id="staging-card-slot" style="margin:0 2rem"></div>
 
   <!-- SECTION 1 -->
   <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
@@ -2322,9 +2323,6 @@ select:focus-visible, input:focus-visible {
 
 
 
-
-  <!-- SALMON STAGING CARD (mouth sections only) -->
-  <div id="staging-card-slot"></div>
 
   <!-- STOCKING SECTION -->
   <div class="ssec fi" id="stocking-section" style="display:none">
@@ -2675,7 +2673,7 @@ function renderStagingCard(sectionName, weather) {
     if (which === 'salmon') {
       if (phase.mode === 'stage') {
         headerLabel = phase.label + " — staging";
-        guidance = "Chinook and Coho aren't in the river yet — they're staging in the lake near this mouth. Target the pier, beach, and rivermouth, especially on overcast days with onshore wind.";
+        guidance = "Chinook and Coho aren't in the river yet — they're staging in the lake near this mouth. Cast spoons and lures with a spinning rod from the pier, beach, and rivermouth — especially on overcast days with onshore wind.";
       } else {
         headerLabel = phase.label + " — in river";
         guidance = "Salmon are pushing into the river. Fish the lower river, pools, and holding water — early morning and after rain are best. Fresh fish move on rising water.";
@@ -2709,6 +2707,9 @@ function renderStagingCard(sectionName, weather) {
         '<div style="margin-top:.5rem;font-size:.95rem;font-weight:600">' + headerLabel + ' — ' + zone.lake.replace("Lake ","") + '</div>' +
         '<div style="font-size:.82rem;opacity:.85;margin-top:.15rem">' + tempLine + '</div>' +
         factorsHtml +
+        (which === 'salmon' && phase.mode === 'stage'
+          ? '<div style="margin-top:.7rem;display:inline-block;background:rgba(255,255,255,.12);border-radius:6px;padding:.3rem .6rem;font-size:.78rem;font-weight:600">🎣 Spoons &amp; lures · spinning rod</div>'
+          : '') +
         '<div style="margin-top:.7rem;font-size:.78rem;opacity:.7;line-height:1.5">' + guidance + '</div>' +
       '</div>';
   });
@@ -6319,7 +6320,32 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   })()) || (recs.length > 0 ? recs[0].name : null);
   var headlineHtml;
   var timeShort = tw.split(' (')[0].split(' and ')[0];
-  if (fallbackSpecies && targetName) {
+  // Staging override: target is an absent staging species AND this is a lake-mouth staging zone
+  var _stagingHeadline = null;
+  try {
+    var _tgtName = targetName || ((typeof selectedSpeciesLabel !== 'undefined' && selectedSpeciesLabel && selectedSpeciesLabel !== 'Any Species') ? selectedSpeciesLabel : null);
+    if (_tgtName && STAGING_ZONES[selectedRiver] && /Chinook|Coho|Steelhead/i.test(_tgtName)) {
+      var _sw = getCurrentSeason(_tgtName);
+      if (_sw && _sw.quality === 'absent') {
+        var _gk = STAGING_GROUP[STAGING_ZONES[selectedRiver].key] || 'central';
+        var _di2 = document.getElementById('trip-date');
+        var _now2 = (_di2 && _di2.value) ? new Date(_di2.value + 'T12:00:00') : new Date();
+        var _sp2 = /Steelhead/i.test(_tgtName)
+          ? getSteelheadPhase(_now2.getMonth(), _now2.getDate(), null)
+          : getSalmonPhase(_gk, _now2.getMonth(), _now2.getDate());
+        if (_sp2 && _sp2.active && _sp2.mode === 'stage') {
+          _stagingHeadline = '<em>' + _tgtName + '</em> aren\u2019t in the river yet \u2014 they\u2019re staging in the lake near the mouth. '
+            + 'See the staging report below for where and how to target them.';
+        } else if (_sp2 && _sp2.active && _sp2.mode === 'run') {
+          _stagingHeadline = '<em>' + _tgtName + '</em> are running into the river now. '
+            + 'See the staging report below \u2014 fish the lower river on rising water.';
+        }
+      }
+    }
+  } catch(e) {}
+  if (_stagingHeadline) {
+    headlineHtml = _stagingHeadline;
+  } else if (fallbackSpecies && targetName) {
     headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
       + 'Fish <em>' + fallbackSpecies + '</em> instead — '
       + 'head to <em>' + spotName + '</em>, '
@@ -6438,6 +6464,22 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     if (_regSum) chips.push({ text: '📋 ' + _regSum.slice(0,80) + (_regSum.length>80?'\u2026':''), cls: 'warn' });
   }
 
+  // When salmon/steelhead are staging (not in river), swap in staging-appropriate chips
+  if (_stagingHeadline) {
+    var _stMode = (_stagingHeadline.indexOf('running into the river') !== -1) ? 'run' : 'stage';
+    if (_stMode === 'stage') {
+      chips = [
+        { text: '📍 Pier, beach & rivermouth', cls: '' },
+        { text: '🎣 Spoons & lures · spinning rod', cls: '' },
+        { text: '🌊 Best on overcast days + onshore wind', cls: '' }
+      ];
+    } else {
+      chips = [
+        { text: '📍 Lower river', cls: '' },
+        { text: '🌊 Fish rising water after rain', cls: '' }
+      ];
+    }
+  }
   document.getElementById('tp-chips').innerHTML = chips.map(function(c) {
     return '<div class="tp-chip ' + c.cls + '">' + c.text + '</div>';
   }).join('');
@@ -7581,6 +7623,10 @@ function initNotifyBar() {
 
 
 </script>
+
+
+
+
 
 
 
