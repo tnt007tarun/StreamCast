@@ -2049,9 +2049,10 @@ select:focus-visible, input:focus-visible {
 <!-- ============ RESULTS PAGE ============ -->
 <div id="results" style="display:none">
   <header class="res-header">
-    <div class="res-logo-wrap">
+    <a class="res-logo-wrap" href="#" onclick="goBack();return false;" aria-label="Back to home" title="Back to home" style="text-decoration:none;cursor:pointer;">
       <div class="res-logo-wave"><span></span><span></span><span></span></div>
       <div class="res-logo-name">HereFishyFishy</div>
+    </a>
     
   <!-- NOTIFY BAR — river page -->
   <div id="notify-bar" class="notify-bar" style="display:none">
@@ -4294,7 +4295,9 @@ var ACCESS_COORDS = {
     {lat:44.4900,lng:-80.4000}
   ],
   "Saugeen River — Headwaters & Upper Tributaries": [
-    {lat:44.2302,lng:-80.8324}
+    {lat:44.2302,lng:-80.8324},  // Rocky Saugeen — Public Access
+    {lat:44.285,lng:-80.91},  // North Saugeen River
+    {lat:44.155,lng:-80.945},  // South Saugeen River
   ],
   "Saugeen River — Lower Main Stem (Paisley to Southampton)": [
     {lat:44.2934,lng:-81.2123},
@@ -4353,8 +4356,9 @@ var ACCESS_COORDS = {
     {lat:43.9080,lng:-78.6820}
   ],
   "Upper Bowmanville Creek": [
-    {lat:43.9864,lng:-78.7327},
-    {lat:44.0173,lng:-78.7808}
+    {lat:43.9864,lng:-78.7327},  // Upper Creek — Road Allowance Crossings
+    {lat:44.005,lng:-78.76},  // Oak Ridges Moraine Headwaters
+    {lat:44.0173,lng:-78.7808},  // Headwaters near Enniskillen
   ],
   "Speed River — Upper (Above Guelph Lake)": [
     {lat:43.6281,lng:-80.1861},
@@ -5558,7 +5562,7 @@ async function renderResults(){
   var speciesSeasonal=null,speciesQuality=null;
   var _checkList=targetNames.length>0?targetNames.filter(function(n){return riverSpeciesList.indexOf(n)!==-1;}):riverSpeciesList;
   _checkList.forEach(function(n){
-    var w=getCurrentSeason(n);if(!w)return;
+    var w=getCurrentSeason(n, getTripDateStr());if(!w)return;
     if(!speciesSeasonal||qualOrd.indexOf(w.quality)<qualOrd.indexOf(speciesSeasonal.quality)){
       speciesSeasonal=w;speciesQuality=w.quality;
       if(targetNames.length===1)targetName=n;
@@ -5574,7 +5578,9 @@ async function renderResults(){
       badge.textContent = "Not on this river";
       badge.style.color = "#e07070";
     } else if (speciesQuality === "absent") {
-      badge.textContent = "Out of season — in lake";
+      // Migratory species are legally in season — they're just staging in the lake, not in rivers yet
+      var _isMigratoryBadge = targetName === 'Chinook Salmon' || targetName === 'Coho Salmon' || targetName === 'Steelhead';
+      badge.textContent = _isMigratoryBadge ? "Staging in lake — not in river yet" : "Out of season";
       badge.style.color = "#e8a85a";
     } else if (speciesQuality === "peak") {
       badge.textContent = "★ Peak season now";
@@ -5988,8 +5994,7 @@ var SPECIES_SEASONS = {
       { months: [8,8],   quality: "good",    label: "Early Run", note: "First Chinook enter rivers late August. Numbers building." },
       { months: [9,9],   quality: "peak",    label: "Peak Run",  note: "Peak Chinook run. Best of the year. Fish stacked in pools." },
       { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Spawned-out fish. Still worth fishing early October." },
-      { months: [11,11], quality: "slow",    label: "Post-Spawn", note: "Run over. Occasional late fish. Most have spawned out." },
-      { months: [11,7],  quality: "absent",  label: "In Lake",   note: "Chinook back in lake until next fall." }
+      { months: [11,11], quality: "slow",    label: "Post-Spawn", note: "Run over. Occasional late fish. Most have spawned out." }
     ]
   },
   "Coho Salmon": {
@@ -5999,14 +6004,19 @@ var SPECIES_SEASONS = {
       { months: [0,8],   quality: "absent",  label: "In Lake",   note: "Coho in Lake Ontario. Not accessible from rivers." },
       { months: [9,9],   quality: "good",    label: "Early Run", note: "Coho enter rivers October. Bright fish, aggressive fighters." },
       { months: [10,10], quality: "peak",    label: "Peak Run",  note: "Peak Coho run. More willing to take flies and lures than Chinook." },
-      { months: [11,11], quality: "good",    label: "Late Run",  note: "Late Coho still in system. Slowing but fish present." },
-      { months: [0,8],   quality: "absent",  label: "In Lake",   note: "Back in lake." }
+      { months: [11,11], quality: "good",    label: "Late Run",  note: "Late Coho still in system. Slowing but fish present." }
     ]
   }
 };
 
-function getCurrentSeason(speciesName) {
-  var now = new Date();
+function getTripDateStr() {
+  var di = document.getElementById('trip-date');
+  return (di && di.value) ? di.value : new Date().toISOString().slice(0,10);
+}
+
+function getCurrentSeason(speciesName, dateStr) {
+  // Use trip date if provided, else today
+  var now = dateStr ? new Date(dateStr + 'T12:00:00') : new Date();
   var month = now.getMonth(); // 0-indexed
   var data = SPECIES_SEASONS[speciesName];
   if (!data) return null;
@@ -6252,7 +6262,12 @@ function rankRivers(rivers, speciesKey, dateStr) {
       if (seasonal) {
         if (seasonal.quality === 'peak')   { score += 10; notes.push('Peak season'); }
         else if (seasonal.quality === 'good') { score += 6; notes.push('In season'); }
-        else if (seasonal.quality === 'absent') { score -= 15; warnings.push('Out of season — in lake'); }
+        else if (seasonal.quality === 'absent') {
+          // Migratory species staging in the lake — softer penalty + accurate wording (they're legally in season)
+          var _isMig = targetSpeciesName === 'Chinook Salmon' || targetSpeciesName === 'Coho Salmon' || targetSpeciesName === 'Steelhead';
+          if (_isMig) { score -= 8; warnings.push('Staging in lake — not in river yet'); }
+          else { score -= 15; warnings.push('Out of season'); }
+        }
         else { score += 1; notes.push('Present but slow'); }
       }
     } else if (!targetSpeciesName) {
@@ -6346,7 +6361,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var recs = recommendSpecies(cfg);
 
   if (targetName) {
-    var seasonal = getCurrentSeason(targetName);
+    var seasonal = getCurrentSeason(targetName, getTripDateStr());
     var onRiver  = cfg.species && cfg.species.indexOf(targetName) !== -1;
     if (!onRiver || (seasonal && seasonal.quality === 'absent')) {
       var _isMigratory = seasonal && (targetName === 'Chinook Salmon' || targetName === 'Coho Salmon' || targetName === 'Steelhead');
@@ -6416,7 +6431,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
   // Build headline — lead with species warning when target is out of season
   var _displaySpecies = fallbackSpecies || (targetName && (() => {
-    var s = getCurrentSeason(targetName);
+    var s = getCurrentSeason(targetName, getTripDateStr());
     return s && s.quality !== 'absent' ? targetName : null;
   })()) || (recs.length > 0 ? recs[0].name : null);
   // Store effective recommended species so regs card can sync to it
@@ -6456,7 +6471,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   try {
     var _tgtName = targetName || ((typeof selectedSpeciesLabel !== 'undefined' && selectedSpeciesLabel && selectedSpeciesLabel !== 'Any Species') ? selectedSpeciesLabel : null);
     if (_tgtName && STAGING_ZONES[selectedRiver] && /Chinook|Coho|Steelhead/i.test(_tgtName)) {
-      var _sw = getCurrentSeason(_tgtName);
+      var _sw = getCurrentSeason(_tgtName, getTripDateStr());
       if (_sw && _sw.quality === 'absent') {
         var _gk = STAGING_GROUP[STAGING_ZONES[selectedRiver].key] || 'central';
         var _di2 = document.getElementById('trip-date');
@@ -6543,6 +6558,44 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
   }
   document.getElementById('tp-headline').innerHTML = headlineHtml;
+
+  // Update eyebrow with date context and tense
+  (function() {
+    var _eyebrow = document.querySelector('.tp-eyebrow');
+    if (!_eyebrow) return;
+    var _di = document.getElementById('trip-date');
+    var _dateStr = _di && _di.value ? _di.value : new Date().toISOString().slice(0,10);
+    var _today = new Date().toISOString().slice(0,10);
+    var _tripD = new Date(_dateStr + 'T12:00:00');
+    var _todayD = new Date(_today + 'T12:00:00');
+    var _diffDays = Math.round((_tripD - _todayD) / 86400000);
+    var _fmt = _tripD.toLocaleDateString('en-CA', {weekday:'short', month:'short', day:'numeric'});
+    var _context;
+    if (_diffDays === 0) {
+      _context = 'Today · ' + _fmt;
+    } else if (_diffDays === 1) {
+      _context = 'Tomorrow · ' + _fmt;
+    } else if (_diffDays > 1) {
+      _context = 'Forecast for ' + _fmt;
+    } else if (_diffDays === -1) {
+      _context = 'Yesterday · ' + _fmt;
+    } else {
+      _context = _fmt;
+    }
+    _eyebrow.textContent = 'HereFishyFishy Pick · ' + _context;
+
+    // Adjust headline verb tense for future dates
+    // Only touches leading action verbs — staging/pre-run headlines are already forward-looking
+    if (_diffDays > 0) {
+      var _hl = document.getElementById('tp-headline');
+      if (_hl) {
+        _hl.innerHTML = _hl.innerHTML
+          .replace(/^Head to /, 'Plan to head to ')
+          .replace(/^Try (?=<em>)/, 'Consider trying ');
+      }
+    }
+  })();
+
   // Always show the band
   if (band) band.style.display = 'block';
   // Hide drive time in expert/check-by-river mode — no city context available
