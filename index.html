@@ -385,6 +385,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .res-center { text-align:center; padding:0.8rem 2rem; border-left:1px solid rgba(139,181,160,0.15); border-right:1px solid rgba(139,181,160,0.15); }
 .res-center-lbl { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--mist); opacity:0.5; }
 .res-center-val { font-family:'JetBrains Mono', monospace; font-size:0.8rem; font-weight:500; color:var(--cream); margin-top:0.1rem; }
+.res-center-date { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold-light); opacity:0.75; margin-top:0.2rem; }
 .res-right { text-align:right; }
 .back-btn { font-family:'Outfit',sans-serif; font-size:0.75rem;font-weight:600; letter-spacing:.01em; text-transform:none; color:var(--mist); background:transparent; border:1px solid rgba(139,181,160,0.2); padding:0.4rem 0.85rem; border-radius:4px; cursor:pointer; transition:all 0.15s; }
 .back-btn:hover { border-color:var(--mist); color:var(--cream); }
@@ -2079,6 +2080,7 @@ select:focus-visible, input:focus-visible {
     <div class="res-center">
       <div class="res-center-lbl">Viewing</div>
       <div class="res-center-val" id="res-river">Grand River, Fergus</div>
+      <div class="res-center-date" id="res-date"></div>
     </div>
     <div class="res-right">
       <button class="back-btn" id="back-btn-el" >&#8592; New Search</button>
@@ -2454,7 +2456,7 @@ function initExpertMode() {
       var sections = RIVER_SECTIONS[river];
       if (sections.length === 1) {
         selectedRiver = sections[0];
-        document.getElementById('res-river').textContent = selectedRiver;
+        setResHeader(selectedRiver);
         secPicker.style.display = 'none'; return;
       }
       chips.innerHTML = sections.map(function(s, idx) {
@@ -2467,11 +2469,11 @@ function initExpertMode() {
           chips.querySelectorAll('.river-chip').forEach(function(c){c.classList.remove('active');});
           this.classList.add('active');
           selectedRiver = this.getAttribute('data-rname');
-          document.getElementById('res-river').textContent = selectedRiver;
+          setResHeader(selectedRiver);
         });
       });
       selectedRiver = sections[0];
-      document.getElementById('res-river').textContent = selectedRiver;
+      setResHeader(selectedRiver);
       secPicker.style.display = 'block';
     });
   }
@@ -4577,9 +4579,13 @@ function renderRiverUI(cfg) {
       var regsSummary = filterAndSummariseRegs(regs, document.getElementById('trip-date') ? document.getElementById('trip-date').value : '', selectedSpecies);
       // Use effective recommended species for label if it differs from selection
       var _effSpLabel = window._effectiveRecommendedSpecies || null;
-      var _labelSpecies = _effSpLabel
-        ? [_effSpLabel.replace(' Trout','').replace(' Salmon','')]
-        : (selectedSpecies.length > 0 ? selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;}) : []);
+      // For multi-species label (e.g. "Brown Trout + Brook Trout"), use the selected keys directly
+      var _isMultiLabel = _effSpLabel && _effSpLabel.indexOf(' + ') !== -1;
+      var _labelSpecies = _isMultiLabel
+        ? selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;})
+        : (_effSpLabel
+          ? [_effSpLabel.replace(/ Trout| Salmon/g,'')]
+          : (selectedSpecies.length > 0 ? selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;}) : []));
       var regsLabel = '2026 Regs' + (_labelSpecies.length > 0 ? ' · ' + _labelSpecies.join('/') : '');
       regsHtml = '<div class="regs-panel">' +
         '<div class="regs-header">' +
@@ -4865,7 +4871,7 @@ function updateRivers(val) {
   });
 
   selectedRiver=rivers[0].name+(rivers[0].loc?", "+rivers[0].loc.replace(/\u2013/g,"-"):"");
-  document.getElementById("res-river").textContent=selectedRiver;
+  setResHeader(selectedRiver);
   sec.style.display="block";
 }
 
@@ -4873,7 +4879,7 @@ function selectRiver(el,name,loc){
   document.querySelectorAll(".river-chip").forEach(function(c){c.classList.remove("active");});
   el.classList.add("active");
   selectedRiver=name+", "+loc;
-  document.getElementById("res-river").textContent=selectedRiver;
+  setResHeader(selectedRiver);
 }
 
 function toggleTech(el){el.classList.toggle("active");}
@@ -4951,7 +4957,7 @@ function goToResults(){
     }
     if (bestPick) {
       selectedRiver = bestPick.name + (bestPick.loc ? ', ' + bestPick.loc.replace(/–/g,'-') : '');
-      document.getElementById('res-river').textContent = selectedRiver;
+      setResHeader(selectedRiver);
       window._beginnerLocKey = locKey;
     }
   }
@@ -4963,7 +4969,7 @@ function goToResults(){
     setTimeout(function(){inp.style.outline="";},2000);
     return;
   }
-    document.getElementById("res-river").textContent=selectedRiver;
+    setResHeader(selectedRiver);
   document.getElementById("landing").style.display="none";
   document.getElementById("results").style.display="block";
   window.scrollTo(0,0);
@@ -6009,6 +6015,26 @@ var SPECIES_SEASONS = {
   }
 };
 
+function setResHeader(riverName) {
+  var riverEl = document.getElementById('res-river');
+  var dateEl  = document.getElementById('res-date');
+  if (riverEl) riverEl.textContent = riverName;
+  if (dateEl) {
+    var _dateStr = getTripDateStr();
+    var _today   = new Date().toISOString().slice(0,10);
+    var _tripD   = new Date(_dateStr + 'T12:00:00');
+    var _todayD  = new Date(_today   + 'T12:00:00');
+    var _diff    = Math.round((_tripD - _todayD) / 86400000);
+    var _fmt     = _tripD.toLocaleDateString('en-CA', {weekday:'short', month:'short', day:'numeric'});
+    var _label   = _diff === 0  ? 'Today · '    + _fmt
+                 : _diff === 1  ? 'Tomorrow · ' + _fmt
+                 : _diff > 1   ? 'Forecast · ' + _fmt
+                 : _diff === -1 ? 'Yesterday · '+ _fmt
+                 : _fmt;
+    dateEl.textContent = _label;
+  }
+}
+
 function getTripDateStr() {
   var di = document.getElementById('trip-date');
   return (di && di.value) ? di.value : new Date().toISOString().slice(0,10);
@@ -6329,7 +6355,14 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var _bka=Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
   var targetName=_bka.length===1?speciesMap[_bka[0]]:null;
+  // Multi-species: build array of all selected species that are present on this river
   var cfg = getRiverConfig(selectedRiver);
+  var _targetNames = _bka.map(function(k){ return speciesMap[k]; }).filter(Boolean);
+  var _riverSpecies = (cfg && cfg.species) || [];
+  var _targetNamesOnRiver = _targetNames.filter(function(n){ return _riverSpecies.indexOf(n) !== -1; });
+  // For headline use: if 2+ species selected and all valid, treat as group target
+  var _multiTarget = _targetNamesOnRiver.length >= 2 ? _targetNamesOnRiver : null;
+  var _multiTargetLabel = _multiTarget ? _multiTarget.join(' + ') : null;
 
   // Best access point: first one with low crowd
   var bestSpot = null;
@@ -6433,7 +6466,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _displaySpecies = fallbackSpecies || (targetName && (() => {
     var s = getCurrentSeason(targetName, getTripDateStr());
     return s && s.quality !== 'absent' ? targetName : null;
-  })()) || (recs.length > 0 ? recs[0].name : null);
+  })()) || _multiTargetLabel || (recs.length > 0 ? recs[0].name : null);
   // Store effective recommended species so regs card can sync to it
   window._effectiveRecommendedSpecies = _displaySpecies || targetName || null;
   // Patch any already-rendered regs labels to match the recommended species
@@ -6547,6 +6580,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       + 'head to <em>' + spotName + '</em>, '
       + timeShort.toLowerCase() + ', '
       + bringPhrase + '.';
+  } else if (!targetName && _multiTarget) {
+    // Multi-species selection: both are on this river, name them both
+    headlineHtml = 'Head to <em>' + spotName + '</em>. '
+      + 'Fish <em>' + timeShort + '</em> for <em>' + _multiTargetLabel + '</em>. '
+      + 'Bring your <em>' + bringPhrase + '</em>.';
   } else if (!targetName && _displaySpecies) {
     headlineHtml = 'Try <em>' + _displaySpecies + '</em> at <em>' + spotName + '</em>. '
       + 'Fish <em>' + timeShort + '</em>. '
@@ -6794,7 +6832,7 @@ function renderRiverRanker(locKey, maxMinutes) {
       var name = this.getAttribute('data-river-name');
       var loc  = this.getAttribute('data-river-loc');
       selectedRiver = name + ', ' + loc;
-      document.getElementById('res-river').textContent = selectedRiver;
+      setResHeader(selectedRiver);
       grid.querySelectorAll('.rrank-card').forEach(function(c){ c.style.outline = ''; });
       this.style.outline = '2px solid var(--fern)';
       renderResults();
@@ -7022,7 +7060,7 @@ function recommendSpecies(cfg) {
     var caveats = [];
 
     // Season quality
-    var seasonal = getCurrentSeason(name);
+    var seasonal = getCurrentSeason(name, getTripDateStr());
     if (!seasonal || seasonal.quality === 'absent') return; // not in river
     if (seasonal.quality === 'peak')      { score += 10; reasons.push('peak season right now'); }
     else if (seasonal.quality === 'good') { score +=  6; reasons.push('in season'); }
@@ -7671,7 +7709,7 @@ function renderDefaultPreview() {
       }
 
       // Show results page directly
-      document.getElementById('res-river').textContent = selectedRiver;
+      setResHeader(selectedRiver);
       document.getElementById('landing').style.display = 'none';
       document.getElementById('results').style.display = 'block';
       window.scrollTo(0, 0);
