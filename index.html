@@ -1491,20 +1491,19 @@ select:focus-visible, input:focus-visible {
 
 
 .sp-season-toggle {
-  display: inline-block;
-  margin-top: .35rem;
+  display: block;
+  margin-top: .4rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: .58rem;
   letter-spacing: .04em;
   color: var(--sage);
   background: none;
   border: none;
-  cursor: pointer;
-  padding: .2rem 0;
-  opacity: .75;
-  transition: opacity .15s;
+  cursor: default;
+  padding: .15rem 0;
+  opacity: .72;
+  line-height: 1.5;
 }
-.sp-season-toggle:hover { opacity: 1; }
 
 #tech-family-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; }
 .method-row {
@@ -2766,7 +2765,7 @@ var RIVER_CONFIG = {
     sweetMin:8, sweetMax:12, flowLow:3, flowHigh:25,
     lat:43.700, lng:-80.280,
     loc:"Below Shand Dam through Elora Gorge to West Montrose",
-    driveTime:{ toronto:73,mississauga:51,brampton:41,oakville:53,burlington:55,milton:37,hamilton:58,guelph:17,cambridge:37,kitchener:32,waterloo:32,orangeville:28,markham:76,"richmond hill":69,vaughan:62,ajax:100,pickering:94,"north york":68,scarborough:80,etobicoke:61,oshawa:113,whitby:107,bowmanville:127,clarington:134,newcastle:135,cobourg:168,"port hope":157,barrie:88,collingwood:87,"owen sound":107 },
+    driveTime:{toronto:25,mississauga:15,brampton:20,oakville:15,burlington:25,milton:15,hamilton:35,guelph:45,cambridge:55,kitchener:65,waterloo:70,orangeville:50,'north york':30,scarborough:35,etobicoke:15,markham:45,'richmond hill':45,vaughan:40,ajax:65,pickering:60,oshawa:80,whitby:75,bowmanville:95,clarington:105,newcastle:105,cobourg:145,'port hope':130,barrie:100,collingwood:120,'owen sound':160},
     species:["Brown Trout","Rainbow Trout"],
     active:true,
     regs:[],
@@ -2786,7 +2785,7 @@ var RIVER_CONFIG = {
     sweetMin:8, sweetMax:15, flowLow:3, flowHigh:30,
     lat:43.420, lng:-80.320,
     loc:"Waterloo through Cambridge, Paris, Brantford",
-    driveTime:{ toronto:80,mississauga:56,brampton:52,oakville:50,burlington:42,milton:36,hamilton:40,guelph:15,cambridge:6,kitchener:14,waterloo:17,orangeville:57,markham:90,"richmond hill":85,vaughan:78,ajax:112,pickering:107,"north york":80,scarborough:92,etobicoke:67,oshawa:125,whitby:120,bowmanville:139,clarington:146,newcastle:147,cobourg:179,"port hope":169,barrie:116,collingwood:117,"owen sound":134 },
+    driveTime:{ toronto:100,mississauga:90,brampton:65,oakville:55,burlington:50,milton:40,hamilton:45,guelph:15,cambridge:5,kitchener:15,waterloo:20,orangeville:65,markham:105,"richmond hill":100,vaughan:95,ajax:130,pickering:125,"north york":95,scarborough:105,etobicoke:85,oshawa:145,whitby:140,bowmanville:160,clarington:170,newcastle:170,cobourg:205,"port hope":195,barrie:135,collingwood:135,"owen sound":155 },
     species:["Brown Trout","Rainbow Trout"],
     active:false,
     regs:[],
@@ -2798,7 +2797,7 @@ var RIVER_CONFIG = {
     sweetMin:10, sweetMax:30, flowLow:5, flowHigh:60,
     lat:43.000, lng:-79.900,
     loc:"Caledonia through Dunnville to Lake Erie",
-    driveTime:{ toronto:83,mississauga:67,brampton:75,oakville:53,burlington:36,milton:56,hamilton:28,guelph:65,cambridge:51,kitchener:68,waterloo:71,orangeville:101,markham:103,"richmond hill":102,vaughan:96,ajax:115,pickering:111,"north york":91,scarborough:98,etobicoke:74,oshawa:127,whitby:123,bowmanville:137,clarington:144,newcastle:144,cobourg:172,"port hope":163,barrie:151,collingwood:165,"owen sound":188 },
+    driveTime:{ toronto:100,mississauga:100,brampton:90,oakville:60,burlington:40,milton:65,hamilton:30,guelph:75,cambridge:60,kitchener:80,waterloo:80,orangeville:115,markham:120,"richmond hill":120,vaughan:115,ajax:130,pickering:130,"north york":110,scarborough:115,etobicoke:95,oshawa:145,whitby:140,bowmanville:160,clarington:165,newcastle:165,cobourg:200,"port hope":185,barrie:175,collingwood:190,"owen sound":215 },
     species:["Steelhead"],
     active:true,
     regs:[],
@@ -2813,7 +2812,7 @@ var RIVER_CONFIG = {
     sweetMin:5, sweetMax:15, flowLow:1, flowHigh:25,
     lat:43.870, lng:-80.010,
     loc:"Headwaters to Norval Dam (Erin, Mono, Orangeville)",
-    driveTime:{ toronto:57,mississauga:42,brampton:28,oakville:51,burlington:61,milton:39,hamilton:67,guelph:40,cambridge:60,kitchener:59,waterloo:59,orangeville:8,markham:53,"richmond hill":45,vaughan:39,ajax:77,pickering:72,"north york":48,scarborough:60,etobicoke:47,oshawa:89,whitby:84,bowmanville:103,clarington:110,newcastle:111,cobourg:144,"port hope":134,barrie:62,collingwood:70,"owen sound":105 },
+    driveTime:{ toronto:35,mississauga:35,brampton:20,oakville:30,burlington:35,milton:20,hamilton:40,guelph:20,cambridge:35,kitchener:35,waterloo:35,orangeville:5,markham:30,"richmond hill":30,vaughan:25,ajax:45,pickering:40,"north york":30,scarborough:35,etobicoke:30,oshawa:50,whitby:50,bowmanville:60,clarington:60,newcastle:65,cobourg:80,"port hope":80,barrie:35,collingwood:40,"owen sound":60 },
     species:["Brown Trout","Rainbow Trout","Brook Trout"],
     active:true,
     regs: [],
@@ -2830,7 +2829,7 @@ var RIVER_CONFIG = {
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:43.660, lng:-79.880,
     loc:"Norval Dam to Streetsville Dam",
-    driveTime:{ toronto:42,mississauga:20,brampton:10,oakville:26,burlington:37,milton:15,hamilton:44,guelph:32,cambridge:47,kitchener:53,waterloo:55,orangeville:33,markham:48,"richmond hill":42,vaughan:35,ajax:70,pickering:65,"north york":38,scarborough:50,etobicoke:29,oshawa:83,whitby:78,bowmanville:97,clarington:105,newcastle:105,cobourg:138,"port hope":128,barrie:80,collingwood:95,"owen sound":129 },
+    driveTime:{toronto:30,mississauga:5,brampton:15,oakville:20,burlington:30,milton:15,hamilton:40,guelph:35,cambridge:50,kitchener:60,waterloo:60,orangeville:35,'north york':35,scarborough:40,etobicoke:20,markham:45,'richmond hill':40,vaughan:35,ajax:65,pickering:60,oshawa:75,whitby:70,bowmanville:90,clarington:100,newcastle:100,cobourg:135,'port hope':125,barrie:90,collingwood:110,'owen sound':150},
     species:["Steelhead","Chinook Salmon","Coho Salmon"],
     active:true,
     regs:[{rule:"Check OMNR regs for this section — some areas closed during salmon season",icon:"📋"}],
@@ -2845,7 +2844,7 @@ var RIVER_CONFIG = {
     sweetMin:5, sweetMax:30, flowLow:1, flowHigh:60,
     lat:43.560, lng:-79.720,
     loc:"Streetsville Dam to Port Credit / Lake Ontario",
-    driveTime:{ toronto:31,mississauga:7,brampton:14,oakville:10,burlington:26,milton:14,hamilton:35,guelph:42,cambridge:51,kitchener:62,waterloo:64,orangeville:49,markham:44,"richmond hill":41,vaughan:34,ajax:63,pickering:58,"north york":33,scarborough:43,etobicoke:18,oshawa:76,whitby:71,bowmanville:89,clarington:97,newcastle:97,cobourg:129,"port hope":119,barrie:90,collingwood:109,"owen sound":145 },
+    driveTime:{ toronto:20,mississauga:15,brampton:10,oakville:5,burlington:15,milton:10,hamilton:20,guelph:25,cambridge:30,kitchener:35,waterloo:40,orangeville:30,markham:25,"richmond hill":25,vaughan:20,ajax:35,pickering:30,"north york":20,scarborough:25,etobicoke:15,oshawa:40,whitby:40,bowmanville:50,clarington:55,newcastle:55,cobourg:75,"port hope":70,barrie:50,collingwood:60,"owen sound":80 },
     species:["Steelhead","Chinook Salmon","Coho Salmon"],
     active:true,
     regs:[{rule:"Check OMNR regs — this section has specific rules around the river mouth",icon:"📋"}],
@@ -2860,7 +2859,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.434, lng:-79.716,
     loc:'Lake Ontario to Lakeshore Road West — Bronte Harbour',
-    driveTime:{'toronto':37,'north york':43,'scarborough':51,'etobicoke':26,'markham':55,'richmond hill':53,'vaughan':47,'ajax':71,'pickering':66,'mississauga':18,'brampton':27,'oakville':4,'burlington':13,'milton':16,'hamilton':23,'guelph':44,'cambridge':48,'kitchener':61,'waterloo':64,'orangeville':60,'oshawa':83,'whitby':79,'bowmanville':96,'clarington':103,'newcastle':103,'cobourg':134,'port hope':124,'barrie':104,'collingwood':122,'owen sound':156},
+    driveTime:{'toronto':35,'north york':35,'scarborough':40,'etobicoke':25,'markham':45,'richmond hill':45,'vaughan':40,'ajax':55,'pickering':50,'mississauga':30,'brampton':25,'oakville':5,'burlington':10,'milton':15,'hamilton':15,'guelph':35,'cambridge':35,'kitchener':45,'waterloo':50,'orangeville':45,'oshawa':65,'whitby':60,'bowmanville':75,'clarington':80,'newcastle':80,'cobourg':105,'port hope':95,'barrie':80,'collingwood':95,'owen sound':120},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Generally open year-round. Standard FMZ limits and dates for trout and salmon apply.',icon:'📋'}],
@@ -2876,7 +2875,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.465, lng:-79.735,
     loc:'Lakeshore Road West to Highway 407 — Bronte Creek Provincial Park',
-    driveTime:{'toronto':37,'north york':41,'scarborough':50,'etobicoke':24,'markham':53,'richmond hill':51,'vaughan':44,'ajax':70,'pickering':65,'mississauga':15,'brampton':24,'oakville':4,'burlington':16,'milton':13,'hamilton':25,'guelph':41,'cambridge':47,'kitchener':60,'waterloo':62,'orangeville':57,'oshawa':83,'whitby':78,'bowmanville':95,'clarington':103,'newcastle':103,'cobourg':134,'port hope':124,'barrie':100,'collingwood':118,'owen sound':152},
+    driveTime:{'toronto':40,'north york':40,'scarborough':40,'etobicoke':25,'markham':45,'richmond hill':45,'vaughan':40,'ajax':60,'pickering':55,'mississauga':30,'brampton':25,'oakville':5,'burlington':15,'milton':10,'hamilton':20,'guelph':35,'cambridge':40,'kitchener':50,'waterloo':50,'orangeville':50,'oshawa':70,'whitby':70,'bowmanville':80,'clarington':90,'newcastle':90,'cobourg':115,'port hope':110,'barrie':85,'collingwood':100,'owen sound':130},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Closed Jan 1 to Friday before 4th Saturday in April. Open 4th Saturday in April through Dec 31 for migratory species.',icon:'📋'}],
@@ -2892,7 +2891,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.530, lng:-79.800,
     loc:'Upstream of Lowville to Progreston / Carlisle — Niagara Escarpment',
-    driveTime:{'toronto':38,'north york':39,'scarborough':50,'etobicoke':25,'markham':51,'richmond hill':48,'vaughan':40,'ajax':70,'pickering':65,'mississauga':14,'brampton':17,'oakville':11,'burlington':22,'milton':7,'hamilton':30,'guelph':35,'cambridge':44,'kitchener':55,'waterloo':57,'orangeville':48,'oshawa':83,'whitby':78,'bowmanville':96,'clarington':104,'newcastle':104,'cobourg':136,'port hope':126,'barrie':94,'collingwood':110,'owen sound':143},
+    driveTime:{'toronto':45,'north york':45,'scarborough':50,'etobicoke':35,'markham':50,'richmond hill':50,'vaughan':45,'ajax':70,'pickering':65,'mississauga':35,'brampton':20,'oakville':15,'burlington':20,'milton':10,'hamilton':30,'guelph':35,'cambridge':45,'kitchener':55,'waterloo':55,'orangeville':50,'oshawa':85,'whitby':80,'bowmanville':95,'clarington':105,'newcastle':105,'cobourg':135,'port hope':125,'barrie':95,'collingwood':110,'owen sound':145},
     species:['Brook Trout','Brown Trout'],
     active:true,
     regs:[{rule:'Inland stream — open 4th Saturday in April to September 30. C&R and tackle restrictions may apply. Verify OMNR regs for specific tributaries.',icon:'📋'}],
@@ -2909,7 +2908,7 @@ var RIVER_CONFIG = {
     sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
     lat:43.640, lng:-79.480,
     loc:"South of Lakeshore Blvd to Lake Ontario (Humber Bay)",
-    driveTime:{ toronto:11,mississauga:14,brampton:22,oakville:25,burlington:42,milton:34,hamilton:52,guelph:61,cambridge:72,kitchener:82,waterloo:84,orangeville:57,markham:26,"richmond hill":26,vaughan:21,ajax:43,pickering:37,"north york":14,scarborough:23,etobicoke:3,oshawa:56,whitby:51,bowmanville:69,clarington:76,newcastle:76,cobourg:108,"port hope":98,barrie:83,collingwood:109,"owen sound":152 },
+    driveTime:{ toronto:20,mississauga:40,brampton:30,oakville:30,burlington:50,milton:40,hamilton:60,guelph:70,cambridge:85,kitchener:95,waterloo:95,orangeville:65,markham:30,"richmond hill":35,vaughan:30,ajax:50,pickering:45,"north york":20,scarborough:25,etobicoke:15,oshawa:65,whitby:60,bowmanville:80,clarington:85,newcastle:85,cobourg:125,"port hope":115,barrie:95,collingwood:125,"owen sound":175 },
     species:["Brown Trout","Steelhead","Chinook Salmon"],
     active:true,
     regs:[{rule:"TRCA managed — check catch regulations for this section",icon:"📋"}],
@@ -2924,7 +2923,7 @@ var RIVER_CONFIG = {
     sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
     lat:43.670, lng:-79.490,
     loc:"Old Mill area north to Eglinton Avenue (Etienne Brulé Park)",
-    driveTime:{ toronto:11,mississauga:15,brampton:21,oakville:27,burlington:45,milton:35,hamilton:54,guelph:61,cambridge:73,kitchener:82,waterloo:84,orangeville:54,markham:23,"richmond hill":23,vaughan:18,ajax:42,pickering:36,"north york":12,scarborough:21,etobicoke:5,oshawa:55,whitby:49,bowmanville:68,clarington:75,newcastle:76,cobourg:108,"port hope":98,barrie:79,collingwood:106,"owen sound":149 },
+    driveTime:{ toronto:20,mississauga:40,brampton:30,oakville:30,burlington:50,milton:40,hamilton:60,guelph:70,cambridge:85,kitchener:95,waterloo:95,orangeville:60,markham:25,"richmond hill":30,vaughan:25,ajax:50,pickering:40,"north york":15,scarborough:25,etobicoke:15,oshawa:65,whitby:55,bowmanville:80,clarington:85,newcastle:85,cobourg:125,"port hope":115,barrie:90,collingwood:120,"owen sound":170 },
     species:["Steelhead","Chinook Salmon"],
     active:true,
     regs:[{rule:"TRCA managed — check regulations",icon:"📋"}],
@@ -2939,7 +2938,7 @@ var RIVER_CONFIG = {
     sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
     lat:43.760, lng:-79.530,
     loc:"Highway 401 to Woodbridge and Kleinburg",
-    driveTime:{ toronto:22,mississauga:28,brampton:18,oakville:38,burlington:55,milton:43,hamilton:62,guelph:58,cambridge:74,kitchener:79,waterloo:80,orangeville:43,markham:28,"richmond hill":22,vaughan:12,ajax:49,pickering:44,"north york":18,scarborough:30,etobicoke:18,oshawa:63,whitby:57,bowmanville:76,clarington:83,newcastle:84,cobourg:117,"port hope":107,barrie:68,collingwood:96,"owen sound":139 },
+    driveTime:{ toronto:30,mississauga:55,brampton:25,oakville:45,burlington:65,milton:50,hamilton:70,guelph:65,cambridge:85,kitchener:90,waterloo:90,orangeville:50,markham:30,"richmond hill":30,vaughan:20,ajax:55,pickering:50,"north york":25,scarborough:35,etobicoke:30,oshawa:70,whitby:65,bowmanville:85,clarington:95,newcastle:95,cobourg:135,"port hope":125,barrie:80,collingwood:110,"owen sound":160 },
     species:[],
     active:false,
     regs:[],
@@ -2951,7 +2950,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:8, flowLow:0.5, flowHigh:15,
     lat:43.870, lng:-79.730,
     loc:"Above Highway 407 to Oak Ridges Moraine / Niagara Escarpment",
-    driveTime:{ toronto:38,mississauga:31,brampton:20,oakville:44,burlington:59,milton:40,hamilton:67,guelph:54,cambridge:72,kitchener:75,waterloo:76,orangeville:29,markham:31,"richmond hill":23,vaughan:18,ajax:55,pickering:50,"north york":28,scarborough:38,etobicoke:32,oshawa:68,whitby:62,bowmanville:81,clarington:89,newcastle:89,cobourg:123,"port hope":112,barrie:56,collingwood:78,"owen sound":121 },
+    driveTime:{ toronto:50,mississauga:60,brampton:30,oakville:50,burlington:70,milton:45,hamilton:75,guelph:60,cambridge:85,kitchener:85,waterloo:85,orangeville:35,markham:35,"richmond hill":30,vaughan:25,ajax:65,pickering:55,"north york":35,scarborough:45,etobicoke:45,oshawa:80,whitby:70,bowmanville:95,clarington:100,newcastle:100,cobourg:140,"port hope":130,barrie:65,collingwood:90,"owen sound":140 },
     species:["Brown Trout","Rainbow Trout","Brook Trout"],
     active:true,
     regs:[{rule:"Some sections strictly catch-and-release — verify OMNR regs before fishing",icon:"📋"}],
@@ -2966,7 +2965,7 @@ var RIVER_CONFIG = {
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:44.130, lng:-79.950,
     loc:'Niagara Escarpment and Hockley Valley — upstream of Alliston',
-    driveTime:{'toronto':70,'north york':58,'scarborough':66,'etobicoke':65,'markham':56,'richmond hill':48,'vaughan':47,'ajax':79,'pickering':74,'mississauga':63,'brampton':51,'oakville':75,'burlington':88,'milton':67,'hamilton':95,'guelph':68,'cambridge':88,'kitchener':85,'waterloo':85,'orangeville':25,'oshawa':88,'whitby':83,'bowmanville':101,'clarington':107,'newcastle':108,'cobourg':140,'port hope':130,'barrie':35,'collingwood':45,'owen sound':90},
+    driveTime:{'toronto':85,'north york':70,'scarborough':75,'etobicoke':85,'markham':65,'richmond hill':60,'vaughan':60,'ajax':90,'pickering':85,'mississauga':95,'brampton':65,'oakville':85,'burlington':100,'milton':75,'hamilton':110,'guelph':80,'cambridge':100,'kitchener':100,'waterloo':100,'orangeville':30,'oshawa':100,'whitby':95,'bowmanville':115,'clarington':125,'newcastle':125,'cobourg':160,'port hope':150,'barrie':40,'collingwood':50,'owen sound':105},
     species:['Rainbow Trout','Brown Trout','Brook Trout'],
     active:true,
     regs:[{rule:'FMZ 16 — vast majority of this section is private land. Access only via Bruce Trail or public road allowances. Strictly enforce no trespassing.',icon:'📋'}],
@@ -2981,7 +2980,7 @@ var RIVER_CONFIG = {
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:44.150, lng:-79.900,
     loc:'Alliston through Angus — extended steelhead water, Pine and Boyne River confluences',
-    driveTime:{'toronto':69,'north york':57,'scarborough':65,'etobicoke':65,'markham':54,'richmond hill':46,'vaughan':46,'ajax':76,'pickering':72,'mississauga':64,'brampton':52,'oakville':76,'burlington':90,'milton':69,'hamilton':97,'guelph':71,'cambridge':91,'kitchener':89,'waterloo':89,'orangeville':29,'oshawa':85,'whitby':80,'bowmanville':98,'clarington':104,'newcastle':105,'cobourg':137,'port hope':127,'barrie':31,'collingwood':45,'owen sound':93},
+    driveTime:{'toronto':85,'north york':70,'scarborough':75,'etobicoke':85,'markham':60,'richmond hill':55,'vaughan':55,'ajax':85,'pickering':85,'mississauga':95,'brampton':65,'oakville':85,'burlington':105,'milton':80,'hamilton':110,'guelph':80,'cambridge':105,'kitchener':100,'waterloo':100,'orangeville':35,'oshawa':100,'whitby':90,'bowmanville':115,'clarington':120,'newcastle':120,'cobourg':160,'port hope':145,'barrie':35,'collingwood':50,'owen sound':105},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[
@@ -3002,7 +3001,7 @@ var RIVER_CONFIG = {
     sweetMin:8, sweetMax:30, flowLow:2, flowHigh:60,
     lat:44.300, lng:-79.980,
     loc:'Below Boyne River confluence to Wasaga Beach — Georgian Bay mouth',
-    driveTime:{'toronto':86,'north york':73,'scarborough':80,'etobicoke':82,'markham':69,'richmond hill':62,'vaughan':62,'ajax':89,'pickering':86,'mississauga':81,'brampton':69,'oakville':93,'burlington':107,'milton':85,'hamilton':114,'guelph':85,'cambridge':105,'kitchener':100,'waterloo':100,'orangeville':42,'oshawa':97,'whitby':92,'bowmanville':109,'clarington':115,'newcastle':116,'cobourg':146,'port hope':136,'barrie':24,'collingwood':28,'owen sound':80},
+    driveTime:{'toronto':105,'north york':85,'scarborough':90,'etobicoke':105,'markham':80,'richmond hill':75,'vaughan':75,'ajax':100,'pickering':100,'mississauga':115,'brampton':85,'oakville':105,'burlington':125,'milton':100,'hamilton':130,'guelph':100,'cambridge':120,'kitchener':115,'waterloo':115,'orangeville':50,'oshawa':110,'whitby':105,'bowmanville':125,'clarington':130,'newcastle':135,'cobourg':170,'port hope':155,'barrie':30,'collingwood':30,'owen sound':90},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Pine River to Georgian Bay: Rainbow Trout open all year, limit S-2 C-1, no size limit. Salmon peak August–September.',icon:'📋'}],
@@ -3018,7 +3017,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.843, lng:-79.065,
     loc:'Lake Ontario to Highway 2 — Ajax / Pickering',
-    driveTime:{'toronto':30,'north york':28,'scarborough':17,'etobicoke':42,'markham':21,'richmond hill':29,'vaughan':35,'ajax':4,'pickering':2,'mississauga':53,'brampton':57,'oakville':64,'burlington':80,'milton':73,'hamilton':90,'guelph':98,'cambridge':111,'kitchener':120,'waterloo':121,'orangeville':81,'oshawa':17,'whitby':11,'bowmanville':30,'clarington':38,'newcastle':38,'cobourg':71,'port hope':61,'barrie':77,'collingwood':114,'owen sound':166},
+    driveTime:{'toronto':40,'north york':35,'scarborough':20,'etobicoke':55,'markham':25,'richmond hill':35,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':90,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':20,'whitby':15,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':90,'collingwood':130,'owen sound':190},
     species:['Steelhead','Chinook Salmon','Coho Salmon'],
     active:true,
     regs:[{rule:'Extended fall trout season Oct–Dec 31 in segments south of CNR track. Standard FMZ limits apply.',icon:'📋'}],
@@ -3034,7 +3033,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.870, lng:-79.058,
     loc:'Highway 2 to the Dams — Greenwood Conservation Area / Whitevale',
-    driveTime:{'toronto':33,'north york':30,'scarborough':19,'etobicoke':45,'markham':22,'richmond hill':30,'vaughan':35,'ajax':4,'pickering':4,'mississauga':55,'brampton':58,'oakville':66,'burlington':83,'milton':75,'hamilton':92,'guelph':100,'cambridge':113,'kitchener':121,'waterloo':123,'orangeville':81,'oshawa':15,'whitby':10,'bowmanville':29,'clarington':37,'newcastle':37,'cobourg':70,'port hope':60,'barrie':75,'collingwood':113,'owen sound':165},
+    driveTime:{'toronto':45,'north york':40,'scarborough':20,'etobicoke':60,'markham':25,'richmond hill':40,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':95,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':85,'collingwood':130,'owen sound':190},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Rainbow Trout','Brown Trout'],
     active:true,
     regs:[{rule:'Fishing near Whitevale Dam and barrier north of Church Street strictly prohibited — fish sanctuaries. Check posted signs.',icon:'🚫'}],
@@ -3050,7 +3049,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.940, lng:-79.040,
     loc:'Above the Dams to Oak Ridges Moraine — Glen Major / West Duffins Headwaters',
-    driveTime:{'toronto':39,'north york':35,'scarborough':25,'etobicoke':51,'markham':25,'richmond hill':32,'vaughan':38,'ajax':10,'pickering':12,'mississauga':61,'brampton':63,'oakville':72,'burlington':89,'milton':80,'hamilton':99,'guelph':104,'cambridge':118,'kitchener':126,'waterloo':127,'orangeville':82,'oshawa':14,'whitby':9,'bowmanville':27,'clarington':34,'newcastle':35,'cobourg':68,'port hope':58,'barrie':70,'collingwood':110,'owen sound':163},
+    driveTime:{'toronto':50,'north york':45,'scarborough':30,'etobicoke':70,'markham':30,'richmond hill':40,'vaughan':50,'ajax':10,'pickering':15,'mississauga':95,'brampton':80,'oakville':85,'burlington':100,'milton':90,'hamilton':115,'guelph':120,'cambridge':135,'kitchener':145,'waterloo':145,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':30,'clarington':40,'newcastle':40,'cobourg':80,'port hope':65,'barrie':80,'collingwood':125,'owen sound':185},
     species:['Brook Trout','Brown Trout'],
     active:true,
     regs:[{rule:'Cold-water habitat — baitfish collection severely restricted. Redside dace present. Check FMZ regs for specific tributary rules.',icon:'📋'}],
@@ -3066,7 +3065,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
     lat:43.940, lng:-78.305,
     loc:'Lake Ontario to CNR railway bridge — Port Hope harbour',
-    driveTime:{'toronto':87,'north york':89,'scarborough':77,'etobicoke':101,'markham':81,'richmond hill':89,'vaughan':95,'ajax':57,'pickering':62,'mississauga':112,'brampton':117,'oakville':120,'burlington':135,'milton':132,'hamilton':143,'guelph':158,'cambridge':170,'kitchener':180,'waterloo':181,'orangeville':140,'oshawa':44,'whitby':50,'bowmanville':30,'clarington':23,'newcastle':22,'cobourg':11,'port hope':1,'barrie':118,'collingwood':160,'owen sound':216},
+    driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:25,bowmanville:10,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Open year-round. Standard FMZ 17 limits apply. Extended fall season Oct 15–Dec 31 in sanctuary section upstream.',icon:'📋'}],
@@ -3081,7 +3080,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
     lat:43.945, lng:-78.300,
     loc:'Jocelyn Street Bridge to CNR Bridge — through Port Hope',
-    driveTime:{'toronto':88,'north york':89,'scarborough':77,'etobicoke':101,'markham':82,'richmond hill':89,'vaughan':95,'ajax':57,'pickering':63,'mississauga':112,'brampton':118,'oakville':120,'burlington':135,'milton':132,'hamilton':144,'guelph':159,'cambridge':170,'kitchener':180,'waterloo':182,'orangeville':140,'oshawa':45,'whitby':50,'bowmanville':31,'clarington':23,'newcastle':23,'cobourg':11,'port hope':1,'barrie':118,'collingwood':161,'owen sound':216},
+    driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:25,bowmanville:10,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'SANCTUARY Sep 1–Oct 14 (closed). Open Oct 15–Dec 31 for extended fall season. Check posted signs throughout.',icon:'🚫'}],
@@ -3096,7 +3095,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
     lat:43.950, lng:-78.298,
     loc:'Highway 401 to Jocelyn Street Bridge — Corbetts Dam and Fishway',
-    driveTime:{'toronto':88,'north york':89,'scarborough':77,'etobicoke':101,'markham':82,'richmond hill':89,'vaughan':95,'ajax':57,'pickering':63,'mississauga':112,'brampton':118,'oakville':121,'burlington':136,'milton':133,'hamilton':144,'guelph':159,'cambridge':170,'kitchener':180,'waterloo':182,'orangeville':140,'oshawa':45,'whitby':51,'bowmanville':31,'clarington':24,'newcastle':23,'cobourg':10,'port hope':0,'barrie':118,'collingwood':161,'owen sound':216},
+    driveTime:{toronto:95,'north york':90,scarborough:80,etobicoke:105,markham:75,'richmond hill':80,vaughan:85,ajax:60,pickering:55,mississauga:120,brampton:110,oakville:115,burlington:125,milton:110,hamilton:135,guelph:145,cambridge:160,kitchener:170,waterloo:170,orangeville:130,oshawa:40,whitby:30,bowmanville:15,clarington:20,newcastle:20,cobourg:40,'port hope':10,barrie:115,collingwood:155,'owen sound':215},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:false,
     regs:[{rule:'CLOSED TO FISHING ALL YEAR. Fish sanctuary protecting migrating salmon and trout at Corbetts Dam and fishway.',icon:'🚫'}],
@@ -3108,7 +3107,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
     lat:43.980, lng:-78.290,
     loc:'North of Highway 401 — Ganaraska Millennium CA, Sylvan Glen CA, Thurne Parks',
-    driveTime:{'toronto':90,'north york':91,'scarborough':79,'etobicoke':103,'markham':83,'richmond hill':90,'vaughan':96,'ajax':59,'pickering':64,'mississauga':114,'brampton':119,'oakville':123,'burlington':138,'milton':134,'hamilton':147,'guelph':160,'cambridge':172,'kitchener':182,'waterloo':184,'orangeville':141,'oshawa':46,'whitby':52,'bowmanville':32,'clarington':25,'newcastle':24,'cobourg':10,'port hope':3,'barrie':118,'collingwood':160,'owen sound':216},
+    driveTime:{toronto:95,'north york':90,scarborough:80,etobicoke:105,markham:75,'richmond hill':80,vaughan:85,ajax:60,pickering:55,mississauga:120,brampton:110,oakville:115,burlington:125,milton:110,hamilton:135,guelph:145,cambridge:160,kitchener:170,waterloo:170,orangeville:130,oshawa:40,whitby:30,bowmanville:15,clarington:20,newcastle:20,cobourg:40,'port hope':10,barrie:115,collingwood:155,'owen sound':215},
     species:['Steelhead','Rainbow Trout','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — strictly obey posted property lines and GRCA rules. Spring Rainbow run popular here.',icon:'📋'}],
@@ -3126,7 +3125,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:44.563, lng:-80.457,
     loc:"Thornbury Dam to Georgian Bay",
-    driveTime:{ toronto:131,mississauga:123,brampton:110,oakville:133,burlington:144,milton:122,hamilton:149,guelph:112,cambridge:131,kitchener:121,waterloo:119,orangeville:75,markham:116,"richmond hill":108,vaughan:108,ajax:136,pickering:132,"north york":119,scarborough:127,etobicoke:126,oshawa:143,whitby:138,bowmanville:154,clarington:160,newcastle:161,cobourg:190,"port hope":180,barrie:62,collingwood:20,"owen sound":38 },
+    driveTime:{ toronto:155,mississauga:165,brampton:130,oakville:155,burlington:165,milton:140,hamilton:170,guelph:130,cambridge:150,kitchener:140,waterloo:135,orangeville:85,markham:135,"richmond hill":130,vaughan:130,ajax:155,pickering:150,"north york":140,scarborough:145,etobicoke:155,oshawa:165,whitby:160,bowmanville:175,clarington:185,newcastle:185,cobourg:220,"port hope":205,barrie:70,collingwood:25,"owen sound":45 },
     species:["Steelhead","Chinook Salmon"],
     active:true,
     regs:[{rule:"Extended fall season for trout and salmon — verify OMNR regs",icon:"📋"}],
@@ -3141,7 +3140,7 @@ var RIVER_CONFIG = {
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:44.520, lng:-80.430,
     loc:"Clarksburg to Heathcote",
-    driveTime:{ toronto:126,mississauga:118,brampton:105,oakville:128,burlington:139,milton:117,hamilton:144,guelph:107,cambridge:126,kitchener:116,waterloo:114,orangeville:70,markham:111,"richmond hill":104,vaughan:103,ajax:131,pickering:128,"north york":114,scarborough:122,etobicoke:121,oshawa:139,whitby:134,bowmanville:150,clarington:156,newcastle:157,cobourg:186,"port hope":177,barrie:59,collingwood:17,"owen sound":40 },
+    driveTime:{ toronto:150,mississauga:160,brampton:125,oakville:145,burlington:160,milton:135,hamilton:165,guelph:125,cambridge:145,kitchener:135,waterloo:130,orangeville:80,markham:130,"richmond hill":125,vaughan:125,ajax:150,pickering:145,"north york":135,scarborough:140,etobicoke:150,oshawa:160,whitby:155,bowmanville:170,clarington:180,newcastle:180,cobourg:215,"port hope":205,barrie:70,collingwood:20,"owen sound":45 },
     species:["Brown Trout","Steelhead"],
     active:true,
     regs:[],
@@ -3155,7 +3154,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:44.500, lng:-80.415,
     loc:"Heathcote to Kimberley — slow warm water",
-    driveTime:{ toronto:124,mississauga:116,brampton:103,oakville:126,burlington:137,milton:115,hamilton:142,guelph:105,cambridge:124,kitchener:114,waterloo:112,orangeville:68,markham:109,"richmond hill":102,vaughan:101,ajax:130,pickering:126,"north york":112,scarborough:120,etobicoke:119,oshawa:137,whitby:132,bowmanville:149,clarington:154,newcastle:155,cobourg:185,"port hope":175,barrie:57,collingwood:16,"owen sound":41 },
+    driveTime:{ toronto:150,mississauga:155,brampton:125,oakville:145,burlington:160,milton:130,hamilton:165,guelph:120,cambridge:145,kitchener:130,waterloo:130,orangeville:80,markham:125,"richmond hill":120,vaughan:120,ajax:150,pickering:145,"north york":130,scarborough:140,etobicoke:145,oshawa:160,whitby:150,bowmanville:170,clarington:175,newcastle:180,cobourg:215,"port hope":200,barrie:65,collingwood:20,"owen sound":45 },
     species:[],
     active:false,
     regs:[],
@@ -3167,7 +3166,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
     lat:44.490, lng:-80.400,
     loc:"Kimberley village up to Hogs Falls / Headwaters",
-    driveTime:{ toronto:122,mississauga:114,brampton:101,oakville:124,burlington:135,milton:113,hamilton:140,guelph:103,cambridge:123,kitchener:113,waterloo:111,orangeville:66,markham:108,"richmond hill":100,vaughan:99,ajax:128,pickering:124,"north york":110,scarborough:118,etobicoke:117,oshawa:135,whitby:130,bowmanville:147,clarington:152,newcastle:153,cobourg:183,"port hope":173,barrie:56,collingwood:14,"owen sound":43 },
+    driveTime:{ toronto:145,mississauga:155,brampton:120,oakville:145,burlington:155,milton:130,hamilton:160,guelph:120,cambridge:140,kitchener:130,waterloo:130,orangeville:75,markham:125,"richmond hill":120,vaughan:120,ajax:145,pickering:145,"north york":130,scarborough:135,etobicoke:145,oshawa:155,whitby:150,bowmanville:170,clarington:175,newcastle:175,cobourg:210,"port hope":200,barrie:65,collingwood:15,"owen sound":50 },
     species:["Brown Trout","Rainbow Trout","Brook Trout"],
     active:true,
     regs:[],
@@ -3181,7 +3180,7 @@ var RIVER_CONFIG = {
     sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
     lat:44.100, lng:-80.750,
     loc:'Rocky Saugeen, North Saugeen, South Saugeen, Beatty Saugeen — above Hanover',
-    driveTime:{'toronto':120,'north york':111,'scarborough':122,'etobicoke':110,'markham':113,'richmond hill':105,'vaughan':101,'ajax':138,'pickering':133,'mississauga':103,'brampton':90,'oakville':108,'burlington':112,'milton':93,'hamilton':115,'guelph':72,'cambridge':87,'kitchener':73,'waterloo':71,'orangeville':55,'oshawa':149,'whitby':143,'bowmanville':162,'clarington':169,'newcastle':170,'cobourg':202,'port hope':192,'barrie':88,'collingwood':60,'owen sound':53},
+    driveTime:{'toronto':145,'north york':130,'scarborough':140,'etobicoke':135,'markham':130,'richmond hill':125,'vaughan':120,'ajax':160,'pickering':155,'mississauga':140,'brampton':110,'oakville':125,'burlington':130,'milton':105,'hamilton':130,'guelph':85,'cambridge':100,'kitchener':85,'waterloo':80,'orangeville':65,'oshawa':170,'whitby':165,'bowmanville':185,'clarington':195,'newcastle':195,'cobourg':230,'port hope':220,'barrie':100,'collingwood':70,'owen sound':60},
     species:['Brook Trout','Brown Trout','Rainbow Trout'],
     active:true,
     regs:[{rule:'FMZ 18 — check specific tributary regulations. Rocky Saugeen is particularly sensitive — practice C&R and minimize disturbance.',icon:'📋'}],
@@ -3197,7 +3196,7 @@ var RIVER_CONFIG = {
     sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
     lat:44.220, lng:-81.000,
     loc:'Hanover through Walkerton to Paisley — warm-water bass and pike fishery',
-    driveTime:{'toronto':143,'north york':134,'scarborough':144,'etobicoke':133,'markham':135,'richmond hill':127,'vaughan':123,'ajax':159,'pickering':155,'mississauga':126,'brampton':113,'oakville':131,'burlington':135,'milton':116,'hamilton':137,'guelph':94,'cambridge':108,'kitchener':92,'waterloo':90,'orangeville':78,'oshawa':170,'whitby':164,'bowmanville':183,'clarington':190,'newcastle':191,'cobourg':222,'port hope':212,'barrie':103,'collingwood':68,'owen sound':38},
+    driveTime:{'toronto':170,'north york':160,'scarborough':165,'etobicoke':160,'markham':155,'richmond hill':150,'vaughan':145,'ajax':185,'pickering':180,'mississauga':170,'brampton':135,'oakville':150,'burlington':155,'milton':135,'hamilton':160,'guelph':110,'cambridge':125,'kitchener':105,'waterloo':105,'orangeville':90,'oshawa':195,'whitby':190,'bowmanville':210,'clarington':220,'newcastle':220,'cobourg':255,'port hope':245,'barrie':120,'collingwood':80,'owen sound':45},
     species:[],
     active:false,
     regs:[],
@@ -3209,7 +3208,7 @@ var RIVER_CONFIG = {
     sweetMin:10, sweetMax:40, flowLow:3, flowHigh:80,
     lat:44.400, lng:-81.200,
     loc:"Paisley to Southampton — Lake Huron mouth, Denny's Dam, major migratory runs",
-    driveTime:{'toronto':166,'north york':156,'scarborough':166,'etobicoke':156,'markham':157,'richmond hill':148,'vaughan':145,'ajax':180,'pickering':175,'mississauga':150,'brampton':137,'oakville':156,'burlington':160,'milton':140,'hamilton':162,'guelph':119,'cambridge':132,'kitchener':117,'waterloo':114,'orangeville':101,'oshawa':190,'whitby':184,'bowmanville':202,'clarington':208,'newcastle':210,'cobourg':241,'port hope':231,'barrie':117,'collingwood':77,'owen sound':27},
+    driveTime:{'toronto':195,'north york':185,'scarborough':190,'etobicoke':190,'markham':180,'richmond hill':175,'vaughan':170,'ajax':205,'pickering':200,'mississauga':195,'brampton':165,'oakville':180,'burlington':185,'milton':160,'hamilton':185,'guelph':135,'cambridge':150,'kitchener':135,'waterloo':130,'orangeville':115,'oshawa':220,'whitby':210,'bowmanville':230,'clarington':240,'newcastle':240,'cobourg':275,'port hope':265,'barrie':135,'collingwood':90,'owen sound':30},
     species:['Steelhead','Chinook Salmon'],
     active:true,
     regs:[{rule:"FMZ 18 — one of the largest steelhead and Chinook salmon runs in the Great Lakes. Check OMNR regs for seasonal limits and closures near Denny's Dam.",icon:'📋'}],
@@ -3225,7 +3224,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.440, lng:-79.672,
     loc:'Lake Ontario mouth to Lakeshore Road — Oakville Harbour',
-    driveTime:{'toronto':34,'north york':40,'scarborough':49,'etobicoke':23,'markham':52,'richmond hill':51,'vaughan':45,'ajax':68,'pickering':63,'mississauga':16,'brampton':27,'oakville':3,'burlington':16,'milton':19,'hamilton':25,'guelph':47,'cambridge':51,'kitchener':65,'waterloo':67,'orangeville':62,'oshawa':80,'whitby':76,'bowmanville':93,'clarington':100,'newcastle':100,'cobourg':131,'port hope':121,'barrie':103,'collingwood':123,'owen sound':157},
+    driveTime:{'toronto':20,'north york':25,'scarborough':30,'etobicoke':20,'markham':30,'richmond hill':30,'vaughan':30,'ajax':40,'pickering':35,'mississauga':20,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':15,'guelph':30,'cambridge':30,'kitchener':40,'waterloo':40,'orangeville':35,'oshawa':45,'whitby':40,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':75,'port hope':70,'barrie':60,'collingwood':70,'owen sound':90},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — standard trout and salmon seasonal dates apply.',icon:'📋'}],
@@ -3240,7 +3239,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.470, lng:-79.685,
     loc:'Rebecca Street to Dundas Street — Lions Valley Park, central Oakville',
-    driveTime:{'toronto':33,'north york':38,'scarborough':47,'etobicoke':21,'markham':50,'richmond hill':49,'vaughan':42,'ajax':66,'pickering':62,'mississauga':13,'brampton':24,'oakville':0,'burlington':18,'milton':16,'hamilton':27,'guelph':45,'cambridge':51,'kitchener':64,'waterloo':66,'orangeville':58,'oshawa':79,'whitby':74,'bowmanville':92,'clarington':99,'newcastle':99,'cobourg':130,'port hope':120,'barrie':100,'collingwood':119,'owen sound':154},
+    driveTime:{'toronto':30,'north york':30,'scarborough':35,'etobicoke':20,'markham':35,'richmond hill':40,'vaughan':35,'ajax':45,'pickering':45,'mississauga':25,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':20,'guelph':30,'cambridge':40,'kitchener':45,'waterloo':45,'orangeville':40,'oshawa':55,'whitby':55,'bowmanville':65,'clarington':70,'newcastle':70,'cobourg':95,'port hope':90,'barrie':70,'collingwood':85,'owen sound':110},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 seasonal dates. Heavy fall rains trigger salmon and steelhead runs — conditions can change quickly.',icon:'📋'}],
@@ -3255,7 +3254,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
     lat:43.530, lng:-79.750,
     loc:'North of Highway 407 — West Branch, cold-water trout habitat',
-    driveTime:{'toronto':34,'north york':37,'scarborough':47,'etobicoke':21,'markham':48,'richmond hill':45,'vaughan':38,'ajax':67,'pickering':62,'mississauga':11,'brampton':17,'oakville':8,'burlington':22,'milton':11,'hamilton':31,'guelph':39,'cambridge':48,'kitchener':59,'waterloo':61,'orangeville':50,'oshawa':80,'whitby':75,'bowmanville':93,'clarington':100,'newcastle':101,'cobourg':132,'port hope':122,'barrie':93,'collingwood':111,'owen sound':146},
+    driveTime:{'toronto':45,'north york':45,'scarborough':55,'etobicoke':35,'markham':55,'richmond hill':55,'vaughan':50,'ajax':75,'pickering':70,'mississauga':35,'brampton':25,'oakville':10,'burlington':25,'milton':15,'hamilton':35,'guelph':45,'cambridge':55,'kitchener':70,'waterloo':70,'orangeville':55,'oshawa':90,'whitby':85,'bowmanville':105,'clarington':115,'newcastle':115,'cobourg':150,'port hope':140,'barrie':105,'collingwood':130,'owen sound':170},
     species:['Brook Trout','Brown Trout','Rainbow Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — cold-water tributary regulations may apply. Check OMNR for West Branch specific rules.',icon:'📋'}],
@@ -3270,7 +3269,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
     lat:43.545, lng:-79.790,
     loc:'North of Highway 407 — Middle and East branches, Mill Pond, warmwater fishery',
-    driveTime:{'toronto':37,'north york':38,'scarborough':48,'etobicoke':23,'markham':49,'richmond hill':46,'vaughan':39,'ajax':69,'pickering':64,'mississauga':12,'brampton':15,'oakville':12,'burlington':24,'milton':8,'hamilton':32,'guelph':36,'cambridge':46,'kitchener':56,'waterloo':58,'orangeville':47,'oshawa':82,'whitby':77,'bowmanville':95,'clarington':102,'newcastle':103,'cobourg':135,'port hope':125,'barrie':92,'collingwood':109,'owen sound':143},
+    driveTime:{'toronto':40,'north york':35,'scarborough':40,'etobicoke':25,'markham':40,'richmond hill':40,'vaughan':40,'ajax':60,'pickering':55,'mississauga':30,'brampton':20,'oakville':10,'burlington':20,'milton':10,'hamilton':25,'guelph':30,'cambridge':40,'kitchener':50,'waterloo':50,'orangeville':40,'oshawa':70,'whitby':70,'bowmanville':80,'clarington':85,'newcastle':90,'cobourg':115,'port hope':110,'barrie':80,'collingwood':95,'owen sound':125},
     species:[],
     active:false,
     regs:[],
@@ -3282,7 +3281,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.803, lng:-79.134,
     loc:'Lake Ontario mouth — Rouge Beach, Pickering / Scarborough',
-    driveTime:{'toronto':23,'north york':22,'scarborough':10,'etobicoke':36,'markham':17,'richmond hill':25,'vaughan':29,'ajax':10,'pickering':5,'mississauga':46,'brampton':51,'oakville':57,'burlington':74,'milton':66,'hamilton':83,'guelph':92,'cambridge':104,'kitchener':113,'waterloo':115,'orangeville':76,'oshawa':23,'whitby':18,'bowmanville':37,'clarington':44,'newcastle':45,'cobourg':78,'port hope':67,'barrie':77,'collingwood':113,'owen sound':163},
+    driveTime:{'toronto':30,'north york':30,'scarborough':10,'etobicoke':50,'markham':20,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':75,'brampton':65,'oakville':65,'burlington':85,'milton':75,'hamilton':95,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':45,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':90,'collingwood':130,'owen sound':185},
     species:['Steelhead','Chinook Salmon'],
     active:true,
     regs:[{rule:'FMZ 17 — standard trout and salmon limits. Check seasonal dates for migratory species.',icon:'📋'}],
@@ -3298,7 +3297,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.835, lng:-79.142,
     loc:'Highway 2 (Kingston Road) north through Rouge National Urban Park and Toronto Zoo',
-    driveTime:{'toronto':26,'north york':23,'scarborough':11,'etobicoke':37,'markham':15,'richmond hill':24,'vaughan':29,'ajax':10,'pickering':4,'mississauga':48,'brampton':51,'oakville':58,'burlington':76,'milton':68,'hamilton':85,'guelph':92,'cambridge':105,'kitchener':114,'waterloo':115,'orangeville':75,'oshawa':23,'whitby':17,'bowmanville':36,'clarington':44,'newcastle':44,'cobourg':77,'port hope':67,'barrie':74,'collingwood':110,'owen sound':161},
+    driveTime:{'toronto':35,'north york':30,'scarborough':15,'etobicoke':50,'markham':15,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':80,'brampton':65,'oakville':65,'burlington':85,'milton':80,'hamilton':100,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':40,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':85,'collingwood':125,'owen sound':185},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Parks Canada managed — Rouge National Urban Park. Respect all park regulations. Check FMZ 17 seasonal dates.',icon:'📋'}],
@@ -3314,7 +3313,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.880, lng:-79.250,
     loc:'Northern tributaries and Milne Dam Conservation Park — Markham',
-    driveTime:{'toronto':26,'north york':18,'scarborough':12,'etobicoke':35,'markham':7,'richmond hill':15,'vaughan':21,'ajax':18,'pickering':13,'mississauga':44,'brampton':45,'oakville':56,'burlington':74,'milton':63,'hamilton':83,'guelph':86,'cambridge':101,'kitchener':108,'waterloo':109,'orangeville':66,'oshawa':30,'whitby':24,'bowmanville':44,'clarington':51,'newcastle':52,'cobourg':85,'port hope':75,'barrie':65,'collingwood':101,'owen sound':151},
+    driveTime:{'toronto':35,'north york':25,'scarborough':15,'etobicoke':50,'markham':10,'richmond hill':20,'vaughan':30,'ajax':20,'pickering':15,'mississauga':75,'brampton':55,'oakville':65,'burlington':85,'milton':70,'hamilton':95,'guelph':100,'cambridge':115,'kitchener':125,'waterloo':125,'orangeville':75,'oshawa':35,'whitby':30,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':100,'port hope':85,'barrie':75,'collingwood':115,'owen sound':175},
     species:['Rainbow Trout','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — urban watershed. Check TRCA rules for Milne Dam Conservation Park. Heavily influenced by urban development.',icon:'📋'}],
@@ -3329,7 +3328,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.890, lng:-78.594,
     loc:'Sir Samuel Wilmot Nature Area — Lake Ontario mouth, Cobbledick Road',
-    driveTime:{'toronto':64,'north york':65,'scarborough':53,'etobicoke':78,'markham':58,'richmond hill':66,'vaughan':72,'ajax':34,'pickering':39,'mississauga':88,'brampton':94,'oakville':97,'burlington':113,'milton':109,'hamilton':121,'guelph':135,'cambridge':147,'kitchener':156,'waterloo':158,'orangeville':117,'oshawa':21,'whitby':27,'bowmanville':8,'clarington':5,'newcastle':4,'cobourg':34,'port hope':24,'barrie':101,'collingwood':142,'owen sound':197},
+    driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':110,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':180,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — standard trout and salmon limits apply. Sir Samuel Wilmot Nature Area — provincially significant wetland, respect all posted regulations.',icon:'📋'}],
@@ -3343,7 +3342,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.900, lng:-78.592,
     loc:'Mouth to CN railway tracks — gravel runs and holding pools',
-    driveTime:{'toronto':65,'north york':66,'scarborough':54,'etobicoke':78,'markham':58,'richmond hill':66,'vaughan':72,'ajax':34,'pickering':39,'mississauga':89,'brampton':94,'oakville':98,'burlington':113,'milton':109,'hamilton':122,'guelph':135,'cambridge':147,'kitchener':157,'waterloo':159,'orangeville':117,'oshawa':21,'whitby':27,'bowmanville':8,'clarington':4,'newcastle':3,'cobourg':34,'port hope':24,'barrie':101,'collingwood':142,'owen sound':196},
+    driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':115,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':185,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — heavy pressure during peak runs. Respect other anglers and practice C&R where possible.',icon:'📋'}],
@@ -3358,7 +3357,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:4, flowLow:0.2, flowHigh:8,
     lat:43.915, lng:-78.585,
     loc:'Newcastle — wooded corridor with riffles and holding pools',
-    driveTime:{'toronto':66,'north york':67,'scarborough':55,'etobicoke':79,'markham':59,'richmond hill':67,'vaughan':73,'ajax':35,'pickering':40,'mississauga':90,'brampton':95,'oakville':99,'burlington':115,'milton':110,'hamilton':124,'guelph':136,'cambridge':148,'kitchener':158,'waterloo':160,'orangeville':118,'oshawa':22,'whitby':28,'bowmanville':8,'clarington':2,'newcastle':1,'cobourg':33,'port hope':23,'barrie':100,'collingwood':142,'owen sound':196},
+    driveTime:{'toronto':80,'north york':80,'scarborough':65,'etobicoke':100,'markham':70,'richmond hill':80,'vaughan':90,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':115,'burlington':130,'milton':125,'hamilton':145,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':185,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':25,'barrie':115,'collingwood':165,'owen sound':225},
     species:['Steelhead','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — water levels can be shallow depending on seasonal rainfall. Check conditions before making the trip.',icon:'📋'}],
@@ -3372,7 +3371,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
     lat:43.960, lng:-78.575,
     loc:'North of Highway 2 — Orono Crown Lands, cold-water headwaters',
-    driveTime:{'toronto':69,'north york':69,'scarborough':57,'etobicoke':82,'markham':61,'richmond hill':68,'vaughan':74,'ajax':37,'pickering':42,'mississauga':93,'brampton':97,'oakville':102,'burlington':118,'milton':113,'hamilton':127,'guelph':139,'cambridge':151,'kitchener':160,'waterloo':162,'orangeville':119,'oshawa':24,'whitby':29,'bowmanville':10,'clarington':3,'newcastle':4,'cobourg':32,'port hope':22,'barrie':98,'collingwood':140,'owen sound':195},
+    driveTime:{'toronto':85,'north york':85,'scarborough':65,'etobicoke':105,'markham':70,'richmond hill':80,'vaughan':90,'ajax':45,'pickering':50,'mississauga':130,'brampton':115,'oakville':115,'burlington':135,'milton':130,'hamilton':145,'guelph':160,'cambridge':175,'kitchener':185,'waterloo':185,'orangeville':135,'oshawa':30,'whitby':35,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':35,'port hope':25,'barrie':115,'collingwood':160,'owen sound':225},
     species:['Brook Trout','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — cold-water sensitive habitat. Orono Crown Lands provide public access. Check for specific tributary restrictions.',icon:'📋'}],
@@ -3387,7 +3386,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
     lat:43.893, lng:-78.685,
     loc:'Lake Ontario mouth · Darlington / Bowmanville Marina',
-    driveTime:{'toronto':58,'north york':59,'scarborough':47,'etobicoke':71,'markham':51,'richmond hill':59,'vaughan':65,'ajax':27,'pickering':32,'mississauga':82,'brampton':87,'oakville':91,'burlington':107,'milton':102,'hamilton':116,'guelph':128,'cambridge':140,'kitchener':150,'waterloo':151,'orangeville':110,'oshawa':14,'whitby':20,'bowmanville':2,'clarington':8,'newcastle':8,'cobourg':41,'port hope':31,'barrie':95,'collingwood':136,'owen sound':190},
+    driveTime:{'toronto':70,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':35,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':115,'hamilton':135,'guelph':145,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16 — check OMNR regs for seasonal closures near the pier and creek mouth',icon:'📋'}],
@@ -3402,7 +3401,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
     lat:43.900, lng:-78.685,
     loc:'Lake Ontario to Baseline Road',
-    driveTime:{'toronto':58,'north york':59,'scarborough':47,'etobicoke':71,'markham':51,'richmond hill':59,'vaughan':65,'ajax':27,'pickering':32,'mississauga':82,'brampton':87,'oakville':92,'burlington':107,'milton':103,'hamilton':116,'guelph':128,'cambridge':140,'kitchener':150,'waterloo':152,'orangeville':110,'oshawa':14,'whitby':20,'bowmanville':2,'clarington':8,'newcastle':8,'cobourg':41,'port hope':31,'barrie':94,'collingwood':136,'owen sound':190},
+    driveTime:{'toronto':70,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':35,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':120,'hamilton':135,'guelph':145,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16 — year-round fishing south of CNR railway bridge. Check boundary markers.',icon:'📋'}],
@@ -3417,7 +3416,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
     lat:43.907, lng:-78.683,
     loc:'Baseline Road to Goodyear / Vanstone Dam (Fish Ladder)',
-    driveTime:{'toronto':59,'north york':59,'scarborough':47,'etobicoke':72,'markham':51,'richmond hill':59,'vaughan':65,'ajax':27,'pickering':33,'mississauga':83,'brampton':88,'oakville':92,'burlington':108,'milton':103,'hamilton':117,'guelph':129,'cambridge':141,'kitchener':150,'waterloo':152,'orangeville':110,'oshawa':14,'whitby':20,'bowmanville':1,'clarington':7,'newcastle':8,'cobourg':41,'port hope':30,'barrie':94,'collingwood':135,'owen sound':190},
+    driveTime:{'toronto':75,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':40,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':120,'hamilton':135,'guelph':150,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Fishing strictly prohibited at the fish ladder and dam — sanctuary signs posted. FMZ 16 applies.',icon:'🚫'}],
@@ -3432,7 +3431,7 @@ var RIVER_CONFIG = {
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.930, lng:-78.680,
     loc:'Above Goodyear Dam to Oak Ridges Moraine headwaters',
-    driveTime:{'toronto':60,'north york':60,'scarborough':48,'etobicoke':73,'markham':52,'richmond hill':59,'vaughan':65,'ajax':28,'pickering':33,'mississauga':84,'brampton':89,'oakville':94,'burlington':110,'milton':104,'hamilton':119,'guelph':130,'cambridge':142,'kitchener':151,'waterloo':153,'orangeville':110,'oshawa':15,'whitby':21,'bowmanville':2,'clarington':6,'newcastle':7,'cobourg':40,'port hope':30,'barrie':93,'collingwood':134,'owen sound':189},
+    driveTime:{'toronto':75,'north york':70,'scarborough':55,'etobicoke':95,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':40,'mississauga':120,'brampton':110,'oakville':110,'burlington':125,'milton':120,'hamilton':135,'guelph':150,'cambridge':165,'kitchener':175,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':5,'newcastle':10,'cobourg':45,'port hope':35,'barrie':105,'collingwood':155,'owen sound':215},
     species:['Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16 — critical spawning habitat. Check for seasonal closures and C&R requirements above the dam.',icon:'📋'}],
@@ -3448,7 +3447,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.640, lng:-80.220,
     loc:'Wellington County rural reaches flowing into Guelph Lake reservoir',
-    driveTime:{'toronto':68,'north york':65,'scarborough':77,'etobicoke':56,'markham':73,'richmond hill':67,'vaughan':60,'ajax':97,'pickering':91,'mississauga':46,'brampton':36,'oakville':46,'burlington':47,'milton':30,'hamilton':50,'guelph':11,'cambridge':31,'kitchener':30,'waterloo':30,'orangeville':32,'oshawa':110,'whitby':104,'bowmanville':123,'clarington':131,'newcastle':131,'cobourg':164,'port hope':154,'barrie':91,'collingwood':93,'owen sound':115},
+    driveTime:{'toronto':85,'north york':80,'scarborough':90,'etobicoke':75,'markham':85,'richmond hill':80,'vaughan':75,'ajax':110,'pickering':105,'mississauga':75,'brampton':45,'oakville':55,'burlington':55,'milton':35,'hamilton':55,'guelph':15,'cambridge':35,'kitchener':35,'waterloo':35,'orangeville':35,'oshawa':125,'whitby':120,'bowmanville':140,'clarington':150,'newcastle':150,'cobourg':190,'port hope':175,'barrie':105,'collingwood':105,'owen sound':130},
     species:['Brook Trout','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16 — cold-water trout habitat. Check OMNR and GRCA regulations for Wellington County tributaries.',icon:'📋'}],
@@ -3463,7 +3462,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.570, lng:-80.250,
     loc:'Guelph Lake reservoir through Riverside Park to downtown Guelph',
-    driveTime:{'toronto':71,'north york':69,'scarborough':81,'etobicoke':58,'markham':78,'richmond hill':72,'vaughan':65,'ajax':101,'pickering':96,'mississauga':48,'brampton':40,'oakville':46,'burlington':44,'milton':29,'hamilton':45,'guelph':3,'cambridge':23,'kitchener':23,'waterloo':24,'orangeville':40,'oshawa':114,'whitby':108,'bowmanville':128,'clarington':135,'newcastle':136,'cobourg':169,'port hope':158,'barrie':99,'collingwood':101,'owen sound':121},
+    driveTime:{'toronto':85,'north york':85,'scarborough':95,'etobicoke':75,'markham':90,'richmond hill':85,'vaughan':80,'ajax':115,'pickering':110,'mississauga':80,'brampton':50,'oakville':55,'burlington':50,'milton':35,'hamilton':50,'guelph':5,'cambridge':25,'kitchener':25,'waterloo':30,'orangeville':45,'oshawa':130,'whitby':125,'bowmanville':145,'clarington':155,'newcastle':155,'cobourg':195,'port hope':180,'barrie':115,'collingwood':115,'owen sound':140},
     species:[],
     active:false,
     regs:[],
@@ -3475,7 +3474,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.430, lng:-80.310,
     loc:'Southern Guelph through Puslinch and Hespeler to Grand River confluence — Cambridge',
-    driveTime:{'toronto':79,'north york':79,'scarborough':91,'etobicoke':66,'markham':89,'richmond hill':84,'vaughan':77,'ajax':111,'pickering':106,'mississauga':55,'brampton':51,'oakville':49,'burlington':42,'milton':35,'hamilton':40,'guelph':13,'cambridge':7,'kitchener':15,'waterloo':17,'orangeville':56,'oshawa':124,'whitby':119,'bowmanville':137,'clarington':145,'newcastle':145,'cobourg':178,'port hope':167,'barrie':115,'collingwood':116,'owen sound':133},
+    driveTime:{'toronto':95,'north york':95,'scarborough':105,'etobicoke':85,'markham':100,'richmond hill':100,'vaughan':95,'ajax':130,'pickering':120,'mississauga':85,'brampton':65,'oakville':55,'burlington':50,'milton':40,'hamilton':45,'guelph':15,'cambridge':10,'kitchener':15,'waterloo':20,'orangeville':65,'oshawa':145,'whitby':135,'bowmanville':160,'clarington':165,'newcastle':165,'cobourg':205,'port hope':190,'barrie':130,'collingwood':135,'owen sound':155},
     species:[],
     active:false,
     regs:[],
@@ -3487,7 +3486,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:8,
     lat:43.615, lng:-80.148,
     loc:'Above Rockwood to headwaters — cold water, road bridge access',
-    driveTime:{'toronto':63,'north york':60,'scarborough':72,'etobicoke':50,'markham':69,'richmond hill':63,'vaughan':56,'ajax':92,'pickering':86,'mississauga':40,'brampton':31,'oakville':40,'burlington':42,'milton':23,'hamilton':45,'guelph':11,'cambridge':30,'kitchener':32,'waterloo':34,'orangeville':33,'oshawa':105,'whitby':99,'bowmanville':119,'clarington':126,'newcastle':127,'cobourg':160,'port hope':149,'barrie':91,'collingwood':96,'owen sound':120},
+    driveTime:{'toronto':80,'north york':70,'scarborough':85,'etobicoke':65,'markham':80,'richmond hill':75,'vaughan':70,'ajax':105,'pickering':100,'mississauga':70,'brampton':40,'oakville':45,'burlington':50,'milton':25,'hamilton':50,'guelph':15,'cambridge':35,'kitchener':35,'waterloo':40,'orangeville':40,'oshawa':120,'whitby':115,'bowmanville':135,'clarington':145,'newcastle':145,'cobourg':185,'port hope':170,'barrie':105,'collingwood':110,'owen sound':140},
     species:['Brook Trout','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16 seasonal dates apply. Access from municipal road bridges only — most of this section flows through private land.',icon:'📋'}],
@@ -3502,7 +3501,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.595, lng:-80.195,
     loc:'Rockwood Conservation Area to Eden Mills — limestone bluffs and glacial potholes',
-    driveTime:{'toronto':67,'north york':64,'scarborough':76,'etobicoke':54,'markham':73,'richmond hill':67,'vaughan':60,'ajax':96,'pickering':91,'mississauga':43,'brampton':36,'oakville':42,'burlington':43,'milton':26,'hamilton':45,'guelph':7,'cambridge':27,'kitchener':28,'waterloo':29,'orangeville':36,'oshawa':109,'whitby':103,'bowmanville':123,'clarington':130,'newcastle':131,'cobourg':164,'port hope':153,'barrie':95,'collingwood':98,'owen sound':120},
+    driveTime:{'toronto':85,'north york':75,'scarborough':85,'etobicoke':70,'markham':85,'richmond hill':80,'vaughan':75,'ajax':110,'pickering':105,'mississauga':75,'brampton':45,'oakville':50,'burlington':50,'milton':30,'hamilton':50,'guelph':10,'cambridge':30,'kitchener':30,'waterloo':35,'orangeville':40,'oshawa':125,'whitby':120,'bowmanville':140,'clarington':150,'newcastle':150,'cobourg':190,'port hope':175,'barrie':110,'collingwood':115,'owen sound':140},
     species:['Rainbow Trout','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16 seasonal dates apply. GRCA managed at Rockwood Conservation Area — day-use fee required.',icon:'📋'}],
@@ -3517,7 +3516,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.565, lng:-80.225,
     loc:'Eden Mills to Guelph — warm water bass and pike fishery',
-    driveTime:{'toronto':70,'north york':67,'scarborough':79,'etobicoke':56,'markham':76,'richmond hill':71,'vaughan':63,'ajax':99,'pickering':94,'mississauga':46,'brampton':39,'oakville':44,'burlington':42,'milton':27,'hamilton':44,'guelph':3,'cambridge':23,'kitchener':24,'waterloo':26,'orangeville':40,'oshawa':112,'whitby':107,'bowmanville':126,'clarington':134,'newcastle':134,'cobourg':167,'port hope':157,'barrie':99,'collingwood':101,'owen sound':122},
+    driveTime:{'toronto':85,'north york':80,'scarborough':90,'etobicoke':75,'markham':85,'richmond hill':85,'vaughan':75,'ajax':115,'pickering':110,'mississauga':75,'brampton':50,'oakville':50,'burlington':50,'milton':30,'hamilton':50,'guelph':5,'cambridge':25,'kitchener':30,'waterloo':30,'orangeville':45,'oshawa':130,'whitby':125,'bowmanville':145,'clarington':155,'newcastle':155,'cobourg':190,'port hope':180,'barrie':115,'collingwood':115,'owen sound':140},
     species:[],
     active:false,
     regs:[],
@@ -3529,7 +3528,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
     lat:43.760, lng:-79.490,
     loc:'North of Finch Avenue — Downsview, York University area, naturalized ravines',
-    driveTime:{'toronto':16,'north york':6,'scarborough':18,'etobicoke':15,'markham':16,'richmond hill':14,'vaughan':8,'ajax':38,'pickering':33,'mississauga':22,'brampton':23,'oakville':35,'burlington':53,'milton':40,'hamilton':62,'guelph':64,'cambridge':78,'kitchener':86,'waterloo':87,'orangeville':50,'oshawa':51,'whitby':45,'bowmanville':65,'clarington':72,'newcastle':73,'cobourg':106,'port hope':95,'barrie':70,'collingwood':98,'owen sound':143},
+    driveTime:{'toronto':25,'north york':10,'scarborough':20,'etobicoke':25,'markham':20,'richmond hill':20,'vaughan':15,'ajax':45,'pickering':40,'mississauga':50,'brampton':30,'oakville':40,'burlington':60,'milton':45,'hamilton':70,'guelph':75,'cambridge':90,'kitchener':100,'waterloo':100,'orangeville':55,'oshawa':60,'whitby':50,'bowmanville':75,'clarington':85,'newcastle':85,'cobourg':120,'port hope':110,'barrie':80,'collingwood':115,'owen sound':165},
     species:['Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17 — urban waterway, flashy conditions. Water levels can surge rapidly after rain — check conditions before visiting.',icon:'📋'}],
@@ -3544,7 +3543,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
     lat:43.720, lng:-79.490,
     loc:'Wilson Avenue to Eglinton Avenue — flood control concrete channel',
-    driveTime:{'toronto':13,'north york':8,'scarborough':19,'etobicoke':11,'markham':19,'richmond hill':18,'vaughan':13,'ajax':39,'pickering':34,'mississauga':19,'brampton':21,'oakville':31,'burlington':49,'milton':38,'hamilton':58,'guelph':62,'cambridge':75,'kitchener':84,'waterloo':86,'orangeville':52,'oshawa':52,'whitby':47,'bowmanville':66,'clarington':73,'newcastle':74,'cobourg':107,'port hope':96,'barrie':74,'collingwood':102,'owen sound':146},
+    driveTime:{'toronto':20,'north york':15,'scarborough':20,'etobicoke':20,'markham':20,'richmond hill':25,'vaughan':20,'ajax':45,'pickering':40,'mississauga':45,'brampton':30,'oakville':35,'burlington':55,'milton':45,'hamilton':65,'guelph':70,'cambridge':85,'kitchener':95,'waterloo':100,'orangeville':60,'oshawa':60,'whitby':55,'bowmanville':75,'clarington':85,'newcastle':85,'cobourg':125,'port hope':110,'barrie':85,'collingwood':115,'owen sound':170},
     species:[],
     active:false,
     regs:[],
@@ -3556,7 +3555,7 @@ var RIVER_CONFIG = {
     sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
     lat:43.670, lng:-79.500,
     loc:'South of Eglinton Avenue — Smythe Park to Humber River junction, Etobicoke',
-    driveTime:{'toronto':12,'north york':12,'scarborough':22,'etobicoke':5,'markham':24,'richmond hill':23,'vaughan':18,'ajax':42,'pickering':37,'mississauga':14,'brampton':20,'oakville':26,'burlington':44,'milton':34,'hamilton':53,'guelph':60,'cambridge':72,'kitchener':82,'waterloo':83,'orangeville':54,'oshawa':55,'whitby':50,'bowmanville':69,'clarington':76,'newcastle':77,'cobourg':109,'port hope':99,'barrie':79,'collingwood':106,'owen sound':149},
+    driveTime:{'toronto':20,'north york':15,'scarborough':25,'etobicoke':15,'markham':30,'richmond hill':30,'vaughan':25,'ajax':50,'pickering':45,'mississauga':40,'brampton':30,'oakville':30,'burlington':50,'milton':40,'hamilton':60,'guelph':70,'cambridge':85,'kitchener':95,'waterloo':95,'orangeville':60,'oshawa':65,'whitby':55,'bowmanville':80,'clarington':85,'newcastle':90,'cobourg':125,'port hope':115,'barrie':90,'collingwood':120,'owen sound':170},
     species:['Steelhead','Chinook Salmon'],
     active:true,
     regs:[{rule:'FMZ 17 — highly accessible urban fishery. Migratory fish push up from the Humber during spring and fall runs.',icon:'📋'}],
@@ -4486,14 +4485,18 @@ function renderRiverUI(cfg) {
     // Filter regs to selected species only
     var regsHtml = "";
     if (regs) {
-      var speciesFilter = selectedSpecies; // e.g. "brown", "rainbow", "brook", "chinook", "coho", ""
-      var speciesMap2 = { brown:"Brown Trout", rainbow:"Rainbow Trout", brook:"Brook Trout", chinook:"Chinook", coho:"Coho" };
-      var filterName = speciesMap2[speciesFilter] || "";
+      // Use the effective recommended species (set by buildTopPick) if it differs from user selection
+      // This ensures regs match the species in the headline (e.g. Rainbow Trout when brown/brook were selected)
+      var _effSp = window._effectiveRecommendedSpecies;
+      var _effKey = _effSp ? ({"Brown Trout":"brown","Rainbow Trout":"rainbow","Brook Trout":"brook","Steelhead":"rainbow","Chinook Salmon":"chinook","Coho Salmon":"coho"}[_effSp] || null) : null;
+      var _regsSpeciesKeys = (_effKey && selectedSpecies.indexOf(_effKey) === -1) ? [_effKey] : selectedSpecies;
+      var speciesFilter = _regsSpeciesKeys;
+      var speciesMap2 = { brown:"Brown Trout", rainbow:"Rainbow Trout", brook:"Brook Trout", chinook:"Chinook Salmon", coho:"Coho Salmon" };
 
       var filteredSpecies = regs.species.filter(function(s) {
-        if (selectedSpecies.length===0) return true;
-        return selectedSpecies.some(function(k){
-          var n={brown:"Brown Trout",rainbow:"Rainbow Trout",brook:"Brook Trout",chinook:"Chinook",coho:"Coho"}[k]||"";
+        if (_regsSpeciesKeys.length===0) return true;
+        return _regsSpeciesKeys.some(function(k){
+          var n={brown:"Brown Trout",rainbow:"Rainbow Trout",brook:"Brook Trout",chinook:"Chinook Salmon",coho:"Coho Salmon"}[k]||"";
           return s.name.toLowerCase().indexOf(n.toLowerCase())!==-1;
         });
       });
@@ -4524,7 +4527,12 @@ function renderRiverUI(cfg) {
         '</div>';
       }).join("");
       var regsSummary = filterAndSummariseRegs(regs, document.getElementById('trip-date') ? document.getElementById('trip-date').value : '', selectedSpecies);
-      var regsLabel = '2026 Regs' + (selectedSpecies.length > 0 ? ' · ' + selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;}).join('/') : '');
+      // Use effective recommended species for label if it differs from selection
+      var _effSpLabel = window._effectiveRecommendedSpecies || null;
+      var _labelSpecies = _effSpLabel
+        ? [_effSpLabel.replace(' Trout','').replace(' Salmon','')]
+        : (selectedSpecies.length > 0 ? selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;}) : []);
+      var regsLabel = '2026 Regs' + (_labelSpecies.length > 0 ? ' · ' + _labelSpecies.join('/') : '');
       regsHtml = '<div class="regs-panel">' +
         '<div class="regs-header">' +
         '<span class="regs-zone">' + regs.zone + '</span>' +
@@ -4797,7 +4805,7 @@ function updateRivers(val) {
     var active=i===0?" active":"";
     var safeLoc=(r.loc||"").replace(/–/g,"-");
     return '<div class="river-chip'+active+'" data-rname="'+r.name+'" data-rloc="'+safeLoc+'">' +
-      '<div class="rc-time">'+drive+'</div>' +
+      '<div class="rc-time">'+drive+' <span style="font-size:.62rem;opacity:.5">est.</span></div>' +
       '<div class="rc-name">'+r.name+'</div>' +
       '<div class="rc-loc">'+r.loc+'</div>' +
     '</div>';
@@ -6147,6 +6155,9 @@ function setMode(mode) {
     var rsecB = document.getElementById('river-section');
     if (rsecB) rsecB.style.display = 'none';
   } else {
+    window._beginnerLocKey = null; // clear stale location from beginner mode
+    var _drvEl = document.getElementById('tp-drive-time');
+    if (_drvEl) _drvEl.style.display = 'none';
     card.classList.add('mode-expert');
     card.classList.remove('mode-beginner');
     btnB.classList.remove('active');
@@ -6294,9 +6305,24 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var seasonal = getCurrentSeason(targetName);
     var onRiver  = cfg.species && cfg.species.indexOf(targetName) !== -1;
     if (!onRiver || (seasonal && seasonal.quality === 'absent')) {
+      var _isMigratory = seasonal && (targetName === 'Chinook Salmon' || targetName === 'Coho Salmon' || targetName === 'Steelhead');
+      var _isSalmon = targetName === 'Chinook Salmon' || targetName === 'Coho Salmon';
+      var _isAtMouth = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
       if (recs.length > 0) {
         fallbackSpecies = recs[0].name;
-        speciesNote = targetName + ' not in river right now. Fish for ' + fallbackSpecies + ' instead (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
+        if (_isSalmon && !_isAtMouth) {
+          // Not at a staging zone — recommend resident species in this or an upstream section
+          speciesNote = targetName + ' won’t enter rivers until late summer. '
+            + 'Fish for <em>' + fallbackSpecies + '</em> in this section instead'
+            + (recs[0].reasons[0] ? ' — ' + recs[0].reasons[0] : '') + '. '
+            + 'For an early shot at salmon, try a harbour mouth section (Ganaraska, Bowmanville, Credit).';
+        } else if (_isSalmon && _isAtMouth) {
+          // At a harbour mouth — staging logic handles the headline; just set fallback quietly
+          fallbackSpecies = recs[0].name;
+          speciesNote = '';
+        } else {
+          speciesNote = targetName + ' not in river right now. Fish for ' + fallbackSpecies + ' instead (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
+        }
       } else {
         speciesNote = targetName + ' not in river right now. ';
       }
@@ -6349,6 +6375,36 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var s = getCurrentSeason(targetName);
     return s && s.quality !== 'absent' ? targetName : null;
   })()) || (recs.length > 0 ? recs[0].name : null);
+  // Store effective recommended species so regs card can sync to it
+  window._effectiveRecommendedSpecies = _displaySpecies || targetName || null;
+  // Patch any already-rendered regs labels to match the recommended species
+  (function() {
+    var _sp = window._effectiveRecommendedSpecies;
+    if (!_sp) return;
+    var _lbl = _sp.replace(' Trout','').replace(' Salmon','');
+    document.querySelectorAll('.regs-title').forEach(function(el) {
+      if (/2026 Regs/i.test(el.textContent)) {
+        el.textContent = '2026 Regs · ' + _lbl;
+      }
+    });
+    // Also re-filter species rows to show recommended species
+    var _keyMap = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Brook Trout':'brook','Steelhead':'rainbow','Chinook Salmon':'chinook','Coho Salmon':'coho'};
+    var _effKey2 = _keyMap[_sp];
+    if (!_effKey2) return;
+    document.querySelectorAll('.reg-row').forEach(function(row) {
+      var nameEl = row.querySelector('.reg-species');
+      if (!nameEl) return;
+      var name = nameEl.textContent.toLowerCase();
+      var matches = name.indexOf(_sp.split(' ')[0].toLowerCase()) !== -1;
+      row.style.display = matches ? '' : 'none';
+    });
+    // If all rows hidden, show all (fallback)
+    document.querySelectorAll('.regs-species-list').forEach(function(list) {
+      var rows = list.querySelectorAll('.reg-row');
+      var visible = Array.from(rows).filter(function(r){ return r.style.display !== 'none'; });
+      if (visible.length === 0) rows.forEach(function(r){ r.style.display = ''; });
+    });
+  })();
   var headlineHtml;
   var timeShort = tw.split(' (')[0].split(' and ')[0];
   // Staging override: target is an absent staging species AND this is a lake-mouth staging zone
@@ -6387,6 +6443,45 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   } catch(e) {}
   if (_stagingHeadline) {
     headlineHtml = _stagingHeadline;
+    // Override method accordion to show spinning/harbour setup instead of fly methods
+    setTimeout(function() {
+      var _m1n = document.getElementById('m1n');
+      var _m1d = document.getElementById('m1d');
+      var _m1c = document.getElementById('m1c');
+      var _m2n = document.getElementById('m2n');
+      var _m2d = document.getElementById('m2d');
+      var _m3n = document.getElementById('m3n');
+      var _m3d = document.getElementById('m3d');
+      var _lbl = document.getElementById('tg-baits-primary-lbl');
+      if (_m1n) _m1n.textContent = 'Spinning — Spoons & Lures';
+      if (_m1d) _m1d.textContent = 'Cast from the pier, beach, or river mouth. Fan cast and vary retrieves — slow flutter on the drop is key. Dawn and dusk are prime; overcast opens the full day.';
+      if (_m1c) _m1c.innerHTML = '<span>Best: Dawn, dusk, or all day overcast</span><span>Target: Harbour mouth, pier, beach</span><span>Rod: 8–10 ft medium-heavy spinning</span>';
+      if (_m2n) _m2n.textContent = 'Trolling';
+      if (_m2d) _m2d.textContent = 'Troll spoons or stick baits parallel to shore at harbour depth. Effective for covering water to locate staging fish.';
+      if (_m3n) _m3n.textContent = 'Jigging';
+      if (_m3d) _m3d.textContent = 'Vertical jig near structure and drop-offs at the harbour mouth. Can intercept resting fish.';
+      // Switch bait panel to salmon lures
+      if (_lbl) _lbl.textContent = 'Recommended Salmon Lures';
+      var container = document.getElementById('bpanels-primary');
+      if (container) {
+        var src = document.getElementById('p-salmon-lures');
+        if (src) {
+          var clone = src.cloneNode(true);
+          clone.id = 'bpanels-primary-p-salmon-lures';
+          clone.className = 'bpanel active';
+          container.innerHTML = '';
+          container.appendChild(clone);
+          setTimeout(loadBaitImages, 100);
+        }
+      }
+      // Rebuild gear setup for spinning — salmon harbour context
+      buildGearSetup('Spinning — Spoons & Lures', 'spin', {cold:false, high:false, low:true});
+      // Hide fly-specific secondary and tertiary method accordions
+      var _tg2 = document.getElementById('tg-secondary');
+      var _tg3 = document.getElementById('tg-tertiary');
+      if (_tg2) _tg2.style.display = 'none';
+      if (_tg3) _tg3.style.display = 'none';
+    }, 50);
   } else if (fallbackSpecies && targetName) {
     headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
       + 'Fish <em>' + fallbackSpecies + '</em> instead — '
@@ -6406,6 +6501,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   document.getElementById('tp-headline').innerHTML = headlineHtml;
   // Always show the band
   if (band) band.style.display = 'block';
+  // Hide drive time in expert/check-by-river mode — no city context available
+  var _driveElHide = document.getElementById('tp-drive-time');
+  if (_driveElHide && appMode === 'expert') _driveElHide.style.display = 'none';
 
   // Confidence badge
   var _confEl = document.getElementById('tp-confidence');
@@ -6471,7 +6569,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     }
 
     _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
-      + '<span class="drive-verdict ' + _verdictCls + '">' + _worthIt + '</span>';
+      + '<span class="drive-verdict ' + _verdictCls + '">' + _worthIt + '</span>'
+      + '<span style="font-size:.68rem;opacity:.55;margin-left:.4rem">est. from city centre</span>';
     _driveEl.style.display = 'block';
   }
     'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
@@ -6585,7 +6684,7 @@ function renderRiverRanker(locKey, maxMinutes) {
     return '<div class="rrank-card'+(isTop?' rr-top':'')+ '" data-river-name="'+r.name+'" data-river-loc="'+(r.loc||'').replace(/\u2013/g,'-')+'">' +
       '<div class="rrank-num">'+(i+1)+(isTop?' \u2014 Top Pick':'')+'</div>' +
       '<div class="rrank-name">'+r.name+'</div>' +
-      '<div class="rrank-drive">'+fmtDrive(r.driveTime)+' away</div>' +
+      '<div class="rrank-drive">'+fmtDrive(r.driveTime)+' away <span style="font-size:.65rem;opacity:.5">est.</span></div>' +
       (notesHtml ? '<div style="margin-bottom:.3rem">'+notesHtml+'</div>' : '') +
       (warnHtml  ? '<div style="margin-bottom:.3rem">'+warnHtml+'</div>'  : '') +
       rrankBadge(r.score) +
@@ -7343,49 +7442,45 @@ function applyBaitShowMore(panel, showCount) {
   panel.appendChild(btn);
 }
 
-// ── SPECIES GRID — collapse out-of-season species ────────────────────────────
+// ── SPECIES GRID — annotate pre-run migratory species ────────────────────────
 function updateSpeciesGrid() {
   var grid = document.querySelector('.species-btn-grid');
   if (!grid) return;
 
-  var OUT_OF_SEASON = ['chinook', 'coho', 'steelhead']; // migratory — check dynamically
-  // Dynamically check which are absent right now
-  var absent = [];
   var speciesKeyMap = { chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead' };
+
+  // Check which migratory species are pre-run (absent from rivers but legally fishable)
+  var preRun = [];
   Object.keys(speciesKeyMap).forEach(function(key) {
     var w = getCurrentSeason(speciesKeyMap[key]);
-    if (w && w.quality === 'absent') absent.push(key);
+    if (w && w.quality === 'absent') preRun.push(key);
   });
 
-  if (!absent.length) return; // all in season — show everything
+  if (!preRun.length) return; // all running — show everything as-is
 
-  // Hide absent species buttons
-  var hiddenBtns = [];
-  absent.forEach(function(key) {
-    var btn = grid.querySelector('.species-btn[data-value="' + key + '"]');
-    if (btn) { btn.style.display = 'none'; hiddenBtns.push(btn); }
-  });
-
-  // Add "Out of season ▸" toggle if not already there
-  if (hiddenBtns.length && !document.getElementById('sp-season-toggle')) {
-    var toggle = document.createElement('button');
-    toggle.id = 'sp-season-toggle';
-    toggle.className = 'sp-season-toggle';
-    toggle.setAttribute('aria-expanded', 'false');
-    var labels = absent.map(function(k) {
+  // Keep all species buttons visible — they're legally in season.
+  // Just add a contextual note beneath the grid explaining they're not in rivers yet.
+  if (!document.getElementById('sp-season-toggle')) {
+    var note = document.createElement('p');
+    note.id = 'sp-season-toggle';
+    note.className = 'sp-season-toggle';
+    var labels = preRun.map(function(k) {
       return speciesKeyMap[k].replace(' Salmon','').replace(' Trout','');
     }).join(', ');
-    toggle.textContent = labels + ' — out of season ▸';
-    grid.parentNode.insertBefore(toggle, grid.nextSibling);
-
-    toggle.addEventListener('click', function() {
-      var expanded = toggle.getAttribute('aria-expanded') === 'true';
-      hiddenBtns.forEach(function(btn) { btn.style.display = expanded ? 'none' : ''; });
-      toggle.setAttribute('aria-expanded', String(!expanded));
-      toggle.textContent = expanded
-        ? labels + ' — out of season ▸'
-        : labels + ' — out of season ▾';
-    });
+    // Distinguish staging-possible from truly absent
+    var stagingSpecies = preRun.filter(function(k) { return k === 'chinook' || k === 'coho'; });
+    var nonStaging = preRun.filter(function(k) { return k === 'steelhead'; });
+    var parts = [];
+    if (stagingSpecies.length) {
+      var stagingLabels = stagingSpecies.map(function(k){ return speciesKeyMap[k].replace(' Salmon',''); }).join(', ');
+      parts.push(stagingLabels + ' — not in rivers yet · may be staging near harbour mouths');
+    }
+    if (nonStaging.length) {
+      parts.push('Steelhead — dropped back to lake until fall');
+    }
+    note.textContent = parts.join(' · ') + ' ▸';
+    note.style.cursor = 'default';
+    grid.parentNode.insertBefore(note, grid.nextSibling);
   }
 }
 
@@ -7452,7 +7547,7 @@ function renderDefaultPreview() {
       var spKey   = this.getAttribute('data-species') || '';
       var cityMap = {
         'Credit River':'mississauga','Grand River':'guelph','Humber River':'toronto',
-        'Bronte Creek':'oakville','Duffins Creek':'ajax','Ganaraska River':'cobourg'
+        'Bronte Creek':'oakville','Duffins Creek':'ajax','Ganaraska River':'port hope'
       };
       var city = cityMap[rname] || 'toronto';
 
