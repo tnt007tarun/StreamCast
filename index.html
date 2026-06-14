@@ -2251,7 +2251,7 @@ select:focus-visible, input:focus-visible {
       </div>
       <div class="bfooter">Harbour mouth fishing — check OMNR regs for seasonal closures near river mouths.</div>
     </div>
-  </div>
+  
 
   <div class="tgsec fi" id="tg-section" role="region" aria-label="Technique and Gear">
 
@@ -4969,17 +4969,23 @@ function goToResults(){
     rivers.forEach(function(r){ var _cfg=RIVER_CONFIG[r.name]; var _dk3=driveKeyFor(locKey); r.driveTime=(r.times&&(r.times[locKey]||r.times[_dk3]))||(_cfg&&_cfg.driveTime&&(_cfg.driveTime[locKey]||_cfg.driveTime[_dk3]))||60; });
     var _tripDate = document.getElementById('trip-date').value||new Date().toISOString().slice(0,10);
     var ranked = rankRivers(rivers, selectedSpecies, _tripDate);
-    // If species selected, prefer a river that actually has it over the closest one
+    // If species selected, prefer a river that has ALL selected species, then fall back to ANY
     var bestPick = ranked[0];
     if (selectedSpecies.length > 0) {
       var _sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
       var targetSpeciesNames = selectedSpecies.map(function(k){ return _sm[k]; });
-      // Find the highest-scored river that has at least one selected species
-      var withSpecies = ranked.filter(function(r){
+      // Tier 1: rivers that have EVERY selected species
+      var withAllSpecies = ranked.filter(function(r){
+        var cfg = getRiverConfig(r.name);
+        return cfg && cfg.species && targetSpeciesNames.every(function(n){ return cfg.species.indexOf(n) !== -1; });
+      });
+      // Tier 2: rivers that have AT LEAST ONE selected species (fallback)
+      var withAnySpecies = ranked.filter(function(r){
         var cfg = getRiverConfig(r.name);
         return cfg && cfg.species && targetSpeciesNames.some(function(n){ return cfg.species.indexOf(n) !== -1; });
       });
-      if (withSpecies.length > 0) bestPick = withSpecies[0];
+      if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
+      else if (withAnySpecies.length > 0) bestPick = withAnySpecies[0];
     }
     if (bestPick) {
       selectedRiver = bestPick.name + (bestPick.loc ? ', ' + bestPick.loc.replace(/–/g,'-') : '');
