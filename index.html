@@ -365,6 +365,10 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   min-height:100vh;
   background:var(--cream);
   color:var(--ink);
+  flex-direction:column;
+}
+#results.active {
+  display:flex;
 }
 
 /* results header */
@@ -546,8 +550,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .regs-title{font-family:'JetBrains Mono', monospace;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;flex:1;opacity:.85;}
 .regs-link{font-family:'JetBrains Mono', monospace;font-size:.55rem;color:var(--gold-light);text-decoration:none;opacity:.8;flex-shrink:0;}
 .regs-link:hover{opacity:1;}
-.regs-plain{font-size:0.82rem;line-height:1.55;color:var(--ink);margin:0.65rem 0 0.5rem;padding:0;}
-.regs-details-toggle{background:none;border:none;color:var(--fern);font-size:0.72rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;cursor:pointer;padding:0;margin-bottom:0.35rem;text-decoration:underline;text-underline-offset:2px;display:block;}
+.regs-plain{font-size:0.82rem;line-height:1.55;color:var(--ink);margin:0;padding:0.65rem 0.75rem 0.5rem;}
+.regs-details-toggle{background:none;border:none;color:var(--fern);font-size:0.82rem;font-family:'Outfit',sans-serif;letter-spacing:0;cursor:pointer;padding:0 0.75rem 0.5rem;margin:0;text-decoration:underline;text-underline-offset:2px;display:block;}
 .regs-details-toggle:hover{color:var(--moss);}
 .regs-species-list{background:var(--white);border-bottom:1px solid rgba(45,74,50,.1);}
 .reg-row{padding:.45rem .75rem;border-bottom:1px solid rgba(45,74,50,.07);display:grid;grid-template-columns:120px 1fr 90px;gap:.4rem;align-items:start;}
@@ -1002,6 +1006,11 @@ select:focus-visible, input:focus-visible {
 
 
 /* RIVER RANKER — compact bottom strip */
+.more-river-wrap { border-top: 1px solid var(--border); margin-top: 0; }
+.more-river-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:1rem 2rem; background:none; border:none; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.85rem; font-weight:600; color:var(--moss); text-align:left; }
+.more-river-toggle:hover { background:rgba(45,74,50,0.04); }
+.more-river-label { }
+.more-river-chev { font-size:0.7rem; color:var(--sage); flex-shrink:0; }
 .rrank-section {
   border-top: 1px solid var(--border);
   margin-top: 2rem;
@@ -2143,7 +2152,8 @@ select:focus-visible, input:focus-visible {
   <div id="staging-card-slot" style="margin:0 2rem"></div>
 
   <!-- SECTION 1 -->
-  <div class="sec-label fi"><div class="sec-num">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
+  <div id="section-access">
+  <div class="sec-label fi"><div class="sec-num" id="sec-num-access">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions. Weekday fishing is significantly quieter at all locations.</p></div></div>
 
     <div class="asec fi">
     <div class="agrid" id="access-grid-wrap">
@@ -2157,7 +2167,10 @@ select:focus-visible, input:focus-visible {
     </div>
   </div>
 
-  <div class="sec-label fi"><div class="sec-num">2</div><div><h3>River Conditions</h3><p>Flow, temperature, and sky — the three variables that determine whether browns are feeding.</p></div></div>
+  </div><!-- /section-access -->
+
+  <div id="section-conditions">
+  <div class="sec-label fi"><div class="sec-num" id="sec-num-conditions">2</div><div><h3>River Conditions</h3><p>Flow, temperature, and sky — the three variables that determine whether browns are feeding.</p></div></div>
 
   <div class="cond-card">
   <div class="cgrid">
@@ -2209,7 +2222,9 @@ select:focus-visible, input:focus-visible {
     <div class="routine" id="routine-steps"></div>
   </div>
 </div>
-  </div><!-- SECTION 2: Technique & Gear (accordion) -->
+  </div>  </div><!-- /section-conditions -->
+
+  <!-- SECTION 2: Technique & Gear (accordion) -->
   <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p>Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
 
@@ -2354,31 +2369,28 @@ select:focus-visible, input:focus-visible {
 
 
   <!-- STOCKING SECTION -->
-  <div class="ssec fi" id="stocking-section" style="display:none">
-    <div class="sec-label fi">
-      <div class="sec-num">📦</div>
-      <div><h3>Stocking Report</h3><p>OMNRF stocking records with maturity forecast</p></div>
-    </div>
-    <div class="stocking-grid" id="stocking-grid"></div>
-  </div>
-
-  <div class="ssec fi" id="species-section" role="region" aria-label="Species Coverage">
-    <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
-    <div class="srail" id="species-rail"></div>
-  </div>
-
-
-  <!-- RIVER RANKER — compact, at bottom -->
-  <div class="rrank-section" id="rrank-section" style="display:none">
-    <button class="rrank-toggle-btn" id="rrank-toggle-btn" onclick="toggleRranker()" aria-expanded="false">
-      <span>Other nearby rivers</span>
-      <span class="rrank-toggle-chev">&#9656;</span>
+    <!-- MORE ABOUT THIS RIVER — collapsible wrapper for stocking + species -->
+  <div class="more-river-wrap" id="more-river-wrap">
+    <button class="more-river-toggle" id="more-river-toggle" onclick="(function(btn){var d=document.getElementById('more-river-body');var open=d.style.display!=='none';d.style.display=open?'none':'block';btn.querySelector('.more-river-chev').textContent=open?'▸':'▾';})(this)" aria-expanded="false">
+      <span class="more-river-label">More about this river &amp; species</span>
+      <span class="more-river-chev">▸</span>
     </button>
-    <div class="rrank-inner" id="rrank-inner" style="display:none">
-      <div class="rrank-lbl" id="rrank-lbl">Ranked by today&#39;s conditions and drive time</div>
-      <div class="rrank-grid" id="rrank-grid"></div>
+    <div id="more-river-body" style="display:none">
+      <div class="ssec fi" id="stocking-section" style="display:none">
+        <div class="sec-label fi">
+          <div class="sec-num">📦</div>
+          <div><h3>Stocking Report</h3><p>OMNRF stocking records with maturity forecast</p></div>
+        </div>
+        <div class="stocking-grid" id="stocking-grid"></div>
+      </div>
+
+      <div class="ssec fi" id="species-section" role="region" aria-label="Species Coverage">
+        <div class="sshdr"><h3 id="species-rail-title">Species on this River</h3><span id="species-rail-sub"></span></div>
+        <div class="srail" id="species-rail"></div>
+      </div>
     </div>
   </div>
+
 
   <div class="res-footer">
     <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
@@ -4646,7 +4658,7 @@ function renderRiverUI(cfg) {
           : (selectedSpecies.length > 0 ? selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;}) : []));
       var regsLabel = '2026 Regs' + (_labelSpecies.length > 0 ? ' · ' + _labelSpecies.join('/') : '');
       regsHtml = (function() {
-        var _plainEnglish = buildRegsPlainEnglish(regs, filteredSpecies);
+        var _plainEnglish = buildRegsPlainEnglish(regs, filteredSpecies, window._effectiveRecommendedSpecies);
         var _detailsId = 'regs-det-' + idx;
         return '<div class="regs-panel">' +
           '<div class="regs-header">' +
@@ -4722,6 +4734,26 @@ function renderRiverUI(cfg) {
 
   // Species rail
   renderSpeciesRail(cfg);
+
+  // Reorder sections based on mode: expert sees Conditions first, beginner sees Access first
+  (function() {
+    var sa = document.getElementById('section-access');
+    var sc = document.getElementById('section-conditions');
+    var numA = document.getElementById('sec-num-access');
+    var numC = document.getElementById('sec-num-conditions');
+    if (!sa || !sc) return;
+    if (appMode === 'expert') {
+      // Conditions first (1), Access second (2)
+      sc.style.order = '-1';
+      if (numA) numA.textContent = '2';
+      if (numC) numC.textContent = '1';
+    } else {
+      // Access first (1), Conditions second (2) — default
+      sc.style.order = '';
+      if (numA) numA.textContent = '1';
+      if (numC) numC.textContent = '2';
+    }
+  })();
 
   // Dam section removed — info is covered in Top Pick summary
   if (false && cfg.dam) {
@@ -5044,7 +5076,7 @@ function goToResults(){
   }
     setResHeader(selectedRiver);
   document.getElementById("landing").style.display="none";
-  document.getElementById("results").style.display="block";
+  document.getElementById("results").style.display=""; document.getElementById("results").classList.add("active");
   window.scrollTo(0,0);
   initNotifyBar();
   // Track river page view
@@ -5060,7 +5092,7 @@ function goToResults(){
 
 function goBack(){
   track('Back to Search', {});
-  document.getElementById("results").style.display="none";
+  document.getElementById("results").style.display=""; document.getElementById("results").classList.remove("active");
   var _bar = document.getElementById("notify-bar"); if (_bar) { _bar.classList.remove("visible"); }
   document.getElementById("landing").style.display="block";
   window.scrollTo(0,0);
@@ -6943,8 +6975,18 @@ function renderRiverRanker(locKey, maxMinutes) {
 // regulations for the given date and selected species.
 
 
-function buildRegsPlainEnglish(regs, filteredSpecies) {
+function buildRegsPlainEnglish(regs, filteredSpecies, effectiveSpecies) {
   if (!regs || !filteredSpecies || filteredSpecies.length === 0) return null;
+
+  // Sort filteredSpecies so the effective recommended species comes first
+  var sortedSpecies = filteredSpecies.slice();
+  if (effectiveSpecies) {
+    sortedSpecies.sort(function(a, b) {
+      var aMatch = a.name.toLowerCase().indexOf(effectiveSpecies.toLowerCase()) !== -1;
+      var bMatch = b.name.toLowerCase().indexOf(effectiveSpecies.toLowerCase()) !== -1;
+      return aMatch ? -1 : bMatch ? 1 : 0;
+    });
+  }
 
   var limitMap = {
     'S-5 / C-2': 'you can keep up to 5 fish on a Sport licence or 2 on a Conservation licence',
@@ -6976,7 +7018,7 @@ function buildRegsPlainEnglish(regs, filteredSpecies) {
   var sentences = [];
 
   // Sentence 1: Season open/closed
-  var sp = filteredSpecies[0];
+  var sp = sortedSpecies[0];
   var seasonText = sp.season || '';
   // Simplify common season strings
   seasonText = seasonText
@@ -7846,15 +7888,12 @@ function renderDefaultPreview() {
       '<div class="dp-name">' + shortName + '</div>' +
       '<div class="dp-row2">' +
         (speciesShort ? '<span class="dp-species">' + speciesShort + '</span>' : '') +
-        '<span class="dp-fishability-wrap">' +
-          '<span class="dp-fishability-lbl">Fishability</span>' +
-          '<span class="dp-conf ' + conf.cls + '" id="dp-conf-' + name.replace(/ /g,'-') + '">' + conf.label + '</span>' +
-        '</span>' +
+        '<span class="dp-conf ' + conf.cls + '" id="dp-conf-' + name.replace(/ /g,'-') + '">' + conf.label + '</span>' +
       '</div>' +
     '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="dp-label" id="dp-label-el">Today near Toronto</div>' + '<div class="dp-grid">' + cards + '</div>';
+  el.innerHTML = '<div class="dp-label" id="dp-label-el">Fishability · Today near Toronto</div>' + '<div class="dp-grid">' + cards + '</div>';
   el.style.display = 'block';
 
   // Wire card clicks — go directly to that river's results page
@@ -7893,7 +7932,7 @@ function renderDefaultPreview() {
       // Show results page directly
       setResHeader(selectedRiver);
       document.getElementById('landing').style.display = 'none';
-      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').style.display = ''; document.getElementById('results').classList.add('active');
       window.scrollTo(0, 0);
       initNotifyBar();
       renderResults();
@@ -7903,7 +7942,7 @@ function renderDefaultPreview() {
 
   // Update label with source note
   var lbl = document.getElementById('dp-label-el') || el.querySelector('.dp-label');
-  if (lbl) lbl.innerHTML = 'TODAY NEAR TORONTO <span class="dp-source">· Live flow loading…</span>';
+  if (lbl) lbl.innerHTML = 'FISHABILITY · TODAY NEAR TORONTO <span class="dp-source">· Live flow loading…</span>';
 
   // Fetch live conditions for each river in parallel
   var _baseScores = {};
@@ -7951,7 +7990,7 @@ function renderDefaultPreview() {
 
     Promise.all(fetches).then(function(results) {
       var gotFlow = results.some(function(r){ return r.flow != null; });
-      if (lbl) lbl.innerHTML = 'Today near Toronto'
+      if (lbl) lbl.innerHTML = 'Fishability · Today near Toronto'
         + ' <span class="dp-source">'+(gotFlow?'· Live flow · Default gauge':'· Seasonal estimate')+'</span>';
     });
   });
@@ -7963,7 +8002,7 @@ function renderDefaultPreview() {
 window.addEventListener('popstate', function(e) {
   if (!e.state || e.state.page === 'landing') {
     // Browser went back to dashboard
-    document.getElementById('results').style.display = 'none';
+    document.getElementById('results').style.display = ''; document.getElementById('results').classList.remove('active');
     document.getElementById('landing').style.display = 'block';
     window.scrollTo(0, 0);
   }
