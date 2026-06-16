@@ -7955,11 +7955,13 @@ function renderDefaultPreview() {
       var dbEntry = RIVERS_DB.find(function(r){ return r.name === rname; });
       if (!dbEntry) return;
 
-      // Set global state
-      selectedRiver = rname + ', ' + dbEntry.loc;
+      // Set global state — get loc from RIVER_CONFIG, not RIVERS_DB (which has no .loc)
+      var _cfgEntry = getRiverConfig(rname);
+      var _loc = (_cfgEntry && _cfgEntry.loc) ? _cfgEntry.loc : '';
+      selectedRiver = rname + (_loc ? ', ' + _loc : '');
       selectedTechFamily = [];
       selectedSpecies = spKey ? [spKey] : [];
-      appMode = 'expert';  // skip beginner ranking block
+      appMode = 'beginner';  // keep beginner mode so section order stays correct
       window._beginnerLocKey = city;
 
       // Set date to today
