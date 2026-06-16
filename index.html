@@ -546,6 +546,9 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .regs-title{font-family:'JetBrains Mono', monospace;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;flex:1;opacity:.85;}
 .regs-link{font-family:'JetBrains Mono', monospace;font-size:.55rem;color:var(--gold-light);text-decoration:none;opacity:.8;flex-shrink:0;}
 .regs-link:hover{opacity:1;}
+.regs-plain{font-size:0.82rem;line-height:1.55;color:var(--ink);margin:0.65rem 0 0.5rem;padding:0;}
+.regs-details-toggle{background:none;border:none;color:var(--fern);font-size:0.72rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;cursor:pointer;padding:0;margin-bottom:0.35rem;text-decoration:underline;text-underline-offset:2px;display:block;}
+.regs-details-toggle:hover{color:var(--moss);}
 .regs-species-list{background:var(--white);border-bottom:1px solid rgba(45,74,50,.1);}
 .reg-row{padding:.45rem .75rem;border-bottom:1px solid rgba(45,74,50,.07);display:grid;grid-template-columns:120px 1fr 90px;gap:.4rem;align-items:start;}
 .reg-row:last-child{border-bottom:none;}
@@ -1284,6 +1287,21 @@ select:focus-visible, input:focus-visible {
   font-size: .6rem;
   color: var(--sage);
   opacity: .85;
+}
+.dp-fishability-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .15rem;
+  flex-shrink: 0;
+}
+.dp-fishability-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .5rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--sage);
+  opacity: .7;
 }
 .dp-conf {
   font-size: .75rem;
@@ -4627,24 +4645,32 @@ function renderRiverUI(cfg) {
           ? [_effSpLabel.replace(/ Trout| Salmon/g,'')]
           : (selectedSpecies.length > 0 ? selectedSpecies.map(function(k){return{brown:'Brown',rainbow:'Rainbow',brook:'Brook',chinook:'Chinook',coho:'Coho'}[k]||k;}) : []));
       var regsLabel = '2026 Regs' + (_labelSpecies.length > 0 ? ' · ' + _labelSpecies.join('/') : '');
-      regsHtml = '<div class="regs-panel">' +
-        '<div class="regs-header">' +
-        '<span class="regs-zone">' + regs.zone + '</span>' +
-        '<span class="regs-title">' + regsLabel + '</span>' +
-        '<a class="regs-link" href="https://www.ontario.ca/page/sport-fishing-ontario" target="_blank">Full Regs ↗</a>' +
-        '</div>' +
-        '<div class="regs-species-list">' + rows + '</div>' +
-        (regsSummary ? '<div class="regs-specials"><div class="reg-special">📋 ' + regsSummary + '</div></div>' : '') +
-        '<div class="regs-glossary">' +
-          '<div class="regs-glossary-title">How to read these rules</div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">S-5 / C-2</span><span class="rg-def">Daily catch limit: 5 fish on a Sport licence, 2 on a Conservation licence — these are Ontario’s two angling licence types. S-0/C-0 means catch &amp; release only — no keeping fish.</span></div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">C&amp;R Only</span><span class="rg-def">Catch and release — you must return the fish to the water immediately, unharmed.</span></div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">4th Sat. April</span><span class="rg-def">Season opens on the fourth Saturday of April — the traditional Ontario trout opener.</span></div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">' + regs.zone + '</span><span class="rg-def">Fisheries Management Zone — Ontario divides the province into zones, each with its own rules. Always confirm the zone for your exact spot.</span></div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">Artificial only</span><span class="rg-def">You may only use artificial lures or flies — no live bait, worms, or roe in that section.</span></div>' +
-          '<div class="regs-glossary-row"><span class="rg-term">Barbless hook</span><span class="rg-def">The hook must have no barb (or it must be pinched flat). Makes releasing fish easier and is required in some sections.</span></div>' +
-        '</div>' +
-      '</div>';
+      regsHtml = (function() {
+        var _plainEnglish = buildRegsPlainEnglish(regs, filteredSpecies);
+        var _detailsId = 'regs-det-' + idx;
+        return '<div class="regs-panel">' +
+          '<div class="regs-header">' +
+            '<span class="regs-zone">' + regs.zone + '</span>' +
+            '<span class="regs-title">' + regsLabel + '</span>' +
+            '<a class="regs-link" href="https://www.ontario.ca/page/ontario-fishing-regulations-summary" target="_blank">Full Regs ↗</a>' +
+          '</div>' +
+          (_plainEnglish ? '<p class="regs-plain">' + _plainEnglish + '</p>' : '') +
+          '<button class="regs-details-toggle" onclick="(function(b){var d=document.getElementById(\'' + _detailsId + '\');var o=d.style.display!==\'none\';d.style.display=o?\'none\':\'block\';b.textContent=o?\'Details +\':\'Details −\';})(this)">Details +</button>' +
+          '<div id="' + _detailsId + '" style="display:none">' +
+            '<div class="regs-species-list">' + rows + '</div>' +
+            (regsSummary ? '<div class="regs-specials"><div class="reg-special">📋 ' + regsSummary + '</div></div>' : '') +
+            '<div class="regs-glossary">' +
+              '<div class="regs-glossary-title">How to read these rules</div>' +
+              '<div class="regs-glossary-row"><span class="rg-term">S-5 / C-2</span><span class="rg-def">Daily catch limit: 5 fish on a Sport licence, 2 on a Conservation licence. S-0/C-0 means catch &amp; release only.</span></div>' +
+              '<div class="regs-glossary-row"><span class="rg-term">C&amp;R Only</span><span class="rg-def">Catch and release — return the fish to the water immediately, unharmed.</span></div>' +
+              '<div class="regs-glossary-row"><span class="rg-term">4th Sat. April</span><span class="rg-def">Season opens on the fourth Saturday of April — the traditional Ontario trout opener.</span></div>' +
+              '<div class="regs-glossary-row"><span class="rg-term">' + regs.zone + '</span><span class="rg-def">Fisheries Management Zone — Ontario divides the province into zones, each with its own rules.</span></div>' +
+              '<div class="regs-glossary-row"><span class="rg-term">Artificial only</span><span class="rg-def">Artificial lures or flies only — no live bait, worms, or roe.</span></div>' +
+              '<div class="regs-glossary-row"><span class="rg-term">Barbless hook</span><span class="rg-def">The hook must have no barb (or be pinched flat). Required in some sections.</span></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      })()
     }
 
     var isRecommended = idx === 0;
@@ -6916,6 +6942,91 @@ function renderRiverRanker(locKey, maxMinutes) {
 // Returns a single plain-English sentence (or null) summarising ACTIVE
 // regulations for the given date and selected species.
 
+
+function buildRegsPlainEnglish(regs, filteredSpecies) {
+  if (!regs || !filteredSpecies || filteredSpecies.length === 0) return null;
+
+  var limitMap = {
+    'S-5 / C-2': 'you can keep up to 5 fish on a Sport licence or 2 on a Conservation licence',
+    'S-5 / C-2 (agg': 'combined limit of 5 fish (Sport) or 2 (Conservation) across species',
+    'S-2 / C-1': 'you can keep up to 2 fish on a Sport licence or 1 on a Conservation licence',
+    'S-1 / C-1': 'you can keep 1 fish on either licence type',
+    'S-0 / C-0': 'catch and release only — no fish may be kept',
+    'C&R': 'catch and release only — no fish may be kept',
+    'C&R Only': 'catch and release only — no fish may be kept'
+  };
+
+  function translateLimit(limit) {
+    if (!limit) return null;
+    var l = limit.trim();
+    // Check map
+    for (var k in limitMap) {
+      if (l.indexOf(k) === 0) return limitMap[k];
+    }
+    // Fallback: parse S-X / C-Y
+    var m = l.match(/S-(\d+)\s*\/\s*C-(\d+)/i);
+    if (m) {
+      var s = parseInt(m[1]), c = parseInt(m[2]);
+      if (s === 0) return 'catch and release only — no fish may be kept';
+      return 'you can keep up to ' + s + ' fish on a Sport licence or ' + c + ' on a Conservation licence';
+    }
+    return null;
+  }
+
+  var sentences = [];
+
+  // Sentence 1: Season open/closed
+  var sp = filteredSpecies[0];
+  var seasonText = sp.season || '';
+  // Simplify common season strings
+  seasonText = seasonText
+    .replace('4th Sat. April', 'late April')
+    .replace('4th Sat. in April', 'late April')
+    .replace('Sept. 30', 'September 30')
+    .replace('Dec. 31', 'December 31')
+    .replace(/open all year/i, 'open year-round');
+
+  if (/open year.round|open all year/i.test(sp.season || '')) {
+    sentences.push('The season is open year-round for ' + sp.name + '.');
+  } else {
+    sentences.push('Season runs from ' + seasonText + '.');
+  }
+
+  // Sentence 2: Keep limit
+  var limitSentence = translateLimit(sp.limit);
+  if (limitSentence) {
+    sentences.push('For ' + sp.name + ', ' + limitSentence + '.');
+  }
+
+  // Sentence 3: Key special rules (bait, barbless, C&R)
+  var specials = regs.special || [];
+  var keyRules = [];
+  specials.forEach(function(s) {
+    var sl = s.toLowerCase();
+    if (sl.indexOf('artificial') !== -1 || sl.indexOf('lure') !== -1) keyRules.push('artificial lures only (no live bait or roe)');
+    else if (sl.indexOf('barbless') !== -1) keyRules.push('barbless hooks required');
+    else if (sl.indexOf('catch and release') !== -1 || sl.indexOf('c&r') !== -1) keyRules.push('catch and release only in this section');
+    else if (sl.indexOf('bait management') !== -1) keyRules.push('Southern Bait Management Zone (no live baitfish)');
+  });
+  // Also check the species notes for these
+  filteredSpecies.forEach(function(sp) {
+    var n = (sp.notes || '').toLowerCase();
+    if (n.indexOf('artificial') !== -1) keyRules.push('artificial lures only');
+    if (n.indexOf('barbless') !== -1) keyRules.push('barbless hooks required');
+    if (n.indexOf('catch.and.release') !== -1 || n.indexOf('c&r') !== -1) keyRules.push('catch and release only');
+  });
+  // Deduplicate
+  keyRules = keyRules.filter(function(v, i, a) { return a.indexOf(v) === i; });
+  if (keyRules.length > 0) {
+    sentences.push('Key rules: ' + keyRules.join('; ') + '.');
+  }
+
+  // Sentence 4: Zone note
+  sentences.push('These rules apply in ' + regs.zone + ' — always verify your exact location.');
+
+  return sentences.join(' ');
+}
+
 function filterAndSummariseRegs(regs, tripDateStr, selectedSpeciesArr) {
   if (!regs) return null;
 
@@ -7735,7 +7846,10 @@ function renderDefaultPreview() {
       '<div class="dp-name">' + shortName + '</div>' +
       '<div class="dp-row2">' +
         (speciesShort ? '<span class="dp-species">' + speciesShort + '</span>' : '') +
-        '<span class="dp-conf ' + conf.cls + '" id="dp-conf-' + name.replace(/ /g,'-') + '">' + conf.label + '</span>' +
+        '<span class="dp-fishability-wrap">' +
+          '<span class="dp-fishability-lbl">Fishability</span>' +
+          '<span class="dp-conf ' + conf.cls + '" id="dp-conf-' + name.replace(/ /g,'-') + '">' + conf.label + '</span>' +
+        '</span>' +
       '</div>' +
     '</div>';
   }).join('');
