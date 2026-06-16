@@ -46,6 +46,7 @@
   --text:    #2c3e50;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
+.ac-summary, .tg-header, .more-river-toggle, .regs-details-toggle, .regs-link, .dp-card, .forecast-btn, button { -webkit-tap-highlight-color: rgba(45,74,50,0.12); touch-action: manipulation; }
 body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream); color:var(--ink); min-height:100vh; overflow-x:hidden; }
 
 /* ========== LANDING ========== */
@@ -548,10 +549,10 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .regs-header{display:flex;align-items:center;gap:.6rem;background:var(--fern);color:var(--cream);padding:.45rem .75rem;}
 .regs-zone{font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.15);padding:.1rem .4rem;border-radius:3px;flex-shrink:0;}
 .regs-title{font-family:'JetBrains Mono', monospace;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;flex:1;opacity:.85;}
-.regs-link{font-family:'JetBrains Mono', monospace;font-size:.55rem;color:var(--gold-light);text-decoration:none;opacity:.8;flex-shrink:0;}
+.regs-link{font-family:'JetBrains Mono', monospace;font-size:.6rem;color:var(--gold-light);text-decoration:none;opacity:.8;flex-shrink:0;padding:.4rem .3rem;margin:-.4rem -.3rem;min-height:32px;display:inline-flex;align-items:center;}
 .regs-link:hover{opacity:1;}
 .regs-plain{font-size:0.82rem;line-height:1.55;color:var(--ink);margin:0;padding:0.65rem 0.75rem 0.5rem;}
-.regs-details-toggle{background:none;border:none;color:var(--fern);font-size:0.82rem;font-family:'Outfit',sans-serif;letter-spacing:0;cursor:pointer;padding:0 0.75rem 0.5rem;margin:0;text-decoration:underline;text-underline-offset:2px;display:block;}
+.regs-details-toggle{background:none;border:none;color:var(--fern);font-size:0.82rem;font-family:'Outfit',sans-serif;letter-spacing:0;cursor:pointer;padding:0.5rem 0.75rem 0.6rem;margin:0;text-decoration:underline;text-underline-offset:2px;display:block;min-height:36px;width:100%;text-align:left;}
 .regs-details-toggle:hover{color:var(--moss);}
 .regs-species-list{background:var(--white);border-bottom:1px solid rgba(45,74,50,.1);}
 .reg-row{padding:.45rem .75rem;border-bottom:1px solid rgba(45,74,50,.07);display:grid;grid-template-columns:120px 1fr 90px;gap:.4rem;align-items:start;}
@@ -1278,6 +1279,11 @@ select:focus-visible, input:focus-visible {
   gap: .3rem;
 }
 .dp-card:active { border-color: var(--fern); }
+.ac-summary:active { background: rgba(45,74,50,0.05); }
+.tg-header:active { background: rgba(45,74,50,0.05); }
+.more-river-toggle:active { background: rgba(45,74,50,0.08); }
+.regs-details-toggle:active { color: var(--moss); }
+.regs-link:active { opacity: 1; }
 .dp-name {
   font-family: 'Nunito', sans-serif;
   font-size: .85rem;
@@ -5047,10 +5053,26 @@ function goToResults(){
     if (selectedSpecies.length > 0) {
       var _sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
       var targetSpeciesNames = selectedSpecies.map(function(k){ return _sm[k]; });
-      // Tier 1: rivers that have EVERY selected species
+      // Determine which selected species are currently fishable (not staging/absent)
+      var _tripDateBP = document.getElementById('trip-date') ? document.getElementById('trip-date').value : '';
+      var fishableSpecies = targetSpeciesNames.filter(function(n) {
+        var w = getCurrentSeason(n, _tripDateBP);
+        return w && w.quality !== 'absent';
+      });
+      // If no selected species are fishable right now, fall back to full list
+      if (fishableSpecies.length === 0) fishableSpecies = targetSpeciesNames;
+
+      // Tier 1: rivers that have EVERY selected species (ideal)
       var withAllSpecies = ranked.filter(function(r){
         var cfg = getRiverConfig(r.name);
         return cfg && cfg.species && targetSpeciesNames.every(function(n){ return cfg.species.indexOf(n) !== -1; });
+      });
+      // Tier 1.5: rivers that have ALL currently FISHABLE selected species
+      // e.g. Brook Trout + Coho in June → Coho is staging so fishable = [Brook Trout]
+      // Duffins Upper has Brook Trout → wins over Duffins Middle which only has Coho
+      var withAllFishable = ranked.filter(function(r){
+        var cfg = getRiverConfig(r.name);
+        return cfg && cfg.species && fishableSpecies.every(function(n){ return cfg.species.indexOf(n) !== -1; });
       });
       // Tier 2: rivers that have AT LEAST ONE selected species (fallback)
       var withAnySpecies = ranked.filter(function(r){
@@ -5058,6 +5080,7 @@ function goToResults(){
         return cfg && cfg.species && targetSpeciesNames.some(function(n){ return cfg.species.indexOf(n) !== -1; });
       });
       if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
+      else if (withAllFishable.length > 0) bestPick = withAllFishable[0];
       else if (withAnySpecies.length > 0) bestPick = withAnySpecies[0];
     }
     if (bestPick) {
@@ -5683,25 +5706,46 @@ async function renderResults(){
   // Species season badge in header
   var badge = document.getElementById("species-season-badge");
   if (badge) {
-    if (targetNames.length===0) {
-      badge.textContent = "";
+    if (targetNames.length === 0) {
+      badge.textContent = '';
     } else if (!speciesOnRiver) {
-      badge.textContent = "Not in this section";
-      badge.style.color = "#e07070";
-    } else if (speciesQuality === "absent") {
-      // Migratory species are legally in season — they're just staging in the lake, not in rivers yet
-      var _isMigratoryBadge = targetName === 'Chinook Salmon' || targetName === 'Coho Salmon' || targetName === 'Steelhead';
-      badge.textContent = _isMigratoryBadge ? "Staging in lake — not in river yet" : "Out of season";
-      badge.style.color = "#e8a85a";
-    } else if (speciesQuality === "peak") {
-      badge.textContent = "★ Peak season now";
-      badge.style.color = "#6dbf8a";
-    } else if (speciesQuality === "good") {
-      badge.textContent = "In season";
-      badge.style.color = "#6dbf8a";
+      // ALL selected species missing from this section
+      badge.textContent = 'Not in this section';
+      badge.style.color = '#e07070';
     } else {
-      badge.textContent = "Present — slow season";
-      badge.style.color = "#e8a85a";
+      // At least one selected species is on this river/section
+      var _migratory = ['Chinook Salmon','Coho Salmon','Steelhead'];
+
+      // For multi-species: note which are missing from this section
+      var _missingSection = targetNames.filter(function(n){ return riverSpeciesList.indexOf(n) === -1; });
+      var _allMigratoryAbsent = targetNames.every(function(n){
+        var w = getCurrentSeason(n, getTripDateStr());
+        return _migratory.indexOf(n) !== -1 && w && w.quality === 'absent';
+      });
+
+      if (_missingSection.length > 0 && _missingSection.length < targetNames.length) {
+        // Partial miss — some present, some not in this section
+        var _shortNames = _missingSection.map(function(n){ return n.replace(' Salmon','').replace(' Trout',''); });
+        badge.textContent = _shortNames.join('+') + ' not in this section';
+        badge.style.color = '#e8a85a';
+      } else if (speciesQuality === 'absent') {
+        // All on-river species are absent/staging
+        var _anyMigratorySelected = targetNames.some(function(n){ return _migratory.indexOf(n) !== -1; });
+        badge.textContent = _anyMigratorySelected ? 'Staging in lake — not in river yet' : 'Out of season';
+        badge.style.color = '#e8a85a';
+      } else if (speciesQuality === 'peak') {
+        badge.textContent = '★ Peak season now';
+        badge.style.color = '#6dbf8a';
+      } else if (speciesQuality === 'good') {
+        badge.textContent = '● In season';
+        badge.style.color = '#6dbf8a';
+      } else if (speciesQuality === 'slow') {
+        badge.textContent = '● Slow season';
+        badge.style.color = '#e8a85a';
+      } else {
+        badge.textContent = speciesSeasonal ? speciesSeasonal.label : '';
+        badge.style.color = '#aaa';
+      }
     }
   }
   // Build a species-aware prefix for the plain summary
