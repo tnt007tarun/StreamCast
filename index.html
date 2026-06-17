@@ -6145,8 +6145,9 @@ var SPECIES_SEASONS = {
     latin: "Oncorhynchus tshawytscha",
     type: "migratory",
     windows: [
-      { months: [0,7],   quality: "absent",  label: "In Lake",   note: "Chinook in Lake Ontario / Georgian Bay. Not accessible from rivers." },
-      { months: [8,8],   quality: "good",    label: "Early Run", note: "First Chinook enter rivers late August. Numbers building." },
+      { months: [0,6],   quality: "absent",  label: "In Lake",   note: "Chinook in Lake Ontario / Georgian Bay. Not accessible from rivers." },
+      { months: [7,7],   quality: "slow",    label: "Harbour Mouth", note: "Early Chinook staging near harbour mouths in late July–August. A few enter rivers mid-August." },
+      { months: [8,8],   quality: "good",    label: "Early Run", note: "Chinook entering rivers through September. Numbers building toward peak." },
       { months: [9,9],   quality: "peak",    label: "Peak Run",  note: "Peak Chinook run. Best of the year. Fish stacked in pools." },
       { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Spawned-out fish. Still worth fishing early October." },
       { months: [11,11], quality: "slow",    label: "Post-Spawn", note: "Run over. Occasional late fish. Most have spawned out." }
@@ -6535,6 +6536,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // For headline use: if 2+ species selected and all valid, treat as group target
   var _multiTarget = _targetNamesOnRiver.length >= 2 ? _targetNamesOnRiver : null;
   var _multiTargetLabel = _multiTarget ? _multiTarget.join(' + ') : null;
+  // If exactly 1 selected species is present in this section (others aren't),
+  // promote it to targetName so the headline uses it instead of falling to recs[0]
+  if (!targetName && !_multiTarget && _targetNamesOnRiver.length === 1) {
+    targetName = _targetNamesOnRiver[0];
+  }
 
   // Best access point: first one with low crowd
   var bestSpot = null;
@@ -7955,11 +7961,13 @@ function renderDefaultPreview() {
       var dbEntry = RIVERS_DB.find(function(r){ return r.name === rname; });
       if (!dbEntry) return;
 
-      // Set global state
-      selectedRiver = rname + ', ' + dbEntry.loc;
+      // Set global state — get loc from RIVER_CONFIG, not RIVERS_DB (which has no .loc)
+      var _cfgEntry = getRiverConfig(rname);
+      var _loc = (_cfgEntry && _cfgEntry.loc) ? _cfgEntry.loc : '';
+      selectedRiver = rname + (_loc ? ', ' + _loc : '');
       selectedTechFamily = [];
       selectedSpecies = spKey ? [spKey] : [];
-      appMode = 'expert';  // skip beginner ranking block
+      appMode = 'beginner';  // keep beginner mode so section order stays correct
       window._beginnerLocKey = city;
 
       // Set date to today
