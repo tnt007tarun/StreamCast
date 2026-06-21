@@ -29,7 +29,7 @@
   --moss:    #1a3a4a;
   --fern:    #1e7a6e;
   --sage:    #4a8c7a;
-  --water:   #2e8fa8;
+  --water:   #247a90;
   --mist:    #9ecfca;
   --foam:    #e0f4f0;
   --cream:   #faf8f4;
@@ -41,6 +41,7 @@
   --ink:     #1a2e3a;
   --good:    #1e7a6e;
   --warn:    #e07b2a;
+  --warn-d:  #a85518;
   --bad:     #c0392b;
   --border:  rgba(30,122,110,0.15);
   --text:    #2c3e50;
@@ -421,7 +422,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .bnum-u { font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--sage); }
 .bnum-l { font-size:0.72rem; color:var(--sage); line-height:1.4; margin-bottom:0.75rem; }
 .trd { font-family:'JetBrains Mono', monospace; font-size:0.7rem; margin-left:0.3rem; }
-.trd.up{color:var(--good);} .trd.down{color:var(--bad);} .trd.stable{color:var(--warn);}
+.trd.up{color:var(--good);} .trd.down{color:var(--bad);} .trd.stable{color:var(--warn-d);}
 .gw { margin-bottom:1.1rem; }
 .gh { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.4rem; }
 .gn { font-size:0.77rem; font-weight:500; color:var(--moss); }
@@ -431,11 +432,24 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .gf.good{background:var(--good);} .gf.warn{background:var(--warn);} .gf.bad{background:var(--bad);}
 .gr { display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:0.54rem; color:var(--sage); opacity:0.6; }
 .gs { font-family:'JetBrains Mono', monospace; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; margin-top:0.2rem; font-weight:500; }
-.gs.good{color:var(--good);} .gs.warn{color:var(--warn);} .gs.bad{color:var(--bad);}
+/* Sky period timeline strip */
+.sps { display:flex; border-radius:10px; overflow:hidden; border:1px solid rgba(45,74,50,0.12); }
+.spc { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:9px 4px 7px; }
+.spc:not(:last-child) { border-right:1px solid rgba(45,74,50,0.1); }
+.spc-icon { line-height:1; }
+.spc-time { font-family:'JetBrains Mono',monospace; font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; font-weight:600; }
+.spc-label { font-size:0.48rem; opacity:0.85; }
+.spc-good  { background:rgba(30,122,110,0.13); }
+.spc-good  .spc-time,.spc-good  .spc-label { color:#1e7a6e; }
+.spc-warn  { background:rgba(30,122,110,0.07); }
+.spc-warn  .spc-time,.spc-warn  .spc-label { color:#2d7a6e; }
+.spc-bad   { background:rgba(232,168,90,0.13); }
+.spc-bad   .spc-time,.spc-bad   .spc-label { color:#9a6a00; }
+.gs.good{color:var(--good);} .gs.warn{color:var(--warn-d);} .gs.bad{color:var(--bad);}
 .cl { list-style:none; display:flex; flex-direction:column; gap:0.55rem; }
 .cl li { display:flex; align-items:flex-start; gap:0.55rem; font-size:0.77rem; line-height:1.45; color:var(--moss); }
 .ci { font-size:0.7rem; margin-top:0.1rem; flex-shrink:0; width:14px; }
-.ci.good{color:var(--good);} .ci.warn{color:var(--warn);} .ci.bad{color:var(--bad);}
+.ci.good{color:var(--good);} .ci.warn{color:var(--warn-d);} .ci.bad{color:var(--bad);}
 .divr { border:none; border-top:1px solid var(--border); margin:1rem 0; }
 .routine { display:flex; flex-direction:column; gap:0.85rem; }
 .rs { display:grid; grid-template-columns:22px 1fr; gap:0.6rem; align-items:start; }
@@ -448,12 +462,12 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .mc { padding:1.5rem 2rem; border-right:1px solid var(--border); }
 .mc:last-child { border-right:none; }
 .mpr { font-family:'JetBrains Mono', monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.5rem; }
-.mpr.p1{color:var(--good);} .mpr.p2{color:var(--warn);} .mpr.p3{color:var(--sage);}
+.mpr.p1{color:var(--good);} .mpr.p2{color:var(--warn-d);} .mpr.p3{color:var(--sage);}
 .mn { font-family:'Nunito', sans-serif; font-size:1.15rem; font-weight:600; margin-bottom:0.4rem; color:var(--moss); }
 .md { font-size:0.76rem; color:var(--sage); line-height:1.55; margin-bottom:0.75rem; }
 .mcond { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); opacity:0.75; line-height:1.5; }
 .mcond span { display:block; padding:0.15rem 0; border-top:1px solid var(--border); }
-.rnote { display:inline-block; margin-top:0.6rem; font-family:'JetBrains Mono', monospace; font-size:0.54rem; color:var(--warn); border:1px solid rgba(184,115,51,0.35); padding:0.15rem 0.4rem; border-radius:4px; }
+.rnote { display:inline-block; margin-top:0.6rem; font-family:'JetBrains Mono', monospace; font-size:0.54rem; color:var(--warn-d); border:1px solid rgba(184,115,51,0.35); padding:0.15rem 0.4rem; border-radius:4px; }
 
 /* baits */
 .bsec { border-bottom:2px solid var(--border); padding:1.75rem 2rem; background:var(--cream); }
@@ -489,7 +503,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .act { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem; }
 .aname { font-family:'Nunito', sans-serif; font-size:1rem; font-weight:600; line-height:1.2; color:var(--moss); }
 .acrowd { font-family:'JetBrains Mono', monospace; font-size:0.52rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.15rem 0.45rem; border:1px solid currentColor; border-radius:4px; white-space:nowrap; flex-shrink:0; margin-left:0.5rem; }
-.acrowd.low{color:var(--good);} .acrowd.med{color:var(--warn);} .acrowd.high{color:var(--bad);}
+.acrowd.low{color:var(--good);} .acrowd.med{color:var(--warn-d);} .acrowd.high{color:var(--bad);}
 .aloc { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); margin-bottom:0.55rem; opacity:0.7; }
 .adesc { font-size:0.76rem; color:var(--sage); line-height:1.55; margin-bottom:0.6rem; }
 .atags { display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.5rem; }
@@ -526,7 +540,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .res-footer p { font-family:'JetBrains Mono', monospace; font-size:0.58rem; color:var(--sage); opacity:0.5; letter-spacing:0.05em; }
 .res-flogo { font-family:'Nunito', sans-serif; font-size:0.9rem; font-weight:700; font-style:italic; color:var(--sage); opacity:0.3; }
 
-.err { font-family:'JetBrains Mono', monospace; font-size:0.62rem; color:var(--warn); }
+.err { font-family:'JetBrains Mono', monospace; font-size:0.62rem; color:var(--warn-d); }
 .fi { opacity:0; transform:translateY(8px); animation:fu 0.45s ease forwards; }
 @keyframes fu { to { opacity:1; transform:translateY(0); } }
 .fi:nth-child(1){animation-delay:.04s} .fi:nth-child(2){animation-delay:.1s} .fi:nth-child(3){animation-delay:.16s}
@@ -625,6 +639,24 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tp-headline em{font-style:normal;color:var(--gold-light);}
 .tp-why{font-size:.85rem;font-weight:300;line-height:1.6;opacity:.88;max-width:680px;margin-bottom:1rem;}
 .tp-chips{display:flex;flex-wrap:wrap;gap:.5rem;}
+/* Conditions tile grid (hero) */
+.tp-tiles { display:flex; gap:6px; margin:.5rem 0 .25rem; }
+.tp-tile { flex:1; min-width:0; border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.04); border:1px solid rgba(158,207,202,0.12); }
+.tp-tile-bar { height:4px; background:var(--mist); opacity:.5; }
+.tp-tile.good   .tp-tile-bar { background:#6dbf8a; opacity:1; }
+.tp-tile.ok     .tp-tile-bar { background:#e8a85a; opacity:1; }
+.tp-tile.poor   .tp-tile-bar { background:#e07070; opacity:1; }
+.tp-tile.na     .tp-tile-bar { background:var(--mist); opacity:.45; }
+.tp-tile-body { padding:9px 8px; }
+.tp-tile-lbl { font-family:'JetBrains Mono',monospace; font-size:.48rem; letter-spacing:.06em; color:var(--mist); opacity:.7; text-transform:uppercase; margin-bottom:4px; }
+.tp-tile-val { font-size:1.05rem; font-weight:700; color:#fff; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tp-tile-val.sm { font-size:.92rem; }
+.tp-tile.na .tp-tile-val { color:var(--mist); }
+.tp-tile-meaning { font-family:'JetBrains Mono',monospace; font-size:.5rem; margin-top:3px; text-transform:uppercase; }
+.tp-tile.good .tp-tile-meaning { color:#6dbf8a; }
+.tp-tile.ok   .tp-tile-meaning { color:#e8a85a; }
+.tp-tile.poor .tp-tile-meaning { color:#e07070; }
+.tp-tile.na   .tp-tile-meaning { color:var(--mist); opacity:.8; }
 .tp-chip{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:.28rem .7rem;font-family:'JetBrains Mono', monospace;font-size:.6rem;letter-spacing:.05em;}
 .tp-chip.warn{background:rgba(232,168,90,.15);border-color:rgba(232,168,90,.3);color:var(--amber-l);}
 .tp-chip.good{background:rgba(109,191,138,.12);border-color:rgba(109,191,138,.25);color:#7dcf96;}
@@ -2149,7 +2181,8 @@ select:focus-visible, input:focus-visible {
       <div class="tp-drive-time" id="tp-drive-time" style="display:none"></div>
       <div class="tp-confidence" id="tp-confidence" style="display:none"></div>
       <div class="tp-why" id="tp-why"></div>
-      <div class="tp-chips" id="tp-chips"></div>
+      <div class="tp-tiles" id="tp-tiles"></div>
+      <div class="tp-chips" id="tp-chips" style="display:none"></div>
     </div>
   </div>
 
@@ -2214,6 +2247,26 @@ select:focus-visible, input:focus-visible {
         <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
         <div class="gt"><div class="gf" id="skybar" style="width:0%"></div></div>
         <div class="gr"><span>Clear</span><span>Ideal: Overcast</span><span>100%</span></div>
+        <!-- Period cloud strip — populated by JS when hourly data is available -->
+        <div id="sky-period-strip" style="display:none;margin-top:10px">
+          <div class="sps">
+            <div class="spc" id="spc-morning">
+              <div class="spc-icon" id="spc-icon-morning"></div>
+              <div class="spc-time">8 AM</div>
+              <div class="spc-label" id="spc-lbl-morning"></div>
+            </div>
+            <div class="spc" id="spc-midday">
+              <div class="spc-icon" id="spc-icon-midday"></div>
+              <div class="spc-time">12 PM</div>
+              <div class="spc-label" id="spc-lbl-midday"></div>
+            </div>
+            <div class="spc" id="spc-evening">
+              <div class="spc-icon" id="spc-icon-evening"></div>
+              <div class="spc-time">6 PM</div>
+              <div class="spc-label" id="spc-lbl-evening"></div>
+            </div>
+          </div>
+        </div>
         <div class="gs" id="skystat">—</div>
       </div>
       <hr class="divr">
@@ -5268,10 +5321,22 @@ async function fetchWeather(cfg){
     var d=await r.json();
     return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m};
   } else {
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
     var d=await r.json();
     var avg=(d.daily.temperature_2m_max[0]+d.daily.temperature_2m_min[0])/2;
-    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null)};
+    // Compute per-period cloud cover from hourly data (hours are 0-23 for that day)
+    var _hourlyCloud = d.hourly && d.hourly.cloudcover ? d.hourly.cloudcover : null;
+    var _periodCloud = null;
+    if (_hourlyCloud && _hourlyCloud.length >= 20) {
+      // Morning: 5-9 AM (hours 5-9), Midday: 10 AM-2 PM (hours 10-14), Evening: 3-8 PM (hours 15-20)
+      var avg6 = function(h,s,e){var sl=h.slice(s,e+1);return Math.round(sl.reduce(function(a,v){return a+v;},0)/sl.length);};
+      _periodCloud = {
+        morning: avg6(_hourlyCloud, 5, 9),
+        midday:  avg6(_hourlyCloud, 10, 14),
+        evening: avg6(_hourlyCloud, 15, 20)
+      };
+    }
+    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],periodCloud:_periodCloud,windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null)};
   }
 }
 
@@ -5683,6 +5748,7 @@ async function renderResults(){
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
       airTemp=wx.airTemp; cloudPct=wx.cloudPct; weatherOk=true;
       _stagingWeather = {cloudPct:wx.cloudPct, windDir:wx.windDir, windSpeed:wx.windSpeed};
+      window._periodCloud = wx.periodCloud || null;
     }
   } catch(e){ console.warn("Weather failed",e); }
   // Fall back to seasonal-typical only if the fetch genuinely failed
@@ -5894,11 +5960,27 @@ async function renderResults(){
     statsEl.style.display = hideStats ? "none" : "";
   }
   // Quick stats in banner
-  var tw=sc==="good"?"All Day":sc==="warn"?"6–9 AM & 6–8 PM":"6–8:30 AM only";
+  // Use period cloud data for summary card if available
+  var _pcSumm = window._periodCloud;
+  var tw, _twColor, _twNote;
+  if (_pcSumm) {
+    var _g = function(c){ return c>=70?'good':c>=30?'warn':'bad'; };
+    var _periods = [{l:'AM',g:_g(_pcSumm.morning)},{l:'Mid',g:_g(_pcSumm.midday)},{l:'PM',g:_g(_pcSumm.evening)}];
+    var _good = _periods.filter(function(p){return p.g==='good';}).map(function(p){return p.l;});
+    var _ok   = _periods.filter(function(p){return p.g==='warn';}).map(function(p){return p.l;});
+    var _all  = _good.concat(_ok);
+    if (_all.length===3){ tw='All day'; _twColor='#6dbf8a'; _twNote='Full day'; }
+    else if (_all.length===0){ tw='Dawn only'; _twColor='#e07070'; _twNote='Dawn only'; }
+    else { tw=_all.join('+')+' best'; _twColor='#e8a85a'; _twNote=_all.length===1?'Narrow window':'Mixed'; }
+  } else {
+    tw=sc==="good"?"All Day":sc==="warn"?"6–9 AM & 6–8 PM":"6–8:30 AM only";
+    _twColor=sc==="good"?"#6dbf8a":sc==="warn"?"#e8a85a":"#e07070";
+    _twNote=sc==="good"?"Full day":sc==="warn"?"Compressed":"Dawn only";
+  }
   // Flow stat box removed from banner - data lives in conditions section below
   document.getElementById("sum-window").textContent=tw;
-  document.getElementById("sum-window").style.color=sc==="good"?"#6dbf8a":sc==="warn"?"#e8a85a":"#e07070";
-  document.getElementById("sum-window-note").textContent=sc==="good"?"Full day":sc==="warn"?"Compressed":"Dawn only";
+  document.getElementById("sum-window").style.color=_twColor;
+  document.getElementById("sum-window-note").textContent=_twNote;
   var _fl2=({'':{h:'Streamers',c:'Slow Nymphing',n:'Nymphing'},fly:{h:'Streamer fishing',c:'Slow nymphing',n:'Nymphing'},spin:{h:'Heavy Spinners',c:'Slow Jig',n:'Spinner Fishing'},float:{h:'Drift Fishing',c:'Bottom Bait',n:'Float Fishing'}})[selectedTechFamily.length>0?selectedTechFamily[0]:'']||{h:'Streamers',c:'Slow Nymphing',n:'Nymphing'};
   var topMethod=flow!=null&&flow>cfg.flowHigh*0.6?_fl2.h:wt<8?_fl2.c:_fl2.n;
   document.getElementById("sum-method").textContent=topMethod;
@@ -5981,19 +6063,27 @@ async function renderResults(){
 
   // Sky column
   document.getElementById("skyv").textContent=skyl+" ("+cloudPct+"%)";
+  renderSkyPeriodStrip(window._periodCloud || null);
   // sky sub-indicators removed — combined into temp-dot
   var sb=document.getElementById("skybar");sb.style.width=cloudPct+"%";sb.className="gf "+sc;
   document.getElementById("skystat").textContent=sc==="good"?"Fish feed through the whole water column all day.":sc==="warn"?"Morning and evening windows open. Midday slows.":"Clear \u2014 fish hard until 8:30 AM then expect it to die.";
   document.getElementById("skystat").className="gs "+sc;
   document.getElementById("twin").textContent=tw;
-  document.getElementById("tnote").textContent=sc==="good"?"Overcast opens the full day. Don\u2019t sleep in.":sc==="warn"?"Partly cloudy compresses your window. Get on at first light.":"Clear sky kills the bite fast. Be on the water before sunrise.";
+  document.getElementById("tnote").textContent=tnoteText||'';
 
   updateMethods(fc,tc,sc,flow,wt);
   updateAccessFlowNotes(cfg,flow);
   autoSelectBaitTab();
 
   // Top Pick band — always shown
-  buildTopPick(nearbyRivers, flow, wt, cloudPct, tc, sc, selectedSpecies, weatherOk);
+  try {
+    buildTopPick(nearbyRivers, flow, wt, cloudPct, tc, sc, selectedSpecies, weatherOk);
+  } catch(_btpErr) {
+    console.error('buildTopPick failed:', _btpErr);
+    // Still show the band even if buildTopPick errors
+    var _band = document.getElementById('tpband');
+    if (_band) _band.style.display = 'block';
+  }
 
   // River Ranker — beginner mode only
   if (appMode === 'beginner' && window._beginnerLocKey) {
@@ -6549,6 +6639,123 @@ function rankRivers(rivers, speciesKey, dateStr) {
 }
 
 // ── BUILD TOP PICK BAND ───────────────────────────────────────────────────────
+// ── SKY PERIOD STRIP ─────────────────────────────────────────────────────────
+function renderSkyPeriodStrip(periodCloud) {
+  var strip = document.getElementById('sky-period-strip');
+  if (!strip) return;
+  if (!periodCloud) { strip.style.display = 'none'; return; }
+
+  function skyGrade(c) { return c >= 70 ? 'good' : c >= 30 ? 'warn' : 'bad'; }
+  function skyLabel(c) {
+    return c >= 70 ? 'Overcast' : c >= 50 ? 'Mostly Cloudy' : c >= 20 ? 'Partly Cloudy' : 'Clear';
+  }
+
+  // SVG icons as inline strings
+  var sunRays = '';
+  [0,45,90,135,180,225,270,315].forEach(function(a) {
+    var r = Math.PI/180*a;
+    sunRays += '<line x1="'+(12+7.5*Math.cos(r)).toFixed(1)+'" y1="'+(12+7.5*Math.sin(r)).toFixed(1)+'" x2="'+(12+9.8*Math.cos(r)).toFixed(1)+'" y2="'+(12+9.8*Math.sin(r)).toFixed(1)+'" stroke="#e8a85a" stroke-width="1.5" stroke-linecap="round"/>';
+  });
+  var SVG_SUN = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#e8a85a"/>'+sunRays+'</svg>';
+
+  var partlyRays = '';
+  [0,60,120,180,240,300].forEach(function(a){
+    var r=Math.PI/180*a;
+    partlyRays += '<line x1="'+(9+5.5*Math.cos(r)).toFixed(1)+'" y1="'+(9+5.5*Math.sin(r)).toFixed(1)+'" x2="'+(9+7*Math.cos(r)).toFixed(1)+'" y2="'+(9+7*Math.sin(r)).toFixed(1)+'" stroke="#e8a85a" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/>';
+  });
+  var SVG_PARTLY = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="9" r="4" fill="#e8a85a" opacity="0.9"/>'+partlyRays+'<path d="M8 16 Q5 16 5 13.5 Q5 11 7.5 11 Q7.5 9 10 9 Q12.5 9 13 11 Q15 11 15 13.5 Q15 16 12 16 Z" fill="#9ab5b0"/></svg>';
+
+  var SVG_CLOUD = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 18 Q3 18 3 15 Q3 12 6 12 Q6 9.5 9 9.5 Q12 9.5 12.5 12 Q15 12 15 15 Q15 18 12 18 Z" fill="#6b9a95"/></svg>';
+
+  function getIcon(c) { return c>=70 ? SVG_CLOUD : c>=30 ? SVG_PARTLY : SVG_SUN; }
+
+  var periods = [
+    { id:'morning', time:'8 AM',  val:periodCloud.morning },
+    { id:'midday',  time:'12 PM', val:periodCloud.midday  },
+    { id:'evening', time:'6 PM',  val:periodCloud.evening }
+  ];
+
+  periods.forEach(function(p) {
+    var cell = document.getElementById('spc-'+p.id);
+    var iconEl = document.getElementById('spc-icon-'+p.id);
+    var lblEl  = document.getElementById('spc-lbl-'+p.id);
+    if (!cell || !iconEl || !lblEl) return;
+    var g = skyGrade(p.val);
+    cell.className = 'spc spc-'+g;
+    iconEl.innerHTML = getIcon(p.val);
+    lblEl.textContent = skyLabel(p.val);
+  });
+
+  strip.style.display = 'block';
+}
+
+// ── CONDITION TILES (hero) ───────────────────────────────────────────────────
+function renderConditionTiles(opts) {
+  // opts: { wt, cloudPct, flow, sweetMin, sweetMax, flowLow, flowHigh, topMethod, isToday, weatherOk }
+  var host = document.getElementById('tp-tiles');
+  if (!host) return;
+
+  function tile(label, value, meaning, state, smallVal) {
+    return '<div class="tp-tile ' + state + '">' +
+      '<div class="tp-tile-bar"></div>' +
+      '<div class="tp-tile-body">' +
+        '<div class="tp-tile-lbl">' + label + '</div>' +
+        '<div class="tp-tile-val' + (smallVal ? ' sm' : '') + '">' + value + '</div>' +
+        '<div class="tp-tile-meaning">' + meaning + '</div>' +
+      '</div></div>';
+  }
+
+  // 1) WATER TEMP — ideal 8–14 for trout
+  var wt = opts.wt;
+  var waterState, waterMeaning;
+  if (wt == null) { waterState = 'na'; waterMeaning = 'No data'; }
+  else if (wt >= 8 && wt <= 14) { waterState = 'good'; waterMeaning = 'Ideal'; }
+  else if (wt >= 5 && wt < 8) { waterState = 'ok'; waterMeaning = 'Cool'; }
+  else if (wt > 14 && wt <= 18) { waterState = 'ok'; waterMeaning = 'Warm'; }
+  else if (wt > 18) { waterState = 'poor'; waterMeaning = 'Too warm'; }
+  else { waterState = 'poor'; waterMeaning = 'Too cold'; }
+  var waterVal = (wt == null) ? '—' : (Math.round(wt * 10) / 10) + '\u00b0';
+
+  // 2) SKY / CLOUD — overcast is best for trout
+  var cp = opts.cloudPct;
+  var skyState, skyMeaning;
+  if (cp == null) { skyState = 'na'; skyMeaning = 'No data'; }
+  else if (cp >= 50) { skyState = 'good'; skyMeaning = 'Good cover'; }
+  else if (cp >= 25) { skyState = 'ok'; skyMeaning = 'Some cover'; }
+  else { skyState = 'poor'; skyMeaning = 'Bright/clear'; }
+  var skyVal = (cp == null) ? '—' : cp + '%';
+
+  // 3) FLOW — today: live value + state; future: target range, muted
+  var flowTile;
+  if (opts.isToday && opts.flow != null) {
+    var f = opts.flow, fState, fMeaning;
+    if (f >= opts.sweetMin && f <= opts.sweetMax) { fState = 'good'; fMeaning = 'In range'; }
+    else if (f < opts.sweetMin && f >= (opts.flowLow || opts.sweetMin * 0.3)) { fState = 'ok'; fMeaning = 'Low'; }
+    else if (f > opts.sweetMax && f <= (opts.flowHigh || opts.sweetMax * 2)) { fState = 'ok'; fMeaning = 'High'; }
+    else { fState = 'poor'; fMeaning = f < opts.sweetMin ? 'Too low' : 'Too high'; }
+    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning, fState);
+  } else if (opts.isToday && opts.flow == null) {
+    // Today but gauge down
+    flowTile = tile('Flow', 'N/A', 'Check gauge', 'na', true);
+  } else {
+    // Future date — show the target range, muted bar (can't forecast flow)
+    flowTile = tile('Flow aim', opts.sweetMin + '\u2013' + opts.sweetMax, 'Check day-of', 'na');
+  }
+
+  // 4) TOP BAIT — based on chosen method; always "good" (it's the recommended bait)
+  var bait = opts.topMethod || 'Varies';
+  // Shorten long bait names for the tile
+  var baitShort = bait.replace(/ fishing/i, '').replace(/Slow /,'').trim();
+  if (baitShort.length > 9) baitShort = baitShort.split(' ')[0];
+  var baitMeaning = bait.length > 9 ? bait.split(' ').slice(-1)[0] : 'Recommended';
+
+  host.innerHTML =
+    tile('Water', waterVal, waterMeaning, waterState) +
+    tile('Sky', skyVal, skyMeaning, skyState) +
+    flowTile +
+    tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
+}
+
 function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weatherOk) {
   var band = document.getElementById('tpband');
   if (!band) return;
@@ -6589,7 +6796,42 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Best time window
   var skyl = cloudPct >= 80 ? 'Overcast' : cloudPct >= 50 ? 'Mostly Cloudy' : cloudPct >= 20 ? 'Partly Cloudy' : 'Clear';
   var sc = clsSky(cloudPct);
-  var tw = sc === 'good' ? 'All day' : sc === 'warn' ? 'Morning (6–9 AM) and evening (6–8 PM)' : 'Early morning only (6–8:30 AM)';
+  // Compute best fishing window using hourly period data if available, else fall back to daily mean
+  var tw, tnoteText;
+  var _pc = window._periodCloud;
+  if (_pc) {
+    // Grade each period: good ≥70% cloud, warn 30-69%, bad <30%
+    var _grade = function(c){ return c >= 70 ? 'good' : c >= 30 ? 'warn' : 'bad'; };
+    var _mg = _grade(_pc.morning), _dg = _grade(_pc.midday), _eg = _grade(_pc.evening);
+    // Build window label from which periods are good or warn
+    var _goodPeriods = [], _warnPeriods = [];
+    if (_mg === 'good') _goodPeriods.push('Morning (6–10 AM)');
+    else if (_mg === 'warn') _warnPeriods.push('Morning (6–10 AM)');
+    if (_dg === 'good') _goodPeriods.push('Midday (10 AM–3 PM)');
+    else if (_dg === 'warn') _warnPeriods.push('Midday (10 AM–3 PM)');
+    if (_eg === 'good') _goodPeriods.push('Evening (3–8 PM)');
+    else if (_eg === 'warn') _warnPeriods.push('Evening (3–8 PM)');
+    var _active = _goodPeriods.concat(_warnPeriods);
+    if (_active.length === 3) {
+      tw = 'All day';
+      tnoteText = 'Consistent cloud cover all day. Fish any time.';
+    } else if (_active.length === 0) {
+      tw = 'Early morning only (before 8 AM)';
+      tnoteText = 'Clear sky all day. Be on the water before sunrise.';
+    } else {
+      tw = _active.join(' & ');
+      // Explain why skipped periods are skipped
+      var _skipped = [];
+      if (_mg === 'bad') _skipped.push('mornings are clear (sun kills the bite)');
+      if (_dg === 'bad') _skipped.push('midday is bright');
+      if (_eg === 'bad') _skipped.push('evening clears out');
+      tnoteText = _skipped.length ? 'Skip ' + _skipped.join('; ') + '.' : 'Mixed sky — focus on the cloudy windows.';
+    }
+  } else {
+    // Fall back to daily mean
+    tw = sc === 'good' ? 'All day' : sc === 'warn' ? 'Morning (6–9 AM) & Evening (6–8 PM)' : 'Early morning only (before 8 AM)';
+    tnoteText = sc === 'good' ? 'Overcast opens the full day. Don\'t sleep in.' : sc === 'warn' ? 'Partly cloudy compresses your window. Get on at first light.' : 'Clear sky kills the bite fast. Be on the water before sunrise.';
+  }
 
   // Best method
   var _famLabels = {
@@ -6601,6 +6843,22 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _fam = selectedTechFamily.length > 0 ? selectedTechFamily[0] : '';
   var _fl = _famLabels[_fam] || _famLabels[''];
   var topMethod = flow!=null&&flow>(cfg.flowHigh||20)*0.6 ? _fl.high : wt<8 ? _fl.cold : _fl.normal;
+
+  // Render the conditions tile grid (hero)
+  (function(){
+    var _td = document.getElementById('trip-date');
+    var _ds = _td && _td.value ? _td.value : new Date().toISOString().slice(0,10);
+    var _isToday = _ds === new Date().toISOString().slice(0,10);
+    try {
+      renderConditionTiles({
+        wt: wt, cloudPct: cloudPct, flow: flow,
+        sweetMin: cfg.sweetMin != null ? cfg.sweetMin : 5,
+        sweetMax: cfg.sweetMax != null ? cfg.sweetMax : 15,
+        flowLow: cfg.flowLow, flowHigh: cfg.flowHigh,
+        topMethod: topMethod, isToday: _isToday, weatherOk: weatherOk
+      });
+    } catch(_tileErr) { console.warn('condition tiles', _tileErr); }
+  })();
 
   // Species situation — fall back to recommendation if target is out of season
   var speciesNote = '';
@@ -6880,7 +7138,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // (live conditions already applied above)
     var _conf = scoreToConfidence(_topScore);
     var _confWords = {3:'Excellent',2:'Good',1:'Marginal',0:'Tough'};
-    _confEl.textContent = _conf.label + '  ' + (_confWords[_conf.stars] || '');
+    _confEl.textContent = 'Conditions: ' + (_confWords[_conf.stars] || _conf.label);
     _confEl.className = 'tp-confidence ' + _conf.cls;
     _confEl.style.display = 'inline-block';
   }
