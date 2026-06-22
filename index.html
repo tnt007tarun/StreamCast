@@ -648,7 +648,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tp-tile.poor   .tp-tile-bar { background:#e07070; opacity:1; }
 .tp-tile.na     .tp-tile-bar { background:var(--mist); opacity:.45; }
 .tp-tile-body { padding:9px 8px; }
-.tp-tile-lbl { font-family:'JetBrains Mono',monospace; font-size:.48rem; letter-spacing:.06em; color:var(--mist); opacity:.7; text-transform:uppercase; margin-bottom:4px; }
+.tp-tile-lbl { font-family:'JetBrains Mono',monospace; font-size:.58rem; font-weight:700; letter-spacing:.06em; color:var(--mist); opacity:.85; text-transform:uppercase; margin-bottom:4px; }
 .tp-tile-val { font-size:1.05rem; font-weight:700; color:#fff; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tp-tile-val.sm { font-size:.92rem; }
 .tp-tile.na .tp-tile-val { color:var(--mist); }
@@ -5778,19 +5778,21 @@ async function renderResults(){
   // Species display
   document.getElementById("species-display").textContent = selectedSpeciesLabel;
 
-  // Species photo in banner circle — use the effective recommended species if available,
-  // else the first selected species. Falls back to placeholder for "Any Species".
+  // Species photo in banner circle — always matches what the user selected,
+  // so the photo and name label are always consistent. The headline + badge
+  // explain any substitution (e.g. "NOT IN THIS SECTION").
   (function() {
     var _fishEl = document.getElementById("species-banner-fish");
     if (!_fishEl) return;
     var _nameToKey = {"Brown Trout":"brown","Rainbow Trout":"rainbow","Brook Trout":"brook","Steelhead":"steelhead","Chinook Salmon":"chinook","Coho Salmon":"coho"};
     var _photoKey = null;
-    // Prefer the effective recommended species (matches the headline target)
-    var _eff = window._effectiveRecommendedSpecies;
-    if (_eff && _eff.indexOf(" + ") === -1 && _nameToKey[_eff]) {
-      _photoKey = _nameToKey[_eff];
-    } else if (selectedSpecies && selectedSpecies.length > 0) {
-      _photoKey = selectedSpecies[0]; // already a key like "brown"
+    // Use the selected species (matches the name label in the banner)
+    if (selectedSpecies && selectedSpecies.length > 0) {
+      _photoKey = selectedSpecies[0]; // already a key like "chinook"
+    } else if (window._effectiveRecommendedSpecies) {
+      // No explicit selection — use the recommendation (Any Species mode)
+      var _eff = window._effectiveRecommendedSpecies;
+      if (_eff.indexOf(" + ") === -1 && _nameToKey[_eff]) _photoKey = _nameToKey[_eff];
     }
     if (_photoKey && SPECIES_PHOTOS[_photoKey]) {
       _fishEl.innerHTML = '<img src="' + SPECIES_PHOTOS[_photoKey] + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block">';
