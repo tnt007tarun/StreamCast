@@ -648,7 +648,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tp-tile.poor   .tp-tile-bar { background:#e07070; opacity:1; }
 .tp-tile.na     .tp-tile-bar { background:var(--mist); opacity:.45; }
 .tp-tile-body { padding:9px 8px; }
-.tp-tile-lbl { font-family:'JetBrains Mono',monospace; font-size:.48rem; letter-spacing:.06em; color:var(--mist); opacity:.7; text-transform:uppercase; margin-bottom:4px; }
+.tp-tile-lbl { font-family:'JetBrains Mono',monospace; font-size:.58rem; font-weight:700; letter-spacing:.06em; color:var(--mist); opacity:.85; text-transform:uppercase; margin-bottom:4px; }
 .tp-tile-val { font-size:1.05rem; font-weight:700; color:#fff; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tp-tile-val.sm { font-size:.92rem; }
 .tp-tile.na .tp-tile-val { color:var(--mist); }
@@ -715,6 +715,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tg-body-collapsed { display:none; }
 .tg-desc { font-size:.88rem; color:var(--text); line-height:1.6; margin-bottom:.75rem; }
 .tg-cond { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1rem; }
+.tg-cond:empty { display:none; }
 .tg-cond span { font-family:'JetBrains Mono', monospace; font-size:.6rem; background:var(--off); padding:.2rem .5rem; border-radius:4px; color:var(--sage); }
 .tg-gear { margin:1rem 0; }
 .tg-gear-lbl { font-family:'JetBrains Mono', monospace; font-size:.52rem; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); opacity:.7; margin-bottom:.65rem; }
@@ -999,6 +1000,7 @@ select:focus-visible, input:focus-visible {
   line-height: 1.5;
   margin-bottom: .75rem;
 }
+.tg-tip:empty { display:none; }
 .tg-tip:empty { display: none; }
 
 
@@ -2176,7 +2178,7 @@ select:focus-visible, input:focus-visible {
 
   <div class="tpband" id="tpband" style="display:none">
     <div class="tpband-inner">
-      <div class="tp-eyebrow">HereFishyFishy Pick</div>
+      <div class="tp-eyebrow"></div>
       <div class="tp-headline" id="tp-headline">Loading…</div>
       <div class="tp-drive-time" id="tp-drive-time" style="display:none"></div>
       <div class="tp-confidence" id="tp-confidence" style="display:none"></div>
@@ -5475,21 +5477,24 @@ function updateMethods(fc,tc,sc,flow,wt){
                 "High flow — drift bait or roe along the bottom in slower edge water."),
         c:adapt("<span>Swing or strip along slower edges</span><span>Target: Undercut banks, log jams</span><span>Leader: 9 ft · 2x–3x</span>",
                 "<span>Lures: Blue Fox #4, Kastmaster</span><span>Cast across, slow retrieve on edges</span><span>Heavier lure to stay down</span>",
-                "<span>Bait: Roe, worms, spawn sacs</span><span>Float high to clear debris</span><span>Edge water and back eddies</span>")};
+                "<span>Bait: Roe, worms, spawn sacs</span><span>Float high to clear debris</span><span>Edge water and back eddies</span>"),
+          tip:'Cast at 45° downstream, mend immediately to slow the swing. Let the fly hang at the end of the drift — fish often strike there.'};
     m2={n:adapt("Heavy Nymphing","Crankbaits & Plugs","Jigging — Slow Pools"),
         d:adapt("Go heavy — tungsten to punch through current. Fish seams between fast and slow.",
                 "Crankbaits that dive deep work well in high flow. Target transition zones.",
                 "Jig bait or leeches slowly through deeper holding pools out of main current."),
         c:adapt("<span>Flies: Stonefly, tungsten caddis</span><span>Extra split shot</span><span>Set indicator high</span>",
                 "<span>Lures: Rapala CD7, Flatfish</span><span>Dive into the current seams</span><span>Slow retrieve, let it bump bottom</span>",
-                "<span>Bait: Leeches, nightcrawlers</span><span>Fish: Deep pools, slow eddies</span><span>Very slow presentation</span>")};
+                "<span>Bait: Leeches, nightcrawlers</span><span>Fish: Deep pools, slow eddies</span><span>Very slow presentation</span>"),
+          tip:'Stack-mend heavily to keep the fly vertical. Add weight until you feel it ticking bottom — if it’s not near the bottom, you won’t catch fish.'};
     m3={n:adapt("Dry Fly","Surface Lures","Surface Float — Back Eddies"),
         d:adapt("Difficult in high flow. Only in back-eddies and slow edge water.",
                 "Popping lures in back-eddies can trigger strikes. Mostly a secondary option in high water.",
                 "Find calm back-eddies. Float a worm or roe near the surface in these slack spots."),
         c:adapt("<span>Back-eddies only</span><span>Watch for rises first</span>",
                 "<span>Target: Back-eddies only</span><span>Lures: Small poppers, stick baits</span>",
-                "<span>Float: Back-eddies and slack water</span><span>Bait: Roe, small worms</span>")};
+                "<span>Float: Back-eddies and slack water</span><span>Bait: Roe, small worms</span>"),
+          tip:'Ignore the main current. Find back-eddies behind boulders or along the bank, cast tight to the seam and keep all line on slow water.'};
   } else if(low){
     m1={n:adapt("Finesse Nymphing","Light Spinners — Slow & Small","Tight-Line Float — Clear Water"),
         d:adapt("Low clear water demands finesse. Long leaders, fine tippet, small flies. Stealth is everything.",
@@ -5504,14 +5509,16 @@ function updateMethods(fc,tc,sc,flow,wt){
                 "Natural bait drifted drag-free through pools is ideal in low clear conditions."),
         c:adapt("<span>Best: Evenings, overcast</span><span>Flies: Caddis, midge, Adams</span>",
                 "<span>Lures: 1/32 oz jig, small Rapala</span><span>Ultra-slow retrieve</span>",
-                "<span>Bait: Worms, roe, minnows</span><span>No weight if possible</span>")};
+                "<span>Bait: Worms, roe, minnows</span><span>No weight if possible</span>"),
+          tip:'Use longer tippet (5x–6x) and smaller flies. Stay low and make your first cast count — fish are spooky in clear shallow water.'};
     m3={n:adapt("Streamer Fishing","Larger Spoons — Deep Pools","Drift Fishing — Pools"),
         d:adapt("Low water makes streamers harder. Small profiles, very slow retrieves.",
                 "In low water, larger spoons can still work in the deepest pools with a slow flutter retrieve.",
                 "Drop bait down into deep holes and let it sit. Don't move it — let the fish come to you."),
         c:adapt("<span>Flies: Small woolly bugger, sculpin</span><span>Very slow retrieve</span>",
                 "<span>Lures: Kastmaster 1/4 oz</span><span>Flutter down into pools</span>",
-                "<span>Bait: Nightcrawler, minnow</span><span>Fish: Deepest holding pools</span>")};
+                "<span>Bait: Nightcrawler, minnow</span><span>Fish: Deepest holding pools</span>"),
+          tip:'Downsize to size 4–6 streamers, fish very slowly. Strip once, pause 3–4 seconds. Target deeper undercut banks and slow tailouts.'};
   } else if(overcast&&tc==="good"){
     m1={n:adapt("Nymphing","Spinner Fishing","Float Fishing — Runs"),
         d:adapt("Prime conditions. Dead-drift through feeding lanes all day — overcast keeps fish feeding.",
@@ -5519,21 +5526,24 @@ function updateMethods(fc,tc,sc,flow,wt){
                 "Overcast opens the full day. Float fish runs and riffles from first light through evening."),
         c:adapt("<span>Best: All day in overcast</span><span>Fish: Head of runs, tailouts</span><span>Leader: 9–12 ft · 4x–5x</span>",
                 "<span>Lures: Mepps #2–3, Blue Fox</span><span>Cast across and downstream</span><span>Vary retrieve speed</span>",
-                "<span>Bait: Roe, worms, minnows</span><span>Float: Medium to large</span><span>Work every run systematically</span>")};
+                "<span>Bait: Roe, worms, minnows</span><span>Float: Medium to large</span><span>Work every run systematically</span>"),
+          tip:'Work the seam between fast and slow water — drift your nymph along that edge at exactly current speed. No drag, no slack.'};
     m2={n:adapt("Dry Fly","Crankbaits — Subsurface","Jigging — Pools"),
         d:adapt("Overcast opens the full-day dry fly window. Watch for hatches from mid-morning on.",
                 "Crankbaits worked just below the surface imitate baitfish. Overcast = reaction strikes.",
                 "Jig bait slowly through pools. Active fish in overcast will move to investigate."),
         c:adapt("<span>Best: Mid-morning to evening</span><span>Watch: Sulphurs, caddis, PMDs</span>",
                 "<span>Lures: Rapala CD5, Flatfish</span><span>Just below surface</span>",
-                "<span>Bait: Worms, leeches</span><span>Slow hop along bottom</span>")};
+                "<span>Bait: Worms, leeches</span><span>Slow hop along bottom</span>"),
+          tip:'Watch the water before casting — rising fish tell you where to go. Cast 2 feet upstream of the rise, drift drag-free over the fish.'};
     m3={n:adapt("Streamer Fishing","Heavy Spoons — Deep","Drift Bait — Deep Runs"),
         d:adapt("Excellent in overcast — fish less wary and more aggressive to big patterns.",
                 "Heavy spoons worked deep in overcast conditions draw aggressive strikes from big fish.",
                 "Drift heavier bait deep through the main runs. Fish are actively feeding."),
         c:adapt("<span>Best: All day in overcast</span><span>Fish: Deep pools, undercut banks</span>",
                 "<span>Lures: Kastmaster 3/8 oz, Crocodile</span><span>Count down to depth</span>",
-                "<span>Bait: Large worms, spawn bags</span><span>Keep bait near bottom</span>")};
+                "<span>Bait: Large worms, spawn bags</span><span>Keep bait near bottom</span>"),
+          tip:'Cover water quickly — one or two casts per spot then move downstream. Strip fast and erratically; aggressive fish don’t want a slow meal.'};
   } else if(cold){
     m1={n:adapt("Slow Nymphing","Slow Jigs — Bottom","Stationary Bait — Pools"),
         d:adapt("Cold water = slow metabolism. Fish near the bottom — they will not chase.",
@@ -5541,21 +5551,24 @@ function updateMethods(fc,tc,sc,flow,wt){
                 "Cold water fish won't move far. Set bait on the bottom in a pool and let it sit."),
         c:adapt("<span>Flies: Small hare, PT, midge #16–20</span><span>Right on the bottom</span><span>Long drifts in slow water</span>",
                 "<span>Lures: Small jig 1/16 oz</span><span>Crawl it along bottom</span><span>10+ second pauses</span>",
-                "<span>Bait: Worm, roe, minnow</span><span>No float — bottom rig</span><span>Deepest slowest pools</span>")};
+                "<span>Bait: Worm, roe, minnow</span><span>No float — bottom rig</span><span>Deepest slowest pools</span>"),
+          tip:'Add extra weight and fish your indicator only 1.5x the water depth. Slow your drift right down — cold fish barely move to take a fly.'};
     m2={n:adapt("Streamer (Slow)","Very Slow Spoon","Slow Float — Deep"),
         d:adapt("Slow short strips near the bottom. Long pauses — fish will not move far.",
                 "Flutter a spoon slowly down into deep pools. Very slow, very deliberate.",
                 "Float a bait very slowly through the deepest pools. Small float, minimal movement."),
         c:adapt("<span>Very slow retrieve, long pauses</span><span>Fish: Deep slow pools</span>",
                 "<span>Lures: Small Kastmaster</span><span>Flutter retrieve, 5 sec pauses</span>",
-                "<span>Small float, heavy weight</span><span>Fish the deepest hole</span>")};
+                "<span>Small float, heavy weight</span><span>Fish the deepest hole</span>"),
+          tip:'Cast tight to the bank and let the fly sink to the bottom before the first strip. Strip once, count to 5, strip again. Patience wins.'};
     m3={n:adapt("Dry Fly","Surface Lures","Surface Float"),
         d:adapt("Unlikely in cold water. Skip unless you see active rises.",
                 "Surface lures won't work in cold water. Skip this unless the sun warms things up.",
                 "Surface presentations unlikely in cold water. Focus on bottom rigs instead."),
         c:adapt("<span>Skip unless you see rises</span><span>Water below 8°C: fish bottom</span>",
                 "<span>Skip in cold water</span><span>Return to jig or bottom rig</span>",
-                "<span>Switch to bottom rig</span><span>Not worth it below 8°C</span>")};
+                "<span>Switch to bottom rig</span><span>Not worth it below 8°C</span>"),
+          tip:'Only worth trying if you see active rises. If you do, match the smallest insect on the water and use a long, fine tippet.'};
   } else {
     // ── NORMAL CONDITIONS — recommendation adapts to target species ──────────
     if (isSalmonSp && fam !== 'fly' && fam !== 'spin') {
@@ -5566,9 +5579,11 @@ function updateMethods(fc,tc,sc,flow,wt){
           c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>Fish: Deep pools, tailouts, current seams</span>'};
       m2={n:'Bottom Bouncing',
           d:'Drift roe or beads along the bottom without a float in faster runs. Effective when fish hold deep.',
+          tip:'Use enough weight to feel the bottom on every other tap. Keep the rod tip high and follow the drift — set on any pause or tick.',
           c:'<span>Bait: Roe, beads, yarn</span><span>Add split shot to reach bottom</span><span>Fish: Fast runs, deep pockets</span>'};
       m3={n:'Swung Streamers / Spoons',
           d:'Swing large streamers or cast spoons through runs to trigger aggressive salmon. Works best on fresh, active fish.',
+          tip:'Take one step downstream after each cast. Cover the run systematically — active salmon will be somewhere in the run and you need to find them.',
           c:'<span>Lures: Spoons, large streamers</span><span>Swing across current</span><span>Best on fresh-run fish</span>'};
     } else if (isResidentTrout && warmEnoughForDries && overcast) {
       // Resident trout + warm water + overcast \u2014 prime dry fly conditions
@@ -5624,10 +5639,16 @@ function updateMethods(fc,tc,sc,flow,wt){
                   "<span>Bait: Roe, worms + split shot</span><span>Fish: Deep runs</span>")};
     }
   }
-  document.getElementById("m1n").textContent=m1.n;document.getElementById("m1d").textContent=m1.d;document.getElementById("m1c").innerHTML=m1.c;
-  var _m1tip=document.getElementById("m1tip"); if(_m1tip) _m1tip.textContent=m1.tip||"";
-  document.getElementById("m2n").textContent=m2.n;document.getElementById("m2d").textContent=m2.d;document.getElementById("m2c").innerHTML=m2.c;
-  document.getElementById("m3n").textContent=m3.n;document.getElementById("m3d").textContent=m3.d;document.getElementById("m3c").innerHTML=m3.c;
+  document.getElementById("m1n").textContent=m1.n;
+  document.getElementById("m1d").textContent=m1.tip||m1.d; // tip replaces generic description
+  document.getElementById("m1c").innerHTML=""; // Best/Fish/Leader removed
+  var _m1tip=document.getElementById("m1tip"); if(_m1tip) _m1tip.textContent=""; // blockquote removed
+  document.getElementById("m2n").textContent=m2.n;
+  document.getElementById("m2d").textContent=m2.tip||m2.d;
+  document.getElementById("m2c").innerHTML="";
+  document.getElementById("m3n").textContent=m3.n;
+  document.getElementById("m3d").textContent=m3.tip||m3.d;
+  document.getElementById("m3c").innerHTML="";
   // Build gear for primary method
   buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
   // Adapt lure panel to species and conditions
@@ -5778,19 +5799,21 @@ async function renderResults(){
   // Species display
   document.getElementById("species-display").textContent = selectedSpeciesLabel;
 
-  // Species photo in banner circle — use the effective recommended species if available,
-  // else the first selected species. Falls back to placeholder for "Any Species".
+  // Species photo in banner circle — always matches what the user selected,
+  // so the photo and name label are always consistent. The headline + badge
+  // explain any substitution (e.g. "NOT IN THIS SECTION").
   (function() {
     var _fishEl = document.getElementById("species-banner-fish");
     if (!_fishEl) return;
     var _nameToKey = {"Brown Trout":"brown","Rainbow Trout":"rainbow","Brook Trout":"brook","Steelhead":"steelhead","Chinook Salmon":"chinook","Coho Salmon":"coho"};
     var _photoKey = null;
-    // Prefer the effective recommended species (matches the headline target)
-    var _eff = window._effectiveRecommendedSpecies;
-    if (_eff && _eff.indexOf(" + ") === -1 && _nameToKey[_eff]) {
-      _photoKey = _nameToKey[_eff];
-    } else if (selectedSpecies && selectedSpecies.length > 0) {
-      _photoKey = selectedSpecies[0]; // already a key like "brown"
+    // Use the selected species (matches the name label in the banner)
+    if (selectedSpecies && selectedSpecies.length > 0) {
+      _photoKey = selectedSpecies[0]; // already a key like "chinook"
+    } else if (window._effectiveRecommendedSpecies) {
+      // No explicit selection — use the recommendation (Any Species mode)
+      var _eff = window._effectiveRecommendedSpecies;
+      if (_eff.indexOf(" + ") === -1 && _nameToKey[_eff]) _photoKey = _nameToKey[_eff];
     }
     if (_photoKey && SPECIES_PHOTOS[_photoKey]) {
       _fishEl.innerHTML = '<img src="' + SPECIES_PHOTOS[_photoKey] + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block">';
@@ -6059,9 +6082,9 @@ async function renderResults(){
       {t:"Fish lies: "+(fc==="good"?"Predictable":"Scattered \u2014 harder to locate"),c:fc}
     ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
   } else {
-    document.getElementById("fval").textContent=isToday?"\u2014":"N/A";
+    document.getElementById("fval").textContent="\u2014";
     document.getElementById("ftrend").textContent="";
-    document.getElementById("flbl").textContent="Live data unavailable — use the gauge link. You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
+    document.getElementById("flbl").textContent=(isToday?"Live data unavailable — use the gauge link.":"Flow cannot be forecast — check the gauge on the day.")+" You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
     document.getElementById("fgv").textContent="\u2014";
     document.getElementById("fstat").innerHTML='<span class="status-dot dot-warn"></span>CHECK GAUGE';document.getElementById("fstat").className="gs warn";
     document.getElementById("fcl").innerHTML="<li><span class=\"ci warn\">\u25b3</span><span>Check the gauge link above for current flow before heading out.</span></li>";
@@ -7128,7 +7151,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     } else {
       _context = _fmt;
     }
-    _eyebrow.textContent = 'HereFishyFishy Pick · ' + _context;
+    _eyebrow.textContent = _context;
 
     // Adjust headline verb tense for future dates
     // Only touches leading action verbs — staging/pre-run headlines are already forward-looking
