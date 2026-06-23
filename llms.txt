@@ -1,0 +1,31 @@
+# HereFishyFishy
+
+> Free Ontario river fishing conditions app. Tells anglers where to fish today based on live flow data, water temperature, and weather.
+
+## What this site does
+
+HereFishyFishy is a web app for Ontario anglers. It recommends the best river sections to fish on a given day or forecast date, using live gauge data, Open-Meteo weather forecasts, and species-specific seasonal logic. It covers rivers across Southern Ontario including the Credit, Grand, Humber, Rouge, Ganaraska, Duffins, Bronte, Saugeen, Notawasaga, and others.
+
+## Who it's for
+
+Recreational anglers in Southern Ontario targeting Brown Trout, Rainbow Trout, Brook Trout, Steelhead, Chinook Salmon, and Coho Salmon in rivers.
+
+## Key features
+
+- River section recommendations ranked by current conditions
+- Live flow data from Water Survey of Canada gauges
+- Estimated water temperature from air temp
+- Hourly cloud cover with per-period fishing windows (morning, midday, evening)
+- Access point information with crowd level and GPS coordinates
+- Ontario fishing regulations (FMZ, seasons, limits) per river section
+- Technique and gear recommendations by conditions
+- Species seasonal status and staging information
+- Email alerts for excellent conditions
+
+## Coverage
+
+Southern Ontario rivers. Eastern rivers (Ganaraska, Wilmot, Bowmanville) run 2–3 weeks ahead of western rivers (Credit, Humber, Bronte) in spring. Steelhead spring run gated on Lake Ontario surface temperature (5–10°C band). Chinook run peaks October. Coho peaks November.
+
+## No app download required
+
+Runs in any mobile browser at herefishyfishy.ca. Free, no account required to use.
