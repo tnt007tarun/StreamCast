@@ -8883,53 +8883,46 @@ function initNotifyBar() {
   var species = params.get('species');
   if (!river) return; // no deep link — normal load
 
-  // Wait for DOM to be ready
   function init() {
-    // Set mode to beginner (find-my-spot flow is cleanest for deep links)
-    if (typeof setMode === 'function') setMode('beginner');
+    // Set global state — mirrors what dp-card / expert flow does
+    selectedRiver   = decodeURIComponent(river);
+    selectedSpecies = species ? [species] : [];
+    selectedTechFamily = [];
+    appMode = 'expert'; // use selectedRiver directly, skip beginner re-rank
 
-    // Pre-select species if provided
+    // Pre-select the species button visually
     if (species) {
-      var btn = document.querySelector('.species-btn[data-value="' + species + '"]');
-      if (btn) {
-        document.querySelectorAll('.species-btn').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        if (typeof selectedSpecies !== 'undefined') selectedSpecies = [species];
-      }
+      document.querySelectorAll('.species-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-value') === species);
+      });
     }
 
-    // Set selectedRiver directly and jump to results
-    if (typeof selectedRiver !== 'undefined') {
-      selectedRiver = decodeURIComponent(river);
-    }
-    // Set appMode to expert so it uses the selectedRiver we just set
-    if (typeof appMode !== 'undefined') appMode = 'expert';
-
-    // Set today's date on the date picker
+    // Set today's date
     var dateEl = document.getElementById('trip-date');
-    if (dateEl) {
-      var today = new Date().toISOString().slice(0, 10);
-      dateEl.value = today;
+    if (dateEl && !dateEl.value) {
+      dateEl.value = new Date().toISOString().slice(0, 10);
     }
 
-    // Jump straight to results
-    if (typeof renderResults === 'function') {
-      document.getElementById('landing').style.display = 'none';
-      document.getElementById('results').style.display = '';
-      document.getElementById('results').classList.add('active');
-      window.scrollTo(0, 0);
-      if (typeof initNotifyBar === 'function') initNotifyBar();
-      renderResults();
-      // Clean the URL so sharing the results page looks tidy
-      history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
-    }
+    // Show results, hide landing — exactly what goToResults() does
+    var landing = document.getElementById('landing');
+    var results = document.getElementById('results');
+    if (!landing || !results) return;
+    landing.style.display = 'none';
+    results.style.display = '';
+    results.classList.add('active');
+    window.scrollTo(0, 0);
+    if (typeof initNotifyBar === 'function') initNotifyBar();
+    if (typeof track === 'function') track('River Viewed', { river: selectedRiver, source: 'deep-link' });
+    history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+    renderResults();
+    setTimeout(function(){ if (typeof loadBaitImages === 'function') loadBaitImages(); }, 800);
   }
 
-  // Run after all scripts have initialised
+  // Defer until all app scripts have fully executed
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 50); });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 100); });
   } else {
-    setTimeout(init, 50);
+    setTimeout(init, 100);
   }
 })();
 </script>
