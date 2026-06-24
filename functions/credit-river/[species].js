@@ -150,7 +150,13 @@ function renderPage(route, cond, speciesSlug) {
   const qualityColor = { excellent: '#6dbf8a', good: '#6dbf8a', marginal: '#e8a85a', tough: '#e07070', 'out-of-season': '#9ecfca' }[cond.quality] || '#9ecfca';
   const stateColor = s => ({ good: '#6dbf8a', ok: '#e8a85a', poor: '#e07070', unknown: '#9ecfca' }[s] || '#9ecfca');
   const today = new Date().toLocaleDateString('en-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Toronto' });
-  const appLink = `https://herefishyfishy.ca/?river=${encodeURIComponent(route.section)}&species=${speciesSlug}`;
+  // Map URL slug to the app's internal species key (data-value on species buttons)
+  const speciesKeyMap = {
+    'brown-trout': 'brown', 'rainbow-trout': 'rainbow', 'brook-trout': 'brook',
+    'steelhead': 'steelhead', 'chinook-salmon': 'chinook', 'coho-salmon': 'coho'
+  };
+  const speciesKey = speciesKeyMap[speciesSlug] || speciesSlug;
+  const appLink = `https://herefishyfishy.ca/?river=${encodeURIComponent(route.section)}&species=${speciesKey}`;
 
   return `<!DOCTYPE html>
 <html lang="en">
