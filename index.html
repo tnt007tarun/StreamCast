@@ -1777,7 +1777,13 @@ select:focus-visible, input:focus-visible {
   transform: translateY(100%);
   transition: transform .35s cubic-bezier(.22,.68,0,1.2);
   padding: .85rem 1.25rem;
-  padding-bottom: calc(.85rem + env(safe-area-inset-bottom));
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    .notify-bar {
+      padding-bottom: calc(.85rem + env(safe-area-inset-bottom));
+    }
+  }
 }
 .notify-bar.visible {
   transform: translateY(0);
@@ -7129,11 +7135,43 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       if (_tg3) _tg3.style.display = 'none';
     }, 50);
   } else if (fallbackSpecies && targetName) {
-    headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
-      + 'Fish <em>' + fallbackSpecies + '</em> instead — '
-      + 'head to <em>' + spotName + '</em>, '
-      + timeShort.toLowerCase() + ', '
-      + bringPhrase + '.';
+    // Distinguish geographic mismatch from seasonal absence
+    var _geoMismatch = _riverSpecies.indexOf(targetName) === -1;
+    var _redirectSection = null;
+    if (_geoMismatch) {
+      var _curRiver = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+      Object.keys(RIVER_SECTIONS).forEach(function(parent) {
+        if (RIVER_SECTIONS[parent].indexOf(_curRiver) !== -1) {
+          RIVER_SECTIONS[parent].forEach(function(sib) {
+            if (!_redirectSection && sib !== _curRiver) {
+              var _sibCfg = getRiverConfig(sib);
+              if (_sibCfg && _sibCfg.species && _sibCfg.species.indexOf(targetName) !== -1) {
+                _redirectSection = sib;
+              }
+            }
+          });
+        }
+      });
+    }
+    if (_geoMismatch && _redirectSection) {
+      var _sibShort = _redirectSection.replace(/^.+—\s*/, '');
+      headlineHtml = '<em>' + targetName + '</em> aren’t found in this section — '
+        + 'they live in the <em>' + _sibShort + '</em>. '
+        + 'Fish <em>' + fallbackSpecies + '</em> here today: '
+        + 'head to <em>' + spotName + '</em>, ' + timeShort.toLowerCase() + ', ' + bringPhrase + '.';
+    } else if (_geoMismatch) {
+      headlineHtml = '<em>' + targetName + '</em> aren’t found in this section. '
+        + 'Fish <em>' + fallbackSpecies + '</em> instead — '
+        + 'head to <em>' + spotName + '</em>, '
+        + timeShort.toLowerCase() + ', '
+        + bringPhrase + '.';
+    } else {
+      headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
+        + 'Fish <em>' + fallbackSpecies + '</em> instead — '
+        + 'head to <em>' + spotName + '</em>, '
+        + timeShort.toLowerCase() + ', '
+        + bringPhrase + '.';
+    }
   } else if (!targetName && _multiTarget) {
     // Multi-species selection: both are on this river, name them both
     headlineHtml = 'Head to <em>' + spotName + '</em>. '
@@ -8883,53 +8921,46 @@ function initNotifyBar() {
   var species = params.get('species');
   if (!river) return; // no deep link — normal load
 
-  // Wait for DOM to be ready
   function init() {
-    // Set mode to beginner (find-my-spot flow is cleanest for deep links)
-    if (typeof setMode === 'function') setMode('beginner');
+    // Set global state — mirrors what dp-card / expert flow does
+    selectedRiver   = decodeURIComponent(river);
+    selectedSpecies = species ? [species] : [];
+    selectedTechFamily = [];
+    appMode = 'expert'; // use selectedRiver directly, skip beginner re-rank
 
-    // Pre-select species if provided
+    // Pre-select the species button visually
     if (species) {
-      var btn = document.querySelector('.species-btn[data-value="' + species + '"]');
-      if (btn) {
-        document.querySelectorAll('.species-btn').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        if (typeof selectedSpecies !== 'undefined') selectedSpecies = [species];
-      }
+      document.querySelectorAll('.species-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-value') === species);
+      });
     }
 
-    // Set selectedRiver directly and jump to results
-    if (typeof selectedRiver !== 'undefined') {
-      selectedRiver = decodeURIComponent(river);
-    }
-    // Set appMode to expert so it uses the selectedRiver we just set
-    if (typeof appMode !== 'undefined') appMode = 'expert';
-
-    // Set today's date on the date picker
+    // Set today's date
     var dateEl = document.getElementById('trip-date');
-    if (dateEl) {
-      var today = new Date().toISOString().slice(0, 10);
-      dateEl.value = today;
+    if (dateEl && !dateEl.value) {
+      dateEl.value = new Date().toISOString().slice(0, 10);
     }
 
-    // Jump straight to results
-    if (typeof renderResults === 'function') {
-      document.getElementById('landing').style.display = 'none';
-      document.getElementById('results').style.display = '';
-      document.getElementById('results').classList.add('active');
-      window.scrollTo(0, 0);
-      if (typeof initNotifyBar === 'function') initNotifyBar();
-      renderResults();
-      // Clean the URL so sharing the results page looks tidy
-      history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
-    }
+    // Show results, hide landing — exactly what goToResults() does
+    var landing = document.getElementById('landing');
+    var results = document.getElementById('results');
+    if (!landing || !results) return;
+    landing.style.display = 'none';
+    results.style.display = '';
+    results.classList.add('active');
+    window.scrollTo(0, 0);
+    if (typeof initNotifyBar === 'function') initNotifyBar();
+    if (typeof track === 'function') track('River Viewed', { river: selectedRiver, source: 'deep-link' });
+    history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+    renderResults();
+    setTimeout(function(){ if (typeof loadBaitImages === 'function') loadBaitImages(); }, 800);
   }
 
-  // Run after all scripts have initialised
+  // Defer until all app scripts have fully executed
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 50); });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 100); });
   } else {
-    setTimeout(init, 50);
+    setTimeout(init, 100);
   }
 })();
 </script>
