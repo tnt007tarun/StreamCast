@@ -416,7 +416,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .cgrid { display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:2px solid var(--border); background:var(--white); }
 .col { padding:1.75rem 2rem; border-right:1px solid var(--border); }
 .col:last-child { border-right:none; }
-.col-lbl { font-family:'JetBrains Mono', monospace; font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--sage); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+.col-lbl { font-family:'JetBrains Mono', monospace; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
 .bnum-wrap { display:flex; align-items:baseline; gap:0.3rem; margin-bottom:0.2rem; }
 .bnum { font-family:'Nunito', sans-serif; font-size:3rem; font-weight:700; line-height:1; color:var(--moss); }
 .bnum-u { font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--sage); }
@@ -425,7 +425,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .trd.up{color:var(--good);} .trd.down{color:var(--bad);} .trd.stable{color:var(--warn-d);}
 .gw { margin-bottom:1.1rem; }
 .gh { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.4rem; }
-.gn { font-size:0.77rem; font-weight:500; color:var(--moss); }
+.gn { font-size:0.77rem; font-weight:700; color:var(--ink); }
 .gv { font-family:'JetBrains Mono', monospace; font-size:0.88rem; color:var(--moss); }
 .gt { height:5px; background:rgba(45,74,50,0.1); border-radius:10px; overflow:hidden; margin-bottom:0.25rem; }
 .gf { height:100%; border-radius:10px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
@@ -2276,8 +2276,6 @@ select:focus-visible, input:focus-visible {
       <hr class="divr">
       <div class="gw">
         <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
-        <div class="gt"><div class="gf" id="skybar" style="width:0%"></div></div>
-        <div class="gr"><span>Clear</span><span>Ideal: Overcast</span><span>100%</span></div>
         <!-- Period cloud strip — populated by JS when hourly data is available -->
         <div id="sky-period-strip" style="display:none;margin-top:10px">
           <div class="sps">
@@ -6138,7 +6136,7 @@ async function renderResults(){
   document.getElementById("skyv").textContent=skyl+" ("+cloudPct+"%)";
   renderSkyPeriodStrip(window._periodCloud || null);
   // sky sub-indicators removed — combined into temp-dot
-  var sb=document.getElementById("skybar");sb.style.width=cloudPct+"%";sb.className="gf "+sc;
+  var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
   document.getElementById("skystat").textContent=sc==="good"?"Fish feed through the whole water column all day.":sc==="warn"?"Morning and evening windows open. Midday slows.":"Clear \u2014 fish hard until 8:30 AM then expect it to die.";
   document.getElementById("skystat").className="gs "+sc;
   // Best Window card — reuse the period-aware window text computed for the summary card
