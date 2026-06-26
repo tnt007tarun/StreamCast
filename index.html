@@ -1895,6 +1895,52 @@ select:focus-visible, input:focus-visible {
 
 
 
+
+/* ── SITE FOOTER ──────────────────────────────────────────── */
+.site-footer {
+  background: var(--deep);
+  border-top: 1px solid rgba(158,207,202,0.1);
+  padding: 1.1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+.site-footer-brand {
+  font-family: 'Nunito', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  color: #fff;
+  font-size: .9rem;
+  text-decoration: none;
+}
+.site-footer-nav {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+.site-footer-nav a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mist);
+  opacity: .7;
+  text-decoration: none;
+}
+.site-footer-nav a:hover { opacity: 1; }
+.site-footer-copy {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .55rem;
+  color: var(--mist);
+  opacity: .4;
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .site-footer { padding: 1rem 1.25rem; }
+  .site-footer-copy { display: none; }
+}
 </style>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
@@ -2141,6 +2187,14 @@ select:focus-visible, input:focus-visible {
 
 </div>
 </div>
+  <footer class="site-footer">
+    <a href="/" class="site-footer-brand">HereFishyFishy</a>
+    <nav class="site-footer-nav">
+      <a href="/rivers">Rivers</a>
+      <a href="/about">About</a>
+    </nav>
+    <span class="site-footer-copy">Data: Water Survey of Canada · Open-Meteo · Refreshes every 15 min</span>
+  </footer>
 <!-- END LANDING -->
 
 <!-- ============ RESULTS PAGE ============ -->
@@ -2479,11 +2533,14 @@ select:focus-visible, input:focus-visible {
   </div>
 
 
-  <div class="res-footer">
-    <p>Data: Environment Canada Water Office · Open-Meteo API · GRCA · Refreshes every 15 min</p>
-    <div class="res-flogo">HereFishyFishy</div>
-  
-</div>
+    <footer class="site-footer">
+    <a href="/" class="site-footer-brand">HereFishyFishy</a>
+    <nav class="site-footer-nav">
+      <a href="/rivers">Rivers</a>
+      <a href="/about">About</a>
+    </nav>
+    <span class="site-footer-copy">Data: Water Survey of Canada · Open-Meteo · Refreshes every 15 min</span>
+  </footer>
 
 </div>
 
