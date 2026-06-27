@@ -2185,8 +2185,6 @@ select:focus-visible, input:focus-visible {
     <div id="default-preview" style="display:none"></div>
   </div>
 
-</div>
-</div>
   <footer class="site-footer">
     <a href="/" class="site-footer-brand">HereFishyFishy</a>
     <nav class="site-footer-nav">
@@ -2195,6 +2193,8 @@ select:focus-visible, input:focus-visible {
     </nav>
     <span class="site-footer-copy">Data: Water Survey of Canada · Open-Meteo · Refreshes every 15 min</span>
   </footer>
+</div>
+</div>
 <!-- END LANDING -->
 
 <!-- ============ RESULTS PAGE ============ -->
@@ -5213,7 +5213,7 @@ function goToResults(){
       var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
     var rivers = getRivers(locKey, _maxMin);
     rivers.forEach(function(r){ var _cfg=RIVER_CONFIG[r.name]; var _dk3=driveKeyFor(locKey); r.driveTime=(r.times&&(r.times[locKey]||r.times[_dk3]))||(_cfg&&_cfg.driveTime&&(_cfg.driveTime[locKey]||_cfg.driveTime[_dk3]))||60; });
-    var _tripDate = document.getElementById('trip-date').value||new Date().toISOString().slice(0,10);
+    var _tripDate = document.getElementById('trip-date').value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
     var ranked = rankRivers(rivers, selectedSpecies, _tripDate);
     // If species selected, prefer a river that has ALL selected species, then fall back to ANY
     var bestPick = ranked[0];
@@ -5295,9 +5295,10 @@ function goBack(){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function(){
   var d=document.getElementById("trip-date");
-  var today=new Date().toISOString().slice(0,10);
+  // Use local date for date picker — UTC causes off-by-one after 8PM Eastern
+  var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   d.value=today; d.min=today;
-  var max=new Date(); max.setDate(max.getDate()+5); d.max=max.toISOString().slice(0,10);
+  var max=new Date(); max.setDate(max.getDate()+5); d.max=(function(){var n=max;return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   var ld=document.getElementById("land-date");
   if(ld) ld.textContent=new Date().toLocaleDateString("en-CA",{weekday:"short",month:"short",day:"numeric"}).toUpperCase();
 
@@ -5440,12 +5441,20 @@ function barW(v,mn,mx){return Math.min(100,Math.max(2,((v-mn)/(mx-mn))*100));}
 // ── WEATHER ───────────────────────────────────────────────────────────────────
 async function fetchWeather(cfg){
   var lat=cfg?cfg.lat:LAT_DEFAULT, lng=cfg?cfg.lng:LNG_DEFAULT;
-  var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
-  var today=new Date().toISOString().slice(0,10);
+  var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  // Use local date not UTC — after 8PM Eastern, UTC is already "tomorrow"
+  var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   if(dateStr===today){
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m&timezone=America%2FToronto&forecast_days=1");
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m&hourly=cloudcover&timezone=America%2FToronto&forecast_days=1");
     var d=await r.json();
-    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m};
+    // Build period cloud from hourly forecast for today (same logic as forecast branch)
+    var _hc = d.hourly && d.hourly.cloudcover ? d.hourly.cloudcover : null;
+    var _pc = null;
+    if (_hc && _hc.length >= 20) {
+      var avg6 = function(h,s,e){var sl=h.slice(s,e+1);return Math.round(sl.reduce(function(a,v){return a+v;},0)/sl.length);};
+      _pc = { morning: avg6(_hc,5,9), midday: avg6(_hc,10,14), evening: avg6(_hc,15,20) };
+    }
+    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,periodCloud:_pc,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m};
   } else {
     var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
     var d=await r.json();
@@ -5880,8 +5889,10 @@ async function renderResults(){
   var cfg = getRiverConfig(selectedRiver);
   try { renderRiverUI(cfg); } catch(_ruErr) { console.error('renderRiverUI failed:', _ruErr); }
 
-  var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
-  var isToday=dateStr===new Date().toISOString().slice(0,10);
+  var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  // Compare using local Eastern date, not UTC — after 8PM ET the UTC date is already "tomorrow"
+  var _localToday=(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+  var isToday=dateStr===_localToday;
   var now=new Date();
   var _vtime=document.getElementById("vtime"); if(_vtime && _vtime.textContent !== undefined) _vtime.textContent=now.toLocaleTimeString("en-CA",{hour:"2-digit",minute:"2-digit"});
   var _vhrd=document.getElementById("vhead"); if(_vhrd) _vhrd.textContent="Reading conditions\u2026";
@@ -6479,7 +6490,7 @@ function setResHeader(riverName) {
   if (riverEl) riverEl.textContent = riverName;
   if (dateEl) {
     var _dateStr = getTripDateStr();
-    var _today   = new Date().toISOString().slice(0,10);
+    var _today   = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
     var _tripD   = new Date(_dateStr + 'T12:00:00');
     var _todayD  = new Date(_today   + 'T12:00:00');
     var _diff    = Math.round((_tripD - _todayD) / 86400000);
@@ -6495,7 +6506,7 @@ function setResHeader(riverName) {
 
 function getTripDateStr() {
   var di = document.getElementById('trip-date');
-  return (di && di.value) ? di.value : new Date().toISOString().slice(0,10);
+  return (di && di.value) ? di.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
 }
 
 function getCurrentSeason(speciesName, dateStr) {
@@ -6747,7 +6758,7 @@ function setMode(mode) {
 
 // ── RANK NEARBY RIVERS BY FISHABILITY ─────────────────────────────────────────
 function rankRivers(rivers, speciesKey, dateStr) {
-  var isToday = dateStr === new Date().toISOString().slice(0,10);
+  var isToday = dateStr === (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var _ska=Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
   var targetSpeciesNames=_ska.map(function(k){return speciesMap[k];}).filter(Boolean);
@@ -7037,8 +7048,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Render the conditions tile grid (hero)
   (function(){
     var _td = document.getElementById('trip-date');
-    var _ds = _td && _td.value ? _td.value : new Date().toISOString().slice(0,10);
-    var _isToday = _ds === new Date().toISOString().slice(0,10);
+    var _ds = _td && _td.value ? _td.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+    var _isToday = _ds === (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
     try {
       renderConditionTiles({
         wt: wt, cloudPct: cloudPct, flow: flow,
@@ -7296,8 +7307,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _eyebrow = document.querySelector('.tp-eyebrow');
     if (!_eyebrow) return;
     var _di = document.getElementById('trip-date');
-    var _dateStr = _di && _di.value ? _di.value : new Date().toISOString().slice(0,10);
-    var _today = new Date().toISOString().slice(0,10);
+    var _dateStr = _di && _di.value ? _di.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+    var _today = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
     var _tripD = new Date(_dateStr + 'T12:00:00');
     var _todayD = new Date(_today + 'T12:00:00');
     var _diffDays = Math.round((_tripD - _todayD) / 86400000);
@@ -7498,7 +7509,7 @@ function renderRiverRanker(locKey, maxMinutes) {
     }
   })();
 
-  var dateStr = document.getElementById('trip-date').value || new Date().toISOString().slice(0,10);
+  var dateStr = document.getElementById('trip-date').value || (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   var ranked = rankRivers(rivers, selectedSpecies, dateStr);
 
   lbl.textContent = 'Rivers near you \u2014 ranked by today\'s conditions';
@@ -8488,7 +8499,7 @@ function renderDefaultPreview() {
 
       // Set date to today
       var dateInp = document.getElementById('trip-date');
-      if (dateInp) dateInp.value = new Date().toISOString().slice(0,10);
+      if (dateInp) dateInp.value = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
 
       // Update species buttons UI
       document.querySelectorAll('.species-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -8533,7 +8544,7 @@ function renderDefaultPreview() {
         var dbEntry = RIVERS_DB.find(function(r){ return r.name === river.name; });
         var drive = dbEntry && dbEntry.times ? (dbEntry.times['toronto'] || 60) : 60;
         var tempRivers = [{ name: river.name, driveTime: drive, times: dbEntry ? dbEntry.times : {} }];
-        var ranked = rankRivers(tempRivers, [], new Date().toISOString().slice(0,10));
+        var ranked = rankRivers(tempRivers, [], (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})());
         var baseScore = ranked.length ? ranked[0].score : 4;
 
         // Add live conditions
