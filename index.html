@@ -2185,8 +2185,6 @@ select:focus-visible, input:focus-visible {
     <div id="default-preview" style="display:none"></div>
   </div>
 
-</div>
-</div>
   <footer class="site-footer">
     <a href="/" class="site-footer-brand">HereFishyFishy</a>
     <nav class="site-footer-nav">
@@ -2195,6 +2193,8 @@ select:focus-visible, input:focus-visible {
     </nav>
     <span class="site-footer-copy">Data: Water Survey of Canada · Open-Meteo · Refreshes every 15 min</span>
   </footer>
+</div>
+</div>
 <!-- END LANDING -->
 
 <!-- ============ RESULTS PAGE ============ -->
@@ -5295,7 +5295,8 @@ function goBack(){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function(){
   var d=document.getElementById("trip-date");
-  var today=new Date().toISOString().slice(0,10);
+  // Use local date for date picker — UTC causes off-by-one after 8PM Eastern
+  var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   d.value=today; d.min=today;
   var max=new Date(); max.setDate(max.getDate()+5); d.max=max.toISOString().slice(0,10);
   var ld=document.getElementById("land-date");
@@ -5881,7 +5882,9 @@ async function renderResults(){
   try { renderRiverUI(cfg); } catch(_ruErr) { console.error('renderRiverUI failed:', _ruErr); }
 
   var dateStr=document.getElementById("trip-date").value||new Date().toISOString().slice(0,10);
-  var isToday=dateStr===new Date().toISOString().slice(0,10);
+  // Compare using local Eastern date, not UTC — after 8PM ET the UTC date is already "tomorrow"
+  var _localToday=(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+  var isToday=dateStr===_localToday;
   var now=new Date();
   var _vtime=document.getElementById("vtime"); if(_vtime && _vtime.textContent !== undefined) _vtime.textContent=now.toLocaleTimeString("en-CA",{hour:"2-digit",minute:"2-digit"});
   var _vhrd=document.getElementById("vhead"); if(_vhrd) _vhrd.textContent="Reading conditions\u2026";
@@ -8671,8 +8674,8 @@ function initNotifyBar() {
 
 
 
-</script>
 
+</script>
 
 
 </body>
