@@ -5380,6 +5380,46 @@ function goBack(){
   document.querySelectorAll(".btab").forEach(function(btn){
     btn.addEventListener("click", function(){ showTab(this.getAttribute("data-tab"), this); });
   });
+
+  // ── DEEP LINK HANDLER ─────────────────────────────────────────────────────
+  // Reads ?river= and ?species= URL params from SSR landing pages.
+  // Runs inside the main IIFE so all globals are guaranteed available.
+  // e.g. herefishyfishy.ca/?river=Upper+Credit+River&species=brown
+  (function() {
+    var _params = new URLSearchParams(window.location.search);
+    var _river  = _params.get('river');
+    var _sp     = _params.get('species');
+    if (!_river) return;
+
+    // Set global state
+    selectedRiver      = _river; // URLSearchParams.get() already decodes
+    selectedSpecies    = _sp ? [_sp] : [];
+    selectedTechFamily = [];
+    appMode            = 'expert';
+
+    // Pre-select species button visually
+    if (_sp) {
+      document.querySelectorAll('.species-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-value') === _sp);
+      });
+    }
+
+    // Show results, hide landing
+    var _landing = document.getElementById('landing');
+    var _results = document.getElementById('results');
+    if (!_landing || !_results) return;
+    _landing.style.display = 'none';
+    _results.style.display = '';
+    _results.classList.add('active');
+    window.scrollTo(0, 0);
+    initNotifyBar();
+    if (typeof track === 'function') track('River Viewed', { river: selectedRiver, source: 'deep-link' });
+    history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+    renderResults();
+    setTimeout(loadBaitImages, 800);
+  })();
+  // ── END DEEP LINK HANDLER ──────────────────────────────────────────────────
+
 })();
 
 // ── CLASSIFY ──────────────────────────────────────────────────────────────────
@@ -8631,400 +8671,9 @@ function initNotifyBar() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-// Deep link handler — reads ?river= and ?species= URL params from SSR landing pages
-// e.g. herefishyfishy.ca/?river=Upper+Credit+River&species=brown
-(function() {
-  var params = new URLSearchParams(window.location.search);
-  var river   = params.get('river');
-  var species = params.get('species');
-  if (!river) return; // no deep link — normal load
-
-  function init() {
-    // Set global state — mirrors what dp-card / expert flow does
-    selectedRiver   = decodeURIComponent(river);
-    selectedSpecies = species ? [species] : [];
-    selectedTechFamily = [];
-    appMode = 'expert'; // use selectedRiver directly, skip beginner re-rank
-
-    // Pre-select the species button visually
-    if (species) {
-      document.querySelectorAll('.species-btn').forEach(function(b) {
-        b.classList.toggle('active', b.getAttribute('data-value') === species);
-      });
-    }
-
-    // Set today's date
-    var dateEl = document.getElementById('trip-date');
-    if (dateEl && !dateEl.value) {
-      dateEl.value = new Date().toISOString().slice(0, 10);
-    }
-
-    // Show results, hide landing — exactly what goToResults() does
-    var landing = document.getElementById('landing');
-    var results = document.getElementById('results');
-    if (!landing || !results) return;
-    landing.style.display = 'none';
-    results.style.display = '';
-    results.classList.add('active');
-    window.scrollTo(0, 0);
-    if (typeof initNotifyBar === 'function') initNotifyBar();
-    if (typeof track === 'function') track('River Viewed', { river: selectedRiver, source: 'deep-link' });
-    history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
-    renderResults();
-    setTimeout(function(){ if (typeof loadBaitImages === 'function') loadBaitImages(); }, 800);
-  }
-
-  // Defer until all app scripts have fully executed
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 100); });
-  } else {
-    setTimeout(init, 100);
-  }
-})();
-</script>
 </body>
 </html>
