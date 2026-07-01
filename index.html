@@ -7066,6 +7066,14 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var fallbackSpecies = null;
   var recs = recommendSpecies(cfg);
 
+  // Thermal stress filter: above 18°C, no trout should be recommended as fallback.
+  // Brook trout are most sensitive (~16°C), but 18°C is the practical C&R threshold for all three.
+  var _TROUT = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
+  var _thermalStress = wt != null && wt >= 18;
+  if (_thermalStress) {
+    recs = recs.filter(function(r) { return _TROUT.indexOf(r.name) === -1; });
+  }
+
   if (targetName) {
     var seasonal = getCurrentSeason(targetName, getTripDateStr());
     var onRiver  = cfg.species && cfg.species.indexOf(targetName) !== -1;
@@ -7285,6 +7293,20 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         + timeShort.toLowerCase() + ', '
         + bringPhrase + '.';
     }
+  } else if (targetName && _thermalStress && _TROUT.indexOf(targetName) !== -1 && !fallbackSpecies) {
+    // Thermal stress, trout-only river — no safe recommendation possible
+    headlineHtml = 'Water is <em>' + (wt || '—') + '°C</em> — above the safe threshold for trout. '
+      + 'Consider waiting for cooler conditions or fishing early morning before 8 AM.';
+  } else if (fallbackSpecies && targetName && seasonal && seasonal.quality === 'slow') {
+    // Slow season — species IS resident/present but conditions discourage fishing
+    // Pull the season note for the real reason (e.g. heat stress, cold water)
+    var _slowNote = seasonal.note ? seasonal.note.split('.')[0] + '.' : 'Fishing is slow this time of year.';
+    headlineHtml = '<em>' + targetName + '</em> are here but it’s tough going — '
+      + _slowNote + ' '
+      + 'Try <em>' + fallbackSpecies + '</em> instead: '
+      + 'head to <em>' + spotName + '</em>, '
+      + timeShort.toLowerCase() + ', '
+      + bringPhrase + '.';
   } else if (!targetName && _multiTarget) {
     // Multi-species selection: both are on this river, name them both
     headlineHtml = 'Head to <em>' + spotName + '</em>. '
@@ -8682,8 +8704,8 @@ function initNotifyBar() {
 
 
 
-</script>
 
+</script>
 
 
 </body>
