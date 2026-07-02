@@ -2801,6 +2801,7 @@ function fetchLakeTemps() {
 function renderStagingCard(sectionName, weather) {
   var container = document.getElementById("staging-card-slot");
   if (container) container.innerHTML = "";  // clear any prior card
+  window._stagingPct = null; // reset — only set again below if a staging card actually renders
   var zone = STAGING_ZONES[sectionName];
   if (!zone || !container) return;
 
@@ -2840,6 +2841,7 @@ function renderStagingCard(sectionName, weather) {
 
     var res = computeStagingScore(lakeTemp, windDir, windSpd, cloudPct, phase.intensity, mouthFaces);
     var pct = Math.round(res.score * 100);
+    window._stagingPct = pct; // expose for drive-time verdict — staging strength, not trout live-conditions score
     var rating = pct >= 65 ? "Strong" : pct >= 40 ? "Fair" : "Slow";
     var ratingColor = pct >= 65 ? "#6dbf8a" : pct >= 40 ? "#e8a85a" : "#b0b0b0";
 
@@ -6161,6 +6163,15 @@ async function renderResults(){
   document.getElementById("sum-window-note").textContent=_twNote;
   var _fl2=({'':{h:'Streamers',c:'Slow Nymphing',n:'Nymphing'},fly:{h:'Streamer fishing',c:'Slow nymphing',n:'Nymphing'},spin:{h:'Heavy Spinners',c:'Slow Jig',n:'Spinner Fishing'},float:{h:'Drift Fishing',c:'Bottom Bait',n:'Float Fishing'}})[selectedTechFamily.length>0?selectedTechFamily[0]:'']||{h:'Streamers',c:'Slow Nymphing',n:'Nymphing'};
   var topMethod=flow!=null&&flow>cfg.flowHigh*0.6?_fl2.h:wt<8?_fl2.c:_fl2.n;
+  // Override: Chinook/Coho staging or running in a staging-zone river call for spin/lures
+  (function(){
+    var _sk2 = selectedSpecies && selectedSpecies[0];
+    var _isSalmonTarget2 = _sk2 === 'chinook' || _sk2 === 'coho';
+    var _isStagingRiver2 = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
+    if (_isSalmonTarget2 && _isStagingRiver2) {
+      topMethod = 'Spinning \u2014 Spoons & Lures';
+    }
+  })();
   document.getElementById("sum-method").textContent=topMethod;
   document.getElementById("sum-method-note").textContent="Current pick";
 
@@ -7043,6 +7054,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _fam = selectedTechFamily.length > 0 ? selectedTechFamily[0] : '';
   var _fl = _famLabels[_fam] || _famLabels[''];
   var topMethod = flow!=null&&flow>(cfg.flowHigh||20)*0.6 ? _fl.high : wt<8 ? _fl.cold : _fl.normal;
+  // Override: Chinook/Coho staging or running in a staging-zone river call for spin/lures, not trout nymphing
+  (function(){
+    var _sk = selectedSpecies && selectedSpecies[0];
+    var _isSalmonTarget = _sk === 'chinook' || _sk === 'coho';
+    var _isStagingRiver = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
+    if (_isSalmonTarget && _isStagingRiver) {
+      topMethod = 'Spinning \u2014 Spoons & Lures';
+    }
+  })();
 
   // Render the conditions tile grid (hero)
   (function(){
@@ -7379,15 +7399,21 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       var _seas = _spName ? getCurrentSeason(_spName) : null;
       _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
     }
-    // Add live conditions bonus to the score
-    var _liveCfg = getRiverConfig(selectedRiver);
-    if (_liveCfg && flow != null) {
-      var _liveBonus = liveConditionsScore(
-        flow, _liveCfg.sweetMin, _liveCfg.sweetMax,
-        _liveCfg.flowLow, _liveCfg.flowHigh,
-        wt, cloudPct
-      );
-      _topScore += _liveBonus;
+    // If this is a salmon staging scenario, use the staging strength score instead —
+    // the generic trout live-conditions bonus doesn't apply to lake-staging fish.
+    if (window._stagingPct != null) {
+      _topScore = window._stagingPct >= 65 ? 8 : window._stagingPct >= 40 ? 5 : 2;
+    } else {
+      // Add live conditions bonus to the score
+      var _liveCfg = getRiverConfig(selectedRiver);
+      if (_liveCfg && flow != null) {
+        var _liveBonus = liveConditionsScore(
+          flow, _liveCfg.sweetMin, _liveCfg.sweetMax,
+          _liveCfg.flowLow, _liveCfg.flowHigh,
+          wt, cloudPct
+        );
+        _topScore += _liveBonus;
+      }
     }
     // (live conditions already applied above)
     var _conf = scoreToConfidence(_topScore);
