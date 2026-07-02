@@ -5943,6 +5943,7 @@ async function renderResults(){
   } catch(e){ console.warn("Weather failed",e); }
   // Fall back to seasonal-typical only if the fetch genuinely failed
   if(!weatherOk){ airTemp=12; cloudPct=50; }
+  window._weatherOk = weatherOk; // expose — used to avoid false-confidence thermal reads on stale/fallback data
   var wt=waterTempEst(airTemp);
   // Salmon staging card (mouth sections, staging species, in-season)
   try { if (typeof renderStagingCard==="function" && selectedRiver && STAGING_ZONES[selectedRiver]) { renderStagingCard(selectedRiver, _stagingWeather); } } catch(e){ console.warn("staging card",e); }
@@ -6953,6 +6954,7 @@ function renderConditionTiles(opts) {
   var wt = opts.wt;
   var waterState, waterMeaning;
   if (wt == null) { waterState = 'na'; waterMeaning = 'No data'; }
+  else if (window._weatherOk === false) { waterState = 'na'; waterMeaning = 'Est. only'; }
   else if (wt >= 8 && wt <= 14) { waterState = 'good'; waterMeaning = 'Ideal'; }
   else if (wt >= 5 && wt < 8) { waterState = 'ok'; waterMeaning = 'Cool'; }
   else if (wt > 14 && wt <= 18) { waterState = 'ok'; waterMeaning = 'Warm'; }
@@ -7121,7 +7123,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Thermal stress filter: above 18°C, no trout should be recommended as fallback.
   // Brook trout are most sensitive (~16°C), but 18°C is the practical C&R threshold for all three.
   var _TROUT = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
-  var _thermalStress = wt != null && wt >= 18;
+  // Only trust wt for thermal-stress filtering when it came from a real weather fetch,
+  // not the generic fallback (airTemp=12 → wt=8, which is not real August/summer data).
+  var _thermalStress = wt != null && wt >= 18 && window._weatherOk !== false;
   if (_thermalStress) {
     recs = recs.filter(function(r) { return _TROUT.indexOf(r.name) === -1; });
   }
@@ -7133,10 +7137,32 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       var _isMigratory = seasonal && (targetName === 'Chinook Salmon' || targetName === 'Coho Salmon' || targetName === 'Steelhead');
       var _isSalmon = targetName === 'Chinook Salmon' || targetName === 'Coho Salmon';
       var _isAtMouth = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
+
+      // Does this river SYSTEM have a staging/mouth section, even if it's not this exact section?
+      // e.g. Middle Credit River isn't a staging zone, but Lower Credit River is, on the same river.
+      var _sysStagingSection = null;
+      if (_isSalmon && !_isAtMouth && selectedRiver && typeof STAGING_ZONES !== 'undefined') {
+        // Strip Upper/Middle/Lower prefix to get the core river name (e.g. "Credit River")
+        var _curRiverName = selectedRiver.split(',')[0].split(' \u2014 ')[0].trim();
+        var _coreName = _curRiverName.replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+        Object.keys(STAGING_ZONES).forEach(function(z) {
+          if (!_sysStagingSection && _coreName && z.indexOf(_coreName) !== -1) _sysStagingSection = z;
+        });
+      }
+
       if (recs.length > 0) {
         fallbackSpecies = recs[0].name;
-        if (_isSalmon && !_isAtMouth) {
-          // Not at a staging zone — recommend resident species in this or an upstream section
+        if (_isSalmon && !_isAtMouth && _sysStagingSection) {
+          // Salmon are staging/running at a mouth section on this same river system.
+          // Redirect there instead of silently substituting a resident species —
+          // the resident fallback may also be unsafe (heat stress) or scarce this time of year.
+          var _sysShort = _sysStagingSection.split(' \u2014 ')[1] || _sysStagingSection;
+          headlineHtml = '<em>' + targetName + '</em> are running \u2014 but at the <em>' + _sysStagingSection + '</em>, not this section. '
+            + 'Head there instead, or fish <em>' + fallbackSpecies + '</em> here if you\u2019d rather stay local'
+            + (recs[0].reasons[0] ? ' \u2014 ' + recs[0].reasons[0] : '') + '.';
+          speciesNote = ''; // headline already set directly, skip the generic builder below
+        } else if (_isSalmon && !_isAtMouth) {
+          // No staging zone anywhere on this river system — genuinely too early
           speciesNote = targetName + ' won’t enter rivers until late summer. '
             + 'Fish for <em>' + fallbackSpecies + '</em> in this section instead'
             + (recs[0].reasons[0] ? ' — ' + recs[0].reasons[0] : '') + '. '
