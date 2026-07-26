@@ -5239,6 +5239,26 @@ function goToResults(){
       // Staging-zone preference wins last — species being "in the species list" doesn't
       // matter if it's fully absent everywhere; a staging-zone river gives a real answer.
       if (_stagingZonePick) bestPick = _stagingZonePick;
+
+      // Safety net: if bestPick doesn't actually have the target species, look for a
+      // sibling section on the same river system that does. Prevents geographic mismatches
+      // like picking Middle Credit (no Brook Trout) when Upper Credit has them.
+      if (bestPick && targetSpeciesNames.length > 0) {
+        var _bpCfg = getRiverConfig(bestPick.name);
+        var _bpHasTarget = _bpCfg && _bpCfg.species && targetSpeciesNames.some(function(n){ return _bpCfg.species.indexOf(n) !== -1; });
+        if (!_bpHasTarget) {
+          // Find a sibling section with the target species
+          var _bpCoreName = bestPick.name.replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+          var _siblingWithSpecies = ranked.find(function(r) {
+            if (r.name === bestPick.name) return false;
+            var _rCore = r.name.replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+            if (_rCore !== _bpCoreName) return false;
+            var _rCfg = getRiverConfig(r.name);
+            return _rCfg && _rCfg.species && targetSpeciesNames.some(function(n){ return _rCfg.species.indexOf(n) !== -1; });
+          });
+          if (_siblingWithSpecies) bestPick = _siblingWithSpecies;
+        }
+      }
     }
     if (bestPick) {
       selectedRiver = bestPick.name + (bestPick.loc ? ', ' + bestPick.loc.replace(/–/g,'-') : '');
