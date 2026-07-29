@@ -29,3 +29,11 @@ Southern Ontario rivers. Eastern rivers (Ganaraska, Wilmot, Bowmanville) run 2�
 ## No app download required
 
 Runs in any mobile browser at herefishyfishy.ca. Free, no account required to use.
+
+## Key pages
+
+- https://herefishyfishy.ca/ — Live conditions app (main tool)
+- https://herefishyfishy.ca/rivers — All covered rivers with species
+- https://herefishyfishy.ca/guides/salmon-run-timing — When salmon run in Ontario, river-by-river timing table (staging begins July on eastern rivers, late July on the Credit/Humber; runs peak mid-September to mid-October)
+- https://herefishyfishy.ca/credit-river/chinook-salmon — Live Credit River Chinook conditions (also: /brown-trout, /rainbow-trout, /brook-trout, /steelhead, /coho-salmon)
+- https://herefishyfishy.ca/about — Who built this and how it works
