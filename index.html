@@ -2701,6 +2701,29 @@ function fetchLakeTemps() {
     .catch(function(){ _lakeTempCache = {}; return _lakeTempCache; });
 }
 
+// ── STAGING HELPERS (shared by river picker, access filter, bestSpot, technique) ──
+// Staging is "plausible" when the species' CURRENT season window describes harbour/mouth
+// activity — e.g. Chinook in August = "Harbour Mouth". July = "In Lake" (nothing staging yet),
+// September = "Early Run" (fish are in the river, normal access points apply).
+function stagingPlausibleFor(speciesName, dateStr) {
+  if (speciesName !== 'Chinook Salmon' && speciesName !== 'Coho Salmon') return false;
+  if (typeof getCurrentSeason !== 'function') return false;
+  var w = getCurrentSeason(speciesName, dateStr);
+  return !!(w && /harbour|staging|mouth/i.test(w.label || ''));
+}
+
+// Resolve the harbour/mouth section for a river system: exact match first, else strip the
+// Upper/Middle/Lower prefix and find the staging zone on the same river (Middle Credit → Lower Credit).
+function resolveStagingSection(riverName) {
+  if (!riverName || typeof STAGING_ZONES === 'undefined') return null;
+  var base = riverName.split(',')[0].trim();
+  if (STAGING_ZONES[base]) return base;
+  var core = base.split(' \u2014 ')[0].replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+  var found = null;
+  Object.keys(STAGING_ZONES).forEach(function(z){ if (!found && core && z.indexOf(core) !== -1) found = z; });
+  return found;
+}
+
 // Render the Lake Staging card for a mouth section during the staging window
 function renderStagingCard(sectionName, weather) {
   var container = document.getElementById("staging-card-slot");
@@ -4723,10 +4746,9 @@ function renderRiverUI(cfg) {
       var _sm3 = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
       _stgSp = _sm3[selectedSpecies[0]];
     }
-    var _isSalmonStg2 = _stgSp === 'Chinook Salmon' || _stgSp === 'Coho Salmon';
-    if (!_isSalmonStg2 || !selectedRiver || typeof STAGING_ZONES === 'undefined' || !STAGING_ZONES[selectedRiver]) return;
-    var _seasonStg2 = getCurrentSeason(_stgSp, getTripDateStr());
-    if (!(_seasonStg2 && _seasonStg2.quality === 'absent')) return;
+    if (!_stgSp || !selectedRiver || typeof STAGING_ZONES === 'undefined') return;
+    if (!STAGING_ZONES[selectedRiver.split(',')[0].trim()]) return;
+    if (!stagingPlausibleFor(_stgSp, getTripDateStr())) return;
     var _mouthOnly = _accessSorted.filter(function(a){ return a.mouth === true; });
     if (_mouthOnly.length > 0) _accessSorted = _mouthOnly;
   })();
@@ -5208,9 +5230,14 @@ function goToResults(){
         var w = getCurrentSeason(n, _tripDateBP);
         return w && w.quality === 'absent';
       });
+      // Staging season (e.g. Chinook in August, label "Harbour Mouth") is quality 'slow',
+      // not 'absent' — so check plausibility directly rather than relying on _allAbsent.
+      var _anyStagingPlausible = targetSpeciesNames.some(function(n) {
+        return typeof stagingPlausibleFor === 'function' && stagingPlausibleFor(n, _tripDateBP);
+      });
       var _hasSalmonTarget = targetSpeciesNames.some(function(n){ return n === 'Chinook Salmon' || n === 'Coho Salmon'; });
       var _stagingZonePick = null;
-      if (_allAbsent && _hasSalmonTarget && typeof STAGING_ZONES !== 'undefined') {
+      if ((_anyStagingPlausible || _allAbsent) && _hasSalmonTarget && typeof STAGING_ZONES !== 'undefined') {
         var withStagingZone = ranked.filter(function(r){ return !!STAGING_ZONES[r.name]; });
         if (withStagingZone.length > 0) _stagingZonePick = withStagingZone[0];
       }
@@ -7027,12 +7054,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _stagingActive = false;
   (function() {
     var _stgTarget = targetName || (_targetNamesNowFishable.length === 1 ? _targetNamesNowFishable[0] : null);
-    var _isSalmonStg = _stgTarget === 'Chinook Salmon' || _stgTarget === 'Coho Salmon';
-    if (!_isSalmonStg || !selectedRiver || typeof STAGING_ZONES === 'undefined') return;
-    var _isAtMouthStg = !!STAGING_ZONES[selectedRiver];
-    if (!_isAtMouthStg) return;
-    var _seasonStg = getCurrentSeason(_stgTarget, getTripDateStr());
-    _stagingActive = _seasonStg && _seasonStg.quality === 'absent';
+    if (!_stgTarget || !selectedRiver || typeof STAGING_ZONES === 'undefined') return;
+    // Only when this section IS the harbour/mouth section — inland sections keep their own spots.
+    if (!resolveStagingSection(selectedRiver) || !STAGING_ZONES[selectedRiver.split(',')[0].trim()]) return;
+    _stagingActive = stagingPlausibleFor(_stgTarget, getTripDateStr());
   })();
 
   var bestSpot = null;
