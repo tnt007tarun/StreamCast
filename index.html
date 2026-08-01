@@ -5922,7 +5922,22 @@ async function renderResults(){
   window._weatherOk = weatherOk; // expose — used to avoid false-confidence thermal reads on stale/fallback data
   var wt=waterTempEst(airTemp);
   // Salmon staging card (mouth sections, staging species, in-season)
-  try { if (typeof renderStagingCard==="function" && selectedRiver && STAGING_ZONES[selectedRiver]) { renderStagingCard(selectedRiver, _stagingWeather); } } catch(e){ console.warn("staging card",e); }
+  try {
+    if (typeof renderStagingCard==="function" && selectedRiver && typeof STAGING_ZONES !== "undefined") {
+      // Resolve the staging section system-wide: exact match first, else find the
+      // mouth section on the same river system (Middle Credit → Lower Credit).
+      var _stgSection = null;
+      var _srBase = selectedRiver.split(',')[0].trim();
+      if (STAGING_ZONES[_srBase]) {
+        _stgSection = _srBase;
+      } else {
+        var _srCore = _srBase.split(' \u2014 ')[0].replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+        Object.keys(STAGING_ZONES).forEach(function(z){ if (!_stgSection && _srCore && z.indexOf(_srCore) !== -1) _stgSection = z; });
+      }
+      // Only render for salmon/steelhead intent — the card itself also checks season windows
+      if (_stgSection) { renderStagingCard(_stgSection, _stagingWeather); }
+    }
+  } catch(e){ console.warn("staging card",e); }
 
   var flow=null,trend="stable",flowAt=null;
   // Debug: show gauge and isToday in panel
@@ -7122,6 +7137,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   if (_thermalStress) {
     recs = recs.filter(function(r) { return _TROUT.indexOf(r.name) === -1; });
   }
+  // A fallback suggestion must never be the species the user already targeted —
+  // "Fish Chinook Salmon instead" of Chinook Salmon is nonsense.
+  if (targetName) {
+    recs = recs.filter(function(r) { return r.name !== targetName; });
+  }
 
   if (targetName) {
     var seasonal = getCurrentSeason(targetName, getTripDateStr());
@@ -7201,7 +7221,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
           if (!_sysStagingSlow && _coreNameSlow && z.indexOf(_coreNameSlow) !== -1) _sysStagingSlow = z;
         });
       }
-      if (_isSalmonSlow && (_isAtMouthSlow || _sysStagingSlow) && window._stagingPct != null && window._stagingPct >= 40) {
+      var _slowPlausible = seasonal && /harbour|staging|mouth/i.test(seasonal.label || '');
+      if (_isSalmonSlow && (_isAtMouthSlow || _sysStagingSlow) && (_slowPlausible || (window._stagingPct != null && window._stagingPct >= 40))) {
         // Staging report already shows real activity — trust it over the generic seasonal label.
         // Only trigger when the staging card actually rendered something meaningful (Fair/Strong).
         fallbackSpecies = recs.length > 0 ? recs[0].name : null;
