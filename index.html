@@ -2321,7 +2321,7 @@ select:focus-visible, input:focus-visible {
   </div>  </div><!-- /section-conditions -->
 
   <!-- SECTION 2: Technique & Gear (accordion) -->
-  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p>Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
+  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p id="tg-subtitle">Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
   <!-- Hidden bait source panels — cloned by JS into accordion -->
   <div id="bait-source" style="display:none">
@@ -2774,6 +2774,54 @@ function resolveStagingSection(riverName) {
   return found;
 }
 
+// Rewrite the Technique & Gear panel for staging fish. Staging salmon are in the LAKE,
+// not the river — fly/nymph recommendations are wrong here regardless of river flow or
+// clarity. Called from both the headline override path and the staging-card path so the
+// two can never disagree with each other.
+var _stagingTechApplied = false;
+function applyStagingTechniqueOverride() {
+  var _m1n = document.getElementById('m1n');
+  var _m1d = document.getElementById('m1d');
+  var _m1c = document.getElementById('m1c');
+  var _m2n = document.getElementById('m2n');
+  var _m2d = document.getElementById('m2d');
+  var _m3n = document.getElementById('m3n');
+  var _m3d = document.getElementById('m3d');
+  var _lbl = document.getElementById('tg-baits-primary-lbl');
+  if (_m1n) _m1n.textContent = 'Spinning \u2014 Spoons & Lures';
+  if (_m1d) _m1d.textContent = 'Cast from the pier, beach, or river mouth. Fan cast and vary retrieves \u2014 slow flutter on the drop is key. Dawn and dusk are prime; overcast opens the full day.';
+  if (_m1c) _m1c.innerHTML = '<span>Best: Dawn, dusk, or all day overcast</span><span>Target: Harbour mouth, pier, beach</span><span>Rod: 8\u201310 ft medium-heavy spinning</span>';
+  if (_m2n) _m2n.textContent = 'Trolling';
+  if (_m2d) _m2d.textContent = 'Troll spoons or stick baits parallel to shore at harbour depth. Effective for covering water to locate staging fish.';
+  if (_m3n) _m3n.textContent = 'Jigging';
+  if (_m3d) _m3d.textContent = 'Vertical jig near structure and drop-offs at the harbour mouth. Can intercept resting fish.';
+  // Also correct the section subtitle, which otherwise still promises fly alternatives
+  var _sub = document.getElementById('tg-subtitle');
+  if (_sub) _sub.textContent = 'Staging fish are in the lake \u2014 spinning gear from shore is the method.';
+  // Switch bait panel to salmon lures
+  if (_lbl) _lbl.textContent = 'Recommended Salmon Lures';
+  var container = document.getElementById('bpanels-primary');
+  if (container) {
+    var src = document.getElementById('p-salmon-lures');
+    if (src) {
+      var clone = src.cloneNode(true);
+      clone.id = 'bpanels-primary-p-salmon-lures';
+      clone.className = 'bpanel active';
+      container.innerHTML = '';
+      container.appendChild(clone);
+      setTimeout(loadBaitImages, 100);
+    }
+  }
+  // Rebuild gear setup for spinning — salmon harbour context
+  buildGearSetup('Spinning \u2014 Spoons & Lures', 'spin', {cold:false, high:false, low:true});
+  // Hide fly-specific secondary and tertiary method accordions
+  var _tg2 = document.getElementById('tg-secondary');
+  var _tg3 = document.getElementById('tg-tertiary');
+  if (_tg2) _tg2.style.display = 'none';
+  if (_tg3) _tg3.style.display = 'none';
+  _stagingTechApplied = true;
+}
+
 // Render the Lake Staging card for a mouth section during the staging window
 function renderStagingCard(sectionName, weather) {
   var container = document.getElementById("staging-card-slot");
@@ -2880,6 +2928,14 @@ function renderStagingCard(sectionName, weather) {
         }
       }
     })();
+    // If this card is telling the user the fish are STAGING in the lake, the Technique &
+    // Gear panel must not still be recommending in-river nymphing. The headline path only
+    // fires when the season window reads 'absent'; a 'slow' window reaches here instead,
+    // which is exactly the case that was leaking fly recommendations through.
+    if (phase.mode === 'stage' && which === 'salmon' && !_stagingTechApplied) {
+      try { applyStagingTechniqueOverride(); } catch(_stErr) { console.warn('staging technique override failed:', _stErr); }
+    }
+
     var rating = pct >= 65 ? "Strong" : pct >= 40 ? "Fair" : "Slow";
     var ratingColor = pct >= 65 ? "#6dbf8a" : pct >= 40 ? "#e8a85a" : "#b0b0b0";
 
@@ -5866,6 +5922,44 @@ function updateMethods(fc,tc,sc,flow,wt){
                   "<span>Bait: Roe, worms + split shot</span><span>Fish: Deep runs</span>")};
     }
   }
+
+  // ── SALMON IN RIVER — float fishing leads, always ─────────────────────────
+  // Once Chinook/Coho are in the river, float-fished roe bags or beads are the most
+  // productive method on Ontario rivers by a wide margin. The flow/clarity branches
+  // above are tuned for resident trout and will otherwise hand back nymphing or
+  // streamers, which under-serve salmon. Lures and streamers stay available as
+  // secondary and tertiary options because they do produce on fresh, aggressive fish.
+  // Skipped when the angler has explicitly forced fly or spin gear — respect their kit.
+  if (isSalmonSp && fam !== 'fly' && fam !== 'spin') {
+    var _fDepth = high ? 'Run deeper and heavier — high water pushes fish to the edges.'
+                : low  ? 'Downsize and lengthen your leader — low clear water makes salmon spooky.'
+                : 'Set the float so the bait drifts just above the bottom.';
+    var _fWhere = high ? 'Fish: Slower edge water, seams, back eddies'
+                : low  ? 'Fish: Deepest pools and tailouts'
+                : 'Fish: Deep pools, tailouts, current seams';
+    m1 = {n:'Float Fishing \u2014 Roe & Beads',
+          d:'For salmon in the river, drift roe bags or beads under a float through holding water. This is the most productive salmon method on Ontario rivers.',
+          tip:_fDepth + ' Cast upstream, keep the line tight, and watch for the float to dip \u2014 that\u2019s your bite.',
+          c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>' + _fWhere + '</span>'};
+    m2 = {n:'Bottom Bouncing',
+          d:'Drift roe or beads along the bottom without a float in faster runs. Effective when fish hold deep.',
+          tip:'Use enough weight to feel the bottom on every other tap. Keep the rod tip high and follow the drift \u2014 set on any pause or tick.',
+          c:'<span>Bait: Roe, beads, yarn</span><span>Add split shot to reach bottom</span><span>Fish: Fast runs, deep pockets</span>'};
+    m3 = {n:'Swung Streamers / Spoons',
+          d:'Swing large streamers or cast spoons through runs to trigger aggressive salmon. Usually less consistent than float fishing, but it can be the better choice on fresh, active fish.',
+          tip:'Take one step downstream after each cast. Cover the run systematically \u2014 active salmon will be somewhere in the run and you need to find them.',
+          c:'<span>Lures: Spoons, large streamers</span><span>Swing across current</span><span>Best on fresh-run fish</span>'};
+  }
+
+  // Clear any staging override left over from a previous search before writing fresh methods
+  _stagingTechApplied = false;
+  var _tgSubReset = document.getElementById('tg-subtitle');
+  if (_tgSubReset) _tgSubReset.textContent = 'Primary method with recommended setup and baits. Tap alternatives to expand.';
+  var _tg2Reset = document.getElementById('tg-secondary');
+  var _tg3Reset = document.getElementById('tg-tertiary');
+  if (_tg2Reset) _tg2Reset.style.display = '';
+  if (_tg3Reset) _tg3Reset.style.display = '';
+
   document.getElementById("m1n").textContent=m1.n;
   document.getElementById("m1d").textContent=m1.tip||m1.d; // tip replaces generic description
   document.getElementById("m1c").innerHTML=""; // Best/Fish/Leader removed
@@ -7440,44 +7534,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   if (_stagingHeadline) {
     headlineHtml = _stagingHeadline;
     // Override method accordion to show spinning/harbour setup instead of fly methods
-    setTimeout(function() {
-      var _m1n = document.getElementById('m1n');
-      var _m1d = document.getElementById('m1d');
-      var _m1c = document.getElementById('m1c');
-      var _m2n = document.getElementById('m2n');
-      var _m2d = document.getElementById('m2d');
-      var _m3n = document.getElementById('m3n');
-      var _m3d = document.getElementById('m3d');
-      var _lbl = document.getElementById('tg-baits-primary-lbl');
-      if (_m1n) _m1n.textContent = 'Spinning — Spoons & Lures';
-      if (_m1d) _m1d.textContent = 'Cast from the pier, beach, or river mouth. Fan cast and vary retrieves — slow flutter on the drop is key. Dawn and dusk are prime; overcast opens the full day.';
-      if (_m1c) _m1c.innerHTML = '<span>Best: Dawn, dusk, or all day overcast</span><span>Target: Harbour mouth, pier, beach</span><span>Rod: 8–10 ft medium-heavy spinning</span>';
-      if (_m2n) _m2n.textContent = 'Trolling';
-      if (_m2d) _m2d.textContent = 'Troll spoons or stick baits parallel to shore at harbour depth. Effective for covering water to locate staging fish.';
-      if (_m3n) _m3n.textContent = 'Jigging';
-      if (_m3d) _m3d.textContent = 'Vertical jig near structure and drop-offs at the harbour mouth. Can intercept resting fish.';
-      // Switch bait panel to salmon lures
-      if (_lbl) _lbl.textContent = 'Recommended Salmon Lures';
-      var container = document.getElementById('bpanels-primary');
-      if (container) {
-        var src = document.getElementById('p-salmon-lures');
-        if (src) {
-          var clone = src.cloneNode(true);
-          clone.id = 'bpanels-primary-p-salmon-lures';
-          clone.className = 'bpanel active';
-          container.innerHTML = '';
-          container.appendChild(clone);
-          setTimeout(loadBaitImages, 100);
-        }
-      }
-      // Rebuild gear setup for spinning — salmon harbour context
-      buildGearSetup('Spinning — Spoons & Lures', 'spin', {cold:false, high:false, low:true});
-      // Hide fly-specific secondary and tertiary method accordions
-      var _tg2 = document.getElementById('tg-secondary');
-      var _tg3 = document.getElementById('tg-tertiary');
-      if (_tg2) _tg2.style.display = 'none';
-      if (_tg3) _tg3.style.display = 'none';
-    }, 50);
+    setTimeout(applyStagingTechniqueOverride, 50);
   } else if (fallbackSpecies && targetName) {
     // Distinguish geographic mismatch from seasonal absence
     var _geoMismatch = _riverSpecies.indexOf(targetName) === -1;
