@@ -2691,6 +2691,12 @@ function computeStagingScore(lakeTempC, windDir, windSpeed, cloudPct, intensity,
     else if (_off <= 75 && windSpeed >= 18) { score += 0.10; _upwell = 'up-light';   factors.push("some upwelling push"); }
     else if (_off >= 135 && windSpeed >= 15){ score -= 0.15; _upwell = 'down-strong';factors.push("downwelling \u2014 warm surface water piling at the mouth"); }
     else if (_off >= 135 && windSpeed >= 8) { score -= 0.07; _upwell = 'down-light'; factors.push("mild downwelling \u2014 surface warming at the mouth"); }
+    else {
+      // Nothing crossed a scoring threshold — still surface a wind status line so the
+      // card always tells the upwelling story, worded to what's actually happening.
+      if (windSpeed < 8) { factors.push("wind light \u2014 minimal upwelling push either way"); }
+      else { factors.push("wind mostly alongshore \u2014 little upwelling effect"); }
+    }
 
     // During strong upwelling the OFFSHORE buoy often reads warm — that is where the
     // displaced surface water went. Nearshore water at the mouth is far colder than the
