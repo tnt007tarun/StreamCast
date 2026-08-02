@@ -1393,6 +1393,42 @@ select:focus-visible, input:focus-visible {
 .sky-badge { margin-bottom: .25rem; }
 
 /* ── DEFAULT PREVIEW WRAPPER ────────────────────────────────────────────── */
+/* ===== HOMEPAGE GUIDE CARDS (Direction B — Run Calendar) ===== */
+.guides-wrap{max-width:1180px;margin:0 auto;padding:2.5rem 1.5rem 3.25rem}
+.guides-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.guides-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);margin-bottom:.35rem}
+.guides-title{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.5rem;line-height:1.2;color:var(--ink)}
+.guides-all{font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:500;color:var(--fern);text-decoration:none;border-bottom:1px solid rgba(30,122,110,.3);padding-bottom:1px}
+.guides-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:1.4rem}
+.guides-stack{display:grid;grid-template-rows:1fr 1fr;gap:1.4rem}
+.gcard{position:relative;background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;display:flex;transition:box-shadow .18s ease,border-color .18s ease}
+.gcard:hover{box-shadow:0 10px 26px rgba(26,58,74,.13);border-color:rgba(30,122,110,.35)}
+.gcard:focus-visible{outline:2px solid var(--fern);outline-offset:2px}
+.gspine{width:5px;flex:none;background:var(--sage)}
+.gcard.live .gspine{background:linear-gradient(180deg,var(--amber),var(--gold))}
+.gcard-lead{flex-direction:column}
+.gcard-lead .gspine{width:100%;height:5px}
+.gimg{background:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));background-size:cover;background-position:center;position:relative}
+.gcard-lead .gimg{aspect-ratio:16/9}
+.gcard-side .gimg{width:104px;flex:none}
+.ginner{padding:1.15rem 1.25rem 1.3rem;display:flex;flex-direction:column;flex:1}
+.gmonths{display:flex;gap:2px;margin-bottom:.75rem}
+.gm{flex:1;height:15px;border-radius:2px;background:rgba(30,122,110,.09);font-family:'JetBrains Mono',monospace;font-size:.44rem;color:transparent;display:flex;align-items:center;justify-content:center}
+.gm.on{background:rgba(74,140,122,.42)}
+.gm.peak{background:var(--amber);color:#fff}
+.gm.cur{outline:1.5px solid var(--ink);outline-offset:1px}
+.gmonths.lbl .gm{color:var(--text);opacity:.55}
+.gmonths.lbl .gm.peak{color:#fff;opacity:1}
+.gcard h3{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.02rem;line-height:1.28;margin-bottom:.4rem;color:var(--ink)}
+.gcard-lead h3{font-size:1.3rem}
+.gcard p{font-size:.84rem;line-height:1.55;color:var(--text);opacity:.85;flex:1;font-weight:300}
+.gstatus{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--sage);margin-top:.85rem}
+.gcard.live .gstatus{color:var(--amber)}
+.gvid{position:absolute;right:.5rem;bottom:.5rem;z-index:2;width:22px;height:22px;border-radius:50%;background:rgba(13,31,45,.72);display:flex;align-items:center;justify-content:center}
+.gvid svg{width:9px;height:9px;fill:var(--cream)}
+@media(max-width:900px){.guides-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.guides-wrap{padding:2rem 1.1rem 2.5rem}.gcard-side .gimg{width:88px}}
+
 .default-preview-wrap {
   width: 100%;
   box-sizing: border-box;
@@ -2140,11 +2176,24 @@ select:focus-visible, input:focus-visible {
     <div id="default-preview" style="display:none"></div>
   </div>
 
+  <!-- GUIDES — seasonal article cards -->
+  <section class="guides-wrap" id="guides-section" aria-labelledby="guides-title-el">
+    <div class="guides-head">
+      <div>
+        <div class="guides-eyebrow">Guides</div>
+        <div class="guides-title" id="guides-title-el">What&rsquo;s running right now</div>
+      </div>
+      <a class="guides-all" href="/guides/">All guides</a>
+    </div>
+    <div class="guides-grid" id="guides-grid"></div>
+  </section>
+
 </div>
   <footer class="site-footer">
     <a href="/" class="site-footer-brand">HereFishyFishy</a>
     <nav class="site-footer-nav">
       <a href="/rivers">Rivers</a>
+      <a href="/guides/">Guides</a>
       <a href="/about">About</a>
     </nav>
     <span class="site-footer-copy">Data: Water Survey of Canada · Open-Meteo · Refreshes every 15 min</span>
@@ -2487,6 +2536,7 @@ select:focus-visible, input:focus-visible {
     <a href="/" class="site-footer-brand">HereFishyFishy</a>
     <nav class="site-footer-nav">
       <a href="/rivers">Rivers</a>
+      <a href="/guides/">Guides</a>
       <a href="/about">About</a>
     </nav>
     <span class="site-footer-copy">Data: Water Survey of Canada · Open-Meteo · Refreshes every 15 min</span>
@@ -6596,6 +6646,119 @@ function setResHeader(riverName) {
   }
 }
 
+/* ===== HOMEPAGE GUIDES — seasonal article cards =====
+   months: 1-12. peak = prime window (amber), on = shoulder window (muted green).
+   A guide with all 12 in `on` and none in `peak` reads as "useful year round".
+   Cards reorder every load: in-peak first (largest slot), then in-shoulder, then the rest. */
+var GUIDES = [
+  {
+    url:'/guides/salmon-run-timing/',
+    title:'When do salmon run in Ontario rivers?',
+    blurb:'Chinook stage off the harbour mouths from late August, then push upriver on the first sustained rain. What triggers a run, how long the window lasts, and which rivers turn on first.',
+    img:'/images/guides/salmon-run-timing.jpg',
+    peak:[9,10], on:[8,11], video:false
+  },
+  {
+    url:'/guides/salmon-float-fishing-tips/',
+    title:'Three float fishing tips for salmon',
+    blurb:'Where to start the drift, how long a leader to run under the float, and why holding the float back gets the bait seen first.',
+    img:'https://i.ytimg.com/vi/sdcNeg5ibaw/mqdefault.jpg',
+    peak:[9,10], on:[8,11], video:true
+  },
+  {
+    url:'/guides/euro-nymphing-upper-credit/',
+    title:'Euro nymphing the Upper Credit for rainbows',
+    blurb:'Four fish landed from eight hook-ups at the Forks of the Credit \u2014 and the fly change that turned the morning around. Gear, positioning, and why the Perdigon outfished everything else.',
+    img:'https://i.ytimg.com/vi/dsNlP-lNE4Y/mqdefault.jpg',
+    // Forks of the Credit sits above Old Baseline Rd: sanctuary closure Oct 1 – Dec 31
+    // and Jan 1 – Friday before the fourth Saturday in April. Season is late Apr – Sep 30.
+    peak:[5,6,9], on:[4,7,8], video:true
+  },
+  {
+    url:'/guides/where-steelhead-hold/',
+    title:'Where steelhead actually hold in a river',
+    blurb:'Most blank days are a location problem, not a gear problem. How to read pools, runs, and seams so you stop fishing dead water \u2014 part one of three.',
+    img:'https://i.ytimg.com/vi/vlj1AhJQRrA/mqdefault.jpg',
+    peak:[4,5,11,12], on:[3,10], video:true
+  }
+];
+
+function renderGuides() {
+  var grid = document.getElementById('guides-grid');
+  if (!grid || !GUIDES.length) return;
+  // Eastern-aware current month — after 8PM ET a UTC month rollover would be wrong
+  var d = new Date(), m = d.getMonth() + 1;
+
+  function rank(g) {
+    if (g.peak.indexOf(m) !== -1) return 0;          // in prime season
+    if (g.on.indexOf(m) !== -1 && g.peak.length) return 1; // shoulder of a seasonal guide
+    if (!g.peak.length) return 3;                    // evergreen — never leads
+    return 2;                                        // out of season
+  }
+  function nextOpen(g) {
+    if (!g.peak.length) return null;
+    for (var i = 0; i < 12; i++) {
+      var mm = ((m - 1 + i) % 12) + 1;
+      if (g.peak.indexOf(mm) !== -1) return i === 0 ? null : mm;
+    }
+    return null;
+  }
+  var MN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var ML = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+
+  // Months until a guide's peak window opens — used to break ties in the dead months
+  // (May–July) so the guide opening soonest leads rather than whichever was listed first.
+  function monthsOut(g) {
+    if (!g.peak.length) return 99;
+    for (var i = 0; i < 12; i++) {
+      if (g.peak.indexOf(((m - 1 + i) % 12) + 1) !== -1) return i;
+    }
+    return 99;
+  }
+  var sorted = GUIDES.slice().sort(function(a,b){
+    return (rank(a) - rank(b)) || (monthsOut(a) - monthsOut(b));
+  });
+  var lead = sorted[0], rest = sorted.slice(1, 3);
+
+  function statusText(g) {
+    if (g.peak.indexOf(m) !== -1) return 'Peak season \u00b7 in the water now';
+    if (!g.peak.length) return 'Useful year round';
+    if (g.on.indexOf(m) !== -1) return 'Season starting';
+    var n = nextOpen(g);
+    return n ? 'Opens ' + MN[n-1] : 'Out of season';
+  }
+  function monthStrip(g, labelled) {
+    var h = '<div class="gmonths' + (labelled ? ' lbl' : '') + '" aria-hidden="true">';
+    for (var i = 1; i <= 12; i++) {
+      var cls = 'gm';
+      if (g.peak.indexOf(i) !== -1) cls += ' peak';
+      else if (g.on.indexOf(i) !== -1) cls += ' on';
+      if (i === m) cls += ' cur';
+      h += '<span class="' + cls + '">' + ML[i-1] + '</span>';
+    }
+    return h + '</div>';
+  }
+  function playIcon(g) {
+    return g.video ? '<span class="gvid"><svg viewBox="0 0 10 10"><path d="M2 1 L9 5 L2 9 Z"/></svg></span>' : '';
+  }
+  function card(g, isLead) {
+    var live = g.peak.indexOf(m) !== -1;
+    var bg = g.img ? ' style="background-image:url(\'' + g.img + '\')"' : '';
+    return '<a class="gcard ' + (isLead ? 'gcard-lead' : 'gcard-side') + (live ? ' live' : '') + '" href="' + g.url + '">' +
+      '<div class="gspine"></div>' +
+      '<div class="gimg"' + bg + '>' + playIcon(g) + '</div>' +
+      '<div class="ginner">' +
+        monthStrip(g, isLead) +
+        '<h3>' + g.title + '</h3>' +
+        '<p>' + g.blurb + '</p>' +
+        '<div class="gstatus">' + statusText(g) + '</div>' +
+      '</div></a>';
+  }
+
+  grid.innerHTML = card(lead, true) +
+    '<div class="guides-stack">' + rest.map(function(g){ return card(g, false); }).join('') + '</div>';
+}
+
 function getTripDateStr() {
   var di = document.getElementById('trip-date');
   return (di && di.value) ? di.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
@@ -8778,6 +8941,7 @@ if (!history.state) {
 }
 
 renderDefaultPreview();
+renderGuides();
 updateSpeciesGrid();
 
 // ── NOTIFY BAR — river page ───────────────────────────────────────────────────
