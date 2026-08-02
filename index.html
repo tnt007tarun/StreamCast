@@ -2661,16 +2661,45 @@ function getSteelheadPhase(month, day, lakeTemp) {
 }
 
 // Compute staging likelihood from lake temp + wind + cloud + seasonal intensity
-function computeStagingScore(lakeTempC, windDir, windSpeed, cloudPct, intensity, mouthFaces) {
+function computeStagingScore(lakeTempC, windDir, windSpeed, cloudPct, intensity, mouthFaces, tempIsEstimate) {
   var score = intensity; // base seasonal driver (0–0.8)
   var factors = [];
+  var _tSuffix = tempIsEstimate ? " (seasonal est.)" : "";
 
   // Lake surface temp — staging fish hold in a thermal band ~10–17°C near mouths
   if (lakeTempC != null) {
-    if (lakeTempC >= 10 && lakeTempC <= 17) { score += 0.25; factors.push("surface temp in staging band"); }
-    else if (lakeTempC > 17 && lakeTempC <= 20) { score += 0.10; factors.push("surface temp slightly warm"); }
-    else if (lakeTempC > 20) { score -= 0.10; factors.push("surface temp warm — fish holding deeper"); }
-    else if (lakeTempC < 10) { score += 0.05; factors.push("cool surface — fish may be shallow"); }
+    if (lakeTempC >= 10 && lakeTempC <= 17) { score += 0.25; factors.push("surface temp in staging band" + _tSuffix); }
+    else if (lakeTempC > 17 && lakeTempC <= 20) { score += 0.10; factors.push("surface temp slightly warm" + _tSuffix); }
+    else if (lakeTempC > 20) { score -= 0.10; factors.push("surface temp warm — fish holding deeper" + _tSuffix); }
+    else if (lakeTempC < 10) { score += 0.05; factors.push("cool surface — fish may be shallow" + _tSuffix); }
+  }
+
+  // ── UPWELLING (Ekman transport) ──────────────────────────────────────────
+  // Surface water moves ~90° to the RIGHT of the wind vector in the Northern
+  // Hemisphere. When that transport points offshore, cold hypolimnetic water
+  // replaces warm surface water at the river mouth — the single strongest
+  // staging trigger. On Lake Ontario's north shore this means W winds upwell
+  // and E winds downwell (TRCA western Durham nearshore monitoring).
+  // mouthFaces is the offshore bearing (180 = mouth faces south into Lk Ontario,
+  // 0 = faces north into Georgian Bay), so the same maths flips correctly there.
+  var _upwell = null;
+  if (windDir != null && mouthFaces != null && windSpeed != null) {
+    var _ekman = (windDir + 270) % 360;                                   // transport bearing
+    var _off   = Math.abs(((_ekman - mouthFaces + 540) % 360) - 180);     // 0 = fully offshore
+    if (_off <= 45 && windSpeed >= 15)      { score += 0.25; _upwell = 'up-strong';  factors.push("upwelling \u2014 cold water pushing into the mouth"); }
+    else if (_off <= 45 && windSpeed >= 8)  { score += 0.12; _upwell = 'up-light';   factors.push("light upwelling \u2014 water cooling at the mouth"); }
+    else if (_off <= 75 && windSpeed >= 18) { score += 0.10; _upwell = 'up-light';   factors.push("some upwelling push"); }
+    else if (_off >= 135 && windSpeed >= 15){ score -= 0.15; _upwell = 'down-strong';factors.push("downwelling \u2014 warm surface water piling at the mouth"); }
+    else if (_off >= 135 && windSpeed >= 8) { score -= 0.07; _upwell = 'down-light'; factors.push("mild downwelling \u2014 surface warming at the mouth"); }
+
+    // During strong upwelling the OFFSHORE buoy often reads warm — that is where the
+    // displaced surface water went. Nearshore water at the mouth is far colder than the
+    // reading suggests, so undo the warm-water penalty applied above rather than letting
+    // the two signals cancel each other out.
+    if (_upwell === 'up-strong' && lakeTempC != null && lakeTempC > 20) {
+      score += 0.10;
+      factors.push("offshore reading warm but shore water cooling fast");
+    }
   }
 
   // Onshore wind concentrates baitfish + cooler water toward the mouth
@@ -2712,6 +2741,21 @@ function stagingPlausibleFor(speciesName, dateStr) {
   return !!(w && /harbour|staging|mouth/i.test(w.label || ''));
 }
 
+// Monthly nearshore surface-temperature climatology (°C) used when the live feed is
+// unavailable. Approximate means for western Lake Ontario / Georgian Bay nearshore water.
+// Keeps the staging score meaningful instead of silently dropping the temperature factor.
+var LAKE_TEMP_CLIMATOLOGY = {
+  "Lake Ontario": [3, 2, 2, 5, 10, 16, 21, 22, 19, 14, 9, 5],
+  "Georgian Bay": [2, 1, 2, 5, 10, 16, 20, 21, 18, 12, 7, 4],
+  "Lake Huron":   [2, 1, 2, 5, 10, 16, 20, 21, 18, 12, 7, 4],
+  "Lake Erie":    [3, 2, 3, 7, 13, 19, 23, 24, 21, 15, 9, 5]
+};
+function seasonalLakeTempEst(lakeName, monthIdx) {
+  var series = LAKE_TEMP_CLIMATOLOGY[lakeName] || LAKE_TEMP_CLIMATOLOGY["Lake Ontario"];
+  var m = (monthIdx == null) ? new Date().getMonth() : monthIdx;
+  return series[Math.max(0, Math.min(11, m))];
+}
+
 // Resolve the harbour/mouth section for a river system: exact match first, else strip the
 // Upper/Middle/Lower prefix and find the staging zone on the same river (Middle Credit → Lower Credit).
 function resolveStagingSection(riverName) {
@@ -2748,6 +2792,13 @@ function renderStagingCard(sectionName, weather) {
 
   fetchLakeTemps().then(function(temps){
     var lakeTemp = (temps && temps[zone.key] != null) ? temps[zone.key] : null;
+    // Live satellite feed is unavailable — fall back to monthly climatology so the
+    // staging score keeps its temperature input instead of silently dropping it.
+    var _tempIsEstimate = false;
+    if (lakeTemp == null) {
+      lakeTemp = seasonalLakeTempEst(zone.lake, now.getMonth());
+      _tempIsEstimate = true;
+    }
     var cloudPct = weather && weather.cloudPct != null ? weather.cloudPct : null;
     var windDir  = weather && weather.windDir  != null ? weather.windDir  : null;
     var windSpd  = weather && weather.windSpeed!= null ? weather.windSpeed : null;
@@ -2766,7 +2817,7 @@ function renderStagingCard(sectionName, weather) {
       return; // nothing active — no card
     }
 
-    var res = computeStagingScore(lakeTemp, windDir, windSpd, cloudPct, phase.intensity, mouthFaces);
+    var res = computeStagingScore(lakeTemp, windDir, windSpd, cloudPct, phase.intensity, mouthFaces, _tempIsEstimate);
     var pct = Math.round(res.score * 100);
     window._stagingPct = pct; // expose for drive-time verdict — staging strength, not trout live-conditions score
     // Re-render the confidence pill, drive-time verdict, AND headline now that staging strength
@@ -2826,9 +2877,9 @@ function renderStagingCard(sectionName, weather) {
     var rating = pct >= 65 ? "Strong" : pct >= 40 ? "Fair" : "Slow";
     var ratingColor = pct >= 65 ? "#6dbf8a" : pct >= 40 ? "#e8a85a" : "#b0b0b0";
 
-    var tempLine = lakeTemp != null
-      ? Math.round(lakeTemp * 10)/10 + "°C surface (" + zone.lake + ")"
-      : "Surface temp unavailable — using seasonal estimate";
+    var tempLine = _tempIsEstimate
+      ? "~" + Math.round(lakeTemp * 10)/10 + "°C surface (" + zone.lake + ") — seasonal average, live feed unavailable"
+      : Math.round(lakeTemp * 10)/10 + "°C surface (" + zone.lake + ")";
 
     var factorsHtml = res.factors.length
       ? '<ul style="margin:.5rem 0 0;padding-left:1.1rem;font-size:.82rem;color:#cfe6e6;line-height:1.5">' +
