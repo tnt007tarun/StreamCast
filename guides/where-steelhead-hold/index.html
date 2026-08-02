@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where steelhead hold in a river — reading pools, runs and seams | HereFishyFishy</title>
+<meta name="description" content="Most blank steelhead days are a location problem, not a gear problem. How to read pools, runs and seams around the Great Lakes so you stop fishing dead water.">
+<link rel="canonical" href="https://herefishyfishy.ca/guides/where-steelhead-hold/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Where steelhead hold in a river — reading pools, runs and seams | HereFishyFishy">
+<meta property="og:description" content="Most blank steelhead days are a location problem, not a gear problem. How to read pools, runs and seams around the Great Lakes so you stop fishing dead water.">
+<meta property="og:url" content="https://herefishyfishy.ca/guides/where-steelhead-hold/">
+<meta property="og:image" content="https://i.ytimg.com/vi/vlj1AhJQRrA/maxresdefault.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Nunito:ital,wght@0,600;0,700;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#0d1f2d;--moss:#1a3a4a;--fern:#1e7a6e;--sage:#4a8c7a;--water:#247a90;
+--mist:#9ecfca;--foam:#e0f4f0;--cream:#faf8f4;--white:#fff;--amber:#e07b2a;--gold:#e8b84a;
+--ink:#1a2e3a;--border:rgba(30,122,110,.15);--text:#2c3e50}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;font-weight:300;background:var(--cream);color:var(--ink);
+line-height:1.65;-webkit-font-smoothing:antialiased}
+.skip{position:absolute;left:-9999px}.skip:focus{left:1rem;top:1rem;z-index:99;background:var(--cream);padding:.5rem 1rem;border-radius:4px}
+header.top{background:var(--deep);border-bottom:2px solid var(--fern);padding:.9rem 1.5rem;
+display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.brand{font-family:'Nunito',sans-serif;font-weight:700;font-style:italic;font-size:1.1rem;
+color:var(--cream);text-decoration:none}
+header.top nav{display:flex;gap:1.1rem}
+header.top nav a{font-size:.82rem;color:var(--mist);text-decoration:none}
+header.top nav a:hover,header.top nav a[aria-current]{color:var(--foam)}
+.crumb{max-width:760px;margin:1.5rem auto 0;padding:0 1.5rem;font-family:'JetBrains Mono',monospace;
+font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sage)}
+.crumb a{color:var(--sage)}
+article,.page{max-width:760px;margin:0 auto;padding:1rem 1.5rem 3.5rem}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+text-transform:uppercase;color:var(--amber);margin-bottom:.6rem}
+h1{font-family:'Nunito',sans-serif;font-weight:700;font-size:2rem;line-height:1.2;
+letter-spacing:-.01em;margin-bottom:.7rem}
+.standfirst{font-size:1.08rem;color:var(--text);opacity:.9;margin-bottom:1.1rem}
+.meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;
+text-transform:uppercase;color:var(--sage);padding-bottom:1.5rem;border-bottom:1px solid var(--border);
+margin-bottom:1.9rem;display:flex;gap:.55rem;flex-wrap:wrap}
+.meta span:not(:last-child)::after{content:' ·';opacity:.5}
+h2{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.32rem;line-height:1.3;
+margin:2.3rem 0 .7rem;scroll-margin-top:1rem}
+h3{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.04rem;margin:1.6rem 0 .45rem}
+p{margin-bottom:1rem}
+article ul,article ol{margin:0 0 1.15rem 1.15rem}
+article li{margin-bottom:.45rem}
+strong{font-weight:600}
+a{color:var(--fern)}
+.answer{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--fern);
+border-radius:0 6px 6px 0;padding:1.05rem 1.2rem;margin:0 0 1.9rem}
+.answer .lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.14em;
+text-transform:uppercase;color:var(--sage);margin-bottom:.4rem}
+.answer p{margin:0;font-size:.98rem}
+.regs{background:rgba(224,123,42,.07);border:1px solid rgba(224,123,42,.32);border-radius:6px;
+padding:1.05rem 1.2rem;margin:1.9rem 0}
+.regs .lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.14em;
+text-transform:uppercase;color:#a85518;margin-bottom:.45rem}
+.regs p:last-child,.regs ul:last-child{margin-bottom:0}
+.regs ul{margin:0 0 .6rem 1.1rem}
+.regs li{margin-bottom:.3rem;font-size:.92rem}
+.vid{margin:1.9rem 0}
+.vid-frame{position:relative;aspect-ratio:16/9;border-radius:6px;overflow:hidden;
+background:var(--moss);display:block;border:1px solid var(--border)}
+.vid-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(180deg,rgba(13,31,45,.15),rgba(13,31,45,.5));cursor:pointer;border:0;width:100%}
+.vid-play i{width:56px;height:56px;border-radius:50%;background:rgba(13,31,45,.82);
+display:flex;align-items:center;justify-content:center;transition:transform .18s ease}
+.vid-play:hover i{transform:scale(1.08)}
+.vid-play svg{width:18px;height:18px;fill:var(--cream);margin-left:3px}
+.vid-cap{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.06em;
+color:var(--sage);margin-top:.55rem}
+.chapters{list-style:none;margin:.7rem 0 0!important;padding:0;
+display:flex;flex-wrap:wrap;gap:.4rem}
+.chapters li{margin:0}
+.chapters a{font-family:'JetBrains Mono',monospace;font-size:.6rem;text-decoration:none;
+background:var(--white);border:1px solid var(--border);border-radius:4px;padding:.28rem .5rem;
+display:inline-block;color:var(--text)}
+.chapters a:hover{border-color:var(--fern);color:var(--fern)}
+.faq{border-top:1px solid var(--border);margin:2.6rem auto 0;padding-top:1.6rem;
+max-width:760px}
+.faq p{margin-bottom:1rem}
+.faq h3{margin-top:1.3rem}
+.cta{background:var(--moss);border-radius:6px;padding:1.4rem 1.4rem;margin:2.4rem 0 0;color:var(--foam)}
+.cta h3{color:var(--cream);margin:0 0 .4rem}
+.cta p{margin-bottom:.9rem;font-size:.93rem;opacity:.9}
+.cta a{display:inline-block;background:var(--fern);color:var(--cream);text-decoration:none;
+font-weight:600;font-size:.88rem;padding:.6rem 1.1rem;border-radius:5px}
+.cta a:hover{background:var(--sage)}
+.sources{margin-top:2.4rem;border-top:1px solid var(--border);padding-top:1.3rem;
+font-size:.84rem;color:var(--text);opacity:.85}
+.sources h2{font-size:.95rem;margin:0 0 .5rem}
+.sources li{margin-bottom:.3rem}
+footer.site{background:var(--deep);color:var(--mist);padding:1.6rem 1.5rem;display:flex;
+align-items:center;gap:1.4rem;flex-wrap:wrap;justify-content:center;text-align:center;margin-top:2rem}
+footer.site a{color:var(--mist);text-decoration:none;font-size:.85rem}
+footer.site a:hover{color:var(--foam)}
+.ft-brand{font-family:'Nunito',sans-serif;font-weight:700;font-style:italic;color:var(--cream);font-size:1rem}
+footer.site nav{display:flex;gap:1.1rem;flex-wrap:wrap;justify-content:center}
+.ft-copy{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--mist);opacity:.55}
+/* index */
+.glist{list-style:none;margin:1.8rem 0 0;padding:0;display:grid;gap:1.1rem}
+.gitem{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+display:flex;transition:box-shadow .18s ease,border-color .18s ease}
+.gitem:hover{box-shadow:0 8px 22px rgba(26,58,74,.12);border-color:rgba(30,122,110,.35)}
+.gitem a{text-decoration:none;color:inherit;display:flex;width:100%}
+.gitem .thumb{width:132px;flex:none;background:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));
+background-size:cover;background-position:center}
+.gitem .txt{padding:1rem 1.15rem}
+.gitem h2{font-size:1.05rem;margin:.3rem 0 .35rem}
+.gitem p{font-size:.87rem;margin:0;color:var(--text);opacity:.85}
+.gseason{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.13em;
+text-transform:uppercase;color:var(--sage)}
+.gseason.now{color:var(--amber)}
+@media(max-width:620px){
+  h1{font-size:1.6rem}
+  .gitem .thumb{width:92px}
+  article,.page{padding:1rem 1.15rem 2.5rem}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "datePublished": "2026-04-18", "dateModified": "2026-04-18", "headline": "Where steelhead actually hold in a river", "author": {"@type": "Person", "name": "Tarun"}, "publisher": {"@type": "Organization", "name": "HereFishyFishy"}, "mainEntityOfPage": "https://herefishyfishy.ca/guides/where-steelhead-hold/", "video": {"@type": "VideoObject", "name": "How to catch your first steelhead — Part 1: Location", "thumbnailUrl": "https://i.ytimg.com/vi/vlj1AhJQRrA/maxresdefault.jpg", "embedUrl": "https://www.youtube.com/embed/vlj1AhJQRrA", "uploadDate": "2026-04-18", "description": "Part 1 of 3: where steelhead hold in a river."}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where do steelhead hold in a river?", "acceptedAnswer": {"@type": "Answer", "text": "In water that offers depth, a current break, and cover at the same time — the heads and tail-outs of pools, the deeper slots within runs, and the slow side of seams where fast water meets slow. Fresh fish often stop at the head of a pool where oxygenated water tumbles in, and stage in tail-outs before moving upstream."}}, {"@type": "Question", "name": "What is a seam and why does it matter for steelhead?", "acceptedAnswer": {"@type": "Answer", "text": "A seam is the visible line where fast water runs alongside slower water. Steelhead hold on the slow side and feed on what the fast side carries past, which costs them very little energy. Seams form beside the main current tongue, behind boulders, on the inside of bends, and at tributary mouths. Drift the slow edge of the line rather than the fast water itself."}}, {"@type": "Question", "name": "Why am I not catching steelhead?", "acceptedAnswer": {"@type": "Answer", "text": "Most often because of where you are fishing rather than what you are fishing with. Steelhead stack into a small number of specific lies, and much of a river is dead water — uniform shallow riffle, flat featureless glides, and slack backwaters. If you cannot say why a fish would hold in the spot you are fishing, move."}}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="top">
+  <a class="brand" href="/">HereFishyFishy</a>
+  <nav>
+    <a href="/rivers">Rivers</a>
+    <a href="/guides/" aria-current="page">Guides</a>
+    <a href="/about">About</a>
+  </nav>
+</header>
+<div class="crumb"><a href="/guides/">Guides</a> / Where steelhead hold</div>
+<article id="main">
+<div class="eyebrow">Steelhead &middot; Part 1 of 3: Location</div>
+<h1>Where steelhead actually hold in a river</h1>
+<p class="standfirst">If you've fished hard for steelhead and caught nothing, the problem usually isn't
+your gear. It's that you spent the day casting into water that never held a fish.</p>
+<div class="meta"><span>Tarun</span><span>Part 1 of 3</span><span>Great Lakes tributaries</span><span>April 2026</span></div>
+
+<div class="answer">
+  <div class="lbl">Short answer</div>
+  <p>Steelhead hold where they get depth, cover, and a break from the current all at once &mdash; the
+  tail-out and head of pools, the deeper slots inside runs, and along seams where fast water meets
+  slow. Most of a river's surface area is dead water. Learn to skip it and your hours on the water
+  count for far more.</p>
+</div>
+
+<p>This is the first of three parts on catching your first steelhead around Toronto. It's about
+location, and I put it first deliberately: it's the piece that decides whether the other two matter
+at all. The best drift in the world through empty water still catches nothing.</p>
+
+<h2>Why location beats gear for beginners</h2>
+
+<p>Steelhead aren't spread evenly through a river. They're migratory fish moving upstream, and they
+stack into a small number of specific lies to rest between pushes. A stretch of river might be two
+hundred metres long and hold fish in three places.</p>
+
+<p>New anglers tend to fish the water that's easiest to stand in and cast across, which is usually the
+featureless middle. Meanwhile the fish are in the deep slot along the far bank, or right at the lip
+where the pool drops away.</p>
+
+<h2>Read the river as three water types</h2>
+
+<h3>Pools</h3>
+
+<p>The deep, slow sections. Fish rest here, particularly in cold water and bright conditions, but a
+pool is bigger than the water that actually holds fish. Concentrate on the <strong>head</strong>,
+where fast water tumbles in and oxygenates &mdash; fresh fish often stop here first &mdash; and the
+<strong>tail-out</strong>, where the pool shallows and narrows before the next drop. Fish stage in
+tail-outs before moving up. The wide, even middle is usually the least productive part.</p>
+
+<h3>Runs</h3>
+
+<p>Moderate depth, steady walking-pace current, often with a broken surface. This is prime steelhead
+water and the most reliable thing to look for. A good run has enough depth that you can't clearly see
+the bottom and enough current to keep your float moving without racing.</p>
+
+<p>Within a run, look for the slots &mdash; the darker lines where it's deeper. Fish sit in those.</p>
+
+<h3>Seams</h3>
+
+<p>Wherever fast water runs alongside slow water, there's a visible line between them. That's a seam,
+and it's the single most useful feature to learn to spot.</p>
+
+<p>Fish hold on the slow side of a seam and feed from what the fast side carries past. It costs them
+little energy and delivers food. Seams form beside the main current tongue, behind boulders, off the
+inside of bends, and where a tributary enters. Drift the slow edge of the line, not the middle of the
+fast water.</p>
+
+<div class="vid">
+  <div class="vid-frame">
+    <img src="https://i.ytimg.com/vi/vlj1AhJQRrA/maxresdefault.jpg" alt="How to catch your first steelhead — Part 1: reading the water" loading="lazy" width="1280" height="720">
+    <button class="vid-play" data-yt="vlj1AhJQRrA" aria-label="Play video: How to catch your first steelhead — Part 1: reading the water">
+      <i><svg viewBox="0 0 10 10"><path d="M2 1 L9 5 L2 9 Z"/></svg></i>
+    </button>
+  </div>
+  <div class="vid-cap">How to catch your first steelhead — Part 1: reading the water</div>
+  <ul class="chapters"><li><a href="https://youtu.be/vlj1AhJQRrA?t=0" target="_blank" rel="noopener">0:00 Where steelhead hold</a></li></ul>
+</div>
+
+<h2>What to do when you arrive at a new spot</h2>
+
+<p>Before making a cast, spend a few minutes doing this:</p>
+
+<ul>
+  <li><strong>Look before you wade.</strong> Walk the bank and find the depth changes, colour changes,
+  and seam lines from above. Once you're standing in the river you can't see any of it.</li>
+  <li><strong>Find the current tongue.</strong> The main thread of fast water entering a pool tells you
+  where the seams will be on either side of it.</li>
+  <li><strong>Identify three spots worth fishing,</strong> then fish those. Not the whole pool.</li>
+  <li><strong>Fish the near water first.</strong> The seam at your feet gets waded through by most
+  anglers on their way to casting across it.</li>
+  <li><strong>Give a lie a handful of good drifts, then move.</strong> Steelhead either take or they
+  don't. Covering more holding water beats perfecting a drift through one spot.</li>
+</ul>
+
+<h2>How to avoid wasting time on dead water</h2>
+
+<p>Dead water has tells: uniform shallow riffle with no depth, wide flat glides with no seam or
+structure, and slack backwaters out of the current. None of it is worth your morning.</p>
+
+<p>The honest test is whether you can say <em>why</em> a fish would be in the spot you're about to fish.
+If the answer isn't depth, a current break, or cover, move on.</p>
+
+<div class="regs">
+  <div class="lbl">Before you go</div>
+  <ul>
+    <li>Steelhead seasons vary sharply by river and reach. Many Ontario tributaries have sanctuary
+    closures over winter and open for the spring trout opener on the fourth Saturday in April, while
+    some lower reaches near Lake Ontario stay open all year for migratory fish.</li>
+    <li>Some reaches are restricted to artificial lures with a single barbless hook, and some are
+    catch-and-release only.</li>
+    <li>Check your specific reach in the current
+    <a href="https://www.ontario.ca/page/ontario-fishing-regulations" target="_blank" rel="noopener">Ontario
+    fishing regulations</a> before heading out.</li>
+  </ul>
+</div>
+
+<p><strong>Coming in parts 2 and 3:</strong> the beginner setup I actually use, and how to float fish it
+effectively. If you want a head start on the drift itself, the
+<a href="/guides/salmon-float-fishing-tips/">three float fishing tips</a> that worked for me on salmon
+apply just as well to steelhead.</p>
+
+<div class="cta">
+  <h3>Find water worth fishing today</h3>
+  <p>Flow, water temperature, and conditions for Ontario steelhead rivers, with access points ranked
+  for today.</p>
+  <a href="/">Find today's best spot</a>
+</div>
+
+<section class="faq"><h2>Common questions</h2><h3>Where do steelhead hold in a river?</h3><p>In water that offers depth, a current break, and cover at the same time — the heads and tail-outs of pools, the deeper slots within runs, and the slow side of seams where fast water meets slow. Fresh fish often stop at the head of a pool where oxygenated water tumbles in, and stage in tail-outs before moving upstream.</p><h3>What is a seam and why does it matter for steelhead?</h3><p>A seam is the visible line where fast water runs alongside slower water. Steelhead hold on the slow side and feed on what the fast side carries past, which costs them very little energy. Seams form beside the main current tongue, behind boulders, on the inside of bends, and at tributary mouths. Drift the slow edge of the line rather than the fast water itself.</p><h3>Why am I not catching steelhead?</h3><p>Most often because of where you are fishing rather than what you are fishing with. Steelhead stack into a small number of specific lies, and much of a river is dead water — uniform shallow riffle, flat featureless glides, and slack backwaters. If you cannot say why a fish would hold in the spot you are fishing, move.</p></section>
+<section class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>Ontario Ministry of Natural Resources &mdash; 2026 Fishing Regulations Summary</li>
+    <li>Flow data: Water Survey of Canada &middot; Weather: Open-Meteo</li>
+  </ul>
+</section>
+</article>
+<footer class="site">
+  <a class="ft-brand" href="/">HereFishyFishy</a>
+  <nav>
+    <a href="/rivers">Rivers</a>
+    <a href="/guides/">Guides</a>
+    <a href="/about">About</a>
+  </nav>
+  <span class="ft-copy">Data: Water Survey of Canada &middot; Open-Meteo &middot; Refreshes every 15 min</span>
+</footer>
+<script>
+document.querySelectorAll('.vid-play').forEach(function(b){
+  b.addEventListener('click', function(){
+    var id=b.getAttribute('data-yt');
+    var f=document.createElement('iframe');
+    f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
+    f.title='Video';
+    f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    f.allowFullscreen=true;
+    b.parentNode.appendChild(f);
+    b.remove();
+  });
+});
+</script>
+</body>
+</html>
