@@ -4378,315 +4378,194 @@ function getRiverRegs(riverName) {
 
 // ── ACCESS POINT COORDINATES ─────────────────────────────────────────────────
 var ACCESS_COORDS = {
-  "Credit River": [
-    {lat:43.5465,lng:-79.6587},  // Erindale Park
-    {lat:43.5523,lng:-79.5873},  // Credit River Mouth — Port Credit
-    {lat:43.6234,lng:-79.7456},  // Eldorado Park
-    {lat:43.586821,lng:-79.715837},  // Streetsville Road Allowances
-    {lat:43.8851,lng:-80.0456},  // Upper Credit Conservation Area
-    {lat:43.7935,lng:-80.0023},  // Belfountain Conservation Area
-    {lat:43.7994,lng:-80.0289},  // Forks of the Credit Provincial Park
-    {lat:43.809821,lng:-79.98202},  // Belfountain to Inglewood Reach
-  ],
-  "Grand River": [
-    {lat:43.0734,lng:-79.9543},  // Caledonia — Argyle Street Access
-    {lat:42.9034,lng:-79.6189},  // Dunnville — Lower Grand
-  ],
   "Upper Grand River (Tailwater)": [
-    {lat:43.7073,lng:-80.3767},  // Fergus Pool — Below Shand Dam
-    {lat:43.6812,lng:-80.4312},  // Elora Gorge
-    {lat:43.691044,lng:-80.412394},  // Racquet Club
-    {lat:43.690579,lng:-80.39624},  // The Trestle
-    {lat:43.624724,lng:-80.447657},  // Wilson's Flats
-    {lat:43.6789,lng:-80.4334},  // Irvine Creek Confluence
-    {lat:43.6823,lng:-80.4289},  // Elora Gorge Conservation Area
-  ],
-  "Humber River": [
-    {lat:43.6267,lng:-79.4734},  // Humber River Mouth — Humber Bay Park
-    {lat:43.6523,lng:-79.5123},  // Humber Valley Heritage Trail — Lower
-    {lat:43.93677,lng:-79.86338},  // Upper Humber — Mono / Orangeville Area
-    {lat:43.8756,lng:-79.7312},  // Humber River — Bolton Reach
-    {lat:43.6634,lng:-79.5123},  // Etienne Brûlé Park
-    {lat:43.6756,lng:-79.5034},  // Scarlett Mills Park
-  ],
-  "Beaver River": [
-    {lat:44.5623,lng:-80.4523},  // Thornbury — Lower River / Harbour
-    {lat:44.5634,lng:-80.4512},  // Thornbury Fishway
-    {lat:44.492513,lng:-80.491162},  // Below Kimberley — Mid-Beaver
-    {lat:44.4289,lng:-80.4067},  // Kimberley — Village Reach
-  ],
-  "Bronte Creek": [
-    {lat:43.3934,lng:-79.7234},  // Bronte Harbour / Pier
-    {lat:43.3956,lng:-79.7267},  // Petro-Canada Park (Petro Park)
-    {lat:43.391912,lng:-79.713422},  // Below Lakeshore Road West
-    {lat:43.4423,lng:-79.7567},  // Bronte Creek Provincial Park
-    {lat:43.4712,lng:-79.7034},  // Lions Valley Park
-    {lat:43.4912,lng:-79.7934},  // Lowville Park
-    {lat:43.399317,lng:-79.958134},  // Progreston Area — Road Allowances
-    {lat:43.390689,lng:-79.984255},  // Carlisle Reach
-  ],
-  "Duffins Creek": [
-    {lat:43.8378,lng:-79.0289},  // Rotary Park
-    {lat:43.8334,lng:-79.0312},  // Duffins Creek Marsh
-    {lat:43.839644,lng:-79.040649},  // Below CNR Railway Line
-    {lat:43.9023,lng:-79.0934},  // Greenwood Conservation Area
-    {lat:43.9156,lng:-79.1234},  // Whitevale — Below Dam
-    {lat:43.9567,lng:-79.1456},  // Glen Major — Seaton Hiking Trail
-    {lat:43.92046,lng:-79.120628},  // West Duffins Headwaters
-  ],
-  "Ganaraska River": [
-    {lat:43.9534,lng:-78.2978},  // Port Hope Harbour — River Mouth
-    {lat:43.9545,lng:-78.2956},  // Below CNR Railway Bridge
-    {lat:43.9612,lng:-78.2934},  // Jocelyn Street Bridge Access
-    {lat:43.9623,lng:-78.2945},  // Port Hope Town Section
-    {lat:44.0234,lng:-78.3456},  // Ganaraska Millennium Conservation Area
-    {lat:44.0512,lng:-78.3789},  // Sylvan Glen Conservation Area
-    {lat:44.00965,lng:-78.370477},  // North Ganaraska Road Allowances
-  ],
-  "Eramosa River": [
-    {lat:43.6123,lng:-80.1523},  // Rockwood Conservation Area
-    {lat:43.5756,lng:-80.1834},  // Eden Mills — Lower Mid-Section
-    {lat:43.661693,lng:-80.153278},  // Municipal Road Bridge Crossings — Upper
-    {lat:43.710604,lng:-80.239947},  // Headwaters Tributaries
-  ],
-  "Rouge River": [
-    {lat:43.8034,lng:-79.1312},  // Rouge Beach — River Mouth
-    {lat:43.8056,lng:-79.1323},  // CNR Railway Bridge Area
-    {lat:43.8289,lng:-79.1456},  // Rouge National Urban Park — Main Access
-    {lat:43.8178,lng:-79.1389},  // Kingston Road (Hwy 2) Bridge Area
-    {lat:43.8178,lng:-79.1823},  // Toronto Zoo Valley
-    {lat:43.8645,lng:-79.2734},  // Milne Dam Conservation Park
-  ],
-  "Sixteen Mile Creek": [
-    {lat:43.4378,lng:-79.6823},  // Lakeside Park — Creek Mouth
-    {lat:43.4423,lng:-79.6867},  // Tannery Park
-    {lat:43.4712,lng:-79.7034},  // Lions Valley Park
-    {lat:43.45449,lng:-79.730047},  // Rebecca Street to Dundas Street Reach
-    {lat:43.542729,lng:-79.813034},  // West Branch — Road Allowance Crossings
-    {lat:43.594924,lng:-79.908163},  // Upper West Branch Tributaries
-  ],
-  "Nottawasaga River": [
-    {lat:44.311446,lng:-79.862504},  // Bruce Trail Access Points — Upper Notty
-    {lat:44.059485,lng:-79.810386},  // Headwaters - Road Allowances
-    {lat:44.332496,lng:-79.878185},  // McKinnon Road Access Point
-    {lat:44.5212,lng:-80.0167},  // Wasaga Beach — River Mouth (Georgian Bay)
-    {lat:44.1534,lng:-79.8712},  // Alliston — Main River Access
-    {lat:44.2123,lng:-79.9034},  // Pine River Confluence
-    {lat:44.172087,lng:-79.813121},  // Boyne River Confluence
-    {lat:44.2567,lng:-79.9456},  // Nicholson Dam / Essa Township Sanctuary
-  ],
-  "Saugeen River": [
-    {lat:44.230228,lng:-80.832446},  // Rocky Saugeen — Public Access
-    {lat:44.2934,lng:-81.2123},  // Denny's Dam
-    {lat:44.5034,lng:-81.3712},  // Southampton — Lake Huron Mouth
-  ],
-  "Wilmot Creek": [
-    {lat:43.9234,lng:-78.5923},  // Nature Preserve Trails — Lower Creek
-    {lat:43.905288,lng:-78.601066},  // CN Railway Track Crossing
-    {lat:43.909923,lng:-78.607982},  // Newcastle — Highway 401 to Highway 2 Reach
-    {lat:43.9123,lng:-78.5978},  // Sir Samuel Wilmot Nature Area
-    {lat:43.9856,lng:-78.6234},  // Orono Crown Lands
-    {lat:44.025814,lng:-78.649362},  // Upper Wilmot Tributaries
-  ],
-  "Bowmanville Creek": [
-    {lat:43.8934,lng:-78.6923},  // Bowmanville Marina Pier
-    {lat:43.889307,lng:-78.663991},  // Creek Mouth — East Bank
-    {lat:43.9056,lng:-78.6867},  // Baseline Road Bridge — Parking Lot
-    {lat:43.89562,lng:-78.677469},  // CNR Railway Bridge — South Side
-    {lat:43.9134,lng:-78.6812},  // Bowmanville Valley Trail Access
-    {lat:43.986435,lng:-78.732727},  // Upper Creek — Road Allowance Crossings
-    {lat:44.017283,lng:-78.780785},  // Headwaters near Enniskillen
-  ],
-  "Black Creek": [
-    {lat:43.6712,lng:-79.4934},  // Smythe Park
-    {lat:43.6634,lng:-79.4867},  // Humber Marshes — Black Creek Confluence
-    {lat:43.763031,lng:-79.507101},  // Black Creek Parkland — Upper
-    {lat:43.7434,lng:-79.4756},  // Downsview Park Area
-  ],
-  "Speed River": [
-    {lat:43.628121,lng:-80.186071},  // Wellington County Road Bridge Crossings
-    {lat:43.6234,lng:-80.2056},  // Guelph Lake Reservoir Inflow
+    {lat:43.7073,lng:-80.3767}, // Fergus Pool — Below Shand Dam
+    {lat:43.6812,lng:-80.4312}, // Elora Gorge
+    {lat:43.691044,lng:-80.412394}, // Racquet Club
+    {lat:43.690579,lng:-80.39624}, // The Trestle
+    {lat:43.624724,lng:-80.447657}, // Wilson
+    {lat:43.6789,lng:-80.4334}, // Irvine Creek Confluence
+    {lat:43.6823,lng:-80.4289}, // Elora Gorge Conservation Area
   ],
   "Lower Grand River": [
-    {lat:43.0000,lng:-79.9000},
-    {lat:43.0010,lng:-79.8990}
+    {lat:43.0734,lng:-79.9543}, // Caledonia — Argyle Street Access
+    {lat:42.9034,lng:-79.6189}, // Dunnville — Lower Grand
   ],
   "Upper Credit River": [
-    {lat:43.8851,lng:-80.0456},
-    {lat:43.7935,lng:-80.0023},
-    {lat:43.7994,lng:-80.0289},
-    {lat:43.8098,lng:-79.982}
+    {lat:43.8851,lng:-80.0456}, // Upper Credit Conservation Area
+    {lat:43.7935,lng:-80.0023}, // Belfountain Conservation Area
+    {lat:43.7994,lng:-80.0289}, // Forks of the Credit Provincial Park
+    {lat:43.8098,lng:-79.982}, // Belfountain to Inglewood Reach
   ],
   "Middle Credit River": [
-    {lat:43.6234,lng:-79.7456},
-    {lat:43.5868,lng:-79.7158}
+    {lat:43.6234,lng:-79.7456}, // Norval Conservation Area
+    {lat:43.5868,lng:-79.7158}, // Streetsville Road Allowances
   ],
   "Lower Credit River": [
-    {lat:43.5600,lng:-79.7200},
-    {lat:43.5610,lng:-79.7190}
+    {lat:43.5465,lng:-79.6587}, // Erindale Park
+    {lat:43.5489787,lng:-79.5837633}, // Credit River Mouth — Port Credit  [mouth]
   ],
   "Bronte Creek — Lower Estuary & Mouth": [
-    {lat:43.3934,lng:-79.7234},
-    {lat:43.3956,lng:-79.7267},
-    {lat:43.3919,lng:-79.7134}
+    {lat:43.3934,lng:-79.7234}, // Bronte Harbour / Pier  [mouth]
+    {lat:43.3956,lng:-79.7267}, // Petro-Canada Park (Petro Park)
+    {lat:43.3919,lng:-79.7134}, // Below Lakeshore Road West
   ],
   "Bronte Creek — Mid-Section & Provincial Park": [
-    {lat:43.4650,lng:-79.7350},
-    {lat:43.4660,lng:-79.7340},
-    {lat:43.4670,lng:-79.7330}
+    {lat:43.4423,lng:-79.7567}, // Bronte Creek Provincial Park
+    {lat:43.4712,lng:-79.7034}, // Lions Valley Park
+    {lat:43.4912,lng:-79.7934}, // Lowville Park
   ],
   "Bronte Creek — Upper Headwaters": [
-    {lat:43.3993,lng:-79.9581},
-    {lat:43.3907,lng:-79.9843}
+    {lat:43.3993,lng:-79.9581}, // Progreston Area — Road Allowances
+    {lat:43.3907,lng:-79.9843}, // Carlisle Reach
   ],
   "Lower Humber River": [
-    {lat:43.6400,lng:-79.4800},
-    {lat:43.6410,lng:-79.4790}
+    {lat:43.6267,lng:-79.4734}, // Humber River Mouth — Humber Bay Park  [mouth]
+    {lat:43.6523,lng:-79.5123}, // Humber Valley Heritage Trail — Lower
   ],
   "Lower-Mid Humber (Old Mill to Eglinton)": [
-    {lat:43.6700,lng:-79.4900},
-    {lat:43.6710,lng:-79.4890}
+    {lat:43.6634,lng:-79.5123}, // Etienne Brûlé Park
+    {lat:43.6756,lng:-79.5034}, // Scarlett Mills Park
   ],
   "Upper Humber River (Headwaters)": [
-    {lat:43.9368,lng:-79.8634},
-    {lat:43.8756,lng:-79.7312}
+    {lat:43.9368,lng:-79.8634}, // Upper Humber — Mono / Orangeville Area
+    {lat:43.8756,lng:-79.7312}, // Humber River — Bolton Reach
   ],
   "Nottawasaga River — Headwaters (Niagara Escarpment)": [
-    {lat:44.3114,lng:-79.8625},
-    {lat:44.0595,lng:-79.8104}
+    {lat:44.3114,lng:-79.8625}, // Bruce Trail Access Points — Upper Notty
+    {lat:44.0595,lng:-79.8104}, // Headwaters - Road Allowances
   ],
   "Nottawasaga River — Middle Section (Alliston to Angus)": [
-    {lat:44.1534,lng:-79.8712},
-    {lat:44.2123,lng:-79.9034},
-    {lat:44.1721,lng:-79.8131},
-    {lat:44.2567,lng:-79.9456}
+    {lat:44.1534,lng:-79.8712}, // Alliston — Main River Access
+    {lat:44.2123,lng:-79.9034}, // Pine River Confluence
+    {lat:44.1721,lng:-79.8131}, // Boyne River Confluence
+    {lat:44.2567,lng:-79.9456}, // Nicholson Dam / Essa Township Sanctuary
   ],
   "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)": [
-    {lat:44.3325,lng:-79.8782},
-    {lat:44.5212,lng:-80.0167}
+    {lat:44.3325,lng:-79.8782}, // McKinnon Road Access Point
+    {lat:44.5212,lng:-80.0167}, // Wasaga Beach — River Mouth (Georgian Bay)
   ],
   "Duffins Creek — Lower Section": [
-    {lat:43.8378,lng:-79.0289},
-    {lat:43.8334,lng:-79.0312},
-    {lat:43.8396,lng:-79.0406}
+    {lat:43.8378,lng:-79.0289}, // Rotary Park
+    {lat:43.8334,lng:-79.0312}, // Duffins Creek Marsh  [mouth]
+    {lat:43.8396,lng:-79.0406}, // Below CNR Railway Line
   ],
   "Duffins Creek — Middle Section": [
-    {lat:43.8700,lng:-79.0580},
-    {lat:43.8710,lng:-79.0570},
-    {lat:43.8720,lng:-79.0560}
+    {lat:43.9023,lng:-79.0934}, // Greenwood Conservation Area
+    {lat:43.9156,lng:-79.1234}, // Whitevale — Below Dam
   ],
   "Duffins Creek — Upper Reaches": [
-    {lat:43.9567,lng:-79.1456},
-    {lat:43.9205,lng:-79.1206}
+    {lat:43.9567,lng:-79.1456}, // Glen Major — Seaton Hiking Trail
+    {lat:43.9205,lng:-79.1206}, // West Duffins Headwaters
   ],
   "Ganaraska River — Lower (Lake to CNR Bridge)": [
-    {lat:43.9400,lng:-78.3050},
-    {lat:43.9410,lng:-78.3040}
+    {lat:43.9423674,lng:-78.290492}, // Port Hope Harbour — River Mouth  [mouth]
+    {lat:43.9545,lng:-78.2956}, // Below CNR Railway Bridge
   ],
   "Ganaraska River — Port Hope Sanctuary": [
-    {lat:43.9450,lng:-78.3000},
-    {lat:43.9460,lng:-78.2990}
+    {lat:43.9612,lng:-78.2934}, // Jocelyn Street Bridge Access
+    {lat:43.946,lng:-78.299}, // Port Hope Town Section — Sanctuary Area
   ],
   "Ganaraska River — Upper & Conservation Areas": [
-    {lat:44.0234,lng:-78.3456},
-    {lat:44.0512,lng:-78.3789},
-    {lat:44.0097,lng:-78.3705}
+    {lat:44.0234,lng:-78.3456}, // Ganaraska Millennium Conservation Area
+    {lat:44.0512,lng:-78.3789}, // Sylvan Glen Conservation Area
+    {lat:44.0097,lng:-78.3705}, // Thurne Parks
   ],
   "Lower Beaver River (Thornbury)": [
-    {lat:44.5630,lng:-80.4570},
-    {lat:44.5640,lng:-80.4560}
+    {lat:44.5623,lng:-80.4523}, // Thornbury — Lower River / Harbour
+    {lat:44.5634,lng:-80.4512}, // Thornbury Fishway
   ],
   "Middle Beaver River (Clarksburg to Heathcote)": [
-    {lat:44.4925,lng:-80.4912}
+    {lat:44.4925,lng:-80.4912}, // Below Kimberley — Mid-Beaver
   ],
   "Upper Beaver River (Kimberley)": [
-    {lat:44.4900,lng:-80.4000}
+    {lat:44.49,lng:-80.4}, // Kimberley — Village Reach
   ],
   "Saugeen River — Headwaters & Upper Tributaries": [
-    {lat:44.2302,lng:-80.8324},  // Rocky Saugeen — Public Access
-    {lat:44.285,lng:-80.91},  // North Saugeen River
-    {lat:44.155,lng:-80.945},  // South Saugeen River
+    {lat:44.2302,lng:-80.8324}, // Rocky Saugeen — Public Access
+    {lat:44.285,lng:-80.91}, // North Saugeen River
+    {lat:44.155,lng:-80.945}, // South Saugeen River
   ],
   "Saugeen River — Lower Main Stem (Paisley to Southampton)": [
-    {lat:44.2934,lng:-81.2123},
-    {lat:44.5034,lng:-81.3712}
+    {lat:44.2934,lng:-81.2123}, // Denny
+    {lat:44.5034,lng:-81.3712}, // Southampton — Lake Huron Mouth
   ],
   "Sixteen Mile Creek — Lower Reaches & Oakville Harbour": [
-    {lat:43.4400,lng:-79.6720},
-    {lat:43.4410,lng:-79.6710}
+    {lat:43.4378,lng:-79.6823}, // Lakeside Park — Creek Mouth
+    {lat:43.4423,lng:-79.6867}, // Tannery Park
   ],
   "Sixteen Mile Creek — Middle Reaches & Main Valley": [
-    {lat:43.4712,lng:-79.7034},
-    {lat:43.4545,lng:-79.73}
+    {lat:43.4712,lng:-79.7034}, // Lions Valley Park
+    {lat:43.4545,lng:-79.73}, // Rebecca Street to Dundas Street Reach
   ],
   "Sixteen Mile Creek — Upper West Branch (Trout)": [
-    {lat:43.5427,lng:-79.813},
-    {lat:43.5949,lng:-79.9082}
+    {lat:43.5427,lng:-79.813}, // West Branch — Road Allowance Crossings
+    {lat:43.5949,lng:-79.9082}, // Upper West Branch Tributaries
   ],
   "Rouge River — Marsh & Mouth (Lake Ontario)": [
-    {lat:43.8030,lng:-79.1340},
-    {lat:43.8040,lng:-79.1330},
-    {lat:43.8050,lng:-79.1320}
+    {lat:43.8034,lng:-79.1312}, // Rouge Beach — River Mouth  [mouth]
+    {lat:43.8056,lng:-79.1323}, // CNR Railway Bridge Area
+    {lat:43.805,lng:-79.132}, // Rouge Marsh
   ],
   "Rouge River — Mid-Section (Rouge National Urban Park)": [
-    {lat:43.8350,lng:-79.1420},
-    {lat:43.8360,lng:-79.1410},
-    {lat:43.8370,lng:-79.1400}
+    {lat:43.8289,lng:-79.1456}, // Rouge National Urban Park — Main Access
+    {lat:43.8178,lng:-79.1389}, // Kingston Road (Hwy 2) Bridge Area
+    {lat:43.8178,lng:-79.1823}, // Toronto Zoo Valley
   ],
   "Rouge River — Upper & Milne Dam (Markham)": [
-    {lat:43.8800,lng:-79.2500},
-    {lat:43.8810,lng:-79.2490}
+    {lat:43.8645,lng:-79.2734}, // Milne Dam Conservation Park
+    {lat:43.881,lng:-79.249}, // Toogood Pond Area
   ],
   "Wilmot Creek — Mouth & Marsh (Lake Ontario)": [
-    {lat:43.9123,lng:-78.5978}
+    {lat:43.9123,lng:-78.5978}, // Sir Samuel Wilmot Nature Area  [mouth]
   ],
   "Wilmot Creek — Lower River (to CN Rail Tracks)": [
-    {lat:43.9234,lng:-78.5923},
-    {lat:43.9053,lng:-78.6011}
+    {lat:43.9234,lng:-78.5923}, // Nature Preserve Trails — Lower Creek
+    {lat:43.9053,lng:-78.6011}, // CN Railway Track Crossing
   ],
   "Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)": [
-    {lat:43.9099,lng:-78.608}
+    {lat:43.9099,lng:-78.608}, // Newcastle — Highway 401 to Highway 2 Reach
   ],
   "Wilmot Creek — Upper Watershed & Orono Crown Lands": [
-    {lat:43.9856,lng:-78.6234},
-    {lat:44.0258,lng:-78.6494}
+    {lat:43.9856,lng:-78.6234}, // Orono Crown Lands
+    {lat:44.0258,lng:-78.6494}, // Upper Wilmot Tributaries
   ],
   "Bowmanville Creek — River Mouth & Piers": [
-    {lat:43.8934,lng:-78.6923},
-    {lat:43.8893,lng:-78.664}
+    {lat:43.8934,lng:-78.6923}, // Bowmanville Marina Pier
+    {lat:43.8893,lng:-78.664}, // Creek Mouth — East Bank
   ],
   "Lower Bowmanville Creek": [
-    {lat:43.9056,lng:-78.6867},
-    {lat:43.8956,lng:-78.6775}
+    {lat:43.9056,lng:-78.6867}, // Baseline Road Bridge — Parking Lot
+    {lat:43.8956,lng:-78.6775}, // CNR Railway Bridge — South Side
   ],
   "Middle Bowmanville Creek (Fish Ladder)": [
-    {lat:43.9070,lng:-78.6830},
-    {lat:43.9080,lng:-78.6820}
+    {lat:43.9134,lng:-78.6812}, // Bowmanville Valley Trail Access
+    {lat:43.908,lng:-78.682}, // Goodyear Dam Lower Pools
   ],
   "Upper Bowmanville Creek": [
-    {lat:43.9864,lng:-78.7327},  // Upper Creek — Road Allowance Crossings
-    {lat:44.005,lng:-78.76},  // Oak Ridges Moraine Headwaters
-    {lat:44.0173,lng:-78.7808},  // Headwaters near Enniskillen
+    {lat:43.9864,lng:-78.7327}, // Upper Creek — Road Allowance Crossings
+    {lat:44.005,lng:-78.76}, // Oak Ridges Moraine Headwaters
+    {lat:44.0173,lng:-78.7808}, // Headwaters near Enniskillen
   ],
   "Speed River — Upper (Above Guelph Lake)": [
-    {lat:43.6281,lng:-80.1861},
-    {lat:43.6234,lng:-80.2056}
+    {lat:43.6281,lng:-80.1861}, // Wellington County Road Bridge Crossings
+    {lat:43.6234,lng:-80.2056}, // Guelph Lake Reservoir Inflow
   ],
   "Eramosa River — Upper Headwaters (Above Rockwood)": [
-    {lat:43.6617,lng:-80.1533},
-    {lat:43.7106,lng:-80.2399}
+    {lat:43.6617,lng:-80.1533}, // Municipal Road Bridge Crossings — Upper
+    {lat:43.7106,lng:-80.2399}, // Headwaters Tributaries
   ],
   "Eramosa River — Mid-Section (Rockwood to Eden Mills)": [
-    {lat:43.5950,lng:-80.1950},
-    {lat:43.5960,lng:-80.1940}
+    {lat:43.6123,lng:-80.1523}, // Rockwood Conservation Area
+    {lat:43.5756,lng:-80.1834}, // Eden Mills — Lower Mid-Section
   ],
   "Black Creek — Upper Reaches (Vaughan to North York)": [
-    {lat:43.763,lng:-79.5071},
-    {lat:43.7434,lng:-79.4756}
+    {lat:43.763,lng:-79.5071}, // Black Creek Parkland — Upper
+    {lat:43.7434,lng:-79.4756}, // Downsview Park Area
   ],
   "Black Creek — Lower Watershed & Humber Confluence": [
-    {lat:43.6700,lng:-79.5000},
-    {lat:43.6710,lng:-79.4990}
+    {lat:43.6712,lng:-79.4934}, // Smythe Park
+    {lat:43.6634,lng:-79.4867}, // Humber Marshes — Black Creek Confluence
   ],
 };
 
