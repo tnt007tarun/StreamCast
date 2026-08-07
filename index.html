@@ -639,6 +639,20 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .tp-why{font-size:.85rem;font-weight:300;line-height:1.6;opacity:.88;max-width:680px;margin-bottom:1rem;}
 .tp-chips{display:flex;flex-wrap:wrap;gap:.5rem;}
 /* Conditions tile grid (hero) */
+/* Staging strength bar — hero, staging mode only */
+.tp-strength { margin:.85rem 0 .2rem; }
+.tp-str-top { display:flex; align-items:baseline; justify-content:space-between; gap:1rem; margin-bottom:.4rem; }
+.tp-str-lbl { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--mist); opacity:.8; }
+.tp-str-val { font-family:'Nunito',sans-serif; font-weight:700; font-size:1.02rem; color:var(--gold); white-space:nowrap; }
+.tp-str-bar { height:6px; border-radius:3px; background:rgba(224,244,240,.13); overflow:hidden; }
+.tp-str-bar i { display:block; height:100%; border-radius:3px;
+  background:linear-gradient(90deg,var(--amber),var(--gold)); transition:width .35s ease; }
+.tp-str-scale { display:flex; justify-content:space-between; margin-top:.3rem;
+  font-family:'JetBrains Mono',monospace; font-size:.5rem; letter-spacing:.1em; color:var(--mist); opacity:.5; }
+@media(prefers-reduced-motion:reduce){ .tp-str-bar i { transition:none; } }
+.tp-staging-note { margin:.7rem 0 .1rem; font-size:.86rem; line-height:1.55;
+  color:var(--foam); opacity:.8; max-width:92ch; }
 .tp-tiles { display:flex; gap:6px; margin:.5rem 0 .25rem; }
 .tp-tile { flex:1; min-width:0; border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.04); border:1px solid rgba(158,207,202,0.12); }
 .tp-tile-bar { height:4px; background:var(--mist); opacity:.5; }
@@ -1426,8 +1440,20 @@ select:focus-visible, input:focus-visible {
 .gcard.live .gstatus{color:var(--amber)}
 .gvid{position:absolute;right:.5rem;bottom:.5rem;z-index:2;width:22px;height:22px;border-radius:50%;background:rgba(13,31,45,.72);display:flex;align-items:center;justify-content:center}
 .gvid svg{width:9px;height:9px;fill:var(--cream)}
-@media(max-width:900px){.guides-grid{grid-template-columns:1fr}}
-@media(max-width:620px){.guides-wrap{padding:2rem 1.1rem 2.5rem}.gcard-side .gimg{width:88px}}
+@media(max-width:900px){
+  .guides-grid{grid-template-columns:1fr}
+  /* Below the two-column breakpoint the side cards have the full width available, so
+     stop squeezing the thumbnail into a narrow strip. Stack image over text like the
+     lead card — a 104px sliver of a 16:9 photo is an unreadable crop. */
+  .gcard-side{flex-direction:column}
+  .gcard-side .gspine{width:100%;height:5px;flex:none}
+  .gcard-side .gimg{width:100%;aspect-ratio:16/9}
+  .guides-stack{grid-template-rows:auto auto}
+}
+@media(max-width:620px){
+  .guides-wrap{padding:2rem 1.1rem 2.5rem}
+  .gcard-lead h3{font-size:1.15rem}
+}
 
 .default-preview-wrap {
   width: 100%;
@@ -2270,7 +2296,9 @@ select:focus-visible, input:focus-visible {
       <div class="tp-drive-time" id="tp-drive-time" style="display:none"></div>
       <div class="tp-confidence" id="tp-confidence" style="display:none"></div>
       <div class="tp-why" id="tp-why"></div>
+      <div class="tp-strength" id="tp-strength" style="display:none"></div>
       <div class="tp-tiles" id="tp-tiles"></div>
+      <div class="tp-staging-note" id="tp-staging-note" style="display:none"></div>
       <div class="tp-chips" id="tp-chips" style="display:none"></div>
     </div>
   </div>
@@ -2297,7 +2325,7 @@ select:focus-visible, input:focus-visible {
   </div><!-- /section-access -->
 
   <div id="section-conditions">
-  <div class="sec-label fi"><div class="sec-num" id="sec-num-conditions">2</div><div><h3>River Conditions</h3><p>Flow, temperature, and sky — the three variables that determine whether browns are feeding.</p></div></div>
+  <div class="sec-label fi"><div class="sec-num" id="sec-num-conditions">2</div><div><h3>River Conditions</h3><p id="cond-subtitle">Flow, temperature, and sky — the three variables that determine whether fish are feeding.</p></div></div>
 
   <div class="cond-card">
   <div class="cgrid">
@@ -2773,7 +2801,9 @@ function computeStagingScore(lakeTempC, windDir, windSpeed, cloudPct, intensity,
   }
 
   score = Math.max(0, Math.min(1, score));
-  return {score: score, factors: factors};
+  // _upwell is surfaced so the hero's wind tile can label the actual mechanism
+  // (upwelling / downwelling / alongshore) instead of just a wind speed.
+  return {score: score, factors: factors, upwell: _upwell, windSpeed: windSpeed};
 }
 
 // Fetch cached lake temps from worker (daily ERDDAP/GLSEA cache); graceful fallback
@@ -2869,10 +2899,30 @@ function applyStagingTechniqueOverride() {
   var _tg3 = document.getElementById('tg-tertiary');
   if (_tg2) _tg2.style.display = 'none';
   if (_tg3) _tg3.style.display = 'none';
+  // Staging fish are in the lake — river flow isn't the deciding variable today
+  try { updateConditionsSubtitle(null, true); } catch(_csErr) {}
   _stagingTechApplied = true;
 }
 
 // Render the Lake Staging card for a mouth section during the staging window
+// The River Conditions subtitle used to be hardcoded to "whether browns are feeding",
+// which is wrong for every other target and actively misleading during staging — when the
+// fish are still in the lake, in-river flow is not what decides the day.
+function updateConditionsSubtitle(speciesName, isStaging) {
+  var el = document.getElementById('cond-subtitle');
+  if (!el) return;
+  if (isStaging) {
+    el.textContent = 'Lake temperature, wind, and sky decide staging. River flow matters once fish push in \u2014 watch it for the first rise.';
+    return;
+  }
+  var _plural = {
+    'Brown Trout':'browns', 'Rainbow Trout':'rainbows', 'Brook Trout':'brookies',
+    'Steelhead':'steelhead', 'Chinook Salmon':'chinook', 'Coho Salmon':'coho'
+  };
+  var who = (speciesName && _plural[speciesName]) || 'fish';
+  el.textContent = 'Flow, temperature, and sky \u2014 the three variables that determine whether ' + who + ' are feeding.';
+}
+
 function renderStagingCard(sectionName, weather) {
   var container = document.getElementById("staging-card-slot");
   if (container) container.innerHTML = "";  // clear any prior card
@@ -3025,31 +3075,32 @@ function renderStagingCard(sectionName, weather) {
       }
     }
 
-    var icon = which === 'steelhead' ? '🐟' : '🌊';
-    var titleTag = which === 'steelhead' ? 'STEELHEAD REPORT' : 'LAKE STAGING REPORT';
+    // ── HERO INTEGRATION ────────────────────────────────────────────────────
+    // The separate staging card is gone. Two competing summary blocks made it unclear
+    // which to trust, so the staging read now writes straight into the hero tiles and
+    // the strength bar. Lures and technique are NOT repeated here — they already live in
+    // Technique & Gear further down, which applyStagingTechniqueOverride() has rewritten.
+    container.innerHTML = '';
+    container.style.display = 'none';
 
-    container.innerHTML =
-      '<div class="staging-card" style="background:linear-gradient(135deg,#0d3b4a,#13556a);color:#eaf4f4;border-radius:12px;padding:1.1rem 1.25rem;margin:1rem 0">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">' +
-          '<div style="font-family:\'JetBrains Mono\',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7">' + icon + ' ' + titleTag + '</div>' +
-          '<div style="font-weight:700;color:' + ratingColor + '">' + rating + ' · ' + pct + '%</div>' +
-        '</div>' +
-        '<div style="margin-top:.5rem;font-size:.95rem;font-weight:600">' + headerLabel + ' — ' + zone.lake.replace("Lake ","") + '</div>' +
-        '<div style="font-size:.82rem;opacity:.85;margin-top:.15rem">' + tempLine + '</div>' +
-        factorsHtml +
-        (which === 'salmon' && phase.mode === 'stage'
-          ? '<div style="margin-top:.8rem">' +
-              '<div style="font-family:\'JetBrains Mono\',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6;margin-bottom:.4rem">🎣 Recommended Lures</div>' +
-              '<div style="display:flex;flex-wrap:wrap;gap:.4rem">' +
-                '<div style="background:rgba(255,255,255,.12);border-radius:6px;padding:.3rem .65rem;font-size:.78rem;font-weight:600">Little Cleo Spoon · ½–¾ oz</div>' +
-                '<div style="background:rgba(255,255,255,.12);border-radius:6px;padding:.3rem .65rem;font-size:.78rem;font-weight:600">Kastmaster · ¾ oz</div>' +
-                '<div style="background:rgba(255,255,255,.12);border-radius:6px;padding:.3rem .65rem;font-size:.78rem;font-weight:600">Rapala Jointed Minnow · J11</div>' +
-                '<div style="background:rgba(255,255,255,.12);border-radius:6px;padding:.3rem .65rem;font-size:.78rem;font-weight:600">Blue Fox Vibrax · #5</div>' +
-              '</div>' +
-            '</div>'
-          : '') +
-        '<div style="margin-top:.7rem;font-size:.78rem;opacity:.7;line-height:1.5">' + guidance + '</div>' +
-      '</div>';
+    try {
+      renderStagingHero({
+        pct: pct,
+        rating: rating,
+        lakeTemp: lakeTemp,
+        lakeName: zone.lake ? zone.lake.replace('Lake ', '') : null,
+        cloudPct: (weather && weather.cloudPct != null) ? weather.cloudPct : window._lastCloudPct,
+        windSpeed: (res.windSpeed != null) ? res.windSpeed
+                 : ((weather && weather.windSpeed != null) ? weather.windSpeed : null),
+        upwell: res.upwell || null,
+        phaseLabel: headerLabel
+      });
+    } catch (_shErr) { console.warn('renderStagingHero failed:', _shErr); }
+
+    // Keep the narrative guidance, but as a single line under the hero rather than
+    // inside a second card competing with it.
+    var _gEl = document.getElementById('tp-staging-note');
+    if (_gEl) { _gEl.textContent = guidance; _gEl.style.display = 'block'; }
   });
 }
 // ── END STAGING ───────────────────────────────────────────────────────────────
@@ -5471,6 +5522,27 @@ function goBack(){
     var _sp     = _params.get('species');
     if (!_river) return;
 
+    // Resolve the incoming param to a real RIVER_CONFIG section key.
+    // Guides link with friendly names like "Ganaraska River", but the app keys everything
+    // (ACCESS_COORDS, STAGING_ZONES, RIVER_CONFIG.access) by full section name. An
+    // unresolved parent name silently yields no access points and no staging match.
+    (function(){
+      var _want = _river.split(',')[0].trim().toLowerCase();
+      if (typeof RIVER_CONFIG !== 'undefined' && RIVER_CONFIG[_river.split(',')[0].trim()]
+          && RIVER_CONFIG[_river.split(',')[0].trim()].access) return; // already a section key
+      if (typeof RIVERS_DB === 'undefined') return;
+      var _exact = null, _partial = [];
+      RIVERS_DB.forEach(function(r){
+        var n = r.name.toLowerCase();
+        if (n === _want) _exact = r.name;
+        else if (n.indexOf(_want) === 0 || n.indexOf(' ' + _want) !== -1) _partial.push(r.name);
+      });
+      // Prefer the lower/mouth section for a bare river name — that's the reach a salmon
+      // or steelhead guide is sending people to, and it's the one with harbour access.
+      var _pick = _exact || _partial.filter(function(n){ return /lower|mouth/i.test(n); })[0] || _partial[0];
+      if (_pick) _river = _pick;
+    })();
+
     // Set global state
     selectedRiver      = _river; // URLSearchParams.get() already decodes
     selectedSpecies    = _sp ? [_sp] : [];
@@ -5882,6 +5954,11 @@ function updateMethods(fc,tc,sc,flow,wt){
 
   // Clear any staging override left over from a previous search before writing fresh methods
   _stagingTechApplied = false;
+  // Default the conditions subtitle to the real target. The staging path overrides this
+  // afterwards if the fish turn out to still be in the lake.
+  var _spNameMap = {brown:'Brown Trout', rainbow:'Rainbow Trout', brook:'Brook Trout',
+                    steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
+  try { updateConditionsSubtitle(_spNameMap[_sp] || null, false); } catch(_csErr2) {}
   var _tgSubReset = document.getElementById('tg-subtitle');
   if (_tgSubReset) _tgSubReset.textContent = 'Primary method with recommended setup and baits. Tap alternatives to expand.';
   var _tg2Reset = document.getElementById('tg-secondary');
@@ -6004,6 +6081,10 @@ function showTab(tab,btn){
 // ── RENDER RESULTS ────────────────────────────────────────────────────────────
 async function renderResults(){
   var cfg = getRiverConfig(selectedRiver);
+  // Keep the header in sync on every path. Deep links set selectedRiver and call
+  // renderResults directly without going through selectRiver, which previously left
+  // the hardcoded "Grand River, Fergus" placeholder showing.
+  try { setResHeader(selectedRiver); } catch(_shErr) {}
   try { renderRiverUI(cfg); } catch(_ruErr) { console.error('renderRiverUI failed:', _ruErr); }
 
   var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
@@ -6655,7 +6736,7 @@ var GUIDES = [
     url:'/guides/salmon-run-timing/',
     title:'When do salmon run in Ontario rivers?',
     blurb:'Chinook stage off the harbour mouths from late August, then push upriver on the first sustained rain. What triggers a run, how long the window lasts, and which rivers turn on first.',
-    img:'/images/guides/salmon-run-timing.jpg',
+    img:'/images/guides/salmon-run-timing-card.jpg',
     peak:[9,10], on:[8,11], video:false
   },
   {
@@ -7145,11 +7226,102 @@ function renderSkyPeriodStrip(periodCloud) {
   strip.style.display = 'block';
 }
 
+// ── STAGING HERO ─────────────────────────────────────────────────────────────
+// When fish are staging, the hero must describe the LAKE, not the river. River flow and
+// river water temp are real numbers answering a question nobody asked while the fish are
+// still out in front of the mouth — showing them alongside a lake recommendation is what
+// made the old two-card layout ambiguous. The separate staging card is gone; this is the
+// single summary. Reasoning lives in the tile sublabels rather than a duplicate chip row,
+// and lures/technique stay in the Technique & Gear section further down the page.
+function renderStagingHero(st) {
+  // st: { pct, rating, lakeTemp, lakeName, cloudPct, windSpeed, upwell, phaseLabel }
+  var host = document.getElementById('tp-tiles');
+  if (!host) return;
+
+  function tile(label, value, meaning, state, smallVal) {
+    return '<div class="tp-tile ' + state + '">' +
+      '<div class="tp-tile-bar"></div>' +
+      '<div class="tp-tile-body">' +
+        '<div class="tp-tile-lbl">' + label + '</div>' +
+        '<div class="tp-tile-val' + (smallVal ? ' sm' : '') + '">' + value + '</div>' +
+        '<div class="tp-tile-meaning">' + meaning + '</div>' +
+      '</div></div>';
+  }
+
+  // 1) LAKE TEMP — warm surface pushes staging fish deeper and holds them off longer
+  var lt = st.lakeTemp, ltState, ltMeaning;
+  if (lt == null) { ltState = 'na'; ltMeaning = 'No buoy data'; }
+  else if (lt <= 14) { ltState = 'good'; ltMeaning = 'Cool \u2014 fish shallow'; }
+  else if (lt <= 18) { ltState = 'good'; ltMeaning = 'Good \u2014 staging temp'; }
+  else if (lt <= 21) { ltState = 'ok';   ltMeaning = 'Warm \u2014 holding deeper'; }
+  else { ltState = 'poor'; ltMeaning = 'Too warm \u2014 deep'; }
+  var ltVal = (lt == null) ? '\u2014' : (Math.round(lt * 10) / 10) + '\u00b0';
+
+  // 2) SKY — overcast brings staging fish higher in the column and extends the window
+  var cp = st.cloudPct, skyState, skyMeaning;
+  if (cp == null) { skyState = 'na'; skyMeaning = 'No data'; }
+  else if (cp >= 50) { skyState = 'good'; skyMeaning = 'Holding higher'; }
+  else if (cp >= 25) { skyState = 'ok';   skyMeaning = 'Some cover'; }
+  else { skyState = 'poor'; skyMeaning = 'Bright \u2014 dawn/dusk'; }
+  var skyVal = (cp == null) ? '\u2014' : cp + '%';
+
+  // 3) WIND / UPWELLING — on the north shore, westerlies drive cold water to the surface
+  var windVal, windMeaning, windState;
+  if (st.windSpeed == null) { windVal = '\u2014'; windMeaning = 'No data'; windState = 'na'; }
+  else if (st.upwell === 'up-strong')  { windVal = 'Upwell'; windMeaning = 'Strong \u2014 cold push'; windState = 'good'; }
+  else if (st.upwell === 'up-light')   { windVal = 'Upwell'; windMeaning = 'Mild cold push';        windState = 'good'; }
+  else if (st.upwell === 'down-strong'){ windVal = 'Downwell'; windMeaning = 'Warm \u2014 pushes out'; windState = 'poor'; }
+  else if (st.upwell === 'down-light') { windVal = 'Downwell'; windMeaning = 'Mild warming';         windState = 'ok'; }
+  else if (st.windSpeed < 8)           { windVal = 'Light';  windMeaning = 'No upwelling push';     windState = 'ok'; }
+  else                                 { windVal = 'Alongshore'; windMeaning = 'Little effect';     windState = 'ok'; }
+
+  // 4) STAGING STRENGTH — the number the whole page hangs on
+  var pct = st.pct == null ? null : Math.round(st.pct);
+  var stState = pct == null ? 'na' : pct >= 65 ? 'good' : pct >= 40 ? 'ok' : 'poor';
+  var stMeaning = pct == null ? 'No data' : (st.rating || '') + ' \u00b7 ' + (st.phaseLabel || 'staging');
+
+  host.innerHTML =
+    tile('Lake Temp', ltVal, ltMeaning, ltState) +
+    tile('Sky', skyVal, skyMeaning, skyState) +
+    tile('Wind', windVal, windMeaning, windState, windVal.length > 8) +
+    tile('Staging', pct == null ? '\u2014' : pct + '%', stMeaning, stState);
+
+  renderStagingStrength(st);
+}
+
+// Full-width strength bar directly under the headline — the one number that answers
+// "is it worth the drive" before anything else on the page.
+function renderStagingStrength(st) {
+  var bar = document.getElementById('tp-strength');
+  if (!bar) return;
+  var pct = st.pct == null ? null : Math.max(0, Math.min(100, Math.round(st.pct)));
+  if (pct == null) { bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+  bar.innerHTML =
+    '<div class="tp-str-top">' +
+      '<span class="tp-str-lbl">Staging strength' + (st.lakeName ? ' \u00b7 ' + st.lakeName : '') + '</span>' +
+      '<span class="tp-str-val">' + (st.rating || '') + ' \u00b7 ' + pct + '%</span>' +
+    '</div>' +
+    '<div class="tp-str-bar"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="tp-str-scale"><span>Slow</span><span>Fair</span><span>Strong</span></div>';
+}
+
+function hideStagingStrength() {
+  var bar = document.getElementById('tp-strength');
+  if (bar) bar.style.display = 'none';
+}
+
 // ── CONDITION TILES (hero) ───────────────────────────────────────────────────
 function renderConditionTiles(opts) {
   // opts: { wt, cloudPct, flow, sweetMin, sweetMax, flowLow, flowHigh, topMethod, isToday, weatherOk }
   var host = document.getElementById('tp-tiles');
   if (!host) return;
+  // Clear staging-mode furniture. renderStagingCard resolves async and may overwrite this
+  // afterwards; on a non-staging river it never fires, so the hero must reset itself here
+  // or a stale strength bar survives into the next search.
+  hideStagingStrength();
+  var _sn = document.getElementById('tp-staging-note');
+  if (_sn) _sn.style.display = 'none';
 
   function tile(label, value, meaning, state, smallVal) {
     return '<div class="tp-tile ' + state + '">' +
@@ -7361,6 +7533,20 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     recs = recs.filter(function(r) { return r.name !== targetName; });
   }
 
+  // A species in its 'slow' window must never become a confident "fish X instead".
+  // recommendSpecies gives +2 for resident and +3 for low-crowd access, which is enough
+  // to float a slow-season fish to the top of an otherwise empty list. That is how Brown
+  // Trout got recommended on the lower Ganaraska in early August, when lake-run browns
+  // don't actually push in until the fall run alongside the salmon.
+  var _recsSlow = recs.filter(function(r){ return r.seasonal && r.seasonal.quality === 'slow'; });
+  recs = recs.filter(function(r){
+    return r.seasonal && (r.seasonal.quality === 'peak' || r.seasonal.quality === 'good');
+  });
+  // If everything left is slow, say so plainly rather than redirecting to a fish that
+  // isn't there yet.
+  window._allSpeciesSlow = (recs.length === 0 && _recsSlow.length > 0);
+  window._slowSpeciesName = window._allSpeciesSlow ? _recsSlow[0].name : null;
+
   if (targetName) {
     var seasonal = getCurrentSeason(targetName, getTripDateStr());
     var onRiver  = cfg.species && cfg.species.indexOf(targetName) !== -1;
@@ -7416,6 +7602,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         // but salmon staging is genuinely plausible right now per the season data. Redirect there.
         headlineHtml = '<em>' + targetName + '</em> aren\u2019t in this section \u2014 '
           + 'but they\u2019re starting to stage at the <em>' + _sysStagingSection + '</em>. Worth checking there instead.';
+        speciesNote = '';
+      } else if (window._allSpeciesSlow && window._slowSpeciesName) {
+        // Everything on this river is in a slow window. Don't redirect to a fish that
+        // isn't really there — name the situation instead.
+        headlineHtml = '<em>' + targetName + '</em> aren\u2019t here yet, and nothing else is in season on this stretch. '
+          + '<em>' + window._slowSpeciesName + '</em> are resident but slow right now \u2014 they pick up later in the season.';
         speciesNote = '';
       } else if (seasonal && seasonal.note) {
         // Genuinely too early in the season — use the honest season note rather than a generic line
@@ -8196,7 +8388,10 @@ function filterAndSummariseRegs(regs, tripDateStr, selectedSpeciesArr) {
 // ── SPECIES RECOMMENDATION (when none selected) ──────────────────────────────
 function recommendSpecies(cfg) {
   // Score each species on the river and return ranked list with reasons
-  var allSpecies = ['Brown Trout','Rainbow Trout','Brook Trout','Chinook Salmon','Coho Salmon'];
+  // Steelhead must be here. It is a distinct SPECIES_SEASONS entry (migratory O. mykiss)
+  // listed on 29 river sections, but it was missing from this list — so it could never be
+  // scored or offered as a fallback, even in November when it is the obvious answer.
+  var allSpecies = ['Brown Trout','Rainbow Trout','Steelhead','Brook Trout','Chinook Salmon','Coho Salmon'];
   var riverSpecies = cfg.species || [];
 
   var scored = [];
