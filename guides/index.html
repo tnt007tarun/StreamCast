@@ -110,6 +110,11 @@ display:flex;transition:box-shadow .18s ease,border-color .18s ease}
 .gitem a{text-decoration:none;color:inherit;display:flex;width:100%}
 .gitem .thumb{width:132px;flex:none;background:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));
 background-size:cover;background-position:center}
+@media(max-width:620px){
+  /* Stack image over text — a 92px sliver of a 16:9 photo reads as noise */
+  .gitem a{flex-direction:column}
+  .gitem .thumb{width:100%;aspect-ratio:16/9}
+}
 .gitem .txt{padding:1rem 1.15rem}
 .gitem h2{font-size:1.05rem;margin:.3rem 0 .35rem}
 .gitem p{font-size:.87rem;margin:0;color:var(--text);opacity:.85}
@@ -118,7 +123,6 @@ text-transform:uppercase;color:var(--sage)}
 .gseason.now{color:var(--amber)}
 @media(max-width:620px){
   h1{font-size:1.6rem}
-  .gitem .thumb{width:92px}
   article,.page{padding:1rem 1.15rem 2.5rem}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -140,7 +144,7 @@ text-transform:uppercase;color:var(--sage)}
 <h1>Ontario river fishing guides</h1>
 <p class="standfirst">First-hand notes from Ontario rivers &mdash; when the fish are in, where they hold,
 and what has actually worked. Written alongside the conditions tool, so the advice matches the water.</p>
-<ul class="glist"><li class="gitem"><a href="/guides/salmon-run-timing/"><span class="thumb"></span><span class="txt"><span class="gseason now">Peak September &ndash; October</span><h2>When do salmon run in Ontario rivers?</h2><p>Chinook stage off the harbour mouths from late August, then push upriver on the first sustained rain. What triggers a run and which rivers turn on first.</p></span></a></li><li class="gitem"><a href="/guides/salmon-float-fishing-tips/"><span class="thumb" style="background-image:url('https://i.ytimg.com/vi/sdcNeg5ibaw/mqdefault.jpg')"></span><span class="txt"><span class="gseason now">Peak September &ndash; October</span><h2>Three float fishing tips for salmon</h2><p>Where to start the drift, how long a leader to run under the float, and why holding the float back gets the bait seen first.</p></span></a></li><li class="gitem"><a href="/guides/euro-nymphing-upper-credit/"><span class="thumb" style="background-image:url('https://i.ytimg.com/vi/dsNlP-lNE4Y/mqdefault.jpg')"></span><span class="txt"><span class="gseason now">Open late April &ndash; September 30</span><h2>Euro nymphing the Upper Credit for rainbows</h2><p>Four fish from eight hook-ups at the Forks of the Credit, and the fly change that turned the morning around.</p></span></a></li><li class="gitem"><a href="/guides/where-steelhead-hold/"><span class="thumb" style="background-image:url('https://i.ytimg.com/vi/vlj1AhJQRrA/mqdefault.jpg')"></span><span class="txt"><span class="gseason">Peak spring &amp; late autumn</span><h2>Where steelhead actually hold in a river</h2><p>Most blank days are a location problem, not a gear problem. Reading pools, runs and seams — part one of three.</p></span></a></li></ul>
+<ul class="glist"><li class="gitem"><a href="/guides/salmon-run-timing/"><span class="thumb" style="background-image:url('/images/guides/salmon-run-timing-card.jpg')"></span><span class="txt"><span class="gseason now">Peak September &ndash; October</span><h2>When do salmon run in Ontario rivers?</h2><p>Chinook stage off the harbour mouths from late August, then push upriver on the first sustained rain. What triggers a run and which rivers turn on first.</p></span></a></li><li class="gitem"><a href="/guides/salmon-float-fishing-tips/"><span class="thumb" style="background-image:url('https://i.ytimg.com/vi/sdcNeg5ibaw/mqdefault.jpg')"></span><span class="txt"><span class="gseason now">Peak September &ndash; October</span><h2>Three float fishing tips for salmon</h2><p>Where to start the drift, how long a leader to run under the float, and why holding the float back gets the bait seen first.</p></span></a></li><li class="gitem"><a href="/guides/euro-nymphing-upper-credit/"><span class="thumb" style="background-image:url('https://i.ytimg.com/vi/dsNlP-lNE4Y/mqdefault.jpg')"></span><span class="txt"><span class="gseason now">Open late April &ndash; September 30</span><h2>Euro nymphing the Upper Credit for rainbows</h2><p>Four fish from eight hook-ups at the Forks of the Credit, and the fly change that turned the morning around.</p></span></a></li><li class="gitem"><a href="/guides/where-steelhead-hold/"><span class="thumb" style="background-image:url('https://i.ytimg.com/vi/vlj1AhJQRrA/mqdefault.jpg')"></span><span class="txt"><span class="gseason">Peak spring &amp; late autumn</span><h2>Where steelhead actually hold in a river</h2><p>Most blank days are a location problem, not a gear problem. Reading pools, runs and seams — part one of three.</p></span></a></li></ul>
 <div class="cta">
   <h3>Check conditions before you drive</h3>
   <p>Live flow, water temperature and cloud cover for Ontario rivers, with access points ranked for today.</p>
