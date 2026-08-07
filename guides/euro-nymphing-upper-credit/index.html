@@ -111,6 +111,11 @@ display:flex;transition:box-shadow .18s ease,border-color .18s ease}
 .gitem a{text-decoration:none;color:inherit;display:flex;width:100%}
 .gitem .thumb{width:132px;flex:none;background:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));
 background-size:cover;background-position:center}
+@media(max-width:620px){
+  /* Stack image over text — a 92px sliver of a 16:9 photo reads as noise */
+  .gitem a{flex-direction:column}
+  .gitem .thumb{width:100%;aspect-ratio:16/9}
+}
 .gitem .txt{padding:1rem 1.15rem}
 .gitem h2{font-size:1.05rem;margin:.3rem 0 .35rem}
 .gitem p{font-size:.87rem;margin:0;color:var(--text);opacity:.85}
@@ -119,7 +124,6 @@ text-transform:uppercase;color:var(--sage)}
 .gseason.now{color:var(--amber)}
 @media(max-width:620px){
   h1{font-size:1.6rem}
-  .gitem .thumb{width:92px}
   article,.page{padding:1rem 1.15rem 2.5rem}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
