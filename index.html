@@ -1414,7 +1414,7 @@ select:focus-visible, input:focus-visible {
 .guides-title{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.5rem;line-height:1.2;color:var(--ink)}
 .guides-all{font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:500;color:var(--fern);text-decoration:none;border-bottom:1px solid rgba(30,122,110,.3);padding-bottom:1px}
 .guides-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:1.4rem}
-.guides-stack{display:grid;grid-template-rows:1fr 1fr;gap:1.4rem}
+.guides-stack{display:grid;grid-template-rows:auto auto;gap:1.4rem;align-content:start}
 .gcard{position:relative;background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;display:flex;transition:box-shadow .18s ease,border-color .18s ease}
 .gcard:hover{box-shadow:0 10px 26px rgba(26,58,74,.13);border-color:rgba(30,122,110,.35)}
 .gcard:focus-visible{outline:2px solid var(--fern);outline-offset:2px}
@@ -1422,9 +1422,19 @@ select:focus-visible, input:focus-visible {
 .gcard.live .gspine{background:linear-gradient(180deg,var(--amber),var(--gold))}
 .gcard-lead{flex-direction:column}
 .gcard-lead .gspine{width:100%;height:5px}
-.gimg{background:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));background-size:cover;background-position:center;position:relative}
-.gcard-lead .gimg{aspect-ratio:16/9}
-.gcard-side .gimg{width:104px;flex:none}
+/* background-color is set separately from the gradient: the inline style writes
+   background-image, which would otherwise wipe the gradient shorthand and leave the tile
+   white when an image 404s. This way a missing file degrades to moss, not blank. */
+.gimg{background-color:var(--moss);
+background-image:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));
+background-size:cover;background-position:center;position:relative}
+.gcard-lead .gimg{aspect-ratio:16/9;max-height:420px}
+/* Side cards stack image-over-text at every width. A 104px-wide slice of a 16:9
+   thumbnail stretched to card height is an unreadable crop, and it looked worst on
+   wide screens where the card is tallest. */
+.gcard-side{flex-direction:column}
+.gcard-side .gspine{width:100%;height:5px;flex:none}
+.gcard-side .gimg{width:100%;aspect-ratio:16/9;flex:none}
 .ginner{padding:1.15rem 1.25rem 1.3rem;display:flex;flex-direction:column;flex:1}
 .gmonths{display:flex;gap:2px;margin-bottom:.75rem}
 .gm{flex:1;height:15px;border-radius:2px;background:rgba(30,122,110,.09);font-family:'JetBrains Mono',monospace;font-size:.44rem;color:transparent;display:flex;align-items:center;justify-content:center}
@@ -1442,12 +1452,6 @@ select:focus-visible, input:focus-visible {
 .gvid svg{width:9px;height:9px;fill:var(--cream)}
 @media(max-width:900px){
   .guides-grid{grid-template-columns:1fr}
-  /* Below the two-column breakpoint the side cards have the full width available, so
-     stop squeezing the thumbnail into a narrow strip. Stack image over text like the
-     lead card — a 104px sliver of a 16:9 photo is an unreadable crop. */
-  .gcard-side{flex-direction:column}
-  .gcard-side .gspine{width:100%;height:5px;flex:none}
-  .gcard-side .gimg{width:100%;aspect-ratio:16/9}
   .guides-stack{grid-template-rows:auto auto}
 }
 @media(max-width:620px){
