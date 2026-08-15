@@ -2863,6 +2863,11 @@ function resolveStagingSection(riverName) {
 // clarity. Called from both the headline override path and the staging-card path so the
 // two can never disagree with each other.
 var _stagingTechApplied = false;
+// Set as soon as the staging phase is known, independently of whether the DOM override has
+// run yet. updateMethods() and the staging card resolve in a race — the staging read comes
+// back during renderResults' `await fetchFlow(...)`, so whichever finishes last wins the
+// Technique panel. This flag lets updateMethods know staging is in play regardless of order.
+var _stagingModeActive = false;
 function applyStagingTechniqueOverride() {
   var _m1n = document.getElementById('m1n');
   var _m1d = document.getElementById('m1d');
@@ -2931,6 +2936,7 @@ function renderStagingCard(sectionName, weather) {
   var container = document.getElementById("staging-card-slot");
   if (container) container.innerHTML = "";  // clear any prior card
   window._stagingPct = null; // reset — only set again below if a staging card actually renders
+  _stagingModeActive = false; // recomputed below; must not leak from the previous river
   var zone = STAGING_ZONES[sectionName];
   if (!zone || !container) return;
 
@@ -3036,8 +3042,11 @@ function renderStagingCard(sectionName, weather) {
     // Gear panel must not still be recommending in-river nymphing. The headline path only
     // fires when the season window reads 'absent'; a 'slow' window reaches here instead,
     // which is exactly the case that was leaking fly recommendations through.
-    if (phase.mode === 'stage' && which === 'salmon' && !_stagingTechApplied) {
-      try { applyStagingTechniqueOverride(); } catch(_stErr) { console.warn('staging technique override failed:', _stErr); }
+    if (phase.mode === 'stage' && which === 'salmon') {
+      _stagingModeActive = true;
+      if (!_stagingTechApplied) {
+        try { applyStagingTechniqueOverride(); } catch(_stErr) { console.warn('staging technique override failed:', _stErr); }
+      }
     }
 
     var rating = pct >= 65 ? "Strong" : pct >= 40 ? "Fair" : "Slow";
@@ -5935,7 +5944,9 @@ function updateMethods(fc,tc,sc,flow,wt){
   // streamers, which under-serve salmon. Lures and streamers stay available as
   // secondary and tertiary options because they do produce on fresh, aggressive fish.
   // Skipped when the angler has explicitly forced fly or spin gear — respect their kit.
-  if (isSalmonSp && fam !== 'fly' && fam !== 'spin') {
+  // Also skipped while salmon are STAGING: those fish are still in the lake, so float-fished
+  // roe is the wrong answer no matter what the river flow says.
+  if (isSalmonSp && !_stagingModeActive && fam !== 'fly' && fam !== 'spin') {
     var _fDepth = high ? 'Run deeper and heavier — high water pushes fish to the edges.'
                 : low  ? 'Downsize and lengthen your leader — low clear water makes salmon spooky.'
                 : 'Set the float so the bait drifts just above the bottom.';
@@ -6128,6 +6139,7 @@ async function renderResults(){
       }
       // Only render for salmon/steelhead intent — the card itself also checks season windows
       if (_stgSection) { renderStagingCard(_stgSection, _stagingWeather); }
+      else { _stagingModeActive = false; }
     }
   } catch(e){ console.warn("staging card",e); }
 
@@ -6491,6 +6503,11 @@ async function renderResults(){
   document.getElementById("tnote").textContent=_bwNote;
 
   updateMethods(fc,tc,sc,flow,wt);
+  // If the staging read already resolved during the `await fetchFlow(...)` above, the call
+  // to updateMethods just overwrote the Technique panel with in-river methods. Re-apply.
+  if (_stagingModeActive && !_stagingTechApplied) {
+    try { applyStagingTechniqueOverride(); } catch(_reErr) { console.warn('staging re-apply failed:', _reErr); }
+  }
   updateAccessFlowNotes(cfg,flow);
   autoSelectBaitTab();
 
