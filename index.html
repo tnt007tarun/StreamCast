@@ -8489,7 +8489,11 @@ var baitImageCache = {  'Hard Bead': '/images/bait/hard-bead.jpg',
 };
 
 function fetchBaitImage(baitName) {
+  // Two separate maps exist: BAIT_IMAGES covers flies and lures, baitImageCache covers
+  // float baits (roe bags, beads, worms). This only ever read the first, so every float
+  // bait fell through to the SVG placeholder even though the photos were on the server.
   if (BAIT_IMAGES[baitName]) return Promise.resolve(BAIT_IMAGES[baitName]);
+  if (baitImageCache[baitName]) return Promise.resolve(baitImageCache[baitName]);
   return Promise.resolve(null);
 }
 
