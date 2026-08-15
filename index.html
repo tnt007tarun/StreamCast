@@ -258,6 +258,17 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   line-height:1.2;
   margin-bottom:0.15rem;
 }
+.rc-sub {
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.56rem;
+  letter-spacing:0.06em;
+  opacity:0.7;
+  line-height:1.3;
+}
+.river-chip.rc-auto .rc-name::before {
+  content:'\2605\00a0';
+  opacity:0.8;
+}
 .rc-loc {
   font-size:0.68rem;
   color:var(--sage);
@@ -2600,6 +2611,85 @@ function track(event, props) {
 
 var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle Beaver River (Clarksburg to Heathcote)", "Upper Beaver River (Kimberley)"], "Black Creek": ["Black Creek — Upper Reaches (Vaughan to North York)", "Black Creek — Lower Watershed & Humber Confluence"], "Bowmanville Creek": ["Bowmanville Creek — River Mouth & Piers", "Lower Bowmanville Creek", "Middle Bowmanville Creek (Fish Ladder)", "Upper Bowmanville Creek"], "Bronte Creek": ["Bronte Creek — Lower Estuary & Mouth", "Bronte Creek — Mid-Section & Provincial Park", "Bronte Creek — Upper Headwaters"], "Credit River": ["Upper Credit River", "Middle Credit River", "Lower Credit River"], "Duffins Creek": ["Duffins Creek — Lower Section", "Duffins Creek — Middle Section", "Duffins Creek — Upper Reaches"], "Eramosa River": ["Eramosa River — Upper Headwaters (Above Rockwood)", "Eramosa River — Mid-Section (Rockwood to Eden Mills)"], "Ganaraska River": ["Ganaraska River — Lower (Lake to CNR Bridge)", "Ganaraska River — Port Hope Sanctuary", "Ganaraska River — Upper & Conservation Areas"], "Grand River": ["Upper Grand River (Tailwater)", "Lower Grand River"], "Humber River": ["Lower Humber River", "Lower-Mid Humber (Old Mill to Eglinton)", "Upper Humber River (Headwaters)"], "Nottawasaga River": ["Nottawasaga River — Headwaters (Niagara Escarpment)", "Nottawasaga River — Middle Section (Alliston to Angus)", "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)"], "Rouge River": ["Rouge River — Marsh & Mouth (Lake Ontario)", "Rouge River — Mid-Section (Rouge National Urban Park)", "Rouge River — Upper & Milne Dam (Markham)"], "Saugeen River": ["Saugeen River — Headwaters & Upper Tributaries", "Saugeen River — Lower Main Stem (Paisley to Southampton)"], "Sixteen Mile Creek": ["Sixteen Mile Creek — Lower Reaches & Oakville Harbour", "Sixteen Mile Creek — Middle Reaches & Main Valley", "Sixteen Mile Creek — Upper West Branch (Trout)"], "Speed River": ["Speed River — Upper (Above Guelph Lake)"], "Wilmot Creek": ["Wilmot Creek — Mouth & Marsh (Lake Ontario)", "Wilmot Creek — Lower River (to CN Rail Tracks)", "Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)", "Wilmot Creek — Upper Watershed & Orono Crown Lands"]};
 
+// ── BEST SECTION FOR SPECIES ──────────────────────────────────────────────────
+// Picking a section is the judgement the app should be making, not the user. Someone who
+// already knows the salmon are in the Lower Credit doesn't need us; the person who knows
+// "Credit River" and "salmon" is exactly who we're for — and asking them to choose was
+// how they ended up on the Upper Credit, above a dam salmon can't pass.
+//
+// Migratory fish: take the LOWEST section that lists the species. Barriers and staging
+// zones make this close to deterministic.
+// Resident trout: take the section with the best odds of actually connecting, which on a
+// mixed river means going UP, away from the migratory-dominated lower reaches. Brown Trout
+// on the Credit should send you to the Forks, not to Port Credit.
+var _MIGRATORY_SPECIES = ['Chinook Salmon','Coho Salmon','Steelhead'];
+// When true, selectedRiver was chosen by us and should be re-resolved whenever the
+// species changes — otherwise picking a species after a river would leave a stale section.
+var selectedRiverIsAuto = false;
+var selectedRiverParent = null;
+
+function resolveAutoSection(riverName) {
+  var sections = RIVER_SECTIONS[riverName] || [];
+  var sp = (typeof selectedSpecies !== 'undefined' && selectedSpecies.length) ? selectedSpecies[0] : null;
+  var best = sp ? bestSectionForSpecies(riverName, sp) : null;
+  // No species chosen, or species absent from every section — fall back to the first
+  // section rather than leaving the app with nothing selected.
+  return best || sections[0] || null;
+}
+
+// Keep the auto chip honest about which reach it actually picked.
+function updateAutoChipSub() {
+  var el = document.getElementById('rc-auto-sub');
+  if (!el) return;
+  if (!selectedRiverIsAuto || !selectedRiver) { el.textContent = 'We\u2019ll pick the reach'; return; }
+  var label = selectedRiver.indexOf(' \u2014 ') !== -1
+    ? selectedRiver.split(' \u2014 ')[1]
+    : selectedRiver.replace(/ River$| Creek$/, '');
+  el.textContent = label;
+}
+
+// Called when the species selection changes so an auto-picked section follows suit.
+function refreshAutoSection() {
+  if (!selectedRiverIsAuto || !selectedRiverParent) return;
+  var next = resolveAutoSection(selectedRiverParent);
+  if (next && next !== selectedRiver) {
+    selectedRiver = next;
+    try { setResHeader(selectedRiver); } catch(_e) {}
+  }
+  updateAutoChipSub();
+}
+
+function bestSectionForSpecies(riverName, speciesKey) {
+  var sections = RIVER_SECTIONS[riverName];
+  if (!sections || !sections.length) return null;
+  var spMap = {brown:'Brown Trout', rainbow:'Rainbow Trout', brook:'Brook Trout',
+               steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
+  var want = spMap[speciesKey];
+  if (!want) return sections[0];
+
+  // Only consider sections that actually list the species and have a real config.
+  var candidates = sections.filter(function(s){
+    var cfg = RIVER_CONFIG[s];
+    return cfg && cfg.species && cfg.species.indexOf(want) !== -1;
+  });
+  if (!candidates.length) return null;   // species not present anywhere on this river
+
+  // Rank by position in the system. Lower numbers are further downstream.
+  function reach(s) {
+    if (/mouth|harbour|estuary|marsh|pier/i.test(s)) return 0;
+    if (/lower-mid/i.test(s)) return 2;
+    if (/lower/i.test(s))     return 1;
+    if (/middle|mid-section|mid-/i.test(s)) return 3;
+    if (/upper|headwater/i.test(s)) return 4;
+    return 2;
+  }
+  var isMigratory = _MIGRATORY_SPECIES.indexOf(want) !== -1;
+  candidates.sort(function(a,b){
+    return isMigratory ? reach(a) - reach(b) : reach(b) - reach(a);
+  });
+  return candidates[0];
+}
+
 // ── EXPERT MODE ───────────────────────────────────────────────────────────────
 function initExpertMode() {
   var sel = document.getElementById('expert-river-select');
@@ -2618,21 +2708,39 @@ function initExpertMode() {
         setResHeader(selectedRiver);
         secPicker.style.display = 'none'; return;
       }
-      chips.innerHTML = sections.map(function(s, idx) {
-        var label = s.indexOf(' — ') !== -1 ? s.split(' — ')[1] : s;
-        return '<div class="river-chip'+(idx===0?' active':'')+'" data-rname="'+s+'">' +
+      // "Best for species" leads and is selected by default. Specific reaches stay
+      // available for anglers who want a particular stretch — we make the call, we don't
+      // take the choice away.
+      var autoChip = '<div class="river-chip active rc-auto" data-rname="__auto__">' +
+                     '<div class="rc-name">Best for species</div>' +
+                     '<div class="rc-sub" id="rc-auto-sub">We\u2019ll pick the reach</div></div>';
+      chips.innerHTML = autoChip + sections.map(function(s) {
+        var label = s.indexOf(' \u2014 ') !== -1 ? s.split(' \u2014 ')[1] : s;
+        return '<div class="river-chip" data-rname="'+s+'">' +
                '<div class="rc-name">'+label+'</div></div>';
       }).join('');
       chips.querySelectorAll('.river-chip').forEach(function(el) {
         el.addEventListener('click', function() {
           chips.querySelectorAll('.river-chip').forEach(function(c){c.classList.remove('active');});
           this.classList.add('active');
-          selectedRiver = this.getAttribute('data-rname');
+          var v = this.getAttribute('data-rname');
+          if (v === '__auto__') {
+            selectedRiverIsAuto = true;
+            selectedRiverParent = river;
+            selectedRiver = resolveAutoSection(river);
+          } else {
+            selectedRiverIsAuto = false;
+            selectedRiverParent = null;
+            selectedRiver = v;
+          }
           setResHeader(selectedRiver);
         });
       });
-      selectedRiver = sections[0];
+      selectedRiverIsAuto = true;
+      selectedRiverParent = river;
+      selectedRiver = resolveAutoSection(river);
       setResHeader(selectedRiver);
+      updateAutoChipSub();
       secPicker.style.display = 'block';
     });
   }
@@ -2937,6 +3045,7 @@ function renderStagingCard(sectionName, weather) {
   if (container) container.innerHTML = "";  // clear any prior card
   window._stagingPct = null; // reset — only set again below if a staging card actually renders
   _stagingModeActive = false; // recomputed below; must not leak from the previous river
+  window._salmonInRiver = false;
   var zone = STAGING_ZONES[sectionName];
   if (!zone || !container) return;
 
@@ -3044,9 +3153,14 @@ function renderStagingCard(sectionName, weather) {
     // which is exactly the case that was leaking fly recommendations through.
     if (phase.mode === 'stage' && which === 'salmon') {
       _stagingModeActive = true;
+      window._salmonInRiver = false;
       if (!_stagingTechApplied) {
         try { applyStagingTechniqueOverride(); } catch(_stErr) { console.warn('staging technique override failed:', _stErr); }
       }
+    } else if (phase.mode === 'run' && which === 'salmon') {
+      // Fish are in the river — the headline must recommend float fishing, matching the
+      // Technique panel rather than contradicting it.
+      window._salmonInRiver = true;
     }
 
     var rating = pct >= 65 ? "Strong" : pct >= 40 ? "Fair" : "Slow";
@@ -3236,7 +3350,8 @@ var RIVER_CONFIG = {
     ]
   },
   "Lower Credit River": {
-    gauge:"02HB001", gaugeName:"Credit River near Cataract",
+    // Cataract sits ~40 km upstream near the Forks and does not represent lower-river flow.
+    gauge:"02HB029", gaugeName:"Credit River at Streetsville",
     sweetMin:5, sweetMax:30, flowLow:1, flowHigh:60,
     lat:43.560, lng:-79.720,
     loc:"Streetsville Dam to Port Credit / Lake Ontario",
@@ -5076,7 +5191,7 @@ var RIVERS_DB = [
     { name:"Upper Bowmanville Creek",                 gauge:"02HD006", sweetMin:0.5, sweetMax:4,  lat:43.930, lng:-78.680 },
     { name:"Upper Credit River",       gauge:"02HB001", sweetMin:5,  sweetMax:15, lat:43.870, lng:-80.010 },
     { name:"Middle Credit River",      gauge:"02HB001", sweetMin:5,  sweetMax:20, lat:43.660, lng:-79.880 },
-    { name:"Lower Credit River",       gauge:"02HB001", sweetMin:5,  sweetMax:30, lat:43.560, lng:-79.720 },
+    { name:"Lower Credit River",       gauge:"02HB029", sweetMin:5,  sweetMax:30, lat:43.560, lng:-79.720 },
     { name:"Upper Grand River (Tailwater)", gauge:"02GA016", sweetMin:8, sweetMax:12, lat:43.700, lng:-80.280 },
     { name:"Middle Grand River",       gauge:"02GA016", sweetMin:8,  sweetMax:15, lat:43.420, lng:-80.320 },
     { name:"Lower Grand River",        gauge:"02GA016", sweetMin:10, sweetMax:30, lat:43.000, lng:-79.900 },
@@ -5318,6 +5433,10 @@ function goToResults(){
   selectedSpecies=Array.from(document.querySelectorAll(".species-btn.active"))
     .map(function(b){return b.getAttribute("data-value");}).filter(function(v){return v!=="";});
   selectedSpeciesLabel=selectedSpecies.length===0?"Any Species":selectedSpecies.length===1?(_sm[selectedSpecies[0]]||"Any"):selectedSpecies.map(function(k){return _sm[k];}).join(" + ");
+  // Expert mode: if the section was auto-picked, re-resolve it now that species is known.
+  // Species is captured after the river is chosen, so without this the auto section would
+  // be stale — resolved against whatever species was selected on a previous search.
+  try { refreshAutoSection(); } catch(_rasErr) {}
   if(appMode === 'beginner') { // always re-rank in beginner mode to respect species selection
     selectedRiver = null; // reset so a stale value from a previous search can't bleed through
       var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
@@ -6419,13 +6538,20 @@ async function renderResults(){
   document.getElementById("sum-window-note").textContent=_twNote;
   var _fl2=({'':{h:'Streamers',c:'Slow Nymphing',n:'Nymphing'},fly:{h:'Streamer fishing',c:'Slow nymphing',n:'Nymphing'},spin:{h:'Heavy Spinners',c:'Slow Jig',n:'Spinner Fishing'},float:{h:'Drift Fishing',c:'Bottom Bait',n:'Float Fishing'}})[selectedTechFamily.length>0?selectedTechFamily[0]:'']||{h:'Streamers',c:'Slow Nymphing',n:'Nymphing'};
   var topMethod=flow!=null&&flow>cfg.flowHigh*0.6?_fl2.h:wt<8?_fl2.c:_fl2.n;
-  // Override: Chinook/Coho staging or running in a staging-zone river call for spin/lures
+  // Override: salmon STAGING in the lake call for spin/lures, not trout nymphing.
+  // This originally fired for any salmon target on a staging-zone river, which was wrong
+  // once the fish moved in — the hero said "spinning gear \u2014 spoons & lures" while the
+  // Technique panel below correctly said float fishing with roe and beads. Being a
+  // staging *zone* is a property of the river; being in a staging *phase* is a property
+  // of the date, and only the latter should change the recommended method.
   (function(){
-    var _sk2 = selectedSpecies && selectedSpecies[0];
-    var _isSalmonTarget2 = _sk2 === 'chinook' || _sk2 === 'coho';
-    var _isStagingRiver2 = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
-    if (_isSalmonTarget2 && _isStagingRiver2) {
-      topMethod = 'Spinning \u2014 Spoons & Lures';
+    var _sk = selectedSpecies && selectedSpecies[0];
+    var _isSalmonTarget = _sk === 'chinook' || _sk === 'coho';
+    if (!_isSalmonTarget) return;
+    if (_stagingModeActive) {
+      topMethod = 'Spinning \u2014 Spoons & Lures';   // fish still in the lake
+    } else if (window._salmonInRiver) {
+      topMethod = 'Float Fishing \u2014 Roe & Beads'; // fish in the river
     }
   })();
   document.getElementById("sum-method").textContent=topMethod;
@@ -7740,8 +7866,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Build method phrase (must come before headline)
   var methodPhrase = topMethod.toLowerCase();
   var bringPhrase;
-  if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
-  else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear — ' + methodPhrase;
+  // Compound method names carry their own gear noun, so the generic branches below would
+  // stutter ("spinning gear — spinning — spoons & lures"). Handle them explicitly.
+  if (/^spinning\s*\u2014/i.test(topMethod)) bringPhrase = 'spinning gear \u2014 spoons & lures';
+  else if (/^float fishing\s*\u2014/i.test(topMethod)) bringPhrase = 'float rod \u2014 roe bags or beads';
+  else if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
+  else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear \u2014 ' + methodPhrase;
   else if (/float|bait|drift/i.test(topMethod)) bringPhrase = 'float rod and bait';
   else bringPhrase = topMethod.toLowerCase() + ' gear';
 
