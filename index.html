@@ -3096,18 +3096,30 @@ function renderStagingCard(sectionName, weather) {
     container.innerHTML = '';
     container.style.display = 'none';
 
+    // Once fish are IN THE RIVER the hero must stop talking about the lake. Only the
+    // staging phase gets lake temp / wind / staging-strength tiles; in run mode the river
+    // tiles that renderConditionTiles already wrote are the correct read, and we just
+    // relabel the strength bar to describe run strength.
     try {
-      renderStagingHero({
-        pct: pct,
-        rating: rating,
-        lakeTemp: lakeTemp,
-        lakeName: zone.lake ? zone.lake.replace('Lake ', '') : null,
-        cloudPct: (weather && weather.cloudPct != null) ? weather.cloudPct : window._lastCloudPct,
-        windSpeed: (res.windSpeed != null) ? res.windSpeed
-                 : ((weather && weather.windSpeed != null) ? weather.windSpeed : null),
-        upwell: res.upwell || null,
-        phaseLabel: headerLabel
-      });
+      if (phase.mode === 'stage') {
+        renderStagingHero({
+          pct: pct,
+          rating: rating,
+          lakeTemp: lakeTemp,
+          lakeName: zone.lake ? zone.lake.replace('Lake ', '') : null,
+          cloudPct: (weather && weather.cloudPct != null) ? weather.cloudPct : window._lastCloudPct,
+          windSpeed: (res.windSpeed != null) ? res.windSpeed
+                   : ((weather && weather.windSpeed != null) ? weather.windSpeed : null),
+          upwell: res.upwell || null,
+          phaseLabel: headerLabel
+        });
+      } else {
+        renderStagingStrength({
+          pct: pct, rating: rating,
+          lakeName: null,
+          barLabel: 'Run strength \u00b7 ' + (phase.label || 'in river')
+        });
+      }
     } catch (_shErr) { console.warn('renderStagingHero failed:', _shErr); }
 
     // Keep the narrative guidance, but as a single line under the hero rather than
@@ -6137,6 +6149,21 @@ async function renderResults(){
         var _srCore = _srBase.split(' \u2014 ')[0].replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
         Object.keys(STAGING_ZONES).forEach(function(z){ if (!_stgSection && _srCore && z.indexOf(_srCore) !== -1) _stgSection = z; });
       }
+      // Migratory fish can only be reported for sections they can actually reach. The
+      // Upper Credit sits above the Norval dam, so salmon never get there — but the
+      // system-wide fallback above happily matched it to the Credit staging zone and
+      // reported a run on water that has no salmon in it. Gate on the section's own
+      // species list, which already encodes every barrier correctly.
+      var _secCfg = RIVER_CONFIG[_srBase];
+      var _secSpecies = (_secCfg && _secCfg.species) || [];
+      var _MIGRATORY = ['Chinook Salmon','Coho Salmon','Steelhead'];
+      var _sectionHasMigratory = _secSpecies.some(function(s){ return _MIGRATORY.indexOf(s) !== -1; });
+      if (_stgSection && !_sectionHasMigratory && _secSpecies.length) {
+        _stgSection = null;
+        window._migratoryBlockedSection = _srBase;
+      } else {
+        window._migratoryBlockedSection = null;
+      }
       // Only render for salmon/steelhead intent — the card itself also checks season windows
       if (_stgSection) { renderStagingCard(_stgSection, _stagingWeather); }
       else { _stagingModeActive = false; }
@@ -6503,6 +6530,17 @@ async function renderResults(){
   document.getElementById("tnote").textContent=_bwNote;
 
   updateMethods(fc,tc,sc,flow,wt);
+  // If migratory fish physically cannot reach this section, say so in the conditions
+  // subtitle rather than presenting upper-river access points as if they were an option.
+  if (window._migratoryBlockedSection) {
+    var _blockedSp = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'};
+    var _wantSp = selectedSpecies.length ? _blockedSp[selectedSpecies[0]] : null;
+    if (_wantSp) {
+      var _cs = document.getElementById('cond-subtitle');
+      if (_cs) _cs.textContent = _wantSp + ' can\u2019t reach ' + window._migratoryBlockedSection
+        + ' \u2014 a dam blocks them downstream. The conditions below are for resident trout on this stretch.';
+    }
+  }
   // If the staging read already resolved during the `await fetchFlow(...)` above, the call
   // to updateMethods just overwrote the Technique panel with in-river methods. Re-apply.
   if (_stagingModeActive && !_stagingTechApplied) {
@@ -7318,9 +7356,10 @@ function renderStagingStrength(st) {
   var pct = st.pct == null ? null : Math.max(0, Math.min(100, Math.round(st.pct)));
   if (pct == null) { bar.style.display = 'none'; return; }
   bar.style.display = 'block';
+  var _lbl = st.barLabel || ('Staging strength' + (st.lakeName ? ' \u00b7 ' + st.lakeName : ''));
   bar.innerHTML =
     '<div class="tp-str-top">' +
-      '<span class="tp-str-lbl">Staging strength' + (st.lakeName ? ' \u00b7 ' + st.lakeName : '') + '</span>' +
+      '<span class="tp-str-lbl">' + _lbl + '</span>' +
       '<span class="tp-str-val">' + (st.rating || '') + ' \u00b7 ' + pct + '%</span>' +
     '</div>' +
     '<div class="tp-str-bar"><i style="width:' + pct + '%"></i></div>' +
