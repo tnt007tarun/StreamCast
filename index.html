@@ -4972,7 +4972,20 @@ function renderRiverUI(cfg) {
   // Sort access cards: recommended spot (low crowd, best match) first
   // During salmon staging (fish in the lake, not yet in the river), only show
   // harbour/port mouth spots — inland pools have nothing to catch yet.
-  var _accessSorted = cfg.access.slice(); // copy
+  var _accessSorted = (cfg && cfg.access ? cfg.access.slice() : []); // copy
+  // An empty access list means a blank section with no explanation, which is worse than
+  // slightly generic guidance. Fall back to the parent river's config, then the default.
+  if (!_accessSorted.length) {
+    var _apName = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _apParent = _apName.indexOf(' \u2014 ') !== -1 ? _apName.split(' \u2014 ')[0].trim() : _apName;
+    var _apCfg = RIVER_CONFIG[_apParent];
+    _accessSorted = (_apCfg && _apCfg.access ? _apCfg.access.slice() : [])
+      || [];
+    if (!_accessSorted.length && RIVER_CONFIG['default'] && RIVER_CONFIG['default'].access) {
+      _accessSorted = RIVER_CONFIG['default'].access.slice();
+    }
+    if (_accessSorted.length) console.warn('access: fell back for "' + _apName + '"');
+  }
   (function() {
     var _stgSp = window._effectiveRecommendedSpecies;
     if (!_stgSp && selectedSpecies && selectedSpecies.length === 1) {
@@ -4999,9 +5012,14 @@ function renderRiverUI(cfg) {
   grid.innerHTML = _accessSorted.map(function(a, idx) {
     var tags = (a.tags||[]).map(function(t) { return '<span class="atag">' + t + '</span>'; }).join("");
 
-    // Filter regs to selected species only
+    // Filter regs to selected species only.
+    // This block is guarded because it runs INSIDE the access-card map: an exception here
+    // used to propagate out of renderRiverUI, get swallowed by the caller's try/catch, and
+    // leave the entire access section blank while the rest of the page rendered normally.
+    // A regs problem should cost us the regs panel, not every access point on the river.
     var regsHtml = "";
-    if (regs) {
+    try {
+    if (regs && regs.species) {
       // Use the effective recommended species (set by buildTopPick) if it differs from user selection
       // This ensures regs match the species in the headline (e.g. Rainbow Trout when brown/brook were selected)
       var _effSp = window._effectiveRecommendedSpecies;
@@ -5079,6 +5097,10 @@ function renderRiverUI(cfg) {
           '</div>' +
         '</div>';
       })()
+    }
+    } catch(_regsErr) {
+      console.warn('regs panel failed for access card, continuing without it:', _regsErr);
+      regsHtml = "";
     }
 
     var isRecommended = idx === 0;
@@ -6231,7 +6253,19 @@ async function renderResults(){
   // renderResults directly without going through selectRiver, which previously left
   // the hardcoded "Grand River, Fergus" placeholder showing.
   try { setResHeader(selectedRiver); } catch(_shErr) {}
-  try { renderRiverUI(cfg); } catch(_ruErr) { console.error('renderRiverUI failed:', _ruErr); }
+  try { renderRiverUI(cfg); } catch(_ruErr) {
+    // This used to fail silently: any exception anywhere in renderRiverUI left the access
+    // section blank while the hero and flow cards rendered fine, which is exactly the
+    // symptom that made this hard to trace. Log loudly and leave a usable message.
+    console.error('renderRiverUI failed:', _ruErr);
+    var _agFallback = document.getElementById('access-grid');
+    if (_agFallback && !_agFallback.innerHTML.trim()) {
+      _agFallback.innerHTML = '<div class="ac"><div class="acard-body">' +
+        '<strong>Access points couldn\u2019t load for this river.</strong>' +
+        '<p style="margin-top:.4rem">Check the Conservation Authority website for this watershed, ' +
+        'and verify current regulations before heading out.</p></div></div>';
+    }
+  }
 
   var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   // Compare using local Eastern date, not UTC — after 8PM ET the UTC date is already "tomorrow"
