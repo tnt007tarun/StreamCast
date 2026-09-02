@@ -7271,32 +7271,48 @@ function rankRivers(rivers, speciesKey, dateStr) {
     // Is this section the harbour/mouth where migratory fish stage?
     var _isMouthSection = (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[r.name];
     // Is staging plausible for this species on this date?
-    var _stagingNow = _isMigTarget && typeof stagingPlausibleFor === 'function'
-                      && stagingPlausibleFor(targetSpeciesName, dateStr);
+    // (stagingPlausibleFor is intentionally not used for ranking — see the label gate below)
 
     if (hasSpecies && targetSpeciesName) {
       var seasonal = getCurrentSeason(targetSpeciesName, dateStr);
       if (seasonal) {
-        if (seasonal.quality === 'peak')   { score += 10; notes.push('Peak season'); }
-        else if (seasonal.quality === 'good') { score += 6; notes.push('In season'); }
-        else if (seasonal.quality === 'absent') {
-          // 'absent' for a migratory species means the fish are staging in the LAKE. At a
-          // mouth section that is the whole opportunity, so it must score as a positive —
-          // it used to take the same -8 as an inland reach, which ranked inland water
-          // above the harbour on exactly the days everyone fishes the harbour.
-          if (_isMigTarget && _isMouthSection && _stagingNow) {
-            score += 8; notes.push('Staging at the mouth');
-          } else if (_isMigTarget) {
-            score -= 8; warnings.push('Staging in lake — not in river yet');
-          } else { score -= 15; warnings.push('Out of season'); }
+        var _q = seasonal.quality;
+        if (_q === 'peak')        { score += 10; notes.push('Peak season'); }
+        else if (_q === 'good')   { score += 6;  notes.push('In season'); }
+        else if (_q === 'absent') {
+          if (_isMigTarget) { score -= 8; warnings.push('Staging in lake — not in river yet'); }
+          else { score -= 15; warnings.push('Out of season'); }
         }
-        else {
-          // 'slow' inland reaches were beating staging mouths by 9 points, which is how a
-          // Mississauga search for Chinook returned Streetsville instead of Port Credit.
-          // While fish are staging, an inland reach is the wrong place regardless of window.
-          if (_isMigTarget && _stagingNow && !_isMouthSection) {
-            score -= 6; warnings.push('Fish still at the mouth, not this reach');
-          } else { score += 1; notes.push('Present but slow'); }
+        else { score += 1; notes.push('Present but slow'); }
+
+        // ── Where are the fish RIGHT NOW? ──────────────────────────────────
+        // Season quality alone ranked a mid-river reach level with the harbour, because
+        // both read "in season" in September. But early in the run most fish are still
+        // stacked off the mouth, so the mouth is the better destination even though the
+        // window says the run has started. The preference fades as the run builds and
+        // disappears at peak, when fish really are spread through the river.
+        // Weight by how far into the run we are, not by a single on/off flag.
+        if (_isMigTarget) {
+          // Gate on the window LABEL, not stagingPlausibleFor(): that helper only matches
+          // "Harbour Mouth"-style labels, so it reads false in September when the label is
+          // "Early Run" — which is exactly the case that sent people to Streetsville.
+          // Label also separates Early Run from Late Run; both are quality 'good', but by
+          // the late run the fish are spread through the river and the mouth is no longer
+          // the right call.
+          var _lab = (seasonal.label || '').toLowerCase();
+          var _mouthBonus = /in lake/.test(_lab)        ? 8
+                          : /harbour|staging|mouth/.test(_lab) ? 6
+                          : /early run/.test(_lab)      ? 3
+                          : 0;
+          if (_mouthBonus) {
+            if (_isMouthSection) {
+              score += _mouthBonus;
+              notes.push(_q === 'good' ? 'Fish still concentrated at the mouth' : 'Staging at the mouth');
+            } else {
+              score -= _mouthBonus;
+              warnings.push(_q === 'good' ? 'Most fish still at the mouth' : 'Fish at the mouth, not this reach');
+            }
+          }
         }
       }
     } else if (!targetSpeciesName) {
