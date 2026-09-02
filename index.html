@@ -5511,8 +5511,10 @@ function goToResults(){
       });
       // Staging season (e.g. Chinook in August, label "Harbour Mouth") is quality 'slow',
       // not 'absent' — so check plausibility directly rather than relying on _allAbsent.
+      // Fourth caller of the same helper. Use the shared mouth preference so the beginner
+      // river pick agrees with the ranking, the access filter and the hero spot.
       var _anyStagingPlausible = targetSpeciesNames.some(function(n) {
-        return typeof stagingPlausibleFor === 'function' && stagingPlausibleFor(n, _tripDateBP);
+        return typeof mouthPreferenceFor === 'function' && mouthPreferenceFor(n, _tripDateBP) > 0;
       });
       var _hasSalmonTarget = targetSpeciesNames.some(function(n){ return n === 'Chinook Salmon' || n === 'Coho Salmon'; });
       var _stagingZonePick = null;
@@ -7631,7 +7633,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     if (!_stgTarget || !selectedRiver || typeof STAGING_ZONES === 'undefined') return;
     // Only when this section IS the harbour/mouth section — inland sections keep their own spots.
     if (!resolveStagingSection(selectedRiver) || !STAGING_ZONES[selectedRiver.split(',')[0].trim()]) return;
-    _stagingActive = stagingPlausibleFor(_stgTarget, getTripDateStr());
+    // Third caller of the same false-in-September helper. The hero picked the spot with
+    // this flag while the technique panel used the phase, so the hero said Erindale Park
+    // while the panel said fish the harbour.
+    _stagingActive = mouthPreferenceFor(_stgTarget, getTripDateStr()) > 0;
   })();
 
   var bestSpot = null;
