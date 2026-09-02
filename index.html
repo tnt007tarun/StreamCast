@@ -6285,18 +6285,22 @@ async function renderResults(){
   // Debug: show gauge and isToday in panel
   if(isToday){
     var lf=await fetchFlow(cfg.gauge);
-    // Single ordering, not a race. Both requests are already in flight, so awaiting the
-    // staging read here costs no extra latency — it just guarantees _stagingModeActive
-    // and the phase are settled before updateMethods and buildTopPick run.
-    if (_stagingPromise) {
-      try { await _stagingPromise; }
-      catch(_spErr) { console.warn('staging read failed, rendering without it:', _spErr); }
-    }
+    if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
+  } else {
+    // Future date — flow data only available for today
+    var _fdbg=document.getElementById('flow-gauge-link');
+    var _flbl=document.getElementById('flbl');
+    if(_flbl) _flbl.textContent='Flow data not available for future dates. Check the gauge link before you drive — you want to see '+(cfg.sweetMin+'–'+cfg.sweetMax)+' m³/s for this river.';
+  }
 
+  // Must sit OUTSIDE the isToday branch: a forecast date skipped both of these, which
+  // left the access grid empty and the staging phase unresolved, so the hero fell back to
+  // the calendar and pointed at the harbour on a date the fish are in the river.
+  if (_stagingPromise) {
+    try { await _stagingPromise; }
+    catch(_spErr) { console.warn('staging read failed, rendering without it:', _spErr); }
+  }
   try { renderRiverUI(cfg); } catch(_ruErr) {
-    // This used to fail silently: any exception anywhere in renderRiverUI left the access
-    // section blank while the hero and flow cards rendered fine, which is exactly the
-    // symptom that made this hard to trace. Log loudly and leave a usable message.
     console.error('renderRiverUI failed:', _ruErr);
     var _agFallback = document.getElementById('access-grid');
     if (_agFallback && !_agFallback.innerHTML.trim()) {
@@ -6305,13 +6309,6 @@ async function renderResults(){
         '<p style="margin-top:.4rem">Check the Conservation Authority website for this watershed, ' +
         'and verify current regulations before heading out.</p></div></div>';
     }
-  }
-    if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
-  } else {
-    // Future date — flow data only available for today
-    var _fdbg=document.getElementById('flow-gauge-link');
-    var _flbl=document.getElementById('flbl');
-    if(_flbl) _flbl.textContent='Flow data not available for future dates. Check the gauge link before you drive — you want to see '+(cfg.sweetMin+'–'+cfg.sweetMax)+' m³/s for this river.';
   }
 
   var skyl=cloudPct>=80?"Overcast":cloudPct>=50?"Mostly Cloudy":cloudPct>=20?"Partly Cloudy":"Clear";
