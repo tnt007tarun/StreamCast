@@ -2967,6 +2967,15 @@ function fetchLakeTemps() {
 // "Early Run" (fish still stacked at the mouth) from "Late Run" (fish spread through the
 // river) — both are quality 'good'. stagingPlausibleFor() is deliberately not used: it
 // only matches harbour-style labels and reads false all through September.
+// Prefer the RESOLVED phase over the month window. SPECIES_SEASONS labels all of
+// September "Early Run", but the staging model reads Sep 30 as Peak Run — fish are in the
+// river. Trusting the calendar there sent people to the harbour while the technique panel
+// correctly said to float-fish the pools.
+function shouldPointAtMouth(speciesName, dateStr) {
+  if (_stagingPhaseResolved) return _stagingModeActive;
+  return mouthPreferenceFor(speciesName, dateStr) > 0;
+}
+
 function mouthPreferenceFor(speciesName, dateStr) {
   var MIG = ['Chinook Salmon','Coho Salmon','Steelhead'];
   if (!speciesName || MIG.indexOf(speciesName) === -1) return 0;
@@ -3023,6 +3032,10 @@ var _stagingTechApplied = false;
 // before rendering anything, so this is settled by the time updateMethods and buildTopPick
 // run — one ordering rather than a race between them.
 var _stagingModeActive = false;
+// True once the staging card has actually computed a phase for this render. Until then,
+// consumers must fall back to the month-window heuristic; afterwards the resolved phase
+// is authoritative because it accounts for lake temperature, not just the calendar.
+var _stagingPhaseResolved = false;
 function applyStagingTechniqueOverride() {
   var _m1n = document.getElementById('m1n');
   var _m1d = document.getElementById('m1d');
@@ -3062,6 +3075,7 @@ function renderStagingCard(sectionName, weather) {
   if (container) container.innerHTML = "";  // clear any prior card
   window._stagingPct = null; // reset — only set again below if a staging card actually renders
   _stagingModeActive = false; // recomputed below; must not leak from the previous river
+  _stagingPhaseResolved = false;
   window._salmonInRiver = false;
   var zone = STAGING_ZONES[sectionName];
   if (!zone || !container) return Promise.resolve();
@@ -3168,6 +3182,7 @@ function renderStagingCard(sectionName, weather) {
     // Gear panel must not still be recommending in-river nymphing. The headline path only
     // fires when the season window reads 'absent'; a 'slow' window reaches here instead,
     // which is exactly the case that was leaking fly recommendations through.
+    if (which === 'salmon') _stagingPhaseResolved = true;
     if (phase.mode === 'stage' && which === 'salmon') {
       _stagingModeActive = true;
       window._salmonInRiver = false;
@@ -5014,7 +5029,7 @@ function renderRiverUI(cfg) {
     // Was gated on stagingPlausibleFor(), which reads false through September — so the
     // mouth filter never ran during the early run and an inland pool got recommended
     // while the technique panel said to fish the harbour.
-    if (!mouthPreferenceFor(_stgSp, getTripDateStr())) return;
+    if (!shouldPointAtMouth(_stgSp, getTripDateStr())) return;
     var _mouthOnly = _accessSorted.filter(function(a){ return a.mouth === true; });
     if (_mouthOnly.length > 0) _accessSorted = _mouthOnly;
   })();
@@ -6202,19 +6217,9 @@ async function renderResults(){
   // renderResults directly without going through selectRiver, which previously left
   // the hardcoded "Grand River, Fergus" placeholder showing.
   try { setResHeader(selectedRiver); } catch(_shErr) {}
-  try { renderRiverUI(cfg); } catch(_ruErr) {
-    // This used to fail silently: any exception anywhere in renderRiverUI left the access
-    // section blank while the hero and flow cards rendered fine, which is exactly the
-    // symptom that made this hard to trace. Log loudly and leave a usable message.
-    console.error('renderRiverUI failed:', _ruErr);
-    var _agFallback = document.getElementById('access-grid');
-    if (_agFallback && !_agFallback.innerHTML.trim()) {
-      _agFallback.innerHTML = '<div class="ac"><div class="acard-body">' +
-        '<strong>Access points couldn\u2019t load for this river.</strong>' +
-        '<p style="margin-top:.4rem">Check the Conservation Authority website for this watershed, ' +
-        'and verify current regulations before heading out.</p></div></div>';
-    }
-  }
+  // renderRiverUI moved below the staging await — the access list needs the resolved
+  // phase to decide whether to show mouth spots only.
+
 
   var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   // Compare using local Eastern date, not UTC — after 8PM ET the UTC date is already "tomorrow"
@@ -6287,6 +6292,20 @@ async function renderResults(){
       try { await _stagingPromise; }
       catch(_spErr) { console.warn('staging read failed, rendering without it:', _spErr); }
     }
+
+  try { renderRiverUI(cfg); } catch(_ruErr) {
+    // This used to fail silently: any exception anywhere in renderRiverUI left the access
+    // section blank while the hero and flow cards rendered fine, which is exactly the
+    // symptom that made this hard to trace. Log loudly and leave a usable message.
+    console.error('renderRiverUI failed:', _ruErr);
+    var _agFallback = document.getElementById('access-grid');
+    if (_agFallback && !_agFallback.innerHTML.trim()) {
+      _agFallback.innerHTML = '<div class="ac"><div class="acard-body">' +
+        '<strong>Access points couldn\u2019t load for this river.</strong>' +
+        '<p style="margin-top:.4rem">Check the Conservation Authority website for this watershed, ' +
+        'and verify current regulations before heading out.</p></div></div>';
+    }
+  }
     if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
   } else {
     // Future date — flow data only available for today
@@ -7636,7 +7655,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Third caller of the same false-in-September helper. The hero picked the spot with
     // this flag while the technique panel used the phase, so the hero said Erindale Park
     // while the panel said fish the harbour.
-    _stagingActive = mouthPreferenceFor(_stgTarget, getTripDateStr()) > 0;
+    _stagingActive = shouldPointAtMouth(_stgTarget, getTripDateStr());
   })();
 
   var bestSpot = null;
