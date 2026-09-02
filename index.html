@@ -723,7 +723,76 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .gear-item-note { font-size:.68rem; color:var(--sage); margin-top:.2rem; font-style:italic; }
 
 /* TECHNIQUE & GEAR ACCORDION */
-.tgsec { background:var(--white); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; margin:0 2rem 1.5rem; }
+/* ── TECHNIQUE · GEAR · BAIT (three pillars) ────────────────────────────────
+   The old single bordered container made everything read as equally important.
+   Each pillar now stands alone, with technique carrying the most visual weight
+   because it's the judgement that makes the other two make sense. */
+.tgsec { margin:0 2rem 1.5rem; background:none; border:0; }
+.pillar { margin-bottom:1.15rem; }
+.pillar:last-child { margin-bottom:0; }
+.p-head { display:flex; align-items:center; gap:.5rem; margin-bottom:.55rem; }
+.p-step { width:19px; height:19px; border-radius:50%; background:var(--fern); color:#fff; flex:none;
+  font-family:'JetBrains Mono',monospace; font-size:.58rem; display:flex; align-items:center; justify-content:center; }
+.p-lbl { font-family:'JetBrains Mono',monospace; font-size:.57rem; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--sage); }
+.p-card { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:.95rem 1rem; }
+.p-tech { background:var(--moss); border:0; color:var(--foam); }
+.p-tech h4 { font-family:'Nunito',sans-serif; font-weight:700; font-size:1.2rem; line-height:1.25;
+  color:var(--white); margin-bottom:.35rem; }
+.p-tech p { font-size:.87rem; line-height:1.55; opacity:.9; }
+.p-tmeta { display:flex; flex-wrap:wrap; gap:.32rem; margin-top:.75rem; }
+.p-tmeta span { font-family:'JetBrains Mono',monospace; font-size:.53rem; letter-spacing:.08em;
+  text-transform:uppercase; background:rgba(255,255,255,.07); border:1px solid rgba(158,207,202,.18);
+  border-radius:3px; padding:.22rem .48rem; color:var(--foam); }
+/* gear */
+.p-gearname { font-family:'Nunito',sans-serif; font-weight:700; font-size:1.02rem; color:var(--ink);
+  margin-bottom:.6rem; padding-bottom:.55rem; border-bottom:1px solid var(--border); }
+.p-gearGrid { display:grid; grid-template-columns:1fr 1fr; gap:.55rem .9rem; }
+.gear-item.wide { grid-column:1 / -1; }
+.gear-item-lbl { font-family:'JetBrains Mono',monospace; font-size:.52rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--sage); margin-bottom:.1rem; }
+.gear-item-val { font-size:.86rem; color:var(--ink); line-height:1.35; }
+.gear-item-note { font-size:.75rem; color:var(--text); opacity:.68; line-height:1.4; margin-top:.1rem; }
+.p-gearnote { font-size:.76rem; color:var(--text); opacity:.75; margin-top:.6rem; line-height:1.5; font-style:italic; }
+.p-gearsec { margin-top:.7rem; padding-top:.6rem; border-top:1px solid rgba(30,122,110,.09);
+  font-size:.78rem; color:var(--text); opacity:.68; line-height:1.5; }
+.p-gearsec b { font-family:'JetBrains Mono',monospace; font-size:.52rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--sage); font-weight:400; opacity:1; }
+/* bait */
+.p-bait-top { display:flex; gap:.8rem; align-items:flex-start; }
+.p-bimg { width:80px; height:60px; flex:none; border-radius:5px; background:#eef3f1;
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  background-size:cover; background-position:center; overflow:hidden; }
+.p-bimg svg { width:26px; height:16px; color:#b9cfc9; }
+.p-bimg img { width:100%; height:100%; object-fit:cover; display:block; }
+.p-badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.5rem;
+  letter-spacing:.13em; text-transform:uppercase; background:var(--amber); color:#fff;
+  padding:.16rem .4rem; border-radius:3px; margin-bottom:.3rem; }
+.p-bait h5 { font-family:'Nunito',sans-serif; font-weight:700; font-size:1.05rem; line-height:1.2; color:var(--ink); }
+.p-bspec { font-family:'JetBrains Mono',monospace; font-size:.6rem; color:var(--text); opacity:.72; margin-top:.15rem; }
+.p-how { margin-top:.75rem; padding-top:.7rem; border-top:1px solid var(--border);
+  display:grid; grid-template-columns:auto 1fr; gap:.3rem .7rem; align-items:baseline; }
+.p-how dt { font-family:'JetBrains Mono',monospace; font-size:.52rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--sage); white-space:nowrap; }
+.p-how dd { font-size:.84rem; line-height:1.5; color:var(--text); }
+.p-alts { margin-top:.15rem; }
+.p-alt { width:100%; display:flex; justify-content:space-between; align-items:center; gap:.6rem;
+  background:none; border:0; border-top:1px solid rgba(30,122,110,.09); padding:.62rem 0;
+  cursor:pointer; text-align:left; font-family:inherit; }
+.p-alt:hover { background:rgba(30,122,110,.03); }
+.p-alt-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:.9rem; color:var(--ink); display:block; }
+.p-alt-sub { font-size:.74rem; color:var(--text); opacity:.72; margin-top:.05rem; display:block; }
+.p-alt-when { font-family:'JetBrains Mono',monospace; font-size:.5rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--sage); white-space:nowrap; flex:none; }
+.p-more { width:100%; background:none; border:0; border-top:1px solid rgba(30,122,110,.09);
+  font-family:'JetBrains Mono',monospace; font-size:.55rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--fern); padding:.55rem 0; cursor:pointer; }
+.p-baitfoot { font-size:.75rem; color:var(--text); opacity:.65; margin-top:.6rem; line-height:1.5; }
+.p-empty { font-size:.82rem; color:var(--text); opacity:.7; line-height:1.55; }
+@media(max-width:620px){
+  .tgsec { margin:0 1.1rem 1.5rem; }
+  .p-gearGrid { grid-template-columns:1fr 1fr; gap:.5rem .7rem; }
+}
 .tg-item { border-bottom:1px solid var(--border); }
 .tg-item:last-child { border-bottom:none; }
 .tg-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; user-select:none; transition:background .12s; }
@@ -2474,80 +2543,33 @@ background-size:cover;background-position:center;position:relative}
 
   <div class="tgsec fi" id="tg-section" role="region" aria-label="Technique and Gear">
 
-    <!-- PRIMARY METHOD ACCORDION ITEM (expanded by default) -->
-    <div class="tg-item tg-open" id="tg-primary">
-      <button class="tg-header" onclick="toggleTG('tg-primary')" aria-expanded="true" aria-controls="tg-primary-body" type="button">
-        <div class="tg-header-left">
-          <div class="tg-label">▸ Primary Method</div>
-          <div class="tg-name" id="m1n">Nymphing</div>
-        </div>
-        <div class="tg-chevron" id="tg-primary-chev">▾</div>
-      </button>
-      <div class="tg-body" id="tg-primary-body">
-        <p class="tg-desc" id="m1d"></p>
-        <div class="tg-tip" id="m1tip"></div>
-        <div class="tg-cond" id="m1c"></div>
-
-        <!-- Gear setup (inline) -->
-        <div class="tg-gear" id="tg-gear">
-          <div class="tg-gear-lbl">Recommended Setup</div>
-          <div class="gear-grid" id="gear-grid"></div>
-        </div>
-
-        <!-- Bait tabs (inline) -->
-        <div class="tg-baits" id="tg-baits-primary">
-          <div class="tg-gear-lbl" id="tg-baits-primary-lbl">Recommended Baits</div>
-          <div id="bpanels-primary"></div>
-        </div>
+    <!-- PILLAR 1 — TECHNIQUE -->
+    <div class="pillar" id="pillar-technique">
+      <div class="p-head"><div class="p-step">1</div><div class="p-lbl">Technique</div></div>
+      <div class="p-card p-tech">
+        <h4 id="m1n">Nymphing</h4>
+        <p id="m1d"></p>
+        <div class="p-tmeta" id="m1c"></div>
       </div>
     </div>
 
-    <!-- SECONDARY METHOD (collapsed) -->
-    <div class="tg-item" id="tg-secondary">
-      <button class="tg-header" onclick="toggleTG('tg-secondary')" aria-expanded="false" aria-controls="tg-secondary-body" type="button">
-        <div class="tg-header-left">
-          <div class="tg-label">Secondary Method</div>
-          <div class="tg-name" id="m2n">—</div>
-        </div>
-        <div class="tg-chevron" id="tg-secondary-chev">▸</div>
-      </button>
-      <div class="tg-body tg-body-collapsed" id="tg-secondary-body">
-        <p class="tg-desc" id="m2d"></p>
-        <div class="tg-cond" id="m2c"></div>
-        <div class="tg-gear" id="tg-gear-2" style="display:none">
-          <div class="tg-gear-lbl" id="tg-gear-2-lbl">Setup</div>
-          <div class="gear-grid" id="gear-grid-2"></div>
-        </div>
-        <div class="tg-baits tg-baits-m2" id="tg-baits-2" style="display:none">
-          <div class="tg-gear-lbl">Flies, Lures &amp; Bait</div>
-          <div class="btabs btabs-2" style="margin-bottom:.75rem" id="btabs-2"></div>
-          <div id="bpanels-2"></div>
-        </div>
+    <!-- PILLAR 2 — GEAR -->
+    <div class="pillar" id="pillar-gear">
+      <div class="p-head"><div class="p-step">2</div><div class="p-lbl">Gear</div></div>
+      <div class="p-card">
+        <div class="p-gearname" id="tg-gear-lbl">Setup</div>
+        <div class="p-gearGrid" id="gear-grid"></div>
+        <div class="p-gearnote" id="tg-gear-note" style="display:none"></div>
+        <div class="p-gearsec" id="tg-gear-sec" style="display:none"></div>
       </div>
     </div>
 
-    <!-- TERTIARY METHOD (collapsed) -->
-    <div class="tg-item" id="tg-tertiary">
-      <button class="tg-header" onclick="toggleTG('tg-tertiary')" aria-expanded="false" aria-controls="tg-tertiary-body" type="button">
-        <div class="tg-header-left">
-          <div class="tg-label">Also Consider</div>
-          <div class="tg-name" id="m3n">—</div>
-        </div>
-        <div class="tg-chevron" id="tg-tertiary-chev">▸</div>
-      </button>
-      <div class="tg-body tg-body-collapsed" id="tg-tertiary-body">
-        <p class="tg-desc" id="m3d"></p>
-        <div class="tg-cond" id="m3c"></div>
-        <div class="tg-gear" id="tg-gear-3" style="display:none">
-          <div class="tg-gear-lbl" id="tg-gear-3-lbl">Setup</div>
-          <div class="gear-grid" id="gear-grid-3"></div>
-        </div>
-        <div class="tg-baits tg-baits-m3" id="tg-baits-3" style="display:none">
-          <div class="tg-gear-lbl">Flies, Lures &amp; Bait</div>
-          <div class="btabs btabs-3" style="margin-bottom:.75rem" id="btabs-3"></div>
-          <div id="bpanels-3"></div>
-        </div>
-      </div>
+    <!-- PILLAR 3 — BAIT -->
+    <div class="pillar" id="pillar-bait">
+      <div class="p-head"><div class="p-step">3</div><div class="p-lbl" id="tg-bait-lbl">Bait</div></div>
+      <div class="p-card p-bait" id="tg-bait-card"></div>
+      <div class="p-alts" id="tg-bait-alts"></div>
+      <div class="p-baitfoot" id="tg-bait-foot" style="display:none"></div>
     </div>
 
   </div>
@@ -2980,43 +3002,13 @@ function applyStagingTechniqueOverride() {
   var _m1n = document.getElementById('m1n');
   var _m1d = document.getElementById('m1d');
   var _m1c = document.getElementById('m1c');
-  var _m2n = document.getElementById('m2n');
-  var _m2d = document.getElementById('m2d');
-  var _m3n = document.getElementById('m3n');
-  var _m3d = document.getElementById('m3d');
-  var _lbl = document.getElementById('tg-baits-primary-lbl');
-  if (_m1n) _m1n.textContent = 'Spinning \u2014 Spoons & Lures';
-  if (_m1d) _m1d.textContent = 'Cast from the pier, beach, or river mouth. Fan cast and vary retrieves \u2014 slow flutter on the drop is key. Dawn and dusk are prime; overcast opens the full day.';
-  if (_m1c) _m1c.innerHTML = '<span>Best: Dawn, dusk, or all day overcast</span><span>Target: Harbour mouth, pier, beach</span><span>Rod: 8\u201310 ft medium-heavy spinning</span>';
-  if (_m2n) _m2n.textContent = 'Trolling';
-  if (_m2d) _m2d.textContent = 'Troll spoons or stick baits parallel to shore at harbour depth. Effective for covering water to locate staging fish.';
-  if (_m3n) _m3n.textContent = 'Jigging';
-  if (_m3d) _m3d.textContent = 'Vertical jig near structure and drop-offs at the harbour mouth. Can intercept resting fish.';
-  // Also correct the section subtitle, which otherwise still promises fly alternatives
+  if (_m1n) _m1n.textContent = 'Throwing spoons at the river mouth';
+  if (_m1d) _m1d.textContent = 'Fish aren\u2019t in the river yet \u2014 they\u2019re staging out front. Cast from the pier, beach or rivermouth, fan casting and varying your retrieve depth.';
+  if (_m1c) _m1c.innerHTML = '<span>Best: Dawn / dusk</span><span>From pier or beach</span><span>Overcast opens the day</span>';
   var _sub = document.getElementById('tg-subtitle');
   if (_sub) _sub.textContent = 'Staging fish are in the lake \u2014 spinning gear from shore is the method.';
-  // Switch bait panel to salmon lures
-  if (_lbl) _lbl.textContent = 'Recommended Salmon Lures';
-  var container = document.getElementById('bpanels-primary');
-  if (container) {
-    var src = document.getElementById('p-salmon-lures');
-    if (src) {
-      var clone = src.cloneNode(true);
-      clone.id = 'bpanels-primary-p-salmon-lures';
-      clone.className = 'bpanel active';
-      container.innerHTML = '';
-      container.appendChild(clone);
-      setTimeout(loadBaitImages, 100);
-    }
-  }
-  // Rebuild gear setup for spinning — salmon harbour context
   buildGearSetup('Spinning \u2014 Spoons & Lures', 'spin', {cold:false, high:false, low:true});
-  // Hide fly-specific secondary and tertiary method accordions
-  var _tg2 = document.getElementById('tg-secondary');
-  var _tg3 = document.getElementById('tg-tertiary');
-  if (_tg2) _tg2.style.display = 'none';
-  if (_tg3) _tg3.style.display = 'none';
-  // Staging fish are in the lake — river flow isn't the deciding variable today
+  try { renderBaitPillar('Little Cleo staging harbour'); } catch(_e) { console.warn('staging bait pillar failed:', _e); }
   try { updateConditionsSubtitle(null, true); } catch(_csErr) {}
   _stagingTechApplied = true;
 }
@@ -6129,105 +6121,26 @@ function updateMethods(fc,tc,sc,flow,wt){
   try { updateConditionsSubtitle(_spNameMap[_sp] || null, false); } catch(_csErr2) {}
   var _tgSubReset = document.getElementById('tg-subtitle');
   if (_tgSubReset) _tgSubReset.textContent = 'Primary method with recommended setup and baits. Tap alternatives to expand.';
-  var _tg2Reset = document.getElementById('tg-secondary');
-  var _tg3Reset = document.getElementById('tg-tertiary');
-  if (_tg2Reset) _tg2Reset.style.display = '';
-  if (_tg3Reset) _tg3Reset.style.display = '';
 
   document.getElementById("m1n").textContent=m1.n;
   document.getElementById("m1d").textContent=m1.tip||m1.d; // tip replaces generic description
   document.getElementById("m1c").innerHTML=""; // Best/Fish/Leader removed
   var _m1tip=document.getElementById("m1tip"); if(_m1tip) _m1tip.textContent=""; // blockquote removed
-  document.getElementById("m2n").textContent=m2.n;
-  document.getElementById("m2d").textContent=m2.tip||m2.d;
-  document.getElementById("m2c").innerHTML="";
-  document.getElementById("m3n").textContent=m3.n;
-  document.getElementById("m3d").textContent=m3.tip||m3.d;
-  document.getElementById("m3c").innerHTML="";
-  // Build gear for primary method
+  // Secondary and tertiary methods removed: three pillars answer "what would I do
+  // here today". Listing every other viable method was the encyclopedia problem.
+
+  // Pillar 2 — gear
   buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
-  // Adapt lure panel to species and conditions
+
+  // Pillar 3 — bait, flies or lures, named to match the technique
+  try { renderBaitPillar(m1.n); } catch(_bpErr) { console.warn('renderBaitPillar failed:', _bpErr); }
+
+  // Adapt lure copy to species and conditions, then load photos
   setTimeout(function(){
     var _sp = selectedSpecies.length > 0 ? selectedSpecies[0] : '';
-    adaptLurePanel(_sp, {cold:cold, high:high, low:low});
+    try { adaptLurePanel(_sp, {cold:cold, high:high, low:low}); } catch(_alErr) {}
+    try { renderBaitPillar(m1.n); } catch(_bp2) {}
   }, 50);
-
-  // Populate primary bait panel — single relevant panel, no tabs
-  (function() {
-    var primaryTab = methodToBaitTab(m1.n);
-    var container  = document.getElementById('bpanels-primary');
-    var lbl        = document.getElementById('tg-baits-primary-lbl');
-    if (!container) return;
-    var tabLabels  = {nymphs:'Recommended Nymphs', dries:'Recommended Dry Flies',
-                      streamers:'Recommended Streamers', lures:'Recommended Lures',
-                      float:'Recommended Float Baits'};
-    if (lbl) lbl.textContent = tabLabels[primaryTab] || 'Recommended Baits';
-    var src = document.getElementById('p-' + primaryTab);
-    if (src) {
-      container.innerHTML = '';
-      var clone = src.cloneNode(true);
-      clone.id = 'primary-bpanel';
-      clone.className = 'bpanel active';
-      container.appendChild(clone);
-      // Load bait images into cloned cards
-      loadBaitImages();
-      // Show top 3, hide rest behind 'Show more'
-      applyBaitShowMore(clone, 3);
-    }
-  })();
-
-  // Populate gear + baits for secondary and tertiary methods
-  // Secondary
-  var _g2 = document.getElementById('tg-gear-2');
-  var _b2 = document.getElementById('tg-baits-2');
-  if (_g2) { buildGearSetup(m2.n, fam, {cold:cold,high:high,low:low}, 'gear-grid-2', 'tg-gear-2-lbl'); _g2.style.display='block'; }
-  if (_b2) {
-    (function() {
-      var tab = methodToBaitTab(m2.n);
-      var lbl2 = document.getElementById('tg-gear-2-lbl');
-      var bLbl2 = document.querySelector('#tg-baits-2 .tg-gear-lbl');
-      var tabLabels = {nymphs:'Recommended Nymphs', dries:'Recommended Dry Flies',
-                       streamers:'Recommended Streamers', lures:'Recommended Lures', float:'Recommended Float Baits'};
-      if (bLbl2) bLbl2.textContent = tabLabels[tab] || 'Recommended Baits';
-      var src = document.getElementById('p-' + tab);
-      var container2 = document.getElementById('bpanels-2');
-      if (src && container2) {
-        container2.innerHTML = '';
-        var clone2 = src.cloneNode(true);
-        clone2.id = 'bpanel-2-clone'; clone2.className = 'bpanel active';
-        container2.appendChild(clone2);
-        applyBaitShowMore(clone2, 3);
-      }
-      // Hide the btabs-2 tab bar (no tabs needed)
-      var bt2 = document.getElementById('btabs-2'); if(bt2) bt2.style.display='none';
-      _b2.style.display='block';
-    })();
-  }
-
-  // Tertiary
-  var _g3 = document.getElementById('tg-gear-3');
-  var _b3 = document.getElementById('tg-baits-3');
-  if (_g3) { buildGearSetup(m3.n, fam, {cold:cold,high:high,low:low}, 'gear-grid-3', 'tg-gear-3-lbl'); _g3.style.display='block'; }
-  if (_b3) {
-    (function() {
-      var tab = methodToBaitTab(m3.n);
-      var bLbl3 = document.querySelector('#tg-baits-3 .tg-gear-lbl');
-      var tabLabels = {nymphs:'Recommended Nymphs', dries:'Recommended Dry Flies',
-                       streamers:'Recommended Streamers', lures:'Recommended Lures', float:'Recommended Float Baits'};
-      if (bLbl3) bLbl3.textContent = tabLabels[tab] || 'Recommended Baits';
-      var src = document.getElementById('p-' + tab);
-      var container3 = document.getElementById('bpanels-3');
-      if (src && container3) {
-        container3.innerHTML = '';
-        var clone3 = src.cloneNode(true);
-        clone3.id = 'bpanel-3-clone'; clone3.className = 'bpanel active';
-        container3.appendChild(clone3);
-        applyBaitShowMore(clone3, 3);
-      }
-      var bt3 = document.getElementById('btabs-3'); if(bt3) bt3.style.display='none';
-      _b3.style.display='block';
-    })();
-  }
 }
 
 // ── BAIT TABS ─────────────────────────────────────────────────────────────────
@@ -8757,89 +8670,120 @@ function loadBaitImages() {
 // ── GEAR SETUP RECOMMENDATIONS ────────────────────────────────────────────────
 function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var cold = conditions.cold, high = conditions.high, low = conditions.low;
-
-  // Species context from selectedSpecies global
   var sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var primarySpecies = selectedSpecies.length > 0 ? sm[selectedSpecies[0]] : null;
   var isSalmon = primarySpecies && primarySpecies.indexOf('Salmon') !== -1;
   var isBrook  = primarySpecies === 'Brook Trout';
 
-  var gear = {};  // { label: { val, note } }
-
-  // ── FLY FISHING ────────────────────────────────────────────
-  if (fam === 'fly' || (!fam && /nymph|dry|streamer|midge/i.test(topMethod))) {
-
-    if (/streamer/i.test(topMethod)) {
-      gear['Rod'] = { val: isSalmon ? '7–8 wt, 9–10 ft' : '5–6 wt, 9 ft', note: 'Fast action for casting big flies' };
-      gear['Line'] = { val: 'Sinking tip or full sink', note: 'Type II–III sink tip for most rivers' };
-      gear['Leader'] = { val: '6–9 ft · 1x–3x fluorocarbon', note: 'Short and stout — fish inhale streamers' };
-      gear['Fly size'] = { val: '#2–8', note: 'Olive, black, rust. Lighter in clear low water' };
-      gear['Extras'] = { val: 'Locking pliers, net', note: 'Streamers hook fish deep — have tools ready' };
-
-    } else if (/dry/i.test(topMethod)) {
-      gear['Rod'] = { val: isBrook ? '2–3 wt, 7–8 ft' : '4–5 wt, 8–9 ft', note: 'Lighter is better for delicate presentations' };
-      gear['Line'] = { val: 'Weight forward floating', note: 'Match to rod weight' };
-      gear['Leader'] = { val: '12–15 ft · 5x–6x tippet', note: 'Long leader critical for spooky fish' };
-      gear['Fly size'] = { val: '#14–20', note: 'Match the hatch — Adams or Elk Hair Caddis as defaults' };
-      gear['Extras'] = { val: 'Floatant, tippet spools', note: 'Dry fly gel + 5x and 6x spools' };
-
-    } else {
-      // Nymphing (default fly)
-      if (/euro|tight.?line/i.test(topMethod) || isBrook) {
-        gear['Rod'] = { val: isBrook ? '3 wt, 10 ft' : '3–4 wt, 10–11 ft', note: 'Long rod for contact nymphing — no indicator needed' };
-        gear['Line'] = { val: 'Euro nymphing line or mono rig', note: 'Level mono or specialty euro line' };
-        gear['Leader'] = { val: '15–20 ft · 5x sighter + 5x–6x tippet', note: 'Bi-colour sighter for strike detection' };
-      } else {
-        gear['Rod'] = { val: isSalmon ? '8–9 wt, 9–10 ft' : '5–6 wt, 9 ft', note: 'Medium-fast action suits most nymphing' };
-        gear['Line'] = { val: 'Weight forward floating', note: 'Standard WF line for indicator nymphing' };
-        gear['Leader'] = { val: '9–12 ft · 4x–5x', note: 'Fluorocarbon tippet — nearly invisible underwater' };
-      }
-      gear['Fly size'] = { val: '#12–18', note: cold ? 'Go small and slow in cold water — #16–18 midge' : 'Match water clarity — smaller in clear, larger in stained' };
-      gear['Extras'] = { val: 'Split shot, indicators, floatant', note: 'Tungsten split shot + yarn or Thingamabobber' };
-    }
-
-  // ── FLOAT FISHING ──────────────────────────────────────────
-  } else if (fam === 'float' || (!fam && /float|drift|bait/i.test(topMethod))) {
-
-    gear['Rod'] = { val: isSalmon ? '10–12 ft centrepin or spinning rod' : '9–11 ft medium-light spinning', note: 'Long rod = better float control and mending' };
-    gear['Reel'] = { val: isSalmon ? 'Centrepin or large arbor spinning' : 'Light spinning reel, 2500 size', note: 'Smooth drag essential for long runs' };
-    gear['Main line'] = { val: '8–12 lb monofilament', note: 'Mono floats — keeps float riding high' };
-    gear['Leader'] = { val: '6–8 lb fluorocarbon, 18–24 in', note: 'Fluoro sinks and is nearly invisible — critical in clear water' };
-    gear['Float'] = { val: high ? 'Large balsa, 4–6 g' : 'Small balsa or pencil, 1–3 g', note: high ? 'Heavier float handles faster water' : 'Smaller float = more sensitive strike detection' };
-    gear['Hook'] = { val: '#8–12 single octopus hook', note: 'Barbless where required. Offset point grips bead/roe better' };
-
-  // ── SPIN FISHING ───────────────────────────────────────────
-  } else {
-
-    gear['Rod'] = { val: isSalmon ? '8–9 ft medium-heavy spinning' : '6–7 ft medium-light spinning', note: isSalmon ? 'Backbone needed to move big fish in current' : 'Sensitive tip for detecting subtle takes' };
-    gear['Reel'] = { val: '2500–3000 size spinning reel', note: 'Smooth drag, 6–8 lb capacity' };
-    gear['Main line'] = { val: '8–12 lb monofilament or braid', note: 'Braid for sensitivity, mono for stretch and forgiveness' };
-    gear['Leader'] = { val: '8–12 lb fluorocarbon, 24 in', note: 'Fluoro leader reduces visibility next to lure' };
-    gear['Lure weight'] = { val: high ? '1/4–1/2 oz' : '1/8–1/4 oz', note: high ? 'Heavier to stay down in current' : 'Lighter = more natural presentation' };
-    gear['Extras'] = { val: 'Split rings, swivels', note: 'Ball bearing swivel prevents line twist with spinners' };
+  // Ordered list, not an object. Order is the packing order, and `secondary:true` demotes
+  // terminal tackle so swivels and split shot stop competing with the rod choice.
+  // `wide:true` lets a long value span both columns instead of wrapping badly.
+  var gear = [];
+  var kitName = 'Setup';
+  var kitNote = null;
+  function g(label, val, note, opts) {
+    if (!val) return;                       // a field that doesn't apply simply isn't pushed
+    opts = opts || {};
+    gear.push({ label:label, val:val, note:note || null, secondary:!!opts.secondary, wide:!!opts.wide });
   }
 
-  // Populate the card
-  var grid  = document.getElementById(gridId || 'gear-grid');
-  var tgGear = gridId ? null : document.getElementById('tg-gear');
+  // ── FLY ────────────────────────────────────────────────────────────────
+  if (fam === 'fly' || (!fam && /nymph|dry|streamer|midge/i.test(topMethod))) {
+    if (/streamer/i.test(topMethod)) {
+      kitName = 'Fly setup \u2014 ' + (isSalmon ? '7\u20138 wt' : '5\u20136 wt');
+      g('Rod', isSalmon ? '7\u20138 wt, 9\u201310 ft' : '5\u20136 wt, 9 ft', 'Fast action for casting big flies');
+      g('Reel', 'Large arbor with a real drag');
+      g('Line', 'Sinking tip or full sink', 'Type II\u2013III for most rivers', {wide:true});
+      g('Leader', '6\u20139 ft \u00b7 1x\u20133x fluorocarbon', 'Short and stout \u2014 fish inhale streamers', {wide:true});
+      g('Fly size', '#2\u20138', 'Olive, black, rust');
+      g('Also bring', 'Locking pliers, net', null, {secondary:true});
+    } else if (/dry/i.test(topMethod)) {
+      kitName = 'Fly setup \u2014 ' + (isBrook ? '2\u20133 wt' : '4\u20135 wt');
+      g('Rod', isBrook ? '2\u20133 wt, 7\u20138 ft' : '4\u20135 wt, 8\u20139 ft', 'Lighter is better for delicate presentation');
+      g('Reel', 'Click-and-pawl or light disc');
+      g('Line', 'Weight forward floating');
+      g('Leader', '12\u201315 ft tapered');
+      g('Tippet', '5x\u20136x', 'Long and fine \u2014 critical for spooky fish');
+      g('Fly size', '#14\u201320', 'Match the hatch');
+      g('Also bring', 'Floatant, 5x and 6x spools', null, {secondary:true});
+    } else if (/euro|tight.?line/i.test(topMethod) || (isBrook && /nymph/i.test(topMethod))) {
+      kitName = 'Fly setup \u2014 ' + (isBrook ? '3 wt' : '3\u20134 wt') + ' euro';
+      kitNote = 'The long rod is the method here \u2014 a 9 ft rod will not fish this water well.';
+      g('Rod', isBrook ? '3 wt, 10 ft' : '3\u20134 wt, 10\u201311 ft', 'Long rod for contact nymphing');
+      g('Reel', 'Small arbor, balanced to the rod');
+      g('Line', 'Euro line or level mono rig', null, {wide:true});
+      g('Leader', '15\u201320 ft with bi-colour sighter', 'Sighter is your strike detection', {wide:true});
+      g('Tippet', '5x\u20136x fluorocarbon');
+      g('Fly size', '#12\u201318', cold ? 'Go smaller in cold water' : null);
+      g('Also bring', 'Tungsten beads, sighter tippet', null, {secondary:true});
+    } else {
+      kitName = 'Fly setup \u2014 ' + (isSalmon ? '8\u20139 wt' : '5\u20136 wt');
+      g('Rod', isSalmon ? '8\u20139 wt, 9\u201310 ft' : '5\u20136 wt, 9 ft', 'Medium-fast suits most nymphing');
+      g('Reel', 'Large arbor with smooth drag');
+      g('Line', 'Weight forward floating');
+      g('Leader', '9\u201312 ft \u00b7 4x\u20135x');
+      g('Tippet', 'Fluorocarbon', 'Nearly invisible underwater');
+      g('Fly size', '#12\u201318', cold ? 'Small and slow in cold water' : 'Smaller in clear, larger in stained');
+      g('Also bring', 'Split shot, indicators, floatant', null, {secondary:true});
+    }
+
+  // ── FLOAT ──────────────────────────────────────────────────────────────
+  } else if (fam === 'float' || (!fam && /float|drift|bait|roe|bead|centrepin|bottom bounc/i.test(topMethod))) {
+    kitName = isSalmon ? 'Centrepin setup' : 'Float setup';
+    kitNote = high ? 'Water is up \u2014 heavier float and more shot than usual.'
+            : low  ? 'Flow is low \u2014 smaller float and a longer leader than usual.' : null;
+    g('Rod', isSalmon ? '10\u201312 ft centrepin or spinning' : '9\u201311 ft medium-light spinning',
+      'Long rod = better float control', {wide:true});
+    g('Reel', isSalmon ? 'Centrepin or large arbor' : 'Light spinning, 2500');
+    g('Main line', '8\u201312 lb mono', 'Mono floats');
+    g('Leader', '6\u20138 lb fluoro, 18\u201324 in', null, {wide:true});
+    g('Float', high ? 'Large balsa, 4\u20136 g' : 'Small balsa or pencil, 1\u20133 g');
+    g('Weights', high ? 'Shot pattern to hold depth' : 'Light shot, strung out');
+    g('Hook', '#8\u201312 single octopus', 'Barbless where required');
+    g('Also bring', 'Split shot, bait needles, pliers', null, {secondary:true});
+
+  // ── SPIN ───────────────────────────────────────────────────────────────
+  } else {
+    kitName = 'Spinning setup';
+    kitNote = high ? 'Water is up \u2014 go heavier so the lure stays down.' : null;
+    g('Rod', isSalmon ? '8\u20139 ft medium-heavy spinning' : '6\u20137 ft medium-light spinning',
+      isSalmon ? 'Backbone to move big fish in current' : 'Sensitive tip for subtle takes', {wide:true});
+    g('Reel', '2500\u20133000 spinning', 'Smooth drag');
+    g('Main line', '8\u201312 lb mono or braid', 'Braid for feel, mono for forgiveness');
+    g('Leader', '8\u201312 lb fluoro, 24 in', null, {wide:true});
+    g('Lure weight', high ? '1/4\u20131/2 oz' : '1/8\u20131/4 oz');
+    g('Also bring', 'Split rings, ball bearing swivels', null, {secondary:true});
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────────────────
+  var grid = document.getElementById(gridId || 'gear-grid');
   if (!grid) return;
+  var core = gear.filter(function(x){ return !x.secondary; });
+  var extras = gear.filter(function(x){ return x.secondary; });
 
-  var famLabel = fam === 'fly' ? 'Fly Fishing' : fam === 'float' ? 'Float Fishing' : fam === 'spin' ? 'Spin Fishing' : 'General';
-  // Update gear section label with technique + species
-  var _tgLblId = labelId || null;
-  var _tgLbl = _tgLblId ? document.getElementById(_tgLblId) : document.querySelector('#tg-gear .tg-gear-lbl');
-  if (_tgLbl) _tgLbl.textContent = famLabel + ' Setup' + (primarySpecies ? ' \u00b7 ' + primarySpecies : '');
+  var _lbl = document.getElementById(labelId || 'tg-gear-lbl');
+  if (_lbl) _lbl.textContent = kitName;
 
-  grid.innerHTML = Object.keys(gear).map(function(lbl) {
-    var item = gear[lbl];
-    return '<div class="gear-item">' +
-      '<div class="gear-item-lbl">' + lbl + '</div>' +
+  grid.innerHTML = core.map(function(item) {
+    return '<div class="gear-item' + (item.wide ? ' wide' : '') + '">' +
+      '<div class="gear-item-lbl">' + item.label + '</div>' +
       '<div class="gear-item-val">' + item.val + '</div>' +
       (item.note ? '<div class="gear-item-note">' + item.note + '</div>' : '') +
     '</div>';
   }).join('');
 
-  if (tgGear) tgGear.style.display = 'block';
+  var noteEl = document.getElementById('tg-gear-note');
+  if (noteEl) {
+    if (kitNote) { noteEl.textContent = kitNote; noteEl.style.display = 'block'; }
+    else noteEl.style.display = 'none';
+  }
+  var secEl = document.getElementById('tg-gear-sec');
+  if (secEl) {
+    if (extras.length) {
+      secEl.innerHTML = '<b>Also bring</b> \u00b7 ' + extras.map(function(e){ return e.val; }).join(' \u00b7 ');
+      secEl.style.display = 'block';
+    } else secEl.style.display = 'none';
+  }
 }
 
 // ── ACCORDION TOGGLE ──────────────────────────────────────────────────────────
@@ -8850,7 +8794,7 @@ function toggleTG(id) {
   if (!item || !body) return;
   var isOpen = item.classList.contains('tg-open');
   // Collapse all + update aria-expanded
-  ['tg-primary','tg-secondary','tg-tertiary'].forEach(function(k) {
+  ['tg-primary'].forEach(function(k) {
     var it = document.getElementById(k);
     var bd = document.getElementById(k + '-body');
     var ch = document.getElementById(k + '-chev');
@@ -8872,18 +8816,156 @@ function toggleTG(id) {
 
 // ── BAIT TAB MAPPING ─────────────────────────────────────────────────────────
 // Returns the best bait tab for a given method name
+// Actionable advice per bait. bestFor/how replace the old single prose blob so the
+// UI can lead with what to DO rather than what the lure IS. `when` is the short
+// label shown on alternate rows.
+var BAIT_ADVICE = {
+  'Hare\'s Ear Nymph': {spec:'#12–16 · Natural / Gold bead', bestFor:'Anywhere, any time — the confidence fly', how:'Dead drift through runs and along seams', when:'Always'},
+  'Frenchie': {spec:'#14–18 · Copper wire rib', bestFor:'Clear water and selective fish', how:'Fish it as your point fly on a two-nymph rig', when:'Clear water'},
+  'Perdigon': {spec:'#12–16 · Olive / Brown', bestFor:'Getting down fast in short pockets', how:'Heavy bead reaches bottom before the drift ends', when:'High flow'},
+  'Stonefly Nymph': {spec:'#8–12 · Black / Brown, heavy', bestFor:'Big fish looking for a big meal', how:'Bounce it along the bottom in fast runs', when:'Fast runs'},
+  'Zebra Midge': {spec:'#18–22 · Black/silver or red/silver', bestFor:'Low clear water when nothing else works', how:'Drop it 18 in below a larger nymph', when:'Low & clear'},
+  'Woolly Bugger': {spec:'#4–8 · Olive, Black, Brown', bestFor:'A first choice almost anywhere', how:'Cast across, swing down, strip back in short pulls', when:'Always'},
+  'Zonker': {spec:'#4–8 · Chartreuse/White or Olive/White', bestFor:'Elevated or stained water', how:'Strip fast enough to make the rabbit strip pulse', when:'Stained water'},
+  'Clouser Minnow': {spec:'#2–6 · Pink/White, Chartreuse/White', bestFor:'Steelhead and browns holding deep', how:'Strip-pause through pools — dumbbell eyes jig it', when:'Deep pools'},
+  'Elk Hair Caddis': {spec:'#14–16 · Tan / Olive', bestFor:'Evening rises, May to September', how:'Drift drag-free, then twitch it once at the end', when:'Evening'},
+  'Sulphur Comparadun': {spec:'#14–16 · Yellow / Orange', bestFor:'The evening sulphur hatch, May to July', how:'Low-riding profile — fish it in the film', when:'May–July'},
+  'Royal Wulff': {spec:'#12–14 · Classic attractor', bestFor:'Broken water, or as a dry-dropper indicator', how:'High-floating — hang a nymph 18–24 in below', when:'Broken water'},
+  'Blue Winged Olive': {spec:'#16–20 · Olive / Grey', bestFor:'Overcast afternoons in spring and September', how:'Match the dun hatch — dead drift, fine tippet', when:'Overcast'},
+  'Rapala Original Floating': {spec:'4–7 cm · Firetiger, Perch, Rainbow', bestFor:'River browns holding near cover', how:'Cast upstream, retrieve just faster than the current', when:'Near cover'},
+  'Blue Fox Vibrax Spinner': {spec:'#3–5 · Silver / Gold blade', bestFor:'Covering water to find active fish', how:'Silver in clear, gold in stained. Slow it down in cold', when:'Finding fish'},
+  'Kastmaster Spoon': {spec:'1/4–3/8 oz · Silver, Gold', bestFor:'Getting deep fast in pools and seams', how:'Cast across, count it down, retrieve steady', when:'Deep water'},
+  'Mepps Aglia Spinner': {spec:'#3–4 · Black/Yellow, Natural', bestFor:'Working seams in any flow', how:'Steady retrieve — keep the blade just turning', when:'Any flow'},
+  'Roe Bag': {spec:'Small mesh sacs · Natural or cured', bestFor:'Fresh fish holding in pools', how:'Cast upstream, hold the float back so the bait leads', when:'Top pick'},
+  'Soft Bead': {spec:'10–12 mm · Pink, Peach, Natural', bestFor:'Steelhead and salmon in coloured water', how:'Peg 1–2 in above the hook. Pink when coloured', when:'Coloured water'},
+  'Hard Bead': {spec:'8–12 mm · Nuke Egg colours', bestFor:'Clear water and pressured fish', how:'Peg 1–2 in above the hook. Chartreuse and orange lead', when:'Clear water'},
+  'Plastic Worm': {spec:'3–4 inch · Red, Pink, Chartreuse', bestFor:'Stained water after rain', how:'Thread on the hook and drift it naturally', when:'After rain'},
+  'Nightcrawler': {spec:'Full or half · Natural', bestFor:'Spring, and after rain when naturals wash in', how:'Drift naturally with just enough shot to hold', when:'Spring / rain'},
+  'Little Cleo Spoon': {spec:'½–¾ oz · Orange/White, Gold/Red', bestFor:'Harbour mouths and pier ends', how:'Cast across current, slow retrieve — let it flutter on the drop', when:'Top pick'},
+  'Rapala Jointed Minnow': {spec:'J11 · Firetiger, Silver', bestFor:'Working parallel to a pier or shoreline', how:'Twitch and pause — salmon key on the action at low speed', when:'Low speed'},
+  'Blue Fox Vibrax': {spec:'#5 · Silver/Chartreuse, Gold', bestFor:'Overcast conditions and dawn', how:'Slow to medium retrieve just under the surface', when:'Dawn / overcast'},
+  'Mepps Aglia': {spec:'#4–5 · Silver, Gold', bestFor:'Calmer harbour water and finicky fish', how:'Slower blade rotation triggers less aggressive fish', when:'Calm water'},
+};
+
+// Render pillar 3 from the hidden bait source panels + BAIT_ADVICE.
+// Replaces the old tab/panel cloning: one ranked pick with BEST FOR / HOW, the rest as
+// one-line rows. Handles 1 bait, 5 baits, missing photos and missing advice without
+// leaving empty cards or "N/A".
+function renderBaitPillar(topMethod) {
+  var card  = document.getElementById('tg-bait-card');
+  var alts  = document.getElementById('tg-bait-alts');
+  var foot  = document.getElementById('tg-bait-foot');
+  var lblEl = document.getElementById('tg-bait-lbl');
+  var pill  = document.getElementById('pillar-bait');
+  if (!card || !alts) return;
+
+  var tab = methodToBaitTab(topMethod);
+  var src = document.getElementById('p-' + tab);
+  var items = src ? Array.prototype.slice.call(src.querySelectorAll('.bi')) : [];
+
+  // Terminology follows the technique — never call a fly "bait".
+  var lblMap = { nymphs:'Flies', dries:'Flies', streamers:'Flies',
+                 lures:'Lures', 'salmon-lures':'Lures', float:'Bait' };
+  if (lblEl) lblEl.textContent = lblMap[tab] || 'Bait';
+
+  if (!items.length) {
+    if (pill) pill.style.display = 'none';
+    return;
+  }
+  if (pill) pill.style.display = '';
+
+  function read(el) {
+    var name = (el.querySelector('.bname')||{}).textContent || '';
+    var adv  = BAIT_ADVICE[name] || {};
+    return {
+      name: name,
+      spec: adv.spec || ((el.querySelector('.bdet')||{}).textContent || ''),
+      bestFor: adv.bestFor || null,
+      how: adv.how || null,
+      when: adv.when || null,
+      // Fall back to the original prose if this bait has no structured advice yet
+      blurb: (el.querySelector('.bcond')||{}).textContent || '',
+      key: el.getAttribute('data-bait-name') || name
+    };
+  }
+  var list = items.map(read);
+  var top = list[0], rest = list.slice(1);
+
+  function imgHtml(b) {
+    var url = (typeof BAIT_IMAGES !== 'undefined' && BAIT_IMAGES[b.key])
+           || (typeof baitImageCache !== 'undefined' && baitImageCache[b.key]) || null;
+    if (url) return '<div class="p-bimg"><img src="' + url + '" alt="' + b.name + '" loading="lazy"></div>';
+    return '<div class="p-bimg"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.2" stroke-linecap="round"><path d="M18 7C16 3 12 2 8 3 5 4 2 6 2 7c0 1 3 3 6 4 4 1 8 0 10-4Z"/>' +
+      '<path d="m18 7 3-2-1 2 1 2Z"/></svg></div>';
+  }
+
+  var rows = '';
+  if (top.bestFor) rows += '<dt>Best for</dt><dd>' + top.bestFor + '</dd>';
+  if (top.how)     rows += '<dt>How</dt><dd>' + top.how + '</dd>';
+  if (!rows && top.blurb) rows = '<dt>Note</dt><dd>' + top.blurb + '</dd>';
+
+  card.innerHTML =
+    '<div class="p-bait-top">' + imgHtml(top) +
+      '<div style="flex:1;min-width:0">' +
+        '<span class="p-badge">\u2605 Start here</span>' +
+        '<h5>' + top.name + '</h5>' +
+        (top.spec ? '<div class="p-bspec">' + top.spec + '</div>' : '') +
+      '</div></div>' +
+    (rows ? '<dl class="p-how">' + rows + '</dl>' : '');
+
+  // Alternates: show two, collapse the remainder.
+  var SHOWN = 2;
+  function altRow(b) {
+    return '<button class="p-alt" type="button">' +
+      '<span><span class="p-alt-name">' + b.name + '</span>' +
+      (b.spec ? '<span class="p-alt-sub">' + b.spec + '</span>' : '') + '</span>' +
+      (b.when ? '<span class="p-alt-when">' + b.when + '</span>' : '') +
+    '</button>';
+  }
+  if (!rest.length) {
+    alts.innerHTML = '<p class="p-empty" style="padding-top:.6rem">No other options ranked for these conditions.</p>';
+  } else {
+    var visible = rest.slice(0, SHOWN), hidden = rest.slice(SHOWN);
+    alts.innerHTML = visible.map(altRow).join('') +
+      (hidden.length
+        ? '<div id="tg-bait-hidden" style="display:none">' + hidden.map(altRow).join('') + '</div>' +
+          '<button class="p-more" type="button" id="tg-bait-more">' + hidden.length + ' more \u2193</button>'
+        : '');
+    var moreBtn = document.getElementById('tg-bait-more');
+    if (moreBtn) moreBtn.addEventListener('click', function() {
+      var h = document.getElementById('tg-bait-hidden');
+      if (!h) return;
+      var open = h.style.display !== 'none';
+      h.style.display = open ? 'none' : 'block';
+      moreBtn.textContent = open ? (hidden.length + ' more \u2193') : 'Show fewer \u2191';
+    });
+  }
+
+  // Panel-level footnote (bait regs, harbour closures) carries over if present.
+  var srcFoot = src ? src.querySelector('.bfooter') : null;
+  if (foot) {
+    if (srcFoot) { foot.textContent = srcFoot.textContent; foot.style.display = 'block'; }
+    else foot.style.display = 'none';
+  }
+}
+
 function methodToBaitTab(methodName) {
   var m = (methodName || '').toLowerCase();
   if (/dry fly|dry-fly|caddis|comparadun|parachute|wulff/i.test(m)) return 'dries';
   if (/streamer|sculpin|woolly|zonker|clouser|articulated|minnow/i.test(m)) return 'streamers';
-  if (/nymph|midge|hatch|euro|tight.?line|subsurface/i.test(m)) return 'nymphs';
-  if (/float|bait|roe|bead|centrepin|drift|stationary/i.test(m)) return 'float';
-  if (/harbour|pier|staging|cleo|little cleo/i.test(m)) return 'salmon-lures';
+  // 'subsurface' used to live in this rule and routed "Crankbaits — Subsurface" to nymphs.
+  if (/nymph|midge|hatch|euro|tight.?line/i.test(m)) return 'nymphs';
+  if (/harbour|pier|staging|cleo/i.test(m)) return 'salmon-lures';
+  // Lures MUST be tested before float: "crankbait" contains the substring "bait", so the
+  // float rule below would otherwise claim every crankbait method for roe and beads.
   if (/spinner|spoon|lure|jig|crankbait|plug|kastmaster|rapala|mepps/i.test(m)) return 'lures';
-  // fallback by family
+  // 'bottom bounc' added — it previously matched nothing and fell through to lures.
+  if (/float|bait|roe|bead|centrepin|drift|stationary|bottom bounc/i.test(m)) return 'float';
   if (/fly/i.test(m)) return 'nymphs';
   return 'lures';
 }
+
 
 // Build a bait tab + panel set for a given method, inserting into btabs/bpanels containers
 function populateMethodBaits(methodName, btabsId, bpanelsId) {
