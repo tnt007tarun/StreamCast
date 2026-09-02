@@ -2962,6 +2962,24 @@ function fetchLakeTemps() {
 // Staging is "plausible" when the species' CURRENT season window describes harbour/mouth
 // activity — e.g. Chinook in August = "Harbour Mouth". July = "In Lake" (nothing staging yet),
 // September = "Early Run" (fish are in the river, normal access points apply).
+// How strongly should we steer people to the river MOUTH right now?
+// Returns 8/6/3/0. Keyed on the season window LABEL, because quality alone cannot tell
+// "Early Run" (fish still stacked at the mouth) from "Late Run" (fish spread through the
+// river) — both are quality 'good'. stagingPlausibleFor() is deliberately not used: it
+// only matches harbour-style labels and reads false all through September.
+function mouthPreferenceFor(speciesName, dateStr) {
+  var MIG = ['Chinook Salmon','Coho Salmon','Steelhead'];
+  if (!speciesName || MIG.indexOf(speciesName) === -1) return 0;
+  if (typeof getCurrentSeason !== 'function') return 0;
+  var w = getCurrentSeason(speciesName, dateStr);
+  if (!w) return 0;
+  var lab = (w.label || '').toLowerCase();
+  if (/in lake/.test(lab)) return 8;
+  if (/harbour|staging|mouth/.test(lab)) return 6;
+  if (/early run/.test(lab)) return 3;
+  return 0;
+}
+
 function stagingPlausibleFor(speciesName, dateStr) {
   if (speciesName !== 'Chinook Salmon' && speciesName !== 'Coho Salmon') return false;
   if (typeof getCurrentSeason !== 'function') return false;
@@ -4993,7 +5011,10 @@ function renderRiverUI(cfg) {
     }
     if (!_stgSp || !selectedRiver || typeof STAGING_ZONES === 'undefined') return;
     if (!STAGING_ZONES[selectedRiver.split(',')[0].trim()]) return;
-    if (!stagingPlausibleFor(_stgSp, getTripDateStr())) return;
+    // Was gated on stagingPlausibleFor(), which reads false through September — so the
+    // mouth filter never ran during the early run and an inland pool got recommended
+    // while the technique panel said to fish the harbour.
+    if (!mouthPreferenceFor(_stgSp, getTripDateStr())) return;
     var _mouthOnly = _accessSorted.filter(function(a){ return a.mouth === true; });
     if (_mouthOnly.length > 0) _accessSorted = _mouthOnly;
   })();
@@ -7299,11 +7320,7 @@ function rankRivers(rivers, speciesKey, dateStr) {
           // Label also separates Early Run from Late Run; both are quality 'good', but by
           // the late run the fish are spread through the river and the mouth is no longer
           // the right call.
-          var _lab = (seasonal.label || '').toLowerCase();
-          var _mouthBonus = /in lake/.test(_lab)        ? 8
-                          : /harbour|staging|mouth/.test(_lab) ? 6
-                          : /early run/.test(_lab)      ? 3
-                          : 0;
+          var _mouthBonus = mouthPreferenceFor(targetSpeciesName, dateStr);
           if (_mouthBonus) {
             if (_isMouthSection) {
               score += _mouthBonus;
@@ -8918,7 +8935,11 @@ function renderBaitPillar(topMethod) {
   var pill  = document.getElementById('pillar-bait');
   if (!card || !alts) return;
 
-  var tab = methodToBaitTab(topMethod);
+  // While fish are staging, the salmon-lures panel is authoritative regardless of how the
+  // technique headline happens to be worded. The 50 ms re-render reads the live headline
+  // "Throwing spoons at the river mouth", which matches the generic /spoon/ lure rule and
+  // was quietly swapping harbour spoons for river-brown crankbaits.
+  var tab = _stagingModeActive ? 'salmon-lures' : methodToBaitTab(topMethod);
   var src = document.getElementById('p-' + tab);
   var items = src ? Array.prototype.slice.call(src.querySelectorAll('.bi')) : [];
 
@@ -9048,7 +9069,7 @@ function methodToBaitTab(methodName) {
   if (/streamer|sculpin|woolly|zonker|clouser|articulated|minnow/i.test(m)) return 'streamers';
   // 'subsurface' used to live in this rule and routed "Crankbaits — Subsurface" to nymphs.
   if (/nymph|midge|hatch|euro|tight.?line/i.test(m)) return 'nymphs';
-  if (/harbour|pier|staging|cleo/i.test(m)) return 'salmon-lures';
+  if (/harbour|pier|staging|cleo|river mouth/i.test(m)) return 'salmon-lures';
   // Lures MUST be tested before float: "crankbait" contains the substring "bait", so the
   // float rule below would otherwise claim every crankbait method for roe and beads.
   if (/spinner|spoon|lure|jig|crankbait|plug|kastmaster|rapala|mepps/i.test(m)) return 'lures';
