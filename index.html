@@ -3001,10 +3001,9 @@ function resolveStagingSection(riverName) {
 // clarity. Called from both the headline override path and the staging-card path so the
 // two can never disagree with each other.
 var _stagingTechApplied = false;
-// Set as soon as the staging phase is known, independently of whether the DOM override has
-// run yet. updateMethods() and the staging card resolve in a race — the staging read comes
-// back during renderResults' `await fetchFlow(...)`, so whichever finishes last wins the
-// Technique panel. This flag lets updateMethods know staging is in play regardless of order.
+// Set as soon as the staging phase is known. renderResults now awaits the staging read
+// before rendering anything, so this is settled by the time updateMethods and buildTopPick
+// run — one ordering rather than a race between them.
 var _stagingModeActive = false;
 function applyStagingTechniqueOverride() {
   var _m1n = document.getElementById('m1n');
@@ -3047,7 +3046,7 @@ function renderStagingCard(sectionName, weather) {
   _stagingModeActive = false; // recomputed below; must not leak from the previous river
   window._salmonInRiver = false;
   var zone = STAGING_ZONES[sectionName];
-  if (!zone || !container) return;
+  if (!zone || !container) return Promise.resolve();
 
   var _di = document.getElementById("trip-date");
   var now = (_di && _di.value) ? new Date(_di.value + "T12:00:00") : new Date();
@@ -3058,12 +3057,12 @@ function renderStagingCard(sectionName, weather) {
   var _isAny = (!_spLbl || _spLbl === "Any Species");
   var wantsSalmon    = _isAny || /Chinook|Coho/i.test(_spLbl);
   var wantsSteelhead = _isAny || /Steelhead/i.test(_spLbl);
-  if (!wantsSalmon && !wantsSteelhead) return;
+  if (!wantsSalmon && !wantsSteelhead) return Promise.resolve();
 
   var groupKey = STAGING_GROUP[zone.key] || 'central';
   var mouthFaces = zone.lake === "Georgian Bay" ? 0 : 180;
 
-  fetchLakeTemps().then(function(temps){
+  return fetchLakeTemps().then(function(temps){
     var lakeTemp = (temps && temps[zone.key] != null) ? temps[zone.key] : null;
     // Live satellite feed is unavailable — fall back to monthly climatology so the
     // staging score keeps its temperature input instead of silently dropping it.
@@ -6147,7 +6146,13 @@ function updateMethods(fc,tc,sc,flow,wt){
   setTimeout(function(){
     var _sp = selectedSpecies.length > 0 ? selectedSpecies[0] : '';
     try { adaptLurePanel(_sp, {cold:cold, high:high, low:low}); } catch(_alErr) {}
-    try { renderBaitPillar(m1.n); } catch(_bp2) {}
+    // Read the CURRENT method from the DOM, not the closed-over m1.n. If the staging
+    // override landed in the intervening 50 ms, m1.n is stale and re-rendering from it
+    // silently replaced the salmon spoons with trout nymphs.
+    try {
+      var _live = document.getElementById('m1n');
+      renderBaitPillar((_live && _live.textContent) || m1.n);
+    } catch(_bp2) {}
   }, 50);
 }
 
@@ -6211,6 +6216,7 @@ async function renderResults(){
   window._weatherOk = weatherOk; // expose — used to avoid false-confidence thermal reads on stale/fallback data
   var wt=waterTempEst(airTemp);
   // Salmon staging card (mouth sections, staging species, in-season)
+  var _stagingPromise = null;
   try {
     if (typeof renderStagingCard==="function" && selectedRiver && typeof STAGING_ZONES !== "undefined") {
       // Resolve the staging section system-wide: exact match first, else find the
@@ -6239,7 +6245,10 @@ async function renderResults(){
         window._migratoryBlockedSection = null;
       }
       // Only render for salmon/steelhead intent — the card itself also checks season windows
-      if (_stgSection) { renderStagingCard(_stgSection, _stagingWeather); }
+      // Kick the staging read off now but keep the promise: it is awaited below, before
+      // anything renders. Previously this was fire-and-forget and raced the main render,
+      // which is what let the hero, the technique panel and the bait list disagree.
+      if (_stgSection) { _stagingPromise = renderStagingCard(_stgSection, _stagingWeather); }
       else { _stagingModeActive = false; }
     }
   } catch(e){ console.warn("staging card",e); }
@@ -6248,6 +6257,13 @@ async function renderResults(){
   // Debug: show gauge and isToday in panel
   if(isToday){
     var lf=await fetchFlow(cfg.gauge);
+    // Single ordering, not a race. Both requests are already in flight, so awaiting the
+    // staging read here costs no extra latency — it just guarantees _stagingModeActive
+    // and the phase are settled before updateMethods and buildTopPick run.
+    if (_stagingPromise) {
+      try { await _stagingPromise; }
+      catch(_spErr) { console.warn('staging read failed, rendering without it:', _spErr); }
+    }
     if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
   } else {
     // Future date — flow data only available for today
@@ -6622,10 +6638,10 @@ async function renderResults(){
         + ' \u2014 a dam blocks them downstream. The conditions below are for resident trout on this stretch.';
     }
   }
-  // If the staging read already resolved during the `await fetchFlow(...)` above, the call
-  // to updateMethods just overwrote the Technique panel with in-river methods. Re-apply.
-  if (_stagingModeActive && !_stagingTechApplied) {
-    try { applyStagingTechniqueOverride(); } catch(_reErr) { console.warn('staging re-apply failed:', _reErr); }
+  // Staging is settled before this point now, so updateMethods already skipped the
+  // in-river salmon block and the override below simply restates the panel.
+  if (_stagingModeActive) {
+    try { applyStagingTechniqueOverride(); } catch(_reErr) { console.warn('staging apply failed:', _reErr); }
   }
   updateAccessFlowNotes(cfg,flow);
   autoSelectBaitTab();
@@ -7249,20 +7265,39 @@ function rankRivers(rivers, speciesKey, dateStr) {
     // Species present?
     var hasSpecies=targetSpeciesNames.length===0||targetSpeciesNames.some(function(n){return cfg.species&&cfg.species.indexOf(n)!==-1;});
     if (!hasSpecies) { score -= 20; warnings.push(targetSpeciesName + ' not on this river'); }
-
     // Species in season?
+    var _MIG = ['Chinook Salmon','Coho Salmon','Steelhead'];
+    var _isMigTarget = targetSpeciesName && _MIG.indexOf(targetSpeciesName) !== -1;
+    // Is this section the harbour/mouth where migratory fish stage?
+    var _isMouthSection = (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[r.name];
+    // Is staging plausible for this species on this date?
+    var _stagingNow = _isMigTarget && typeof stagingPlausibleFor === 'function'
+                      && stagingPlausibleFor(targetSpeciesName, dateStr);
+
     if (hasSpecies && targetSpeciesName) {
       var seasonal = getCurrentSeason(targetSpeciesName, dateStr);
       if (seasonal) {
         if (seasonal.quality === 'peak')   { score += 10; notes.push('Peak season'); }
         else if (seasonal.quality === 'good') { score += 6; notes.push('In season'); }
         else if (seasonal.quality === 'absent') {
-          // Migratory species staging in the lake — softer penalty + accurate wording (they're legally in season)
-          var _isMig = targetSpeciesName === 'Chinook Salmon' || targetSpeciesName === 'Coho Salmon' || targetSpeciesName === 'Steelhead';
-          if (_isMig) { score -= 8; warnings.push('Staging in lake — not in river yet'); }
-          else { score -= 15; warnings.push('Out of season'); }
+          // 'absent' for a migratory species means the fish are staging in the LAKE. At a
+          // mouth section that is the whole opportunity, so it must score as a positive —
+          // it used to take the same -8 as an inland reach, which ranked inland water
+          // above the harbour on exactly the days everyone fishes the harbour.
+          if (_isMigTarget && _isMouthSection && _stagingNow) {
+            score += 8; notes.push('Staging at the mouth');
+          } else if (_isMigTarget) {
+            score -= 8; warnings.push('Staging in lake — not in river yet');
+          } else { score -= 15; warnings.push('Out of season'); }
         }
-        else { score += 1; notes.push('Present but slow'); }
+        else {
+          // 'slow' inland reaches were beating staging mouths by 9 points, which is how a
+          // Mississauga search for Chinook returned Streetsville instead of Port Credit.
+          // While fish are staging, an inland reach is the wrong place regardless of window.
+          if (_isMigTarget && _stagingNow && !_isMouthSection) {
+            score -= 6; warnings.push('Fish still at the mouth, not this reach');
+          } else { score += 1; notes.push('Present but slow'); }
+        }
       }
     } else if (!targetSpeciesName) {
       // No species filter — find the best in-season species
