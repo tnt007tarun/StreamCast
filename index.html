@@ -776,10 +776,18 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   text-transform:uppercase; color:var(--sage); white-space:nowrap; }
 .p-how dd { font-size:.84rem; line-height:1.5; color:var(--text); }
 .p-alts { margin-top:.15rem; }
+.p-altwrap { border-top:1px solid rgba(30,122,110,.09); }
 .p-alt { width:100%; display:flex; justify-content:space-between; align-items:center; gap:.6rem;
-  background:none; border:0; border-top:1px solid rgba(30,122,110,.09); padding:.62rem 0;
+  background:none; border:0; padding:.62rem 0;
   cursor:pointer; text-align:left; font-family:inherit; }
 .p-alt:hover { background:rgba(30,122,110,.03); }
+.p-alt:focus-visible { outline:2px solid var(--fern); outline-offset:-2px; }
+.p-alt-right { display:flex; align-items:center; gap:.5rem; flex:none; }
+.p-alt-chev { font-size:.6rem; color:var(--sage); transition:transform .18s ease; display:inline-block; }
+.p-alt.is-open .p-alt-chev { transform:rotate(180deg); }
+.p-altbody { display:none; padding:0 0 .85rem; }
+.p-altbody.open { display:block; }
+@media(prefers-reduced-motion:reduce){ .p-alt-chev { transition:none; } }
 .p-alt-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:.9rem; color:var(--ink); display:block; }
 .p-alt-sub { font-size:.74rem; color:var(--text); opacity:.72; margin-top:.05rem; display:block; }
 .p-alt-when { font-family:'JetBrains Mono',monospace; font-size:.5rem; letter-spacing:.1em;
@@ -8916,12 +8924,44 @@ function renderBaitPillar(topMethod) {
 
   // Alternates: show two, collapse the remainder.
   var SHOWN = 2;
+  // Alternates expand to the same depth as the top pick — photo, BEST FOR, HOW. They
+  // open independently rather than closing each other: comparing two lures side by side
+  // is a real thing to do at the water, and force-closing the one just read is annoying.
+  var _altSeq = 0;
   function altRow(b) {
-    return '<button class="p-alt" type="button">' +
-      '<span><span class="p-alt-name">' + b.name + '</span>' +
-      (b.spec ? '<span class="p-alt-sub">' + b.spec + '</span>' : '') + '</span>' +
-      (b.when ? '<span class="p-alt-when">' + b.when + '</span>' : '') +
-    '</button>';
+    var id = 'alt-' + (_altSeq++);
+    var rows = '';
+    if (b.bestFor) rows += '<dt>Best for</dt><dd>' + b.bestFor + '</dd>';
+    if (b.how)     rows += '<dt>How</dt><dd>' + b.how + '</dd>';
+    if (!rows && b.blurb) rows = '<dt>Note</dt><dd>' + b.blurb + '</dd>';
+    return '<div class="p-altwrap">' +
+      '<button class="p-alt" type="button" data-alt="' + id + '" aria-expanded="false" aria-controls="' + id + '">' +
+        '<span><span class="p-alt-name">' + b.name + '</span>' +
+        (b.spec ? '<span class="p-alt-sub">' + b.spec + '</span>' : '') + '</span>' +
+        '<span class="p-alt-right">' +
+          (b.when ? '<span class="p-alt-when">' + b.when + '</span>' : '') +
+          '<span class="p-alt-chev">\u25be</span>' +
+        '</span>' +
+      '</button>' +
+      '<div class="p-altbody" id="' + id + '">' +
+        '<div class="p-bait-top">' + imgHtml(b) +
+          '<div style="flex:1;min-width:0">' +
+            (b.spec ? '<div class="p-bspec" style="margin-top:0">' + b.spec + '</div>' : '') +
+          '</div></div>' +
+        (rows ? '<dl class="p-how" style="border-top:0;padding-top:.55rem;margin-top:.4rem">' + rows + '</dl>' : '') +
+      '</div></div>';
+  }
+  function wireAlts(scope) {
+    (scope || document).querySelectorAll('.p-alt[data-alt]').forEach(function(btn){
+      if (btn._wired) return; btn._wired = true;
+      btn.addEventListener('click', function(){
+        var body = document.getElementById(btn.getAttribute('data-alt'));
+        if (!body) return;
+        var open = body.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.classList.toggle('is-open', open);
+      });
+    });
   }
   if (!rest.length) {
     alts.innerHTML = '<p class="p-empty" style="padding-top:.6rem">No other options ranked for these conditions.</p>';
@@ -8940,6 +8980,7 @@ function renderBaitPillar(topMethod) {
       h.style.display = open ? 'none' : 'block';
       moreBtn.textContent = open ? (hidden.length + ' more \u2193') : 'Show fewer \u2191';
     });
+    wireAlts(alts);
   }
 
   // Panel-level footnote (bait regs, harbour closures) carries over if present.
