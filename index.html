@@ -6295,7 +6295,11 @@ function updateMethods(fc,tc,sc,flow,wt){
   // roe is the wrong answer no matter what the river flow says.
   // Bait is illegal on artificial-only water, so a roe-and-beads recommendation there is
   // not merely suboptimal — it tells the angler to break the regs.
-  var _artificialOnly = !!(cfg && cfg.artificialOnly);
+  // updateMethods has no `cfg` in scope — it takes only (fc,tc,sc,flow,wt). Referencing
+  // one threw a ReferenceError that killed the whole function, blanking the hero and the
+  // Technique panel. Resolve the section config here instead.
+  var _cfgUM = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
+  var _artificialOnly = !!(_cfgUM && _cfgUM.artificialOnly);
   // If the salmon target can't physically reach this section we've already fallen back to
   // a resident species, so the salmon method must not be applied to it. selectedSpecies
   // still reads 'chinook', which is why the Upper Credit recommended roe for brown trout.
@@ -6357,7 +6361,7 @@ function updateMethods(fc,tc,sc,flow,wt){
   // an angler decides whether to keep a fish at the water, and by then they've stopped
   // reading. Shown only when it applies to the species actually being recommended.
   (function(){
-    var cr = (cfg && cfg.catchRelease) || null;
+    var cr = (_cfgUM && _cfgUM.catchRelease) || null;
     if (!cr || !cr.length) return;
     var _spName = {brown:'Brown Trout', rainbow:'Rainbow Trout', brook:'Brook Trout',
                    steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
