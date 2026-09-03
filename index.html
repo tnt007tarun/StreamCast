@@ -3131,16 +3131,19 @@ var _stagingModeActive = false;
 // is authoritative because it accounts for lake temperature, not just the calendar.
 var _stagingPhaseResolved = false;
 function applyStagingTechniqueOverride() {
-  var _m1n = document.getElementById('m1n');
-  var _m1d = document.getElementById('m1d');
-  var _m1c = document.getElementById('m1c');
-  if (_m1n) _m1n.textContent = 'Throwing spoons at the river mouth';
-  if (_m1d) _m1d.textContent = 'Fish aren\u2019t in the river yet \u2014 they\u2019re staging out front. Cast from the pier, beach or rivermouth, fan casting and varying your retrieve depth.';
-  if (_m1c) _m1c.innerHTML = '<span>Best: Dawn / dusk</span><span>From pier or beach</span><span>Overcast opens the day</span>';
-  var _sub = document.getElementById('tg-subtitle');
-  if (_sub) _sub.textContent = 'Staging fish are in the lake \u2014 spinning gear from shore is the method.';
-  buildGearSetup('Spinning \u2014 Spoons & Lures', 'spin', {cold:false, high:false, low:true});
-  try { renderBaitPillar('Little Cleo staging harbour'); } catch(_e) { console.warn('staging bait pillar failed:', _e); }
+  var _cfgST = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
+  renderTechniquePillars({
+    name: 'Throwing spoons at the river mouth',
+    desc: 'Fish aren\u2019t in the river yet \u2014 they\u2019re staging out front. Cast from the pier, beach or rivermouth, fan casting and varying your retrieve depth.',
+    chips: ['Best: Dawn / dusk', 'From pier or beach', 'Overcast opens the day'],
+    subtitle: 'Staging fish are in the lake \u2014 spinning gear from shore is the method.',
+    gearMethod: 'Spinning \u2014 Spoons & Lures',
+    gearFam: 'spin',
+    conditions: {cold:false, high:false, low:true},
+    baitMethod: 'Little Cleo staging harbour',
+    shownSpecies: window._shownSpeciesName || null,
+    cfg: _cfgST
+  });
   try { updateConditionsSubtitle(null, true); } catch(_csErr) {}
   _stagingTechApplied = true;
 }
@@ -6102,6 +6105,59 @@ async function fetchFlow(gaugeId) {
 //   'spin'   — fish are staging in the lake at THIS section; spoons from shore
 //   'float'  — fish are in the river here; roe or beads under a float
 //   null     — no salmon-specific override; use the normal flow/temperature branches
+
+// ── TECHNIQUE PILLAR RENDERING: SINGLE PATH ───────────────────────────────────
+// updateMethods and applyStagingTechniqueOverride both wrote the three pillars, by hand,
+// in slightly different ways. Beyond the drift that caused, the override rewrote the
+// chip row wholesale — which silently erased the catch-and-release chip on water that is
+// both a staging zone AND C-0 (the lower Nottawasaga, for steelhead). Both callers now
+// go through here, and the C&R notice is applied last so it can never be overwritten.
+function applyCatchReleaseNotice(shownSpeciesName, cfg) {
+  var cr = (cfg && cfg.catchRelease) || null;
+  if (!cr || !cr.length || !shownSpeciesName) return false;
+  if (cr.indexOf(shownSpeciesName) === -1) return false;
+  var chips = document.getElementById('m1c');
+  if (chips && chips.innerHTML.indexOf('Catch &amp; release') === -1
+            && chips.innerHTML.indexOf('Catch & release') === -1) {
+    chips.innerHTML = '<span class="chip-cr">\u21ba Catch &amp; release only</span>' + chips.innerHTML;
+  }
+  var note = document.getElementById('tg-gear-note');
+  if (note) {
+    var msg = shownSpeciesName + ' is catch and release only on this stretch (S-0, C-0). '
+            + 'Keep them wet, unhook in the water where you can, and bring pliers.';
+    if ((note.textContent || '').indexOf('catch and release only') === -1) {
+      note.textContent = note.textContent ? (note.textContent + ' ' + msg) : msg;
+    }
+    note.style.display = 'block';
+  }
+  return true;
+}
+
+// spec: { name, desc, chips[], subtitle, gearMethod, gearFam, conditions, baitMethod,
+//         shownSpecies, cfg }
+function renderTechniquePillars(spec) {
+  spec = spec || {};
+  var n = document.getElementById('m1n');
+  var d = document.getElementById('m1d');
+  var ch = document.getElementById('m1c');
+  if (n) n.textContent = spec.name || '';
+  if (d) d.textContent = spec.desc || '';
+  if (ch) ch.innerHTML = (spec.chips || []).map(function(t){ return '<span>' + t + '</span>'; }).join('');
+  var sub = document.getElementById('tg-subtitle');
+  if (sub && spec.subtitle) sub.textContent = spec.subtitle;
+  var tip = document.getElementById('m1tip'); if (tip) tip.textContent = '';
+
+  try { buildGearSetup(spec.gearMethod || spec.name, spec.gearFam || '',
+        spec.conditions || {cold:false, high:false, low:false}); }
+  catch(e) { console.warn('gear pillar failed:', e); }
+
+  try { renderBaitPillar(spec.baitMethod || spec.name); }
+  catch(e) { console.warn('bait pillar failed:', e); }
+
+  // Last, so nothing downstream can overwrite it.
+  try { applyCatchReleaseNotice(spec.shownSpecies, spec.cfg); } catch(e) {}
+}
+
 function salmonMethodMode(opts) {
   opts = opts || {};
   var speciesKey = opts.speciesKey || null;
@@ -6345,7 +6401,20 @@ function updateMethods(fc,tc,sc,flow,wt){
     stagingModeActive: _stagingModeActive,
     migratoryBlocked: window._migratoryBlockedSection
   });
-  if (_salmonMode === 'float') {
+  // Handle BOTH modes the shared function can return. Previously only 'float' was acted
+  // on and 'spin' was silently dropped, leaving updateMethods to produce trout nymphing
+  // for staging salmon and depending on applyStagingTechniqueOverride running afterwards
+  // to correct it. Correct-by-ordering is what caused the earlier drift bugs; this is now
+  // correct standalone, and the override is belt-and-braces rather than load-bearing.
+  if (_salmonMode === 'spin') {
+    m1 = {n:'Throwing spoons at the river mouth',
+          d:'Fish aren\u2019t in the river yet \u2014 they\u2019re staging out front. Cast from the pier, beach or rivermouth, fan casting and varying your retrieve depth.',
+          tip:'Fish aren\u2019t in the river yet \u2014 they\u2019re staging out front. Cast from the pier, beach or rivermouth, fan casting and varying your retrieve depth.',
+          c:''};
+    m2 = {n:'Trolling', d:'Troll spoons parallel to shore at harbour depth.', c:''};
+    m3 = {n:'Jigging', d:'Vertical jig near structure at the harbour mouth.', c:''};
+    fam = 'spin';
+  } else if (_salmonMode === 'float') {
     var _fDepth = high ? 'Run deeper and heavier — high water pushes fish to the edges.'
                 : low  ? 'Downsize and lengthen your leader — low clear water makes salmon spooky.'
                 : 'Set the float so the bait drifts just above the bottom.';
@@ -6389,44 +6458,22 @@ function updateMethods(fc,tc,sc,flow,wt){
   var _tgSubReset = document.getElementById('tg-subtitle');
   if (_tgSubReset) _tgSubReset.textContent = 'Primary method with recommended setup and baits. Tap alternatives to expand.';
 
-  document.getElementById("m1n").textContent=m1.n;
-  document.getElementById("m1d").textContent=m1.tip||m1.d; // tip replaces generic description
-  document.getElementById("m1c").innerHTML=""; // Best/Fish/Leader removed
-  var _m1tip=document.getElementById("m1tip"); if(_m1tip) _m1tip.textContent=""; // blockquote removed
-  // Secondary and tertiary methods removed: three pillars answer "what would I do
-  // here today". Listing every other viable method was the encyclopedia problem.
-
-  // Catch-and-release notice. Belongs on the technique card, not buried in the regs panel:
-  // an angler decides whether to keep a fish at the water, and by then they've stopped
-  // reading. Shown only when it applies to the species actually being recommended.
-  (function(){
-    var cr = (_cfgUM && _cfgUM.catchRelease) || null;
-    if (!cr || !cr.length) return;
-    var _spName = {brown:'Brown Trout', rainbow:'Rainbow Trout', brook:'Brook Trout',
-                   steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
-    // Use the species actually on screen — which may be the fallback, not the original target.
-    var shown = (typeof window._shownSpeciesName === 'string' && window._shownSpeciesName)
-             || (_sp ? _spName[_sp] : null);
-    if (!shown || cr.indexOf(shown) === -1) return;
-    var chips = document.getElementById('m1c');
-    if (chips && chips.innerHTML.indexOf('Catch &amp; release') === -1
-              && chips.innerHTML.indexOf('Catch & release') === -1) {
-      chips.innerHTML = '<span class="chip-cr">\u21ba Catch &amp; release only</span>' + chips.innerHTML;
-    }
-    var note = document.getElementById('tg-gear-note');
-    if (note) {
-      var msg = shown + ' is catch and release only on this stretch (S-0, C-0). '
-              + 'Keep them wet, unhook in the water where you can, and bring pliers.';
-      note.textContent = note.textContent ? (note.textContent + ' ' + msg) : msg;
-      note.style.display = 'block';
-    }
-  })();
-
-  // Pillar 2 — gear
-  buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
-
-  // Pillar 3 — bait, flies or lures, named to match the technique
-  try { renderBaitPillar(m1.n); } catch(_bpErr) { console.warn('renderBaitPillar failed:', _bpErr); }
+  // Same renderer the staging override uses — see renderTechniquePillars. The C&R notice
+  // is applied inside it, last, so nothing can overwrite the chip.
+  var _spNameC = {brown:'Brown Trout', rainbow:'Rainbow Trout', brook:'Brook Trout',
+                  steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
+  renderTechniquePillars({
+    name: m1.n,
+    desc: m1.tip || m1.d,
+    chips: [],
+    gearMethod: m1.n,
+    gearFam: fam,
+    conditions: {cold:cold, high:high, low:low},
+    baitMethod: m1.n,
+    shownSpecies: (typeof window._shownSpeciesName === 'string' && window._shownSpeciesName)
+                  || (_sp ? _spNameC[_sp] : null),
+    cfg: _cfgUM
+  });
 
   // Adapt lure copy to species and conditions, then load photos
   setTimeout(function(){
