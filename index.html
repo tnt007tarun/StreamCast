@@ -6090,6 +6090,46 @@ async function fetchFlow(gaugeId) {
 }
 
 // ── METHODS ───────────────────────────────────────────────────────────────────
+
+// ── SALMON METHOD: SINGLE SOURCE OF TRUTH ─────────────────────────────────────
+// The hero (buildTopPick) and the Technique panel (updateMethods) both have to answer
+// "what method for a salmon target on this water today". That decision used to live in
+// two hand-maintained copies, which drifted apart four separate times — spinning in the
+// hero while the panel said float, roe recommended for a Brown Trout fallback, roe
+// headlined on artificial-only water. Both callers now ask this function instead.
+//
+// Returns one of:
+//   'spin'   — fish are staging in the lake at THIS section; spoons from shore
+//   'float'  — fish are in the river here; roe or beads under a float
+//   null     — no salmon-specific override; use the normal flow/temperature branches
+function salmonMethodMode(opts) {
+  opts = opts || {};
+  var speciesKey = opts.speciesKey || null;
+  var fam        = opts.fam || '';
+  var cfg        = opts.cfg || null;
+  var staging    = !!opts.stagingModeActive;
+  var blocked    = !!opts.migratoryBlocked;
+
+  var isSalmon = speciesKey === 'chinook' || speciesKey === 'coho';
+  if (!isSalmon) return null;
+  // The angler forced a gear family — respect their kit over our preference.
+  if (fam === 'fly' || fam === 'spin') return null;
+  // Species can't physically reach this section, so we're recommending a fallback
+  // species and the salmon method must not be applied to it.
+  if (blocked) return null;
+  // Artificial lures only: roe, beads and worms are illegal, so no float recommendation.
+  if (cfg && cfg.artificialOnly) return null;
+  return staging ? 'spin' : 'float';
+}
+
+// Bait/organic-bait methods that cannot stand on artificial-only water.
+var BAIT_METHOD_RE = /roe|bead|bait|worm|centrepin|float fishing|drift bait|stationary/i;
+// Final legality pass — applied to whatever the flow/temperature branches produced.
+function legalMethodName(methodName, cfg) {
+  if (cfg && cfg.artificialOnly && BAIT_METHOD_RE.test(methodName || '')) return 'Nymphing';
+  return methodName;
+}
+
 function updateMethods(fc,tc,sc,flow,wt){
   var high=flow!=null&&flow>12,low=flow!=null&&flow<3,overcast=sc==="good",cold=wt<8;
   // Resolve array to single family for method rendering (first non-empty, or '')
@@ -6300,12 +6340,12 @@ function updateMethods(fc,tc,sc,flow,wt){
   // Technique panel. Resolve the section config here instead.
   var _cfgUM = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
   var _artificialOnly = !!(_cfgUM && _cfgUM.artificialOnly);
-  // If the salmon target can't physically reach this section we've already fallen back to
-  // a resident species, so the salmon method must not be applied to it. selectedSpecies
-  // still reads 'chinook', which is why the Upper Credit recommended roe for brown trout.
-  var _targetBlocked = !!window._migratoryBlockedSection;
-  if (isSalmonSp && !_stagingModeActive && !_targetBlocked && !_artificialOnly
-      && fam !== 'fly' && fam !== 'spin') {
+  var _salmonMode = salmonMethodMode({
+    speciesKey: _sp, fam: fam, cfg: _cfgUM,
+    stagingModeActive: _stagingModeActive,
+    migratoryBlocked: window._migratoryBlockedSection
+  });
+  if (_salmonMode === 'float') {
     var _fDepth = high ? 'Run deeper and heavier — high water pushes fish to the edges.'
                 : low  ? 'Downsize and lengthen your leader — low clear water makes salmon spooky.'
                 : 'Set the float so the bait drifts just above the bottom.';
@@ -6330,9 +6370,8 @@ function updateMethods(fc,tc,sc,flow,wt){
   // cannot stand on artificial-only water. Swap to the nearest legal equivalent rather
   // than showing nothing.
   if (_artificialOnly) {
-    var _BAIT_RE = /roe|bead|bait|worm|centrepin|float fishing|drift bait|stationary/i;
     var _legal = function(m) {
-      if (!m || !_BAIT_RE.test(m.n)) return m;
+      if (!m || legalMethodName(m.n, _cfgUM) === m.n) return m;
       return {n:'Nymphing', d:'Artificial lures only on this water \u2014 fish nymphs on a dead drift through runs and seams.',
               tip:'Only artificial lures and one single-pointed barbless hook are permitted here. No roe, worms or other organic bait.',
               c:'<span>Artificial lures only</span><span>Single barbless hook</span><span>Fish: Runs and seams</span>'};
@@ -7950,23 +7989,21 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // keyed on "is this river a staging zone", a permanent property, so the Ganaraska hero
   // said spinning all season while the technique panel correctly said float fishing.
   // Phase, not geography: staging = spoons, in river = roe under a float.
+  // Same decision as the Technique panel, from the same function — see salmonMethodMode.
   (function(){
-    var _sk = selectedSpecies && selectedSpecies[0];
-    var _isSalmonTarget = _sk === 'chinook' || _sk === 'coho';
-    if (!_isSalmonTarget) return;
-    // Respect an explicitly forced gear family, exactly as updateMethods does.
-    if (_fam === 'fly' || _fam === 'spin') return;
-    if (_stagingModeActive) {
-      topMethod = 'Spinning \u2014 Spoons & Lures';   // staging, and we're AT the mouth
-    } else {
-      // Anything else for a salmon target is in-river float fishing. The old condition
-      // required window._salmonInRiver, which is only set when the phase resolves to
-      // 'run'. Viewing an inland reach while fish stage at the mouth is neither state,
-      // so the hero fell through to the trout default and said "Nymphing" while the
-      // Technique panel correctly said float fishing.
-      topMethod = 'Float Fishing \u2014 Roe & Beads';
-    }
+    var _mode = salmonMethodMode({
+      speciesKey: selectedSpecies && selectedSpecies[0],
+      fam: _fam, cfg: cfg,
+      stagingModeActive: _stagingModeActive,
+      migratoryBlocked: window._migratoryBlockedSection
+    });
+    if (_mode === 'spin')  topMethod = 'Spinning \u2014 Spoons & Lures';
+    if (_mode === 'float') topMethod = 'Float Fishing \u2014 Roe & Beads';
   })();
+
+  // Final legality pass for the hero, mirroring updateMethods. Whatever branch produced
+  // topMethod, a bait/roe method cannot stand on artificial-only water.
+  topMethod = legalMethodName(topMethod, cfg);
 
   // Render the conditions tile grid (hero)
   (function(){
