@@ -2971,6 +2971,39 @@ function fetchLakeTemps() {
 // activity — e.g. Chinook in August = "Harbour Mouth". July = "In Lake" (nothing staging yet),
 // September = "Early Run" (fish are in the river, normal access points apply).
 
+
+// Reduce a section name to the river system it belongs to, e.g.
+//   "Lower-Mid Humber (Old Mill to Eglinton)"     -> "Humber"
+//   "Middle Bowmanville Creek (Fish Ladder)"      -> "Bowmanville Creek"
+//   "Ganaraska River — Lower (Lake to CNR Bridge)"-> "Ganaraska River"
+// The old inline version stripped only the leading Upper/Middle/Lower prefix, so a
+// trailing parenthetical survived and the substring match against STAGING_ZONES failed —
+// which is why the Lower-Mid Humber and Middle Bowmanville had no staging awareness at all.
+function riverSystemName(sectionName) {
+  if (!sectionName) return '';
+  return String(sectionName)
+    .split(',')[0]
+    .split(' \u2014 ')[0]                              // drop the em-dash qualifier
+    .replace(/\s*\([^)]*\)\s*/g, ' ')                  // drop any parenthetical
+    .replace(/^(Upper|Middle|Lower-Mid|Lower|Mid)\s+/i, '')
+    .trim();
+}
+// Find the staging zone for whatever system this section sits on. Exact match wins;
+// otherwise match on system name in either direction so "Humber" finds "Lower Humber River".
+function stagingZoneForSection(sectionName) {
+  if (typeof STAGING_ZONES === 'undefined' || !sectionName) return null;
+  var base = String(sectionName).split(',')[0].trim();
+  if (STAGING_ZONES[base]) return base;
+  var core = riverSystemName(base);
+  if (!core) return null;
+  var found = null;
+  Object.keys(STAGING_ZONES).forEach(function(z){
+    if (found) return;
+    if (z.indexOf(core) !== -1 || riverSystemName(z) === core) found = z;
+  });
+  return found;
+}
+
 // ── SEASONAL CLOSURES ─────────────────────────────────────────────────────────
 // Fish sanctuaries from the MNR 2026 summary. Recommending a spot inside a closed
 // sanctuary is the worst error this app can make, so closed spots are removed from
@@ -3136,6 +3169,7 @@ function renderStagingCard(sectionName, weather) {
   _stagingModeActive = false; // recomputed below; must not leak from the previous river
   _stagingPhaseResolved = false;
   window._salmonInRiver = false;
+  window._stagingElsewhere = null;
   var zone = STAGING_ZONES[sectionName];
   if (!zone || !container) return Promise.resolve();
 
@@ -3198,7 +3232,7 @@ function renderStagingCard(sectionName, weather) {
           var _isAtMouthNow = selectedRiver && STAGING_ZONES[selectedRiver];
           if (!_isAtMouthNow) {
             var _curName = selectedRiver ? selectedRiver.split(',')[0].split(' \u2014 ')[0].trim() : '';
-            var _coreN = _curName.replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+            var _coreN = riverSystemName(_curName);
             var _sysSec = null;
             Object.keys(STAGING_ZONES).forEach(function(z){ if (!_sysSec && _coreN && z.indexOf(_coreN) !== -1) _sysSec = z; });
             if (_sysSec) {
@@ -3242,7 +3276,19 @@ function renderStagingCard(sectionName, weather) {
     // fires when the season window reads 'absent'; a 'slow' window reaches here instead,
     // which is exactly the case that was leaking fly recommendations through.
     if (which === 'salmon') _stagingPhaseResolved = true;
-    if (phase.mode === 'stage' && which === 'salmon') {
+    // The staging section is resolved SYSTEM-WIDE: viewing the Middle Credit finds the
+    // Lower Credit staging zone. That's right for reporting "the fish are staging" but
+    // wrong for recommending a method, because you cannot throw spoons at a river mouth
+    // from an inland park. Staging methods only apply when you are AT the staging section.
+    var _selBase = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _atStagingSection = (sectionName === _selBase);
+    window._stagingElsewhere = null;
+    if (phase.mode === 'stage' && which === 'salmon' && !_atStagingSection) {
+      // Fish are staging, but not on the water being viewed. Say where they actually are
+      // instead of prescribing pier tactics for a spot with no pier.
+      window._stagingElsewhere = sectionName;
+    }
+    if (phase.mode === 'stage' && which === 'salmon' && _atStagingSection) {
       _stagingModeActive = true;
       window._salmonInRiver = false;
       if (!_stagingTechApplied) {
@@ -6338,14 +6384,8 @@ async function renderResults(){
     if (typeof renderStagingCard==="function" && selectedRiver && typeof STAGING_ZONES !== "undefined") {
       // Resolve the staging section system-wide: exact match first, else find the
       // mouth section on the same river system (Middle Credit → Lower Credit).
-      var _stgSection = null;
       var _srBase = selectedRiver.split(',')[0].trim();
-      if (STAGING_ZONES[_srBase]) {
-        _stgSection = _srBase;
-      } else {
-        var _srCore = _srBase.split(' \u2014 ')[0].replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
-        Object.keys(STAGING_ZONES).forEach(function(z){ if (!_stgSection && _srCore && z.indexOf(_srCore) !== -1) _stgSection = z; });
-      }
+      var _stgSection = stagingZoneForSection(_srBase);
       // Migratory fish can only be reported for sections they can actually reach. The
       // Upper Credit sits above the Norval dam, so salmon never get there — but the
       // system-wide fallback above happily matched it to the Credit staging zone and
@@ -6757,6 +6797,17 @@ async function renderResults(){
   updateMethods(fc,tc,sc,flow,wt);
   // If migratory fish physically cannot reach this section, say so in the conditions
   // subtitle rather than presenting upper-river access points as if they were an option.
+  // Fish are staging somewhere else on this system. Don't let the page read as though
+  // this reach is holding fish — name the water that actually is.
+  if (window._stagingElsewhere) {
+    var _seSub = document.getElementById('cond-subtitle');
+    if (_seSub) _seSub.textContent = 'Fish are still staging at the ' + window._stagingElsewhere
+      + ' \u2014 they haven\u2019t pushed up this far yet. Methods below are for when they do.';
+    var _seTech = document.getElementById('m1c');
+    if (_seTech && _seTech.innerHTML.indexOf('staging') === -1) {
+      _seTech.innerHTML = '<span>Fish not here yet</span>' + _seTech.innerHTML;
+    }
+  }
   if (window._migratoryBlockedSection) {
     var _blockedSp = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'};
     var _wantSp = selectedSpecies.length ? _blockedSp[selectedSpecies[0]] : null;
@@ -7900,7 +7951,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       if (_isSalmon && !_isAtMouth && selectedRiver && typeof STAGING_ZONES !== 'undefined') {
         // Strip Upper/Middle/Lower prefix to get the core river name (e.g. "Credit River")
         var _curRiverName = selectedRiver.split(',')[0].split(' \u2014 ')[0].trim();
-        var _coreName = _curRiverName.replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+        var _coreName = riverSystemName(_curRiverName);
         Object.keys(STAGING_ZONES).forEach(function(z) {
           if (!_sysStagingSection && _coreName && z.indexOf(_coreName) !== -1) _sysStagingSection = z;
         });
@@ -7965,7 +8016,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       var _sysStagingSlow = null;
       if (_isSalmonSlow && !_isAtMouthSlow && selectedRiver && typeof STAGING_ZONES !== 'undefined') {
         var _curRiverNameSlow = selectedRiver.split(',')[0].split(' \u2014 ')[0].trim();
-        var _coreNameSlow = _curRiverNameSlow.replace(/^(Upper|Middle|Lower|Lower-Mid)\s+/i, '').trim();
+        var _coreNameSlow = riverSystemName(_curRiverNameSlow);
         Object.keys(STAGING_ZONES).forEach(function(z) {
           if (!_sysStagingSlow && _coreNameSlow && z.indexOf(_coreNameSlow) !== -1) _sysStagingSlow = z;
         });
