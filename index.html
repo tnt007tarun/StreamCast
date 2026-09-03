@@ -727,6 +727,14 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
    The old single bordered container made everything read as equally important.
    Each pillar now stands alone, with technique carrying the most visual weight
    because it's the judgement that makes the other two make sense. */
+.closed-notice { background:rgba(192,57,43,.06); border:1px solid rgba(192,57,43,.28);
+  border-radius:8px; padding:.9rem 1rem; margin:1rem 2rem 0; }
+.closed-notice .cn-lbl { font-family:'JetBrains Mono',monospace; font-size:.56rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--red); margin-bottom:.5rem; }
+.closed-notice ul { margin:0 0 .5rem 1.1rem; }
+.closed-notice li { font-size:.86rem; line-height:1.55; color:var(--text); margin-bottom:.25rem; }
+.closed-notice .cn-foot { font-size:.74rem; color:var(--text); opacity:.7; line-height:1.5; }
+@media(max-width:620px){ .closed-notice { margin:1rem 1.1rem 0; } }
 .tgsec { margin:0 2rem 1.5rem; background:none; border:0; }
 .pillar { margin-bottom:1.15rem; }
 .pillar:last-child { margin-bottom:0; }
@@ -2962,6 +2970,57 @@ function fetchLakeTemps() {
 // Staging is "plausible" when the species' CURRENT season window describes harbour/mouth
 // activity — e.g. Chinook in August = "Harbour Mouth". July = "In Lake" (nothing staging yet),
 // September = "Early Run" (fish are in the river, normal access points apply).
+
+// ── SEASONAL CLOSURES ─────────────────────────────────────────────────────────
+// Fish sanctuaries from the MNR 2026 summary. Recommending a spot inside a closed
+// sanctuary is the worst error this app can make, so closed spots are removed from
+// recommendations entirely and shown with the reason rather than silently dropped.
+//
+// Dates are {from:'MM-DD', to:'MM-DD'} and may wrap the year end. Rules keyed to a
+// floating date ("Friday before the fourth Saturday in April") are resolved per-year.
+function _nthWeekdayOfMonth(year, month, weekday, n) { // month 1-12, weekday 0=Sun
+  var d = new Date(year, month - 1, 1), count = 0;
+  while (d.getMonth() === month - 1) {
+    if (d.getDay() === weekday) { count++; if (count === n) return new Date(d); }
+    d.setDate(d.getDate() + 1);
+  }
+  return null;
+}
+function _resolveClosureDate(token, year) {
+  // 'MM-DD' literal, or a named floating date
+  if (/^\d{2}-\d{2}$/.test(token)) {
+    return new Date(year, parseInt(token.slice(0,2),10) - 1, parseInt(token.slice(3),10));
+  }
+  if (token === 'FRI_BEFORE_4TH_SAT_APRIL') {
+    var s = _nthWeekdayOfMonth(year, 4, 6, 4);           // 4th Saturday in April
+    if (!s) return null;
+    var f = new Date(s); f.setDate(f.getDate() - 1); return f;
+  }
+  if (token === 'FRI_BEFORE_2ND_SAT_MAY') {
+    var s2 = _nthWeekdayOfMonth(year, 5, 6, 2);
+    if (!s2) return null;
+    var f2 = new Date(s2); f2.setDate(f2.getDate() - 1); return f2;
+  }
+  return null;
+}
+function accessClosureOn(spot, dateStr) {
+  if (!spot || !spot.closed || !spot.closed.length || !dateStr) return null;
+  var parts = dateStr.split('-');
+  var y = parseInt(parts[0],10);
+  var d = new Date(y, parseInt(parts[1],10) - 1, parseInt(parts[2],10));
+  for (var i = 0; i < spot.closed.length; i++) {
+    var win = spot.closed[i];
+    if (win.allYear) return win;
+    var from = _resolveClosureDate(win.from, y);
+    var to   = _resolveClosureDate(win.to, y);
+    if (!from || !to) continue;
+    if (from <= to) { if (d >= from && d <= to) return win; }
+    else { if (d >= from || d <= to) return win; }  // wraps the year end
+  }
+  return null;
+}
+function isAccessOpen(spot, dateStr) { return !accessClosureOn(spot, dateStr); }
+
 // How strongly should we steer people to the river MOUTH right now?
 // Returns 8/6/3/0. Keyed on the season window LABEL, because quality alone cannot tell
 // "Early Run" (fish still stacked at the mouth) from "Late Run" (fish spread through the
@@ -3313,13 +3372,13 @@ var RIVER_CONFIG = {
     regs:[],
     methods:["fly","spin","float"],
     access:[
-      {name:"Fergus Pool — Below Shand Dam",loc:"Fergus, ON · Below Shand Dam",crowd:"med",desc:"Closest tailwater to the dam. Cold, consistent flows year-round from depth-draw releases — prime summer water when other rivers are too warm."},
-      {name:"Elora Gorge",loc:"Elora, ON · Below gorge on river-right",crowd:"high",desc:"Deep pools, limestone walls, predictable brown trout habitat. Heavy weekend pressure. Gorge walls create shadow even on sunny days — a genuine advantage at midday."},
-      {name:"Racquet Club",loc:"Elora, ON · North of Quarry CA on Wellington Rd 18",crowd:"low",desc:"North of Elora on Wellington Rd 18. Turn right at the next road after the Quarry Conservation Area. Park here and follow the steep trail down to the river — can be slippery during wet weather."},
-      {name:"The Trestle",loc:"Elora, ON · Wellington Rd 18",crowd:"low",desc:"Past the railway trestle on Wellington Rd 18. Look for a sharp right turn — a marked trail and stairs lead down to the river."},
-      {name:"Wilson's Flats",loc:"Elora, ON · Grand River — Wilson's Flats",crowd:"low",desc:"Continue north on Wellington Rd 18 and turn left onto 2nd Line. Limited roadside parking, and the river is a short walk away."},
-      {name:"Irvine Creek Confluence",loc:"Elora, ON · Where Irvine Creek meets the Grand",crowd:"low",desc:"Underutilized. Confluence concentrates baitfish and large browns. Most anglers don't walk past the gorge — access via Wellington County trail system."},
-      {name:"Elora Gorge Conservation Area",loc:"Elora, ON · GRCA managed access",crowd:"high",desc:"Managed access with day-use fee. Interior sections slightly less pressured. The upstream end near the lookout bridge consistently holds large fish."}
+      {name:"Fergus Pool — Below Shand Dam",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Fergus, ON · Below Shand Dam",crowd:"med",desc:"Closest tailwater to the dam. Cold, consistent flows year-round from depth-draw releases — prime summer water when other rivers are too warm."},
+      {name:"Elora Gorge",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Below gorge on river-right",crowd:"high",desc:"Deep pools, limestone walls, predictable brown trout habitat. Heavy weekend pressure. Gorge walls create shadow even on sunny days — a genuine advantage at midday."},
+      {name:"Racquet Club",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · North of Quarry CA on Wellington Rd 18",crowd:"low",desc:"North of Elora on Wellington Rd 18. Turn right at the next road after the Quarry Conservation Area. Park here and follow the steep trail down to the river — can be slippery during wet weather."},
+      {name:"The Trestle",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Wellington Rd 18",crowd:"low",desc:"Past the railway trestle on Wellington Rd 18. Look for a sharp right turn — a marked trail and stairs lead down to the river."},
+      {name:"Wilson's Flats",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Grand River — Wilson's Flats",crowd:"low",desc:"Continue north on Wellington Rd 18 and turn left onto 2nd Line. Limited roadside parking, and the river is a short walk away."},
+      {name:"Irvine Creek Confluence",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Where Irvine Creek meets the Grand",crowd:"low",desc:"Underutilized. Confluence concentrates baitfish and large browns. Most anglers don't walk past the gorge — access via Wellington County trail system."},
+      {name:"Elora Gorge Conservation Area",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · GRCA managed access",crowd:"high",desc:"Managed access with day-use fee. Interior sections slightly less pressured. The upstream end near the lookout bridge consistently holds large fish."}
     ]
   },
   "Middle Grand River": {
@@ -3362,7 +3421,7 @@ var RIVER_CONFIG = {
     access:[
       {name:"Upper Credit Conservation Area",loc:"Caledon, ON · CVC managed · above Orangeville",crowd:"low",desc:"CVC-designated coldwater fishery on the upper Credit headwaters. Wild brook trout in the main river and feeder creeks. Catch-and-release only. Quieter than Belfountain — bring waders as bank access is limited."},
       {name:"Belfountain Conservation Area",loc:"Belfountain, ON · Above the falls",crowd:"med",desc:"Picturesque gorge setting above a small dam. Good dry fly water in low flows. The pool below the dam holds resident brown trout year-round. CVC managed — day-use fee applies."},
-      {name:"Forks of the Credit Provincial Park",loc:"Cataract, ON · Niagara Escarpment gorge",crowd:"med",desc:"Spectacular gorge section below the Cataract waterfalls. Wild brown trout in pools below the escarpment. Catch-and-release only in most sections. Hike-in required to the best water."},
+      {name:"Forks of the Credit Provincial Park",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31 (Old Baseline Rd to Hwy 9)'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Cataract, ON · Niagara Escarpment gorge",crowd:"med",desc:"Spectacular gorge section below the Cataract waterfalls. Wild brown trout in pools below the escarpment. Catch-and-release only in most sections. Hike-in required to the best water."},
       {name:"Belfountain to Inglewood Reach",loc:"Between Belfountain and Inglewood",crowd:"low",desc:"Walk-in access only along this productive section. Fewer anglers, quality fish. Brown trout and rainbow trout throughout. Road allowance access at several bridge crossings."}
     ]
   },
@@ -3378,7 +3437,7 @@ var RIVER_CONFIG = {
     methods:["float"],
     access:[
       {name:"Norval Conservation Area",loc:"Norval, ON · Below Norval Dam",crowd:"med",desc:"Access below the Norval Dam where migratory fish begin to concentrate. Good float fishing for steelhead in spring and fall salmon runs. Do not fish closer to the dam per MNR regulations."},
-      {name:"Streetsville Road Allowances",loc:"Streetsville, ON · Multiple road allowances",crowd:"low",desc:"Several road allowance access points through this reach. Quieter than the lower river access points."}
+      {name:"Streetsville Road Allowances",closed:[{from:'08-15',to:'12-31',why:'Fish sanctuary \u2014 no fishing Aug 15 to Dec 31 (Hwy 403 to Britannia Rd)'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Streetsville, ON · Multiple road allowances",crowd:"low",desc:"Several road allowance access points through this reach. Quieter than the lower river access points."}
     ]
   },
   "Lower Credit River": {
@@ -3628,7 +3687,7 @@ var RIVER_CONFIG = {
     methods:['float','fly'],
     access:[
       {name:'Jocelyn Street Bridge Access',loc:'Jocelyn Street · Port Hope',crowd:'med',desc:'Lower boundary of the sanctuary section. Good pool and run structure. Open Oct 15 through December for the extended fall season. During open periods this stretch holds excellent numbers of Chinook and Coho waiting below Corbetts Dam.'},
-      {name:'Port Hope Town Section — Sanctuary Area',loc:'Port Hope · Through town',crowd:'high',desc:'When open (Oct 15–Dec 31), this downtown stretch offers surprisingly good fishing with fish stacked below the dam upstream. Fly fishing and centrepin work well in the deeper pools. Respect the Sep 1–Oct 14 closure — wardens patrol this section.'}
+      {name:'Port Hope Town Section — Sanctuary Area',closed:[{from:'09-01',to:'10-14',why:'Fish sanctuary \u2014 no fishing Sep 1 to Oct 14 (Jocelyn St to CNR right-of-way)'}],loc:'Port Hope · Through town',crowd:'high',desc:'When open (Oct 15–Dec 31), this downtown stretch offers surprisingly good fishing with fish stacked below the dam upstream. Fly fishing and centrepin work well in the deeper pools. Respect the Sep 1–Oct 14 closure — wardens patrol this section.'}
     ]
   },
   'Ganaraska River — Corbetts Dam (Closed Year-Round)': {
@@ -5004,7 +5063,15 @@ function renderRiverUI(cfg) {
   // Sort access cards: recommended spot (low crowd, best match) first
   // During salmon staging (fish in the lake, not yet in the river), only show
   // harbour/port mouth spots — inland pools have nothing to catch yet.
-  var _accessSorted = (cfg && cfg.access ? cfg.access.slice() : []); // copy
+  var _tripDateAcc = (typeof getTripDateStr === 'function') ? getTripDateStr() : null;
+  var _closedSpots = (cfg && cfg.access ? cfg.access : []).filter(function(a){
+    return !isAccessOpen(a, _tripDateAcc);
+  });
+  // Closed spots are removed from the ranked list entirely and surfaced separately below,
+  // so an angler sees WHY a spot they know is missing rather than assuming we forgot it.
+  var _accessSorted = (cfg && cfg.access ? cfg.access.filter(function(a){
+    return isAccessOpen(a, _tripDateAcc);
+  }) : []);
   // An empty access list means a blank section with no explanation, which is worse than
   // slightly generic guidance. Fall back to the parent river's config, then the default.
   if (!_accessSorted.length) {
@@ -5173,6 +5240,28 @@ function renderRiverUI(cfg) {
   }).join("");
 
   // Build map with OpenStreetMap iframe
+  // Sanctuary notice — say plainly which spots are shut and why.
+  (function(){
+    var host = document.getElementById('access-grid');
+    if (!host || !_closedSpots.length) return;
+    var seen = {};
+    var rows = _closedSpots.map(function(s){
+      var win = accessClosureOn(s, _tripDateAcc);
+      var why = (win && win.why) || 'Fish sanctuary \u2014 closed to fishing';
+      var k = s.name + '|' + why;
+      if (seen[k]) return '';
+      seen[k] = 1;
+      return '<li><strong>' + s.name + '</strong> \u2014 ' + why + '</li>';
+    }).join('');
+    if (!rows) return;
+    var box = document.createElement('div');
+    box.className = 'closed-notice';
+    box.innerHTML = '<div class="cn-lbl">\u26a0 Closed on this date</div><ul>' + rows + '</ul>' +
+      '<div class="cn-foot">Sanctuary closures from the Ontario 2026 regulations. ' +
+      'Always confirm the exact boundary before you fish.</div>';
+    host.parentNode.insertBefore(box, host.nextSibling);
+  })();
+
   // Reorder coords to match _accessSorted (recommended spot first)
   var _sortedCoords = _accessSorted.map(function(a) {
     var origIdx = cfg.access.indexOf(a);
@@ -7657,13 +7746,28 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
   var bestSpot = null;
   if (cfg.access) {
+    // Drop anything closed on the trip date before ranking. A sanctuary closure is not a
+    // preference to weigh against drive time — it is illegal to fish there.
+    var _tripD = (typeof getTripDateStr === 'function') ? getTripDateStr() : null;
+    var _openAccess = cfg.access.filter(function(a){ return isAccessOpen(a, _tripD); });
+    cfg = Object.create(cfg);           // shadow, don't mutate the shared config
+    cfg.access = _openAccess.length ? _openAccess : [];
+  }
+  if (cfg.access && cfg.access.length) {
     if (_stagingActive) {
       var _mouthSpots = cfg.access.filter(function(a){ return a.mouth === true; });
       bestSpot = _mouthSpots[0] || cfg.access.find(function(a){ return a.crowd === 'low'; }) || cfg.access[0];
     } else {
-      bestSpot = cfg.access.find(function(a){ return a.crowd === 'low'; }) ||
-                 cfg.access.find(function(a){ return a.crowd === 'med'; }) ||
-                 cfg.access[0];
+      // Fish are IN THE RIVER. Prefer in-river spots and only fall back to a mouth spot
+      // if the section has nothing else. The old chain looked for low crowd, then med,
+      // then cfg.access[0] — and on rivers where every spot is 'high' (the Ganaraska has
+      // exactly two, both high) index 0 happened to be the harbour, so the hero sent
+      // people to the mouth on the very dates the fish had left it.
+      var _inRiver = cfg.access.filter(function(a){ return a.mouth !== true; });
+      var _pool = _inRiver.length ? _inRiver : cfg.access;
+      bestSpot = _pool.find(function(a){ return a.crowd === 'low'; }) ||
+                 _pool.find(function(a){ return a.crowd === 'med'; }) ||
+                 _pool[0];
     }
   }
 
