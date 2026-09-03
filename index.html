@@ -7880,9 +7880,16 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _sk = selectedSpecies && selectedSpecies[0];
     var _isSalmonTarget = _sk === 'chinook' || _sk === 'coho';
     if (!_isSalmonTarget) return;
+    // Respect an explicitly forced gear family, exactly as updateMethods does.
+    if (_fam === 'fly' || _fam === 'spin') return;
     if (_stagingModeActive) {
-      topMethod = 'Spinning \u2014 Spoons & Lures';
-    } else if (window._salmonInRiver) {
+      topMethod = 'Spinning \u2014 Spoons & Lures';   // staging, and we're AT the mouth
+    } else {
+      // Anything else for a salmon target is in-river float fishing. The old condition
+      // required window._salmonInRiver, which is only set when the phase resolves to
+      // 'run'. Viewing an inland reach while fish stage at the mouth is neither state,
+      // so the hero fell through to the trout default and said "Nymphing" while the
+      // Technique panel correctly said float fishing.
       topMethod = 'Float Fishing \u2014 Roe & Beads';
     }
   })();
