@@ -7717,13 +7717,18 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _fam = selectedTechFamily.length > 0 ? selectedTechFamily[0] : '';
   var _fl = _famLabels[_fam] || _famLabels[''];
   var topMethod = flow!=null&&flow>(cfg.flowHigh||20)*0.6 ? _fl.high : wt<8 ? _fl.cold : _fl.normal;
-  // Override: Chinook/Coho staging or running in a staging-zone river call for spin/lures, not trout nymphing
+  // Second copy of the salmon method override — this is the one the HERO reads. It still
+  // keyed on "is this river a staging zone", a permanent property, so the Ganaraska hero
+  // said spinning all season while the technique panel correctly said float fishing.
+  // Phase, not geography: staging = spoons, in river = roe under a float.
   (function(){
     var _sk = selectedSpecies && selectedSpecies[0];
     var _isSalmonTarget = _sk === 'chinook' || _sk === 'coho';
-    var _isStagingRiver = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
-    if (_isSalmonTarget && _isStagingRiver) {
+    if (!_isSalmonTarget) return;
+    if (_stagingModeActive) {
       topMethod = 'Spinning \u2014 Spoons & Lures';
+    } else if (window._salmonInRiver) {
+      topMethod = 'Float Fishing \u2014 Roe & Beads';
     }
   })();
 
@@ -8717,8 +8722,9 @@ function autoSelectBaitTab() {
 
   // Chinook or Coho at a staging zone → salmon lures panel
   var _isSalmonSp = selectedSpecies.length > 0 && (selectedSpecies[0] === 'chinook' || selectedSpecies[0] === 'coho');
-  var _isStaging  = selectedRiver && (typeof STAGING_ZONES !== 'undefined') && !!STAGING_ZONES[selectedRiver];
-  if (_isSalmonSp && _isStaging && (fam === 'spin' || fam === '')) {
+  // Phase, not geography — a staging ZONE is permanent, a staging PHASE is not. This
+  // forced the salmon-lures panel year-round on every mouth section.
+  if (_isSalmonSp && _stagingModeActive && (fam === 'spin' || fam === '')) {
     tab = 'salmon-lures';
     var btn2 = document.querySelector('.btab[data-tab="salmon-lures"]');
     if (btn2) showTab('salmon-lures', btn2);
