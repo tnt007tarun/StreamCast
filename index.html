@@ -749,6 +749,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
   color:var(--white); margin-bottom:.35rem; }
 .p-tech p { font-size:.87rem; line-height:1.55; opacity:.9; }
 .p-tmeta { display:flex; flex-wrap:wrap; gap:.32rem; margin-top:.75rem; }
+.p-tmeta span.chip-cr { background:rgba(224,123,42,.22); border-color:rgba(240,160,88,.55);
+  color:#f7d3ae; }
 .p-tmeta span { font-family:'JetBrains Mono',monospace; font-size:.53rem; letter-spacing:.08em;
   text-transform:uppercase; background:rgba(255,255,255,.07); border:1px solid rgba(158,207,202,.18);
   border-radius:3px; padding:.22rem .48rem; color:var(--foam); }
@@ -3408,6 +3410,11 @@ const TEMP_MIN = 8, TEMP_MAX = 14, TEMP_STRESS = 18;
 var RIVER_CONFIG = {
 
   "Upper Grand River (Tailwater)": {
+    // MNR 2026: Brook, Brown and Rainbow Trout are S-0 / C-0 here \u2014 catch and release only.
+    catchRelease:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
+    // MNR 2026: only artificial lures, one single-pointed barbless hook. Roe, worms and
+    // all other organic bait are illegal here — no float/bait method may be recommended.
+    artificialOnly:true,
     gauge:"02GA016", gaugeName:"Grand River below Shand Dam",
     sweetMin:8, sweetMax:12, flowLow:3, flowHigh:25,
     lat:43.700, lng:-80.280,
@@ -3428,6 +3435,11 @@ var RIVER_CONFIG = {
     ]
   },
   "Middle Grand River": {
+    // MNR 2026: Brook, Brown and Rainbow Trout are S-0 / C-0 here \u2014 catch and release only.
+    catchRelease:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
+    // MNR 2026: only artificial lures, one single-pointed barbless hook. Roe, worms and
+    // all other organic bait are illegal here — no float/bait method may be recommended.
+    artificialOnly:true,
     gauge:"02GA016", gaugeName:"Grand River below Shand Dam",
     sweetMin:8, sweetMax:15, flowLow:3, flowHigh:30,
     lat:43.420, lng:-80.320,
@@ -3440,6 +3452,9 @@ var RIVER_CONFIG = {
     access:[]
   },
   "Lower Grand River": {
+    // MNR 2026 (Paris to Brantford): Brown Trout, Rainbow Trout, Northern Pike,
+    // Smallmouth Bass and Walleye are all S-0 / C-0.
+    catchRelease:['Brown Trout','Rainbow Trout','Steelhead'],
     gauge:"02GA016", gaugeName:"Grand River below Shand Dam",
     sweetMin:10, sweetMax:30, flowLow:5, flowHigh:60,
     lat:43.000, lng:-79.900,
@@ -3455,6 +3470,11 @@ var RIVER_CONFIG = {
     ]
   },
   "Upper Credit River": {
+    // MNR 2026: Brook, Brown and Rainbow Trout are S-0 / C-0 here \u2014 catch and release only.
+    catchRelease:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
+    // MNR 2026: only artificial lures, one single-pointed barbless hook. Roe, worms and
+    // all other organic bait are illegal here — no float/bait method may be recommended.
+    artificialOnly:true,
     gauge:"02HB001", gaugeName:"Credit River near Cataract",
     sweetMin:5, sweetMax:15, flowLow:1, flowHigh:25,
     lat:43.870, lng:-80.010,
@@ -3644,6 +3664,8 @@ var RIVER_CONFIG = {
     ]
   },
   'Nottawasaga River — Lower Section (Boyne to Wasaga Beach)': {
+    // MNR 2026: Boyne River downstream to the Pine River \u2014 Rainbow Trout S-0 / C-0.
+    catchRelease:['Rainbow Trout','Steelhead'],
     gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
     sweetMin:8, sweetMax:30, flowLow:2, flowHigh:60,
     lat:44.300, lng:-79.980,
@@ -6271,7 +6293,15 @@ function updateMethods(fc,tc,sc,flow,wt){
   // Skipped when the angler has explicitly forced fly or spin gear — respect their kit.
   // Also skipped while salmon are STAGING: those fish are still in the lake, so float-fished
   // roe is the wrong answer no matter what the river flow says.
-  if (isSalmonSp && !_stagingModeActive && fam !== 'fly' && fam !== 'spin') {
+  // Bait is illegal on artificial-only water, so a roe-and-beads recommendation there is
+  // not merely suboptimal — it tells the angler to break the regs.
+  var _artificialOnly = !!(cfg && cfg.artificialOnly);
+  // If the salmon target can't physically reach this section we've already fallen back to
+  // a resident species, so the salmon method must not be applied to it. selectedSpecies
+  // still reads 'chinook', which is why the Upper Credit recommended roe for brown trout.
+  var _targetBlocked = !!window._migratoryBlockedSection;
+  if (isSalmonSp && !_stagingModeActive && !_targetBlocked && !_artificialOnly
+      && fam !== 'fly' && fam !== 'spin') {
     var _fDepth = high ? 'Run deeper and heavier — high water pushes fish to the edges.'
                 : low  ? 'Downsize and lengthen your leader — low clear water makes salmon spooky.'
                 : 'Set the float so the bait drifts just above the bottom.';
@@ -6292,6 +6322,20 @@ function updateMethods(fc,tc,sc,flow,wt){
           c:'<span>Lures: Spoons, large streamers</span><span>Swing across current</span><span>Best on fresh-run fish</span>'};
   }
 
+  // Final legality pass. Whatever the flow/temperature branches chose, a bait or roe method
+  // cannot stand on artificial-only water. Swap to the nearest legal equivalent rather
+  // than showing nothing.
+  if (_artificialOnly) {
+    var _BAIT_RE = /roe|bead|bait|worm|centrepin|float fishing|drift bait|stationary/i;
+    var _legal = function(m) {
+      if (!m || !_BAIT_RE.test(m.n)) return m;
+      return {n:'Nymphing', d:'Artificial lures only on this water \u2014 fish nymphs on a dead drift through runs and seams.',
+              tip:'Only artificial lures and one single-pointed barbless hook are permitted here. No roe, worms or other organic bait.',
+              c:'<span>Artificial lures only</span><span>Single barbless hook</span><span>Fish: Runs and seams</span>'};
+    };
+    m1 = _legal(m1); m2 = _legal(m2); m3 = _legal(m3);
+  }
+
   // Clear any staging override left over from a previous search before writing fresh methods
   _stagingTechApplied = false;
   // Default the conditions subtitle to the real target. The staging path overrides this
@@ -6308,6 +6352,32 @@ function updateMethods(fc,tc,sc,flow,wt){
   var _m1tip=document.getElementById("m1tip"); if(_m1tip) _m1tip.textContent=""; // blockquote removed
   // Secondary and tertiary methods removed: three pillars answer "what would I do
   // here today". Listing every other viable method was the encyclopedia problem.
+
+  // Catch-and-release notice. Belongs on the technique card, not buried in the regs panel:
+  // an angler decides whether to keep a fish at the water, and by then they've stopped
+  // reading. Shown only when it applies to the species actually being recommended.
+  (function(){
+    var cr = (cfg && cfg.catchRelease) || null;
+    if (!cr || !cr.length) return;
+    var _spName = {brown:'Brown Trout', rainbow:'Rainbow Trout', brook:'Brook Trout',
+                   steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
+    // Use the species actually on screen — which may be the fallback, not the original target.
+    var shown = (typeof window._shownSpeciesName === 'string' && window._shownSpeciesName)
+             || (_sp ? _spName[_sp] : null);
+    if (!shown || cr.indexOf(shown) === -1) return;
+    var chips = document.getElementById('m1c');
+    if (chips && chips.innerHTML.indexOf('Catch &amp; release') === -1
+              && chips.innerHTML.indexOf('Catch & release') === -1) {
+      chips.innerHTML = '<span class="chip-cr">\u21ba Catch &amp; release only</span>' + chips.innerHTML;
+    }
+    var note = document.getElementById('tg-gear-note');
+    if (note) {
+      var msg = shown + ' is catch and release only on this stretch (S-0, C-0). '
+              + 'Keep them wet, unhook in the water where you can, and bring pliers.';
+      note.textContent = note.textContent ? (note.textContent + ' ' + msg) : msg;
+      note.style.display = 'block';
+    }
+  })();
 
   // Pillar 2 — gear
   buildGearSetup(m1.n, fam, {cold:cold, high:high, low:low});
@@ -7913,6 +7983,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Species situation — fall back to recommendation if target is out of season
   var speciesNote = '';
   var fallbackSpecies = null;
+  // The species genuinely on screen. Set alongside every fallback assignment below so the
+  // catch-and-release check tests what we're recommending, not what was asked for.
+  window._shownSpeciesName = targetName || null;
   var recs = recommendSpecies(cfg);
 
   // Thermal stress filter: above 18°C, no trout should be recommended as fallback.
@@ -7969,7 +8042,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       var _stagingPlausible = seasonal && /harbour|staging|mouth/i.test(seasonal.label || '');
 
       if (recs.length > 0) {
-        fallbackSpecies = recs[0].name;
+        fallbackSpecies = recs[0].name; window._shownSpeciesName = fallbackSpecies;
         if (_isSalmon && !_isAtMouth && _sysStagingSection && _stagingPlausible) {
           // Salmon are staging/running at a mouth section on this same river system.
           // Redirect there instead of silently substituting a resident species —
@@ -7989,7 +8062,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
               : (seasonal && seasonal.note ? seasonal.note : ''));
         } else if (_isSalmon && _isAtMouth) {
           // At a harbour mouth — staging logic handles the headline; just set fallback quietly
-          fallbackSpecies = recs[0].name;
+          fallbackSpecies = recs[0].name; window._shownSpeciesName = fallbackSpecies;
           speciesNote = '';
         } else {
           speciesNote = targetName + ' not in river right now. Fish for ' + fallbackSpecies + ' instead (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
@@ -8032,7 +8105,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       if (_isSalmonSlow && (_isAtMouthSlow || _sysStagingSlow) && (_slowPlausible || (window._stagingPct != null && window._stagingPct >= 40))) {
         // Staging report already shows real activity — trust it over the generic seasonal label.
         // Only trigger when the staging card actually rendered something meaningful (Fair/Strong).
-        fallbackSpecies = recs.length > 0 ? recs[0].name : null;
+        fallbackSpecies = recs.length > 0 ? recs[0].name : null; if (fallbackSpecies) window._shownSpeciesName = fallbackSpecies;
         if (_sysStagingSlow) {
           headlineHtml = '<em>' + targetName + '</em> are starting to push in \u2014 see the staging report below. '
             + 'Best water is the <em>' + _sysStagingSlow + '</em>'
@@ -8044,14 +8117,14 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       } else {
         speciesNote = targetName + ' fishing is slow. ';
         if (recs.length > 0 && recs[0].name !== targetName) {
-          fallbackSpecies = recs[0].name;
+          fallbackSpecies = recs[0].name; window._shownSpeciesName = fallbackSpecies;
           speciesNote += 'Consider ' + fallbackSpecies + ' instead. ';
         }
       }
     }
   } else {
     if (recs.length > 0) {
-      fallbackSpecies = recs[0].name;
+      fallbackSpecies = recs[0].name; window._shownSpeciesName = fallbackSpecies;
       speciesNote = 'Best bet: ' + recs[0].name + ' (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
       if (recs.length > 1) speciesNote += recs[1].name + ' also good. ';
     }
@@ -9129,6 +9202,9 @@ function renderBaitPillar(topMethod) {
   // "Throwing spoons at the river mouth", which matches the generic /spoon/ lure rule and
   // was quietly swapping harbour spoons for river-brown crankbaits.
   var tab = _stagingModeActive ? 'salmon-lures' : methodToBaitTab(topMethod);
+  // Artificial-only water: the float panel is roe, beads and worms — all illegal here.
+  var _cfgAO = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
+  if (_cfgAO && _cfgAO.artificialOnly && tab === 'float') tab = 'nymphs';
   var src = document.getElementById('p-' + tab);
   var items = src ? Array.prototype.slice.call(src.querySelectorAll('.bi')) : [];
 
