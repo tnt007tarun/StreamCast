@@ -1,144 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ontario river fishing guides | HereFishyFishy</title>
 <meta name="description" content="First-hand guides to fishing Ontario rivers — salmon run timing, float fishing, euro nymphing the Upper Credit, and where steelhead hold.">
 <link rel="canonical" href="https://herefishyfishy.ca/guides/">
-<meta property="og:type" content="website">
 <meta property="og:title" content="Ontario river fishing guides | HereFishyFishy">
 <meta property="og:description" content="First-hand guides to fishing Ontario rivers — salmon run timing, float fishing, euro nymphing the Upper Credit, and where steelhead hold.">
 <meta property="og:url" content="https://herefishyfishy.ca/guides/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Nunito:ital,wght@0,600;0,700;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta property="og:type" content="article">
 <style>
-:root{--deep:#0d1f2d;--moss:#1a3a4a;--fern:#1e7a6e;--sage:#4a8c7a;--water:#247a90;
---mist:#9ecfca;--foam:#e0f4f0;--cream:#faf8f4;--white:#fff;--amber:#e07b2a;--gold:#e8b84a;
---ink:#1a2e3a;--border:rgba(30,122,110,.15);--text:#2c3e50}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Outfit',sans-serif;font-weight:300;background:var(--cream);color:var(--ink);
-line-height:1.65;-webkit-font-smoothing:antialiased}
-.skip{position:absolute;left:-9999px}.skip:focus{left:1rem;top:1rem;z-index:99;background:var(--cream);padding:.5rem 1rem;border-radius:4px}
-header.top{background:var(--deep);border-bottom:2px solid var(--fern);padding:.9rem 1.5rem;
-display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.brand{font-family:'Nunito',sans-serif;font-weight:700;font-style:italic;font-size:1.1rem;
-color:var(--cream);text-decoration:none}
-header.top nav{display:flex;gap:1.1rem}
-header.top nav a{font-size:.82rem;color:var(--mist);text-decoration:none}
-header.top nav a:hover,header.top nav a[aria-current]{color:var(--foam)}
-.crumb{max-width:760px;margin:1.5rem auto 0;padding:0 1.5rem;font-family:'JetBrains Mono',monospace;
-font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sage)}
-.crumb a{color:var(--sage)}
-article,.page{max-width:760px;margin:0 auto;padding:1rem 1.5rem 3.5rem}
-.eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.16em;
-text-transform:uppercase;color:var(--amber);margin-bottom:.6rem}
-h1{font-family:'Nunito',sans-serif;font-weight:700;font-size:2rem;line-height:1.2;
-letter-spacing:-.01em;margin-bottom:.7rem}
-.standfirst{font-size:1.08rem;color:var(--text);opacity:.9;margin-bottom:1.1rem}
-.meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;
-text-transform:uppercase;color:var(--sage);padding-bottom:1.5rem;border-bottom:1px solid var(--border);
-margin-bottom:1.9rem;display:flex;gap:.55rem;flex-wrap:wrap}
-.meta span:not(:last-child)::after{content:' ·';opacity:.5}
-h2{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.32rem;line-height:1.3;
-margin:2.3rem 0 .7rem;scroll-margin-top:1rem}
-h3{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.04rem;margin:1.6rem 0 .45rem}
-p{margin-bottom:1rem}
-article ul,article ol{margin:0 0 1.15rem 1.15rem}
-article li{margin-bottom:.45rem}
-strong{font-weight:600}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;
+--paper:#fbf9f5;--fern:#1e7a6e;--amber:#b8620f;--deep:#0d1f2d}
+body{background:var(--paper);color:var(--text);
+font:400 19px/1.72 Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+-webkit-font-smoothing:antialiased}
 a{color:var(--fern)}
-.answer{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--fern);
-border-radius:0 6px 6px 0;padding:1.05rem 1.2rem;margin:0 0 1.9rem}
-.answer .lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.14em;
-text-transform:uppercase;color:var(--sage);margin-bottom:.4rem}
-.answer p{margin:0;font-size:.98rem}
-.regs{background:rgba(224,123,42,.07);border:1px solid rgba(224,123,42,.32);border-radius:6px;
-padding:1.05rem 1.2rem;margin:1.9rem 0}
-.regs .lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.14em;
-text-transform:uppercase;color:#a85518;margin-bottom:.45rem}
-.regs p:last-child,.regs ul:last-child{margin-bottom:0}
-.regs ul{margin:0 0 .6rem 1.1rem}
-.regs li{margin-bottom:.3rem;font-size:.92rem}
-.vid{margin:1.9rem 0}
-.vid-frame{position:relative;aspect-ratio:16/9;border-radius:6px;overflow:hidden;
-background:var(--moss);display:block;border:1px solid var(--border)}
+.wrap{max-width:660px;margin:0 auto;padding:0 1.4rem}
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:1rem;top:1rem;z-index:99;background:var(--paper);padding:.5rem 1rem}
+
+.mast{border-bottom:1px solid var(--rule)}
+.mast .wrap{display:flex;align-items:center;justify-content:space-between;
+padding-top:1.1rem;padding-bottom:1.1rem;max-width:900px}
+.mast a.brand{font:italic 700 1.05rem/1 Charter,Georgia,serif;color:var(--ink);text-decoration:none}
+.mast nav{display:flex;gap:1.3rem}
+.mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);text-decoration:none}
+.mast nav a:hover,.mast nav a[aria-current]{color:var(--ink)}
+
+article,.page{padding:3.2rem 0 4rem}
+.eyebrow{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
+h1{font:700 2.45rem/1.14 Charter,'Iowan Old Style',Georgia,serif;color:var(--ink);
+letter-spacing:-.015em;margin-bottom:1.2rem}
+.standfirst{font-size:1.24rem;line-height:1.62;margin-bottom:0}
+.standfirst strong{color:var(--ink);font-weight:600}
+.meta{font:500 .78rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin:1.5rem 0 0;padding-top:1.1rem;border-top:1px solid var(--rule);
+display:flex;gap:.5rem;flex-wrap:wrap}
+.meta span:not(:last-child)::after{content:' ·';opacity:.6}
+
+p{margin:0 0 1.35rem}
+h2{font:700 1.55rem/1.28 Charter,Georgia,serif;color:var(--ink);
+letter-spacing:-.01em;margin:3rem 0 1rem}
+h3{font:700 1.1rem/1.35 Charter,Georgia,serif;color:var(--ink);margin:2rem 0 .6rem}
+strong{font-weight:600;color:var(--ink)}
+ul,ol{margin:0 0 1.35rem 1.2rem}li{margin-bottom:.5rem}
+
+/* the direct answer — a rule-bounded aside, not a card */
+.answer{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
+padding:1.2rem 0 1.3rem;margin:2.2rem 0}
+.answer .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.7rem}
+.answer p{font-size:1.06rem;margin-bottom:0}
+
+/* regulations — unmissable, but an inset rule rather than a box */
+.regs,.callout{border-left:3px solid var(--amber);padding:.2rem 0 .2rem 1.3rem;margin:2.2rem 0}
+.regs .lbl,.callout-label{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem;display:block}
+.regs p,.callout p{font-size:1rem;margin-bottom:.7rem}
+.regs p:last-child,.callout p:last-child{margin-bottom:0}
+.regs ul{margin:.4rem 0 .6rem 1.1rem}
+.regs li{font-size:1rem}
+
+blockquote{margin:2.4rem 0;padding-left:1.4rem;border-left:3px solid var(--rule)}
+blockquote p{font-style:italic;font-size:1.1rem;color:var(--ink)}
+blockquote p:last-child{margin-bottom:0}
+
+figure,.guide-img{margin:2.6rem 0}
+figure img,.guide-img img{display:block;width:100%;height:auto;border-radius:3px}
+figcaption{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.7rem}
+.guide-img.portrait img{max-width:420px;margin:0 auto}
+@media(min-width:900px){figure.wide{width:calc(100% + 180px);margin-left:-90px}}
+
+/* video — click to load, unchanged behaviour */
+.vid{margin:2.6rem 0}
+.vid-frame{position:relative;aspect-ratio:16/9;border-radius:3px;overflow:hidden;
+background:var(--deep);display:block}
 .vid-frame img{width:100%;height:100%;object-fit:cover;display:block}
 .vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-background:linear-gradient(180deg,rgba(13,31,45,.15),rgba(13,31,45,.5));cursor:pointer;border:0;width:100%}
-.vid-play i{width:56px;height:56px;border-radius:50%;background:rgba(13,31,45,.82);
+background:linear-gradient(180deg,rgba(13,31,45,.1),rgba(13,31,45,.45));cursor:pointer;border:0;width:100%}
+.vid-play i{width:56px;height:56px;border-radius:50%;background:rgba(13,31,45,.8);
 display:flex;align-items:center;justify-content:center;transition:transform .18s ease}
 .vid-play:hover i{transform:scale(1.08)}
-.vid-play svg{width:18px;height:18px;fill:var(--cream);margin-left:3px}
-.vid-cap{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.06em;
-color:var(--sage);margin-top:.55rem}
-.chapters{list-style:none;margin:.7rem 0 0!important;padding:0;
-display:flex;flex-wrap:wrap;gap:.4rem}
+.vid-play svg{width:18px;height:18px;fill:#fff;margin-left:3px}
+.vid-cap{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.7rem}
+.chapters{list-style:none;margin:.7rem 0 0!important;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
 .chapters li{margin:0}
-.chapters a{font-family:'JetBrains Mono',monospace;font-size:.6rem;text-decoration:none;
-background:var(--white);border:1px solid var(--border);border-radius:4px;padding:.28rem .5rem;
-display:inline-block;color:var(--text)}
+.chapters a{font:500 .72rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+text-decoration:none;border:1px solid var(--rule);border-radius:3px;padding:.32rem .55rem;
+display:inline-block;color:var(--muted);background:#fff}
 .chapters a:hover{border-color:var(--fern);color:var(--fern)}
-.faq{border-top:1px solid var(--border);margin:2.6rem auto 0;padding-top:1.6rem;
-max-width:760px}
-.faq p{margin-bottom:1rem}
-.faq h3{margin-top:1.3rem}
-.cta{background:var(--moss);border-radius:6px;padding:1.4rem 1.4rem;margin:2.4rem 0 0;color:var(--foam)}
-.cta h3{color:var(--cream);margin:0 0 .4rem}
-.cta p{margin-bottom:.9rem;font-size:.93rem;opacity:.9}
-.cta a{display:inline-block;background:var(--fern);color:var(--cream);text-decoration:none;
-font-weight:600;font-size:.88rem;padding:.6rem 1.1rem;border-radius:5px}
-.cta a:hover{background:var(--sage)}
-.sources{margin-top:2.4rem;border-top:1px solid var(--border);padding-top:1.3rem;
-font-size:.84rem;color:var(--text);opacity:.85}
-.sources h2{font-size:.95rem;margin:0 0 .5rem}
-.sources li{margin-bottom:.3rem}
-footer.site{background:var(--deep);color:var(--mist);padding:1.6rem 1.5rem;display:flex;
-align-items:center;gap:1.4rem;flex-wrap:wrap;justify-content:center;text-align:center;margin-top:2rem}
-footer.site a{color:var(--mist);text-decoration:none;font-size:.85rem}
-footer.site a:hover{color:var(--foam)}
-.ft-brand{font-family:'Nunito',sans-serif;font-weight:700;font-style:italic;color:var(--cream);font-size:1rem}
-footer.site nav{display:flex;gap:1.1rem;flex-wrap:wrap;justify-content:center}
-.ft-copy{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--mist);opacity:.55}
-/* index */
-.glist{list-style:none;margin:1.8rem 0 0;padding:0;display:grid;gap:1.1rem}
-.gitem{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;
-display:flex;transition:box-shadow .18s ease,border-color .18s ease}
-.gitem:hover{box-shadow:0 8px 22px rgba(26,58,74,.12);border-color:rgba(30,122,110,.35)}
-.gitem a{text-decoration:none;color:inherit;display:flex;width:100%}
-.gitem .thumb{width:132px;flex:none;background:linear-gradient(150deg,var(--moss),var(--water) 55%,var(--sage));
+
+table{width:100%;border-collapse:collapse;margin:1.6rem 0 2.2rem;
+font:400 .93rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.timing-table-wrap{overflow-x:auto}
+th{text-align:left;font-weight:600;color:var(--ink);font-size:.72rem;letter-spacing:.09em;
+text-transform:uppercase;padding:0 1rem .6rem 0;border-bottom:1px solid var(--ink);white-space:nowrap}
+td{padding:.75rem 1rem .75rem 0;border-bottom:1px solid var(--rule);vertical-align:top}
+td:first-child{color:var(--ink);font-weight:600}
+tr.group-row td{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.11em;text-transform:uppercase;color:var(--amber);padding-top:1.4rem;border-bottom:none}
+table a{font-size:.86rem;white-space:nowrap}
+
+/* FAQ — headings and prose, not cards */
+.faq-item{margin:0 0 1.6rem}
+.faq-q{font:700 1.1rem/1.35 Charter,Georgia,serif;color:var(--ink);margin-bottom:.5rem}
+.faq-a{font-size:1rem}
+
+/* call to action — a single line, not a slab */
+.cta,.live-cta{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+padding:1.3rem 0;margin:2.6rem 0;background:none;text-align:left;border-radius:0}
+.cta h3{margin:0 0 .4rem}
+.cta p,.live-cta p{font-size:1rem;margin-bottom:.8rem;color:var(--text)}
+.cta a,.live-cta a,.cta a.btn,.live-cta a.btn{display:inline-block;background:none;color:var(--fern);
+font:600 .92rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:0 0 3px;
+border-radius:0;border-bottom:2px solid rgba(30,122,110,.3);text-decoration:none}
+.cta a:hover,.live-cta a:hover{border-bottom-color:var(--fern);background:none}
+
+.sources,.endnote{margin-top:3.2rem;padding-top:1.4rem;border-top:1px solid var(--rule);
+font:400 .85rem/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--muted)}
+.sources h2{font-size:.95rem;margin:0 0 .5rem;font-family:inherit;letter-spacing:.06em;
+text-transform:uppercase;color:var(--text)}
+.sources strong,.endnote strong{color:var(--text)}
+
+/* guides index list */
+.glist{list-style:none;margin:2rem 0 0;padding:0}
+.gitem{border-top:1px solid var(--rule);margin:0}
+.gitem:last-child{border-bottom:1px solid var(--rule)}
+.gitem a{display:flex;gap:1.1rem;align-items:flex-start;text-decoration:none;color:inherit;
+padding:1.5rem 0}
+.gitem a:hover .gitem-h{color:var(--fern)}
+.gitem .thumb{width:104px;height:70px;flex:none;border-radius:3px;background:#e8eeec;
 background-size:cover;background-position:center}
-@media(max-width:620px){
-  /* Stack image over text — a 92px sliver of a 16:9 photo reads as noise */
-  .gitem a{flex-direction:column}
-  .gitem .thumb{width:100%;aspect-ratio:16/9}
-}
-.gitem .txt{padding:1rem 1.15rem}
-.gitem h2{font-size:1.05rem;margin:.3rem 0 .35rem}
-.gitem p{font-size:.87rem;margin:0;color:var(--text);opacity:.85}
-.gseason{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.13em;
-text-transform:uppercase;color:var(--sage)}
+.gitem .txt{flex:1;min-width:0}
+.gseason{font:600 .66rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .gseason.now{color:var(--amber)}
-@media(max-width:620px){
-  h1{font-size:1.6rem}
-  article,.page{padding:1rem 1.15rem 2.5rem}
+.gitem h2,.gitem-h{font:700 1.22rem/1.3 Charter,Georgia,serif;color:var(--ink);margin:.35rem 0 .3rem}
+.gitem p{font-size:.95rem;margin:0;color:var(--text)}
+
+footer.site{border-top:1px solid var(--rule);margin-top:3rem}
+footer.site .wrap{display:flex;gap:1.4rem;align-items:center;justify-content:space-between;
+padding-top:1.6rem;padding-bottom:2.4rem;flex-wrap:wrap;max-width:900px}
+footer.site a{font:500 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);text-decoration:none}
+footer.site .brand,footer.site .ft-brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--ink)}
+footer.site .ft-copy{display:none}
+
+@media(max-width:640px){
+  body{font-size:18px}
+  h1{font-size:1.95rem}
+  h2{font-size:1.35rem;margin-top:2.4rem}
+  .standfirst{font-size:1.12rem}
+  .mast nav{gap:.95rem}
+  .gitem a{flex-direction:column}
+  .gitem .thumb{width:100%;height:auto;aspect-ratio:16/9}
+  .guide-img.portrait img{max-width:100%}
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "name": "Ontario river fishing guides", "url": "https://herefishyfishy.ca/guides/", "publisher": {"@type": "Organization", "name": "HereFishyFishy"}, "hasPart": [{"@type": "Article", "headline": "When do salmon run in Ontario rivers?", "url": "https://herefishyfishy.ca/guides/salmon-run-timing/"}, {"@type": "Article", "headline": "Three float fishing tips for salmon", "url": "https://herefishyfishy.ca/guides/salmon-float-fishing-tips/"}, {"@type": "Article", "headline": "Euro nymphing the Upper Credit for rainbows", "url": "https://herefishyfishy.ca/guides/euro-nymphing-upper-credit/"}, {"@type": "Article", "headline": "Where steelhead actually hold in a river", "url": "https://herefishyfishy.ca/guides/where-steelhead-hold/"}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to main content</a>
-<header class="top">
+<header class="mast"><div class="wrap">
   <a class="brand" href="/">HereFishyFishy</a>
   <nav>
     <a href="/rivers">Rivers</a>
     <a href="/guides/" aria-current="page">Guides</a>
-    <a href="/about">About</a>
+    <a href="/">Conditions</a>
   </nav>
-</header>
+</div></header>
+<article id="main"><div class="wrap">
 <div class="page" id="main">
 <div class="eyebrow">Guides</div>
 <h1>Ontario river fishing guides</h1>
@@ -150,26 +189,21 @@ and what has actually worked. Written alongside the conditions tool, so the advi
   <p>Live flow, water temperature and cloud cover for Ontario rivers, with access points ranked for today.</p>
   <a href="/">Find today's best spot</a>
 </div>
-</div><footer class="site">
-  <a class="ft-brand" href="/">HereFishyFishy</a>
-  <nav>
-    <a href="/rivers">Rivers</a>
-    <a href="/guides/">Guides</a>
-    <a href="/about">About</a>
-  </nav>
-  <span class="ft-copy">Data: Water Survey of Canada &middot; Open-Meteo &middot; Refreshes every 15 min</span>
-</footer>
+</div>
+</div></article>
+<footer class="site"><div class="wrap">
+  <span class="brand">HereFishyFishy</span>
+  <span><a href="/rivers">Rivers</a> &nbsp; <a href="/guides/">Guides</a> &nbsp; <a href="/about">About</a></span>
+</div></footer>
 <script>
 document.querySelectorAll('.vid-play').forEach(function(b){
   b.addEventListener('click', function(){
     var id=b.getAttribute('data-yt');
     var f=document.createElement('iframe');
     f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
-    f.title='Video';
+    f.title='Video'; f.allowFullscreen=true;
     f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    f.allowFullscreen=true;
-    b.parentNode.appendChild(f);
-    b.remove();
+    b.parentNode.appendChild(f); b.remove();
   });
 });
 </script>
