@@ -2099,11 +2099,17 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* hero */
 /* .hero-copy is a CHILD of .hero-photo, so hiding the photo hid the headline too.
    Keep the container, drop only the photographic background and its fixed height. */
-#landing .hero-photo{position:static;height:auto;overflow:visible;background:none}
+#landing .hero-photo{position:static;height:auto;overflow:visible;background:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 #landing .hero-photo-bg{display:none}
 #landing .hero-photo::before,#landing .hero-photo::after{display:none}
-#landing .hero-copy{max-width:660px;margin:0 auto;padding:3.4rem 1.3rem 2.2rem;
-  text-align:center;background:none;position:static;bottom:auto;left:auto;right:auto}
+/* The base rule centres this with `left:50%; transform:translateX(-50%)`, which only
+   works while it is absolutely positioned. Now that it is in normal flow that transform
+   shifts the whole block bodily left by half its width — which is what was breaking the
+   centring. Clear the transform along with the offsets. */
+#landing .hero-copy{max-width:660px;margin-left:auto;margin-right:auto;
+  padding:3.4rem 1.3rem 2.2rem;text-align:center;background:none;position:static;
+  bottom:auto;left:auto;right:auto;transform:none}
 /* A later base rule sets .hero-copy h1{text-align:left}, so centring has to be stated
    here on the element itself rather than inherited from the container. */
 #landing .hero-copy h1{font:700 2.3rem/1.15 var(--ed-serif) !important;color:var(--ed-ink);
