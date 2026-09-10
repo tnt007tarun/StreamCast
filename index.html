@@ -2099,7 +2099,11 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* hero */
 /* .hero-copy is a CHILD of .hero-photo, so hiding the photo hid the headline too.
    Keep the container, drop only the photographic background and its fixed height. */
-#landing .hero-photo{position:static;height:auto;overflow:visible;background:none;
+/* A mobile rule sets .hero-photo{height:160px !important}. That was right when this held
+   a fixed-height photo; with the photo gone the copy is taller than 160px and spilled
+   over the form. !important here is required to beat it. */
+#landing .hero-photo{position:static;height:auto !important;min-height:0;
+  overflow:visible;background:none;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 #landing .hero-photo-bg{display:none}
 #landing .hero-photo::before,#landing .hero-photo::after{display:none}
@@ -2130,7 +2134,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .land-nav a{font-size:.74rem}}
 
 /* form */
-#landing .form-card{max-width:660px;margin:0 auto 1rem;padding:0 1.3rem;background:none;
+#landing .form-card{max-width:660px;margin:1.6rem auto 1rem;padding:0 1.3rem;background:none;
   border:0;box-shadow:none;border-radius:0}
 /* If the hero copy is ever empty or hidden, the form still needs clearance
    from the masthead — this is a floor, not a total. */
@@ -2172,8 +2176,12 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   font-family:var(--sans,inherit);color:var(--ed-text)}
 #landing .species-btn.active,#landing .tech-family-btn.active{border-color:var(--fern);
   background:rgba(30,122,110,.06);color:var(--ed-ink);box-shadow:none}
-#landing .species-btn-img{width:42px;height:42px;border-radius:50%;overflow:hidden;
-  border:1px solid var(--ed-rule);background:#dfe7e4;padding:0;display:block;margin:0 auto}
+/* Base is 44x26 and mobile forces 44x28 !important — a landscape strip. A 50% radius on
+   a non-square box is what produced the squashed ovals. Force a square so the circle is
+   round and object-fit:cover keeps the fish's aspect ratio at every width. */
+#landing .species-btn-img{width:44px !important;height:44px !important;aspect-ratio:1/1;
+  border-radius:50%;overflow:hidden;border:1px solid var(--ed-rule);background:#dfe7e4;
+  padding:0;display:block;margin:0 auto;flex:none}
 #landing .species-btn-img img{width:100%;height:100%;object-fit:cover;display:block}
 #landing .species-btn.active .species-btn-img{border-color:var(--fern);
   box-shadow:0 0 0 2px rgba(30,122,110,.18)}
@@ -2289,7 +2297,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     <div class="hero-copy">
       <h1>Discover where to fish today.</h1>
     <h3 class="hero-sub">Get personalized fishing spot recommendations, techniques, and gear based on current conditions</h3>
-      <br>
+      
     </div>
   </div>
 
