@@ -2203,20 +2203,30 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #landing .guides-wrap{max-width:660px;padding:0 1.3rem 3rem}
 #landing .guides-title{font-family:var(--ed-serif);font-weight:700;color:var(--ed-ink)}
 #landing .guides-eyebrow{font-family:'JetBrains Mono',monospace;color:var(--ed-muted)}
-/* guide cards become a reading list, matching /guides/ */
+/* Guides: one lead with a full-width image, then every other guide as a compact row.
+   Nothing is hidden — the old lead-plus-two layout showed three of six. */
 #landing .guides-grid{display:block;grid-template-columns:none}
-#landing .guides-stack{display:block}
-#landing .gcard,#landing .gcard-lead,#landing .gcard-side{display:flex;flex-direction:row;
-  background:none;border:0;border-bottom:1px solid var(--ed-rule);border-radius:0;
-  box-shadow:none;margin:0;padding:1.25rem 0;gap:1rem;align-items:flex-start}
+#landing .guides-list{display:block}
+#landing .gcard,#landing .gcard-lead,#landing .gcard-side{background:none;border:0;
+  border-bottom:1px solid var(--ed-rule);border-radius:0;box-shadow:none;margin:0;
+  padding:1.15rem 0;gap:1rem;align-items:flex-start}
 #landing .gcard:hover{box-shadow:none;transform:none}
 #landing .gspine{display:none}
-#landing .gimg,#landing .gcard-lead .gimg,#landing .gcard-side .gimg{width:96px;height:64px;
-  aspect-ratio:auto;flex:none;border-radius:3px;max-height:none}
+/* the lead: stacked, image on top */
+#landing .gcard-lead{display:block;padding:0 0 1.3rem}
+#landing .gcard-lead .gimg{width:100%;aspect-ratio:16/9;height:auto;max-height:none;
+  border-radius:3px;margin-bottom:.9rem;flex:none}
+#landing .gcard-lead h3{font:700 1.45rem/1.22 var(--ed-serif);color:var(--ed-ink);
+  margin:.3rem 0 .35rem}
+#landing .gcard-lead p{font:400 1rem/1.55 var(--ed-serif);color:var(--ed-text);opacity:1}
+/* the rest: thumbnail beside text */
+#landing .gcard-side{display:flex;flex-direction:row}
+#landing .gcard-side .gimg{width:88px;height:60px;aspect-ratio:auto;flex:none;
+  border-radius:3px;max-height:none}
 #landing .ginner{padding:0;flex:1;min-width:0}
-#landing .gcard h3,#landing .gcard-lead h3{font:700 1.08rem/1.32 var(--ed-serif);
-  color:var(--ed-ink);margin:.3rem 0 .25rem}
-#landing .gcard p{font:400 .92rem/1.5 var(--ed-serif);color:var(--ed-text);opacity:1}
+#landing .gcard-side h3{font:700 1.05rem/1.32 var(--ed-serif);color:var(--ed-ink);
+  margin:.28rem 0 .22rem}
+#landing .gcard-side p{font:400 .9rem/1.5 var(--ed-serif);color:var(--ed-text);opacity:1}
 #landing .gmonths{display:none}
 #landing .gstatus{font-family:'JetBrains Mono',monospace;font-size:.61rem;letter-spacing:.11em;
   color:var(--ed-muted);margin-top:.4rem;order:-1}
@@ -2231,9 +2241,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media(max-width:520px){
   #landing .hero-copy h1{font-size:1.85rem}
   #landing .hero-copy{padding:2.2rem 1.1rem 1.5rem}
-  #landing .gcard,#landing .gcard-lead,#landing .gcard-side{flex-direction:column}
-  #landing .gimg,#landing .gcard-lead .gimg,#landing .gcard-side .gimg{width:100%;
-    height:auto;aspect-ratio:16/9}
+  #landing .gcard-side{flex-direction:column}
+  #landing .gcard-side .gimg{width:100%;height:auto;aspect-ratio:16/9}
+  #landing .gcard-lead h3{font-size:1.25rem}
 }
 
 </style>
@@ -7395,6 +7405,13 @@ function setResHeader(riverName) {
    Cards reorder every load: in-peak first (largest slot), then in-shoulder, then the rest. */
 var GUIDES = [
   {
+    url:'/rivers/bowmanville/salmon-run/',
+    title:'When do salmon run in Bowmanville Creek?',
+    blurb:'A small creek with a big run \u2014 and a fish ladder that exists because volunteers once carried 15,000 salmon over the dam by hand.',
+    img:'/images/rivers/bowmanville-creek-valley.jpg',
+    peak:[9,10], on:[8,11], video:false
+  },
+  {
     // River-specific page. These rank better than the Ontario-wide guide — "bowmanville
     // salmon run 2026" sits at position 3.7 off a table row alone — so they lead.
     url:'/rivers/ganaraska/salmon-run/',
@@ -7470,7 +7487,9 @@ function renderGuides() {
   var sorted = GUIDES.slice().sort(function(a,b){
     return (rank(a) - rank(b)) || (monthsOut(a) - monthsOut(b));
   });
-  var lead = sorted[0], rest = sorted.slice(1, 3);
+  // Every guide is shown. The old lead-plus-two slice hid half the library once there were
+  // more than three, which cost visibility on the pages that exist for search.
+  var lead = sorted[0], rest = sorted.slice(1);
 
   function statusText(g) {
     if (g.peak.indexOf(m) !== -1) return 'Peak season \u00b7 in the water now';
@@ -7508,7 +7527,7 @@ function renderGuides() {
   }
 
   grid.innerHTML = card(lead, true) +
-    '<div class="guides-stack">' + rest.map(function(g){ return card(g, false); }).join('') + '</div>';
+    '<div class="guides-list">' + rest.map(function(g){ return card(g, false); }).join('') + '</div>';
 }
 
 function getTripDateStr() {
