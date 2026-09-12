@@ -749,6 +749,8 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .p-tmeta { display:flex; flex-wrap:wrap; gap:.32rem; margin-top:.75rem; }
 .p-tmeta span.chip-cr { background:rgba(224,123,42,.22); border-color:rgba(240,160,88,.55);
   color:#f7d3ae; }
+.p-tmeta span.chip-closed { background:rgba(192,57,43,.28); border-color:rgba(224,110,95,.6);
+  color:#ffd7d0; font-weight:600; }
 .p-tmeta span { font-family:'JetBrains Mono',monospace; font-size:.53rem; letter-spacing:.08em;
   text-transform:uppercase; background:rgba(255,255,255,.07); border:1px solid rgba(158,207,202,.18);
   border-radius:3px; padding:.22rem .48rem; color:var(--foam); }
@@ -3200,6 +3202,50 @@ function stagingZoneForSection(sectionName) {
   return found;
 }
 
+
+// ── TROUT & SALMON SEASON BY REACH ────────────────────────────────────────────
+// Ontario closes trout and salmon on most water on September 30, but named lower
+// reaches of Great Lakes tributaries stay open — some to December 31, some all year.
+// Getting this wrong sends anglers to closed water during the exact weeks the run peaks,
+// so every section carries an explicit season band:
+//
+//   'all-year'  — open 365 days (lowest reaches, below the CNR / Hwy 2 / Eglinton line)
+//   'extended'  — 4th Sat April to December 31 (middle reaches)
+//   'standard'  — 4th Sat April to September 30 (everything else)
+//
+// Sources: Ontario Fishing Regulations Summary 2026, Zone 16 and Zone 17 Species
+// Exceptions ("Additional Fishing Opportunities").
+function seasonWindowFor(band, year) {
+  var openD = _resolveClosureDate('FRI_BEFORE_4TH_SAT_APRIL', year);
+  if (openD) { openD = new Date(openD); openD.setDate(openD.getDate() + 1); } // the Saturday
+  if (band === 'all-year') return null;                       // never closed
+  var close = (band === 'extended') ? new Date(year, 11, 31) : new Date(year, 8, 30);
+  return { open: openD, close: close };
+}
+// Returns null when open, or {reason} when trout/salmon season is shut on this date.
+function seasonClosureFor(cfg, dateStr) {
+  if (!cfg || !dateStr) return null;
+  // Default to 'standard' — the most restrictive band. A section with no explicit season
+  // is treated as closing September 30, so a missing tag produces an over-cautious warning
+  // rather than silently sending someone to closed water. All six currently-untagged
+  // sections are upstream reaches where 'standard' is correct anyway.
+  var band = cfg.season || 'standard';
+  var parts = dateStr.split('-');
+  var y = parseInt(parts[0], 10);
+  var d = new Date(y, parseInt(parts[1],10) - 1, parseInt(parts[2],10));
+  var w = seasonWindowFor(band, y);
+  if (!w) return null;
+  if (d >= w.open && d <= w.close) return null;
+  var reopen = (d > w.close) ? (y + 1) : y;
+  return {
+    band: band,
+    reason: band === 'extended'
+      ? 'Trout and salmon season on this reach runs from the fourth Saturday in April to December 31.'
+      : 'Trout and salmon season on this reach runs from the fourth Saturday in April to September 30.',
+    reopens: reopen
+  };
+}
+
 // ── SEASONAL CLOSURES ─────────────────────────────────────────────────────────
 // Fish sanctuaries from the MNR 2026 summary. Recommending a spot inside a closed
 // sanctuary is the worst error this app can make, so closed spots are removed from
@@ -3607,6 +3653,7 @@ const TEMP_MIN = 8, TEMP_MAX = 14, TEMP_STRESS = 18;
 var RIVER_CONFIG = {
 
   "Upper Grand River (Tailwater)": {
+    season:'standard',
     // MNR 2026: Brook, Brown and Rainbow Trout are S-0 / C-0 here \u2014 catch and release only.
     catchRelease:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
     // MNR 2026: only artificial lures, one single-pointed barbless hook. Roe, worms and
@@ -3649,6 +3696,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   "Lower Grand River": {
+    season:'extended',
     // MNR 2026 (Paris to Brantford): Brown Trout, Rainbow Trout, Northern Pike,
     // Smallmouth Bass and Walleye are all S-0 / C-0.
     catchRelease:['Brown Trout','Rainbow Trout','Steelhead'],
@@ -3667,6 +3715,7 @@ var RIVER_CONFIG = {
     ]
   },
   "Upper Credit River": {
+    season:'standard',
     // MNR 2026: Brook, Brown and Rainbow Trout are S-0 / C-0 here \u2014 catch and release only.
     catchRelease:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
     // MNR 2026: only artificial lures, one single-pointed barbless hook. Roe, worms and
@@ -3689,6 +3738,7 @@ var RIVER_CONFIG = {
     ]
   },
   "Middle Credit River": {
+    season:'extended',
     gauge:"02HB001", gaugeName:"Credit River near Cataract",
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:43.660, lng:-79.880,
@@ -3708,6 +3758,7 @@ var RIVER_CONFIG = {
     ]
   },
   "Lower Credit River": {
+    season:'all-year',
     // Cataract sits ~40 km upstream near the Forks and does not represent lower-river flow.
     gauge:"02HB029", gaugeName:"Credit River at Streetsville",
     sweetMin:5, sweetMax:30, flowLow:1, flowHigh:60,
@@ -3727,6 +3778,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Bronte Creek — Lower Estuary & Mouth': {
+    season:'all-year',
     gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.434, lng:-79.716,
@@ -3743,6 +3795,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Bronte Creek — Mid-Section & Provincial Park': {
+    season:'extended',
     gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.465, lng:-79.735,
@@ -3759,6 +3812,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Bronte Creek — Upper Headwaters': {
+    season:'standard',
     gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.530, lng:-79.800,
@@ -3775,6 +3829,7 @@ var RIVER_CONFIG = {
   },
 
   "Lower Humber River": {
+    season:'all-year',
     gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
     sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
     lat:43.640, lng:-79.480,
@@ -3790,6 +3845,7 @@ var RIVER_CONFIG = {
     ]
   },
   "Lower-Mid Humber (Old Mill to Eglinton)": {
+    season:'all-year',
     gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
     sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
     lat:43.670, lng:-79.490,
@@ -3805,6 +3861,7 @@ var RIVER_CONFIG = {
     ]
   },
   "Middle Humber (Black Creek to Woodbridge)": {
+    season:'extended',
     gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
     sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
     lat:43.760, lng:-79.530,
@@ -3817,6 +3874,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   "Upper Humber River (Headwaters)": {
+    season:'standard',
     gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
     sweetMin:2, sweetMax:8, flowLow:0.5, flowHigh:15,
     lat:43.870, lng:-79.730,
@@ -3832,6 +3890,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Nottawasaga River — Headwaters (Niagara Escarpment)': {
+    season:'standard',
     gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:44.130, lng:-79.950,
@@ -3847,6 +3906,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Nottawasaga River — Middle Section (Alliston to Angus)': {
+    season:'standard',
     gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:44.150, lng:-79.900,
@@ -3868,6 +3928,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Nottawasaga River — Lower Section (Boyne to Wasaga Beach)': {
+    season:'all-year',
     // MNR 2026: Boyne River downstream to the Pine River \u2014 Rainbow Trout S-0 / C-0.
     catchRelease:['Rainbow Trout','Steelhead'],
     gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
@@ -3886,6 +3947,7 @@ var RIVER_CONFIG = {
   },
 
   'Duffins Creek — Lower Section': {
+    season:'all-year',
     gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.843, lng:-79.065,
@@ -3902,6 +3964,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Duffins Creek — Middle Section': {
+    season:'extended',
     gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.870, lng:-79.058,
@@ -3917,6 +3980,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Duffins Creek — Upper Reaches': {
+    season:'standard',
     gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.940, lng:-79.040,
@@ -3933,6 +3997,7 @@ var RIVER_CONFIG = {
   },
 
   'Ganaraska River — Lower (Lake to CNR Bridge)': {
+    season:'all-year',
     gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
     sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
     lat:43.940, lng:-78.305,
@@ -3948,6 +4013,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Ganaraska River — Port Hope Sanctuary': {
+    season:'extended',
     gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
     sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
     lat:43.945, lng:-78.300,
@@ -3975,6 +4041,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Ganaraska River — Upper & Conservation Areas': {
+    season:'standard',
     gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
     sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
     lat:43.980, lng:-78.290,
@@ -3992,6 +4059,7 @@ var RIVER_CONFIG = {
   },
 
   "Lower Beaver River (Thornbury)": {
+    season:'extended',
     gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:44.563, lng:-80.457,
@@ -4007,6 +4075,7 @@ var RIVER_CONFIG = {
     ]
   },
   "Middle Beaver River (Clarksburg to Heathcote)": {
+    season:'standard',
     gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:44.520, lng:-80.430,
@@ -4033,6 +4102,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   "Upper Beaver River (Kimberley)": {
+    season:'standard',
     gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
     lat:44.490, lng:-80.400,
@@ -4047,6 +4117,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Saugeen River — Headwaters & Upper Tributaries': {
+    season:'standard',
     gauge:'02FC016', gaugeName:'Saugeen River above Durham',
     sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
     lat:44.100, lng:-80.750,
@@ -4063,6 +4134,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Saugeen River — Middle Main Stem (Hanover to Paisley)': {
+    season:'standard',
     gauge:'02FC016', gaugeName:'Saugeen River above Durham',
     sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
     lat:44.220, lng:-81.000,
@@ -4075,6 +4147,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Saugeen River — Lower Main Stem (Paisley to Southampton)': {
+    season:'extended',
     gauge:'02FC016', gaugeName:'Saugeen River above Durham',
     sweetMin:10, sweetMax:40, flowLow:3, flowHigh:80,
     lat:44.400, lng:-81.200,
@@ -4091,6 +4164,7 @@ var RIVER_CONFIG = {
   },
 
   'Sixteen Mile Creek — Lower Reaches & Oakville Harbour': {
+    season:'all-year',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.440, lng:-79.672,
@@ -4106,6 +4180,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Sixteen Mile Creek — Middle Reaches & Main Valley': {
+    season:'standard',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.470, lng:-79.685,
@@ -4121,6 +4196,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Sixteen Mile Creek — Upper West Branch (Trout)': {
+    season:'standard',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
     sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
     lat:43.530, lng:-79.750,
@@ -4148,6 +4224,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Rouge River — Marsh & Mouth (Lake Ontario)': {
+    season:'all-year',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.803, lng:-79.134,
@@ -4164,6 +4241,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Rouge River — Mid-Section (Rouge National Urban Park)': {
+    season:'standard',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.835, lng:-79.142,
@@ -4180,6 +4258,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Rouge River — Upper & Milne Dam (Markham)': {
+    season:'standard',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.880, lng:-79.250,
@@ -4195,6 +4274,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Wilmot Creek — Mouth & Marsh (Lake Ontario)': {
+    season:'all-year',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.890, lng:-78.594,
@@ -4209,6 +4289,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Wilmot Creek — Lower River (to CN Rail Tracks)': {
+    season:'all-year',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.900, lng:-78.592,
@@ -4224,6 +4305,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)': {
+    season:'extended',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
     sweetMin:1, sweetMax:4, flowLow:0.2, flowHigh:8,
     lat:43.915, lng:-78.585,
@@ -4238,6 +4320,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Wilmot Creek — Upper Watershed & Orono Crown Lands': {
+    season:'standard',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
     sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
     lat:43.960, lng:-78.575,
@@ -4253,6 +4336,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Bowmanville Creek — River Mouth & Piers': {
+    season:'all-year',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
     sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
     lat:43.893, lng:-78.685,
@@ -4268,6 +4352,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Lower Bowmanville Creek': {
+    season:'all-year',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
     sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
     lat:43.900, lng:-78.685,
@@ -4283,6 +4368,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Middle Bowmanville Creek (Fish Ladder)': {
+    season:'extended',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
     lat:43.907, lng:-78.683,
@@ -4298,6 +4384,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Upper Bowmanville Creek': {
+    season:'standard',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
     sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
     lat:43.930, lng:-78.680,
@@ -4314,6 +4401,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Speed River — Upper (Above Guelph Lake)': {
+    season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.640, lng:-80.220,
@@ -4329,6 +4417,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Speed River — Middle (Guelph Lake to Downtown Guelph)': {
+    season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.570, lng:-80.250,
@@ -4341,6 +4430,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Speed River — Lower (Guelph to Cambridge Confluence)': {
+    season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.430, lng:-80.310,
@@ -4353,6 +4443,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Eramosa River — Upper Headwaters (Above Rockwood)': {
+    season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:8,
     lat:43.615, lng:-80.148,
@@ -4368,6 +4459,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Eramosa River — Mid-Section (Rockwood to Eden Mills)': {
+    season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
     sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
     lat:43.595, lng:-80.195,
@@ -4395,6 +4487,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Black Creek — Upper Reaches (Vaughan to North York)': {
+    season:'standard',
     gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
     sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
     lat:43.760, lng:-79.490,
@@ -4422,6 +4515,7 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Black Creek — Lower Watershed & Humber Confluence': {
+    season:'all-year',
     gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
     sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
     lat:43.670, lng:-79.500,
@@ -7165,6 +7259,24 @@ async function renderResults(){
   updateMethods(fc,tc,sc,flow,wt);
   // If migratory fish physically cannot reach this section, say so in the conditions
   // subtitle rather than presenting upper-river access points as if they were an option.
+  // Trout and salmon season is shut on this reach. This outranks every other note on the
+  // page: conditions do not matter if it is illegal to fish there today.
+  (function(){
+    var _cfgS = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
+    var _sc = (typeof seasonClosureFor === 'function')
+      ? seasonClosureFor(_cfgS, (typeof getTripDateStr === 'function') ? getTripDateStr() : null)
+      : null;
+    window._seasonClosed = _sc;
+    if (!_sc) return;
+    var sub = document.getElementById('cond-subtitle');
+    if (sub) sub.textContent = 'Trout and salmon season is closed on this stretch for the date you picked. '
+      + _sc.reason;
+    var chips = document.getElementById('m1c');
+    if (chips && chips.innerHTML.indexOf('Season closed') === -1) {
+      chips.innerHTML = '<span class="chip-closed">\u2715 Season closed here</span>' + chips.innerHTML;
+    }
+  })();
+
   // Fish are staging somewhere else on this system. Don't let the page read as though
   // this reach is holding fish — name the water that actually is.
   if (window._stagingElsewhere) {
