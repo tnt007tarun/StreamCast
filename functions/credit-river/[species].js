@@ -1,102 +1,108 @@
 // functions/credit-river/[species].js
 // Cloudflare Pages Function — handles /credit-river/{species} routes
-// Runs on herefishyfishy.ca domain, before Pages serves index.html
 
 // ── ROUTE TABLE ──────────────────────────────────────────────────────────────
+// gauge: the Lower Credit uses Streetsville (02HB029), NOT Cataract (02HB001).
+// Cataract sits ~40 km upstream near the Forks and does not represent lower-river flow.
+// access: must never list a reach that is closed during that species' season — see
+// `closures` below, which is surfaced on the page.
 const SSR_ROUTES = {
   'brown-trout': {
     river: 'Credit River',
     species: 'Brown Trout',
     section: 'Upper Credit River',
-    gauge: '02HB001',
+    gauge: '02HB001', gaugeName: 'Credit River near Cataract',
     sweetMin: 5, sweetMax: 15,
     lat: 43.870, lng: -80.010,
-    seasonMonths: [3, 9],
+    seasonMonths: [3, 8],   // April – September (season closes Sept 30)
     access: [
       'Forks of the Credit Provincial Park — Cataract, ON',
       'Belfountain Conservation Area — Belfountain, ON',
       'Upper Credit Conservation Area — Caledon, ON',
     ],
-    evergreen: `The Upper Credit River is one of Southern Ontario's best wild brown trout fisheries. The river runs cold year-round through the Niagara Escarpment gorge, holding resident browns from Cataract down through Belfountain. Best action is April through June on nymphs and dry flies, and again in September as water cools. The stretch above Old Baseline Road in Caledon is catch-and-release, artificial only.`,
-    tips: `Fish the seams at the head of pools in the morning before the sun hits the water. Hendrickson hatches in late April and early May draw fish to the surface. In summer, switch to a dropper rig with a small nymph off a dry fly.`,
+    closures: 'Above Old Baseline Road: artificial lures only, one single-pointed barbless hook, and catch-and-release for Brook, Brown and Rainbow Trout. Season runs from the fourth Saturday in April to September 30 — this water is closed October 1 to December 31.',
+    evergreen: `The Upper Credit is one of Southern Ontario's best wild brown trout fisheries. The river runs cold year-round through the Niagara Escarpment gorge, holding resident browns from Cataract down through Belfountain. Best action is April through June on nymphs and dry flies, and again in September as the water cools.`,
+    tips: `Fish the seams at the head of pools in the morning before the sun hits the water. Hendrickson hatches in late April and early May bring fish to the surface. In summer, switch to a dropper rig with a small nymph off a dry fly.`,
   },
   'rainbow-trout': {
     river: 'Credit River',
     species: 'Rainbow Trout',
-    section: 'Upper Credit River',
-    gauge: '02HB001',
-    sweetMin: 5, sweetMax: 15,
-    lat: 43.870, lng: -80.010,
-    seasonMonths: [2, 4],
+    section: 'Middle Credit River',
+    gauge: '02HB001', gaugeName: 'Credit River near Cataract',
+    sweetMin: 5, sweetMax: 20,
+    lat: 43.660, lng: -79.880,
+    seasonMonths: [2, 4],   // March – May
     access: [
-      'Norval Conservation Area — Norval, ON',
-      'Streetsville Road Allowances — Mississauga, ON',
+      'McNab Park — Norval, ON (below the Norval dam)',
       'Forks of the Credit Provincial Park — Cataract, ON',
     ],
-    evergreen: `Rainbow trout enter the Credit River in spring, typically March through May. Resident rainbows hold in the upper reaches year-round in smaller numbers. The best spring run fishing is around Norval and the Forks, where fish stack below holding pools. Flows between 10–20 m³/s produce the best conditions.`,
-    tips: `Drift roe, bead patterns, or large nymphs through the deep pools during peak flows. As levels drop through April, switch to lighter nymphing rigs with smaller flies. Early morning before 9AM is consistently the most productive window.`,
+    closures: 'The Forks reach is artificial lures only, single barbless hook, and catch-and-release for trout. Streetsville Road Allowances is deliberately not listed here: part of that reach sits below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary that closes August 15 to December 31.',
+    evergreen: `Rainbow trout push into the Credit in spring, typically March through May. Resident rainbows hold in the upper reaches year-round in smaller numbers. The best spring fishing is around Norval, where the dam is the upstream limit and fish stack in the pools below it.`,
+    tips: `Drift roe, beads or large nymphs through the deep pools during peak flows — but note that the artificial-only reaches above Old Baseline allow no bait at all. As levels drop through April, switch to lighter nymphing rigs with smaller flies. Before 9am is consistently the most productive window.`,
   },
   'brook-trout': {
     river: 'Credit River',
     species: 'Brook Trout',
     section: 'Upper Credit River',
-    gauge: '02HB001',
+    gauge: '02HB001', gaugeName: 'Credit River near Cataract',
     sweetMin: 3, sweetMax: 10,
     lat: 43.870, lng: -80.010,
-    seasonMonths: [3, 9],
+    seasonMonths: [3, 8],
     access: [
-      'Upper Credit Conservation Area — Caledon, ON (catch-and-release)',
+      'Upper Credit Conservation Area — Caledon, ON',
       'Belfountain Conservation Area — Belfountain, ON',
     ],
-    evergreen: `Brook trout are found in the coldest headwater reaches of the Upper Credit River, particularly in the catch-and-release sections above Old Baseline Road in Caledon. These are wild fish — smaller than the browns below but extraordinarily beautiful. Water temperature is key: brookies go off the feed when water exceeds 18°C in midsummer. Best fishing is May–June and again in September.`,
-    tips: `Use light tackle — 3 or 4 weight fly rod, 5x or 6x tippet, small flies (size 14–18). Brook trout in clear headwater streams spook easily. Wade carefully, stay low, and cast accurately to specific fish rather than covering water randomly.`,
+    closures: 'Catch-and-release only for Brook Trout on this stretch, artificial lures only, one single-pointed barbless hook. Season closes September 30.',
+    evergreen: `Brook trout hold in the coldest headwater reaches of the Upper Credit, particularly above Old Baseline Road in Caledon. These are wild fish — smaller than the browns below but extraordinarily beautiful. Water temperature is the whole game: brookies go off the feed above 18°C, so midsummer is unproductive. Best fishing is May–June and again in September.`,
+    tips: `Use light tackle — a 3 or 4 weight, 5x or 6x tippet, flies in the 14–18 range. Brook trout in clear headwater streams spook easily. Wade carefully, stay low, and cast to specific fish rather than covering water at random.`,
   },
   'steelhead': {
     river: 'Credit River',
     species: 'Steelhead',
-    section: 'Middle Credit River',
-    gauge: '02HB001',
+    section: 'Lower Credit River',
+    gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
     sweetMin: 8, sweetMax: 25,
-    lat: 43.660, lng: -79.880,
-    seasonMonths: [8, 4],
+    lat: 43.560, lng: -79.720,
+    seasonMonths: [8, 4],   // September – May
     access: [
-      'Norval Conservation Area — Norval, ON',
-      'Streetsville Conservation Area — Streetsville, ON',
       'Erindale Park — Mississauga, ON',
+      'Credit River Mouth — Port Credit, ON',
     ],
-    evergreen: `Steelhead begin entering the Credit River in late September following the Chinook salmon run, and continue through winter into late April. Peak fishing is March–April when fish push upriver on rising spring temperatures. The middle section around Norval and Streetsville holds the most accessible water.`,
-    tips: `In fall, swing large streamers or run float rigs with roe through the deeper pools. Spring fish are more willing to take nymphs dead-drifted through feeding lanes. Early morning before 9AM is consistently the most productive window on bright days.`,
+    closures: 'Streetsville Road Allowances is deliberately not listed: part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31 — which covers most of the fall steelhead run. Erindale Park is downstream of Hwy 403 and open year-round.',
+    evergreen: `Steelhead start entering the Credit in late September behind the Chinook run and keep coming through winter into late April. Peak fishing is March and April, when fish push upriver on rising spring temperatures. The lower river below Hwy 403 stays open all year for migratory fish.`,
+    tips: `In fall, swing large streamers or run float rigs with roe through the deeper pools. Spring fish are more willing to take nymphs dead-drifted through feeding lanes. Before 9am is consistently the most productive window on bright days.`,
   },
   'chinook-salmon': {
     river: 'Credit River',
     species: 'Chinook Salmon',
     section: 'Lower Credit River',
-    gauge: '02HB001',
-    sweetMin: 10, sweetMax: 40,
+    gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
+    sweetMin: 5, sweetMax: 30,
     lat: 43.560, lng: -79.720,
-    seasonMonths: [8, 10],
+    seasonMonths: [7, 10],  // August – November
     access: [
+      'Credit River Mouth — Port Credit, ON',
       'Erindale Park — Mississauga, ON',
-      'Port Credit Harbour Mouth — Port Credit, ON',
-      'Streetsville Conservation Area — Streetsville, ON',
     ],
-    evergreen: `Chinook salmon enter the Credit River from Lake Ontario starting in late September, with peak numbers moving through in October. Fish stack near the harbour mouth at Port Credit waiting for sufficient flow, then push upriver after rain events. The lower Credit through Mississauga holds the most fish.`,
-    tips: `Target the Credit during and just after rain events when flows spike above 15 m³/s — fresh fish push hard on rising water. Anchor beads, roe bags, or large streamers near the bottom of the deepest pools. Early morning low-light conditions produce the most aggressive fish.`,
+    closures: 'Streetsville Road Allowances is deliberately not listed: part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31 — the whole of the salmon run. Fish the mouth and Erindale instead; both are open.',
+    evergreen: `Chinook stage off Port Credit harbour from late July and enter the Credit from late August, with peak numbers moving through in late September and October. Fish hold near the harbour mouth waiting for flow, then push upriver after rain. Until they commit, the pier and beach fish better than the river does.`,
+    tips: `Target the Credit during and just after rain, when fresh fish push on rising water. While fish are still staging, cast spoons and spinners from the pier at dawn and dusk. Once they are in the river, float-fished roe or beads through the deepest pools is the more productive approach.`,
   },
   'coho-salmon': {
     river: 'Credit River',
     species: 'Coho Salmon',
     section: 'Lower Credit River',
-    gauge: '02HB001',
-    sweetMin: 8, sweetMax: 30,
+    gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
+    sweetMin: 5, sweetMax: 30,
     lat: 43.560, lng: -79.720,
-    seasonMonths: [9, 10],
+    seasonMonths: [8, 10],
     access: [
+      'Credit River Mouth — Port Credit, ON',
       'Erindale Park — Mississauga, ON',
-      'Port Credit Harbour Mouth — Port Credit, ON',
     ],
-    evergreen: `Coho salmon arrive on the Credit River in October, following the main Chinook push. Smaller and more acrobatic than Chinook, coho are known for aggressive takes and spectacular aerial fights. They hold higher in the water column than Chinook and are more willing to chase flies and lures.`,
-    tips: `Coho respond well to swung flies and small spoons — a size 2 silver spoon retrieved steadily through pools can be deadly. Focus on the lower 5km of the Credit, particularly in the pools below Erindale Park.`,
+    closures: 'The Hwy 403–Britannia reach is closed August 15 to December 31. Erindale Park is downstream of Hwy 403 and open.',
+    evergreen: `Coho arrive on the Credit in October, behind the main Chinook push. Smaller and more acrobatic than Chinook, they hold higher in the water column and are far more willing to chase a fly or a lure.`,
+    tips: `Coho respond well to swung flies and small spoons — a size 2 silver spoon retrieved steadily through a pool can be deadly. Focus on the lower river, particularly the pools below Erindale Park.`,
   },
 };
 
@@ -146,134 +152,157 @@ function scoreConditions(flow, airTemp, cloudPct, route, month) {
 }
 
 // ── HTML TEMPLATE ────────────────────────────────────────────────────────────
+// Editorial styling, matching /guides/ and /rivers/: serif on paper, hairline rules,
+// no gradient hero and no shadowed cards.
 function renderPage(route, cond, speciesSlug) {
-  const qualityColor = { excellent: '#6dbf8a', good: '#6dbf8a', marginal: '#e8a85a', tough: '#e07070', 'out-of-season': '#9ecfca' }[cond.quality] || '#9ecfca';
-  const stateColor = s => ({ good: '#6dbf8a', ok: '#e8a85a', poor: '#e07070', unknown: '#9ecfca' }[s] || '#9ecfca');
+  const stateColor = s => ({ good: '#1e7a6e', ok: '#b8620f', poor: '#a3402f', unknown: '#6b7d86' }[s] || '#6b7d86');
   const today = new Date().toLocaleDateString('en-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Toronto' });
-  // Map URL slug to the app's internal species key (data-value on species buttons)
   const speciesKeyMap = {
     'brown-trout': 'brown', 'rainbow-trout': 'rainbow', 'brook-trout': 'brook',
     'steelhead': 'steelhead', 'chinook-salmon': 'chinook', 'coho-salmon': 'coho'
   };
   const speciesKey = speciesKeyMap[speciesSlug] || speciesSlug;
-  const appLink = `https://herefishyfishy.ca/?river=${encodeURIComponent(route.section)}&species=${speciesKey}`;
+  const appLink = `/?river=${encodeURIComponent(route.section)}&species=${speciesKey}`;
+  const others = Object.keys(SSR_ROUTES).filter(k => k !== speciesSlug);
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${route.river} ${route.species} Fishing Conditions Today — HereFishyFishy</title>
-  <meta name="description" content="Live ${route.species} fishing conditions on the ${route.river} today. Flow: ${cond.flow != null ? cond.flow + ' m3/s' : 'check gauge'} · Water: ${cond.waterTemp != null ? '~' + cond.waterTemp + 'C' : 'unknown'} · Conditions: ${cond.qualityLabel}. Updated ${today}.">
-  <link rel="canonical" href="https://herefishyfishy.ca/credit-river/${speciesSlug}">
-  <link rel="icon" href="https://herefishyfishy.ca/favicon.ico">
-  <meta property="og:title" content="${route.river} ${route.species} — ${cond.qualityLabel} today">
-  <meta property="og:url" content="https://herefishyfishy.ca/credit-river/${speciesSlug}">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"${route.river} ${route.species} Fishing Conditions","url":"https://herefishyfishy.ca/credit-river/${speciesSlug}","isPartOf":{"@type":"WebApplication","name":"HereFishyFishy","url":"https://herefishyfishy.ca"}}</script>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f0ea;color:#1a2e3a}
-    a{color:#1e7a6e}
-    .topbar{background:#0d1f2d;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
-    .topbar-brand{font-family:Georgia,serif;font-style:italic;font-weight:700;color:#fff;font-size:1.1rem;text-decoration:none}
-    .topbar-link{font-size:.75rem;color:#9ecfca;text-decoration:none}
-    .hero{background:linear-gradient(160deg,#0d1f2d,#1a3a4a);padding:2rem 1.5rem 1.75rem}
-    .hero-inner{max-width:680px;margin:0 auto}
-    .eyebrow{font-family:'Courier New',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:#9ecfca;opacity:.65;margin-bottom:.5rem}
-    .hero-title{font-size:1.6rem;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.25rem}
-    .hero-sub{font-size:.9rem;color:#9ecfca;margin-bottom:1rem}
-    .quality-pill{display:inline-block;font-family:'Courier New',monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:${qualityColor};background:${qualityColor}22;padding:.3rem .8rem;border-radius:20px;margin-bottom:1.25rem}
-    .tiles{display:flex;gap:6px;margin-bottom:1.25rem}
-    .tile{flex:1;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid rgba(158,207,202,.12)}
-    .tile-bar{height:4px}
-    .tile-body{padding:9px 8px}
-    .tile-lbl{font-family:'Courier New',monospace;font-size:.52rem;letter-spacing:.06em;color:#9ecfca;opacity:.85;text-transform:uppercase;font-weight:700;margin-bottom:4px}
-    .tile-val{font-size:1rem;font-weight:700;color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .tile-meaning{font-family:'Courier New',monospace;font-size:.48rem;margin-top:3px;text-transform:uppercase}
-    .cta{display:block;background:#1e7a6e;color:#fff;text-align:center;padding:.85rem 1rem;border-radius:10px;font-weight:700;font-size:.95rem;text-decoration:none}
-    .cta-note{font-size:.65rem;color:#9ecfca;opacity:.65;text-align:center;margin-top:.4rem;font-family:'Courier New',monospace}
-    .content{max-width:680px;margin:0 auto;padding:1.5rem}
-    .card{background:#fff;border-radius:14px;padding:1.25rem;margin-bottom:1rem;border:1px solid rgba(30,122,110,.1)}
-    .card-title{font-family:'Courier New',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:#4a8c7a;margin-bottom:.6rem}
-    .card-body{font-size:.9rem;line-height:1.65;color:#2c3e50}
-    .tip{margin-top:.75rem;padding:.6rem .85rem;background:rgba(30,122,110,.05);border-left:3px solid #1e7a6e;border-radius:0 6px 6px 0;font-size:.85rem;color:#1a3a4a;line-height:1.55}
-    .access-list{list-style:none}
-    .access-list li{padding:.4rem 0;border-bottom:1px solid rgba(30,122,110,.08);font-size:.88rem}
-    .access-list li:last-child{border-bottom:none}
-    .access-list li::before{content:'📍 '}
-    .links{display:flex;flex-direction:column;gap:.4rem}
-    .updated{font-family:'Courier New',monospace;font-size:.6rem;color:#9ab5b0;text-align:center;padding:1rem;letter-spacing:.05em}
-    .footer{background:#0d1f2d;padding:1.25rem 1.5rem;text-align:center}
-    .footer a{color:#9ecfca;font-size:.8rem;text-decoration:none;margin:0 .75rem}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credit River ${route.species} — Conditions Today</title>
+<meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : '— check gauge'}, water ${cond.waterTemp != null ? '~' + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
+<link rel="canonical" href="https://herefishyfishy.ca/credit-river/${speciesSlug}">
+<meta property="og:title" content="Credit River ${route.species} — ${cond.qualityLabel} today">
+<meta property="og:description" content="Live flow, water temperature and access points for ${route.species} on the Credit River.">
+<meta property="og:url" content="https://herefishyfishy.ca/credit-river/${speciesSlug}">
+<meta property="og:type" content="article">
+<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Credit River ${route.species} Fishing Conditions","url":"https://herefishyfishy.ca/credit-river/${speciesSlug}","isPartOf":{"@type":"WebSite","name":"HereFishyFishy","url":"https://herefishyfishy.ca"}}</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;--paper:#fbf9f5;
+--fern:#1e7a6e;--amber:#b8620f;
+--serif:Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif}
+body{background:var(--paper);color:var(--text);
+font:400 19px/1.72 var(--serif);-webkit-font-smoothing:antialiased}
+a{color:var(--fern)}
+.wrap{max-width:660px;margin:0 auto;padding:0 1.4rem}
+.mast{border-bottom:1px solid var(--rule)}
+.mast .wrap{display:flex;align-items:center;justify-content:space-between;
+padding:1.1rem 1.4rem;max-width:900px}
+.mast .brand{font:italic 700 1.05rem/1 var(--serif);color:var(--ink);text-decoration:none}
+.mast nav{display:flex;gap:1.3rem}
+.mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);text-decoration:none}
+article{padding:3rem 0 4rem}
+.eyebrow{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
+h1{font:700 2.3rem/1.15 var(--serif);color:var(--ink);letter-spacing:-.015em;margin-bottom:.9rem}
+.standfirst{font-size:1.18rem;line-height:1.6}
+.byline{font:500 .76rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin:1.4rem 0 0;padding-top:1rem;border-top:1px solid var(--rule)}
+p{margin:0 0 1.3rem}
+h2{font:700 1.5rem/1.28 var(--serif);color:var(--ink);margin:2.8rem 0 1rem}
+strong{font-weight:600;color:var(--ink)}
+.now{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
+padding:1.2rem 0 1.3rem;margin:2.2rem 0}
+.now-lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.9rem}
+.tiles{display:flex;gap:1.6rem;flex-wrap:wrap}
+.tile-lbl{font:600 .62rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.tile-val{font:700 1.5rem/1 var(--serif);color:var(--ink)}
+.tile-meaning{font:600 .62rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.08em;text-transform:uppercase;margin-top:.35rem}
+.verdict{font:600 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.06em;margin-top:1.1rem}
+.cta-line{margin-top:1.1rem}
+.cta-line a{font:600 .88rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:2px}
+.regs{border-left:3px solid var(--amber);padding:.2rem 0 .2rem 1.3rem;margin:2rem 0}
+.regs-lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.6rem}
+.regs p{font-size:1rem;margin:0}
+ul{margin:0 0 1.3rem 1.2rem}li{margin-bottom:.45rem}
+.other{list-style:none;margin:0}
+.other li{border-bottom:1px solid var(--rule);margin:0}
+.other a{display:block;padding:.8rem 0;text-decoration:none;color:var(--ink);
+font:700 1rem/1.3 var(--serif)}
+.other a:hover{color:var(--fern)}
+.endnote{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+font:400 .84rem/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--muted)}
+footer.site{border-top:1px solid var(--rule);margin-top:2.5rem}
+footer.site .wrap{display:flex;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
+padding-top:1.5rem;padding-bottom:2.2rem;max-width:900px;align-items:center}
+footer.site a{font:500 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);text-decoration:none}
+footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
+@media(max-width:640px){body{font-size:18px}h1{font-size:1.85rem}.tiles{gap:1.2rem}}
+</style>
 </head>
 <body>
-<div class="topbar">
-  <a href="https://herefishyfishy.ca" class="topbar-brand">HereFishyFishy</a>
-  <a href="https://herefishyfishy.ca" class="topbar-link">All rivers &rarr;</a>
-</div>
-<div class="hero">
-  <div class="hero-inner">
-    <div class="eyebrow">Live conditions &middot; ${today}</div>
-    <div class="hero-title">${route.river} &middot; ${route.species}</div>
-    <div class="hero-sub">${route.section}</div>
-    <div class="quality-pill">Conditions: ${cond.qualityLabel}</div>
+<header class="mast"><div class="wrap">
+  <a class="brand" href="/">HereFishyFishy</a>
+  <nav><a href="/rivers/">Rivers</a><a href="/guides/">Guides</a><a href="/">Conditions</a></nav>
+</div></header>
+
+<article><div class="wrap">
+  <div class="eyebrow">Credit River &middot; ${route.section}</div>
+  <h1>Credit River ${route.species.toLowerCase()}, today</h1>
+  <p class="standfirst">${route.evergreen}</p>
+  <p class="byline">Live conditions &middot; ${today} &middot; Gauge: ${route.gaugeName}</p>
+
+  <div class="now">
+    <div class="now-lbl">The river right now</div>
     <div class="tiles">
-      <div class="tile">
-        <div class="tile-bar" style="background:${stateColor(cond.flowState)}"></div>
-        <div class="tile-body">
-          <div class="tile-lbl">Flow</div>
-          <div class="tile-val">${cond.flow != null ? cond.flow : '&mdash;'}</div>
-          <div class="tile-meaning" style="color:${stateColor(cond.flowState)}">${cond.flowLabel}</div>
-        </div>
-      </div>
-      <div class="tile">
-        <div class="tile-bar" style="background:${stateColor(cond.tempState)}"></div>
-        <div class="tile-body">
-          <div class="tile-lbl">Water</div>
-          <div class="tile-val">${cond.waterTemp != null ? '~' + cond.waterTemp + '&deg;' : '&mdash;'}</div>
-          <div class="tile-meaning" style="color:${stateColor(cond.tempState)}">${cond.tempLabel}</div>
-        </div>
-      </div>
-      <div class="tile">
-        <div class="tile-bar" style="background:${stateColor(cond.skyState)}"></div>
-        <div class="tile-body">
-          <div class="tile-lbl">Sky</div>
-          <div class="tile-val">${cond.cloudPct != null ? cond.cloudPct + '%' : '&mdash;'}</div>
-          <div class="tile-meaning" style="color:${stateColor(cond.skyState)}">${cond.skyLabel}</div>
-        </div>
-      </div>
+      <div><div class="tile-lbl">Flow</div>
+        <div class="tile-val">${cond.flow != null ? cond.flow + ' <span style="font-size:.8rem">m³/s</span>' : '&mdash;'}</div>
+        <div class="tile-meaning" style="color:${stateColor(cond.flowState)}">${cond.flowLabel}</div></div>
+      <div><div class="tile-lbl">Water temp</div>
+        <div class="tile-val">${cond.waterTemp != null ? '~' + cond.waterTemp + '&deg;' : '&mdash;'}</div>
+        <div class="tile-meaning" style="color:${stateColor(cond.tempState)}">${cond.tempLabel}</div></div>
+      <div><div class="tile-lbl">Sky</div>
+        <div class="tile-val">${cond.cloudPct != null ? cond.cloudPct + '%' : '&mdash;'}</div>
+        <div class="tile-meaning" style="color:${stateColor(cond.skyState)}">${cond.skyLabel}</div></div>
     </div>
-    <a href="${appLink}" class="cta">See full conditions, access points &amp; gear &rarr;</a>
-    <div class="cta-note">Opens the full app &middot; free &middot; no account needed</div>
-  </div>
-</div>
-<div class="content">
-  <div class="card">
-    <div class="card-title">About ${route.river} ${route.species} fishing</div>
-    <div class="card-body">${route.evergreen}<div class="tip">${route.tips}</div></div>
-  </div>
-  <div class="card">
-    <div class="card-title">Access points</div>
-    <ul class="access-list">${route.access.map(a => `<li>${a}</li>`).join('')}</ul>
-  </div>
-  <div class="card">
-    <div class="card-title">More Credit River fishing</div>
-    <div class="links">
-      <a href="/credit-river/brown-trout">Credit River &mdash; Brown Trout</a>
-      <a href="/credit-river/rainbow-trout">Credit River &mdash; Rainbow Trout</a>
-      <a href="/credit-river/brook-trout">Credit River &mdash; Brook Trout</a>
-      <a href="/credit-river/steelhead">Credit River &mdash; Steelhead</a>
-      <a href="/credit-river/chinook-salmon">Credit River &mdash; Chinook Salmon</a>
-      <a href="/credit-river/coho-salmon">Credit River &mdash; Coho Salmon</a>
+    <div class="verdict" style="color:${stateColor(cond.quality === 'excellent' || cond.quality === 'good' ? 'good' : cond.quality === 'marginal' ? 'ok' : 'poor')}">
+      Conditions: ${cond.qualityLabel}${route.sweetMin ? ` &middot; aim for ${route.sweetMin}&ndash;${route.sweetMax} m³/s` : ''}
     </div>
+    <div class="cta-line"><a href="${appLink}">See access points, technique and gear for today &rarr;</a></div>
   </div>
-</div>
-<div class="updated">Conditions updated ${new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Toronto' })} ET &middot; Flow: Water Survey of Canada &middot; Weather: Open-Meteo</div>
-<div class="footer">
-  <a href="https://herefishyfishy.ca">Home</a>
-  <a href="https://herefishyfishy.ca/sitemap.xml">Sitemap</a>
-</div>
+
+  <h2>How to fish it</h2>
+  <p>${route.tips}</p>
+
+  <div class="regs">
+    <div class="regs-lbl">Before you go</div>
+    <p>${route.closures} Confirm the current rules in the <a href="https://www.ontario.ca/page/ontario-fishing-regulations" target="_blank" rel="noopener">Ontario fishing regulations</a> for Zone 16 before you fish.</p>
+  </div>
+
+  <h2>Access points</h2>
+  <ul>${route.access.map(a => `<li>${a}</li>`).join('')}</ul>
+
+  <h2>Read next</h2>
+  <p>Timing for every Ontario river is in the <a href="/guides/salmon-run-timing/">river-by-river salmon
+  run guide</a>. For the drift itself, <a href="/guides/salmon-float-fishing-tips/">three float fishing
+  tips</a>. Every river we cover is on the <a href="/rivers/">rivers page</a>.</p>
+
+  <h2>Other species on the Credit</h2>
+  <ul class="other">${others.map(k => `<li><a href="/credit-river/${k}">${SSR_ROUTES[k].species} &rarr;</a></li>`).join('')}</ul>
+
+  <div class="endnote">
+    <strong>Sources.</strong> Flow: Water Survey of Canada, ${route.gaugeName} (${route.gauge}) &middot;
+    Weather: Open-Meteo &middot; Ontario Fishing Regulations Summary 2026, Zone 16. Conditions refresh
+    every 30 minutes. Regulations change and vary by reach — always confirm the rules for the exact
+    stretch you plan to fish.
+  </div>
+</div></article>
+
+<footer class="site"><div class="wrap">
+  <span class="b">HereFishyFishy</span>
+  <span><a href="/rivers/">Rivers</a> &nbsp; <a href="/guides/">Guides</a> &nbsp; <a href="/about">About</a></span>
+</div></footer>
 </body>
 </html>`;
 }
@@ -288,7 +317,6 @@ export async function onRequest(context) {
     return new Response('Not found', { status: 404 });
   }
 
-  // Cache key
   const cacheKey = `ssr:credit-river:${speciesSlug}`;
   if (env.CACHE) {
     try {
@@ -297,7 +325,6 @@ export async function onRequest(context) {
     } catch (e) {}
   }
 
-  // Fetch flow + weather in parallel
   const PROXY = 'https://streamcast-proxy.tnt-tarun.workers.dev';
   const [flowRes, wxRes] = await Promise.allSettled([
     fetch(`${PROXY}/flow?station=${route.gauge}`).then(r => r.json()).catch(() => null),
@@ -311,7 +338,6 @@ export async function onRequest(context) {
   const cond = scoreConditions(flow, airTemp, cloudPct, route, new Date().getMonth());
   const html = renderPage(route, cond, speciesSlug);
 
-  // Cache for 30 minutes
   if (env.CACHE) {
     try { await env.CACHE.put(cacheKey, html, { expirationTtl: 1800 }); } catch (e) {}
   }
