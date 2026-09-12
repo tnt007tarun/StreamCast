@@ -37,8 +37,8 @@ const SSR_ROUTES = {
       'Forks of the Credit Provincial Park — Cataract, ON',
     ],
     closures: 'The Forks reach is artificial lures only, single barbless hook, and catch-and-release for trout. Streetsville Road Allowances is deliberately not listed here: part of that reach sits below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary that closes August 15 to December 31.',
-    evergreen: `Rainbow trout push into the Credit in spring, typically March through May. Resident rainbows hold in the upper reaches year-round in smaller numbers. The best spring fishing is around Norval, where the dam is the upstream limit and fish stack in the pools below it.`,
-    tips: `Drift roe, beads or large nymphs through the deep pools during peak flows — but note that the artificial-only reaches above Old Baseline allow no bait at all. As levels drop through April, switch to lighter nymphing rigs with smaller flies. Before 9am is consistently the most productive window.`,
+    evergreen: `Rainbow trout run the Credit in spring, typically March through May, and resident rainbows hold in the upper reaches year-round in smaller numbers. Worth knowing how they get there: migratory fish stop at the Streetsville dam, and the water above it is stocked by hand — Credit River Anglers Association volunteers lift fish through the fishway and truck them 30 km north past the Norval dam. The ladder runs daily from ice-out to late April, which is exactly the spring run.`,
+    tips: `Drift roe, beads or large nymphs through the deep pools during peak flows — but note that the artificial-only reaches above Old Baseline allow no bait at all. As levels drop through April, switch to lighter nymphing rigs with smaller flies. Before 9am is consistently the most productive window. Below Streetsville you are fishing fish that arrived under their own power; above it, fish that were carried.`,
   },
   'brook-trout': {
     river: 'Credit River',
@@ -69,7 +69,7 @@ const SSR_ROUTES = {
       'Credit River Mouth — Port Credit, ON',
     ],
     closures: 'Streetsville Road Allowances is deliberately not listed: part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31 — which covers most of the fall steelhead run. Erindale Park is downstream of Hwy 403 and open year-round.',
-    evergreen: `Steelhead start entering the Credit in late September behind the Chinook run and keep coming through winter into late April. Peak fishing is March and April, when fish push upriver on rising spring temperatures. The lower river below Hwy 403 stays open all year for migratory fish.`,
+    evergreen: `Steelhead start entering the Credit in late September behind the Chinook run and keep coming through winter into late April. Peak fishing is March and April, when fish push upriver on rising spring temperatures. The lower river below Hwy 403 stays open all year. Unlike Chinook, steelhead get the whole river — they swim as far as the Streetsville dam, then Credit River Anglers Association volunteers lift them through the fishway and truck them 30 km north past Norval. When CRAA rebuilt the ladder entrance in 1997, the share of steelhead finding it went from 10–20% to 99.5%.`,
     tips: `In fall, swing large streamers or run float rigs with roe through the deeper pools. Spring fish are more willing to take nymphs dead-drifted through feeding lanes. Before 9am is consistently the most productive window on bright days.`,
   },
   'chinook-salmon': {
@@ -248,7 +248,7 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
 </div></header>
 
 <article><div class="wrap">
-  <div class="eyebrow">Credit River &middot; ${route.section}</div>
+  <div class="eyebrow"><a href="/rivers/credit/" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(184,98,15,.4)">Credit River</a> &middot; ${route.section}</div>
   <h1>Credit River ${route.species.toLowerCase()}, today</h1>
   <p class="standfirst">${route.evergreen}</p>
   <p class="byline">Live conditions &middot; ${today} &middot; Gauge: ${route.gaugeName}</p>
@@ -284,9 +284,11 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
   <ul>${route.access.map(a => `<li>${a}</li>`).join('')}</ul>
 
   <h2>Read next</h2>
-  <p>Timing for every Ontario river is in the <a href="/guides/salmon-run-timing/">river-by-river salmon
-  run guide</a>. For the drift itself, <a href="/guides/salmon-float-fishing-tips/">three float fishing
-  tips</a>. Every river we cover is on the <a href="/rivers/">rivers page</a>.</p>
+  <p>For the river as a whole &mdash; the three sections, the two dams, and why which stretch you pick
+  matters more here than anywhere &mdash; see <a href="/rivers/credit/">fishing the Credit River</a>.
+  Timing for every Ontario river is in the <a href="/guides/salmon-run-timing/">river-by-river salmon
+  run guide</a>, and for the drift itself, <a href="/guides/salmon-float-fishing-tips/">three float
+  fishing tips</a>.</p>
 
   <h2>Other species on the Credit</h2>
   <ul class="other">${others.map(k => `<li><a href="/credit-river/${k}">${SSR_ROUTES[k].species} &rarr;</a></li>`).join('')}</ul>
