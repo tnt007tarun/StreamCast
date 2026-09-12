@@ -3675,7 +3675,7 @@ var RIVER_CONFIG = {
     gauge:"02HB001", gaugeName:"Credit River near Cataract",
     sweetMin:5, sweetMax:15, flowLow:1, flowHigh:25,
     lat:43.870, lng:-80.010,
-    loc:"Headwaters to Norval Dam (Erin, Mono, Orangeville)",
+    loc:"Headwaters to Inglewood (Erin, Mono, Orangeville)",
     driveTime:{ toronto:35,mississauga:35,brampton:20,oakville:30,burlington:35,milton:20,hamilton:40,guelph:20,cambridge:35,kitchener:35,waterloo:35,orangeville:5,markham:30,"richmond hill":30,vaughan:25,ajax:45,pickering:40,"north york":30,scarborough:35,etobicoke:30,oshawa:50,whitby:50,bowmanville:60,clarington:60,newcastle:65,cobourg:80,"port hope":80,barrie:35,collingwood:40,"owen sound":60 },
     species:["Brown Trout","Rainbow Trout","Brook Trout"],
     active:true,
@@ -3692,9 +3692,13 @@ var RIVER_CONFIG = {
     gauge:"02HB001", gaugeName:"Credit River near Cataract",
     sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
     lat:43.660, lng:-79.880,
-    loc:"Norval Dam to Streetsville Dam",
+    loc:"Norval Dam upstream to Inglewood",
     driveTime:{toronto:30,mississauga:5,brampton:15,oakville:20,burlington:30,milton:15,hamilton:40,guelph:35,cambridge:50,kitchener:60,waterloo:60,orangeville:35,'north york':35,scarborough:40,etobicoke:20,markham:45,'richmond hill':40,vaughan:35,ajax:65,pickering:60,oshawa:75,whitby:70,bowmanville:90,clarington:100,newcastle:100,cobourg:135,'port hope':125,barrie:90,collingwood:110,'owen sound':150},
-    species:["Brown Trout","Rainbow Trout","Steelhead","Chinook Salmon","Coho Salmon"],
+    // Chinook and Coho removed: the Streetsville dam is their upstream limit, and the
+    // CRAA fishway is deliberately closed during the chinook run so MNR can collect
+    // eggs. Only Atlantic salmon, steelhead, brown trout and coaster brook trout are
+    // lifted above it.
+    species:["Brown Trout","Rainbow Trout","Steelhead"],
     active:true,
     regs:[{rule:"Check OMNR regs for this section — some areas closed during salmon season",icon:"📋"}],
     methods:["float"],
@@ -3708,7 +3712,10 @@ var RIVER_CONFIG = {
     gauge:"02HB029", gaugeName:"Credit River at Streetsville",
     sweetMin:5, sweetMax:30, flowLow:1, flowHigh:60,
     lat:43.560, lng:-79.720,
-    loc:"Streetsville Dam to Port Credit / Lake Ontario",
+    // Reach now runs up to the Norval dam. Chinook and Coho still stop at the
+    // Streetsville dam partway up it, so the access list stays below Streetsville —
+    // Erindale and the river mouth — and never sends anyone to water salmon cannot reach.
+    loc:"Norval Dam to Port Credit / Lake Ontario",
     driveTime:{ toronto:20,mississauga:15,brampton:10,oakville:5,burlington:15,milton:10,hamilton:20,guelph:25,cambridge:30,kitchener:35,waterloo:40,orangeville:30,markham:25,"richmond hill":25,vaughan:20,ajax:35,pickering:30,"north york":20,scarborough:25,etobicoke:15,oshawa:40,whitby:40,bowmanville:50,clarington:55,newcastle:55,cobourg:75,"port hope":70,barrie:50,collingwood:60,"owen sound":80 },
     species:["Steelhead","Chinook Salmon","Coho Salmon"],
     active:true,
