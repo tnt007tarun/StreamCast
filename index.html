@@ -5229,7 +5229,14 @@ function getRiverConfig(riverName) {
   if (!riverName) return RIVER_CONFIG["default"];
   var name = riverName.split(",")[0].trim();
   // Exact match only against known operational config keys (not RIVER_REGS)
-  var validKeys = ["Upper Credit River","Middle Credit River","Lower Credit River","Upper Grand River (Tailwater)","Middle Grand River","Lower Grand River","Lower Humber River","Lower-Mid Humber (Old Mill to Eglinton)","Upper Humber River (Headwaters)","Lower Beaver River (Thornbury)","Middle Beaver River (Clarksburg to Heathcote)","Beaver River Swamp (Heathcote to Kimberley)","Upper Beaver River (Kimberley)","Bronte Creek — Lower Estuary & Mouth","Bronte Creek — Mid-Section & Provincial Park","Bronte Creek — Upper Headwaters","Duffins Creek — Lower Section","Duffins Creek — Middle Section","Duffins Creek — Upper Reaches","Ganaraska River — Lower (Lake to CNR Bridge)","Ganaraska River — Port Hope Sanctuary","Ganaraska River — Corbetts Dam (Closed Year-Round)","Ganaraska River — Upper & Conservation Areas","Sixteen Mile Creek — Lower Reaches & Oakville Harbour","Sixteen Mile Creek — Middle Reaches & Main Valley","Sixteen Mile Creek — Upper West Branch (Trout)","Sixteen Mile Creek — Upper Middle/East Branches","Rouge River — Marsh & Mouth (Lake Ontario)","Rouge River — Mid-Section (Rouge National Urban Park)","Rouge River — Upper & Milne Dam (Markham)","Nottawasaga River — Headwaters (Niagara Escarpment)","Nottawasaga River — Middle Section (Alliston to Angus)","Nottawasaga River — Lower Section (Boyne to Wasaga Beach)","Saugeen River","Wilmot Creek — Mouth & Marsh (Lake Ontario)","Wilmot Creek — Lower River (to CN Rail Tracks)","Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)","Wilmot Creek — Upper Watershed & Orono Crown Lands","Bowmanville Creek","Speed River — Upper (Above Guelph Lake)","Speed River — Middle (Guelph Lake to Downtown Guelph)","Speed River — Lower (Guelph to Cambridge Confluence)","Eramosa River","Black Creek — Upper Reaches (Vaughan to North York)","Black Creek — Concrete Channel (Central North York)","Black Creek — Lower Watershed & Humber Confluence"];
+  // Derived from RIVER_CONFIG itself rather than maintained by hand. The old hardcoded
+  // list had drifted: 11 real sections were missing from it (all four Bowmanville
+  // sections, three Saugeen, three Eramosa, one Humber) and silently fell through to the
+  // default config — no gauge, wrong sweet spot, generic access text, and species
+  // reported as "not in this section". Three stale entries pointed at configs that no
+  // longer exist. Generating the list makes that class of drift impossible.
+  var validKeys = getRiverConfig._keys || (getRiverConfig._keys = Object.keys(RIVER_CONFIG)
+    .filter(function(k){ return k !== 'default' && RIVER_CONFIG[k] && RIVER_CONFIG[k].lat !== undefined; }));
   // Exact match
   if (validKeys.indexOf(name) !== -1 && RIVER_CONFIG[name] && RIVER_CONFIG[name].lat !== undefined) {
     return RIVER_CONFIG[name];
