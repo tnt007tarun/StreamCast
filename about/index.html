@@ -1,156 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About HereFishyFishy — Ontario River Fishing Conditions</title>
-  <meta name="description" content="HereFishyFishy was built by a Mississauga angler tired of driving 90 minutes to find out the river wasn't fishable. Free, no account needed.">
-  <link rel="canonical" href="https://herefishyfishy.ca/about">
-  <link rel="icon" href="/favicon.ico">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "name": "About HereFishyFishy",
-    "url": "https://herefishyfishy.ca/about",
-    "isPartOf": { "@type": "WebApplication", "name": "HereFishyFishy", "url": "https://herefishyfishy.ca" },
-    "author": { "@type": "Person", "name": "Tarun", "description": "Mississauga-based angler targeting trout and salmon on Southern Ontario rivers" }
-  }
-  </script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f0ea; color: #1a2e3a; }
-    a { color: #1e7a6e; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About HereFishyFishy &mdash; Ontario River Fishing Conditions</title>
+<meta name="description" content="Who makes HereFishyFishy and why. Live flow, run timing and regulations for Ontario rivers, written by someone who fishes them.">
+<link rel="canonical" href="https://herefishyfishy.ca/about">
+<meta property="og:title" content="About HereFishyFishy">
+<meta property="og:description" content="Live flow, run timing and regulations for Ontario rivers, written by someone who fishes them.">
+<meta property="og:url" content="https://herefishyfishy.ca/about">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://herefishyfishy.ca/images/about/about-steelhead-duffins.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;
+--paper:#fbf9f5;--fern:#1e7a6e;--amber:#b8620f;--deep:#0d1f2d}
+body{background:var(--paper);color:var(--text);
+font:400 19px/1.72 Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+-webkit-font-smoothing:antialiased}
+a{color:var(--fern)}
+.wrap{max-width:660px;margin:0 auto;padding:0 1.4rem}
 
-    .topbar { background: #0d1f2d; padding: .75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-    .topbar-brand { font-family: Georgia, serif; font-style: italic; font-weight: 700; color: #fff; font-size: 1.1rem; text-decoration: none; }
-    .topbar-nav { display: flex; gap: 1.5rem; align-items: center; }
-    .topbar-nav a { font-size: .8rem; color: #9ecfca; text-decoration: none; }
-    .topbar-nav a.active { color: #fff; }
-    .topbar-nav a:hover { color: #fff; }
+/* masthead — deliberately quiet */
+.mast{border-bottom:1px solid var(--rule);background:var(--paper)}
+.mast .wrap{display:flex;align-items:center;justify-content:space-between;
+padding-top:1.1rem;padding-bottom:1.1rem;max-width:900px}
+.mast a.brand{font:italic 700 1.05rem/1 Charter,Georgia,serif;color:var(--ink);text-decoration:none}
+.mast nav{display:flex;gap:1.3rem}
+.mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);text-decoration:none;letter-spacing:.01em}
+.mast nav a:hover{color:var(--ink)}
 
-    .hero { background: linear-gradient(160deg, #0d1f2d, #1a3a4a); padding: 3rem 1.5rem 2.5rem; }
-    .hero-inner { max-width: 680px; margin: 0 auto; }
-    .hero-eyebrow { font-family: 'Courier New', monospace; font-size: .6rem; letter-spacing: .15em; text-transform: uppercase; color: #9ecfca; opacity: .7; margin-bottom: .75rem; }
-    .hero-title { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: .75rem; }
-    .hero-sub { font-size: 1rem; color: #9ecfca; line-height: 1.65; }
+article{padding:3.2rem 0 4rem}
+.kicker{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
+h1{font:700 2.45rem/1.14 Charter,'Iowan Old Style',Georgia,serif;color:var(--ink);
+letter-spacing:-.015em;margin-bottom:1.2rem}
+.standfirst{font-size:1.24rem;line-height:1.62;color:var(--text)}
+.standfirst strong{color:var(--ink);font-weight:600}
+.byline{font:500 .78rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin:1.5rem 0 0;padding-top:1.1rem;border-top:1px solid var(--rule)}
 
-    .content { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+p{margin:0 0 1.35rem}
+h2{font:700 1.55rem/1.28 Charter,Georgia,serif;color:var(--ink);
+letter-spacing:-.01em;margin:3rem 0 1rem}
+h3{font:700 1.1rem/1.35 Charter,Georgia,serif;color:var(--ink);margin:2rem 0 .6rem}
+strong{font-weight:600;color:var(--ink)}
+em{font-style:italic}
 
-    .card { background: #fff; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; border: 1px solid rgba(30,122,110,.1); }
-    .card-title { font-family: 'Courier New', monospace; font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: #4a8c7a; margin-bottom: .85rem; padding-bottom: .5rem; border-bottom: 1px solid rgba(30,122,110,.1); }
-    .card-body { font-size: .92rem; line-height: 1.7; color: #2c3e50; }
-    .card-body p + p { margin-top: .85rem; }
+/* figures break the measure — the main visual rhythm */
+figure{margin:2.6rem 0}
+figure img{display:block;width:100%;height:auto;border-radius:3px}
+figcaption{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.7rem;padding-left:.1rem}
+@media(min-width:900px){
+  figure.wide{width:calc(100% + 180px);margin-left:-90px}
+}
 
-    .how-list { list-style: none; margin-top: .75rem; }
-    .how-list li { display: flex; gap: .85rem; padding: .65rem 0; border-bottom: 1px solid rgba(30,122,110,.08); font-size: .9rem; color: #2c3e50; line-height: 1.5; }
-    .how-list li:last-child { border-bottom: none; }
-    .how-num { font-family: 'Courier New', monospace; font-size: .9rem; font-weight: 700; color: #1e7a6e; flex-shrink: 0; width: 1.4rem; }
+/* the one live element — a rule-bounded aside, not a card */
+.now{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
+padding:1.3rem 0 1.4rem;margin:2.4rem 0}
+.now .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.75rem}
+.now p{font-size:1.02rem;margin-bottom:.9rem}
+.now a{font:600 .88rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:2px}
+.now a:hover{border-bottom-color:var(--fern)}
 
-    .species-grid { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
-    .sp-chip { display: flex; align-items: center; gap: .4rem; padding: .3rem .7rem; background: rgba(30,122,110,.07); border-radius: 20px; font-size: .8rem; color: #1e7a6e; }
-    .sp-chip img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+/* regs — must be unmissable, but as an inset rule not a box */
+.regs{border-left:3px solid var(--amber);padding:.2rem 0 .2rem 1.3rem;margin:2.2rem 0}
+.regs .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem}
+.regs p{font-size:1rem;margin-bottom:.7rem}
+.regs p:last-child{margin-bottom:0}
 
-    .cta-block { text-align: center; padding: 2rem 0 .5rem; }
-    .cta-btn { display: inline-block; background: #1e7a6e; color: #fff; padding: .85rem 1.75rem; border-radius: 10px; font-weight: 700; font-size: 1rem; text-decoration: none; }
-    .cta-btn:hover { background: #2a9d8f; }
-    .cta-note { font-size: .75rem; color: #4a8c7a; margin-top: .5rem; font-family: 'Courier New', monospace; }
+blockquote{margin:2.4rem 0;padding-left:1.4rem;border-left:3px solid var(--rule)}
+blockquote p{font-style:italic;font-size:1.1rem;color:var(--ink)}
+blockquote p:last-child{margin-bottom:0}
 
-    .footer { background: #0d1f2d; padding: 1.5rem; text-align: center; }
-    .footer a { color: #9ecfca; font-size: .8rem; margin: 0 .75rem; text-decoration: none; }
-    .footer-copy { font-size: .7rem; color: #4a8c7a; margin-top: .5rem; }
+table{width:100%;border-collapse:collapse;margin:1.6rem 0 2.2rem;
+font:400 .93rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+th{text-align:left;font-weight:600;color:var(--ink);font-size:.72rem;letter-spacing:.09em;
+text-transform:uppercase;padding:0 1rem .6rem 0;border-bottom:1px solid var(--ink)}
+td{padding:.75rem 1rem .75rem 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--text)}
+tr:last-child td{border-bottom:none}
 
-    @media (max-width: 600px) {
-      .hero-title { font-size: 1.5rem; }
-    }
-  </style>
+ul{margin:0 0 1.35rem 1.2rem}li{margin-bottom:.5rem}
+
+.endnote{margin-top:3.2rem;padding-top:1.4rem;border-top:1px solid var(--rule);
+font:400 .85rem/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--muted)}
+.endnote strong{color:var(--text)}
+
+footer.site{border-top:1px solid var(--rule);margin-top:3rem}
+footer.site .wrap{display:flex;gap:1.4rem;align-items:center;justify-content:space-between;
+padding-top:1.6rem;padding-bottom:2.4rem;flex-wrap:wrap;max-width:900px}
+footer.site a{font:500 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);text-decoration:none}
+footer.site .brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--ink)}
+
+@media(max-width:640px){
+  body{font-size:18px}
+  h1{font-size:1.95rem}
+  h2{font-size:1.35rem;margin-top:2.4rem}
+  .standfirst{font-size:1.12rem}
+  .mast nav{gap:.95rem}
+}
+
+.credit{display:block;margin-top:.3rem;font-size:.78rem;opacity:.8}
+.stamp{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.62rem;
+letter-spacing:.04em;color:var(--muted);margin-top:.7rem}
+.vid{margin:2.6rem 0}
+.vid-frame{position:relative;aspect-ratio:16/9;border-radius:3px;overflow:hidden;background:var(--deep)}
+.vid-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(180deg,rgba(13,31,45,.1),rgba(13,31,45,.45));cursor:pointer;border:0;width:100%}
+.vid-play i{width:56px;height:56px;border-radius:50%;background:rgba(13,31,45,.8);
+display:flex;align-items:center;justify-content:center}
+.vid-play svg{width:18px;height:18px;fill:#fff;margin-left:3px}
+.vid-cap{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.7rem}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2.6rem 0}
+.pair figure{margin:0}
+.pair img{width:100%;height:auto;border-radius:3px;display:block}
+.pair figcaption{font:400 .8rem/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.6rem}
+.sectbl td:first-child{white-space:normal}
+.speclist{list-style:none;margin:1.4rem 0 2rem}
+.speclist li{border-bottom:1px solid var(--rule);padding:.9rem 0;display:flex;
+justify-content:space-between;gap:1rem;align-items:baseline}
+.speclist .s{font-weight:600;color:var(--ink)}
+.speclist .w{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.68rem;
+letter-spacing:.06em;color:var(--muted);white-space:nowrap;text-align:right}
+.speclist a{text-decoration:none;border-bottom:1px solid rgba(30,122,110,.3)}
+@media(max-width:620px){.pair{grid-template-columns:1fr}}
+
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2.6rem 0}
+.pair figure{margin:0}
+.pair img{width:100%;height:auto;border-radius:3px;display:block}
+.pair figcaption{font:400 .8rem/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.6rem}
+.yt{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
+padding:1.3rem 0;margin:2.6rem 0}
+.yt .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.7rem}
+.yt p{font-size:1.02rem;margin-bottom:.9rem}
+.yt a.go{font:600 .9rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:2px}
+.principles{list-style:none;margin:1.4rem 0 2rem}
+.principles li{border-bottom:1px solid var(--rule);padding:1rem 0}
+.principles strong{display:block;margin-bottom:.25rem}
+.principles span{font-size:.96rem;line-height:1.6}
+@media(max-width:620px){.pair{grid-template-columns:1fr}}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "AboutPage", "name": "About HereFishyFishy", "url": "https://herefishyfishy.ca/about", "description": "Who makes HereFishyFishy, why it exists, and where the data comes from.", "mainEntity": {"@type": "Person", "name": "TJ", "url": "https://herefishyfishy.ca/about", "sameAs": ["https://youtube.com/@fishingwithtj"], "description": "Ontario angler and the person behind HereFishyFishy and the Fishing with TJ YouTube channel."}}</script>
 </head>
 <body>
 
-<div class="topbar">
-  <a href="/" class="topbar-brand">HereFishyFishy</a>
-  <nav class="topbar-nav">
-    <a href="/rivers">Rivers</a>
-    <a href="/about" class="active">About</a>
-    <a href="/">Check conditions →</a>
-  </nav>
-</div>
+<header class="mast"><div class="wrap">
+  <a class="brand" href="/">HereFishyFishy</a>
+  <nav><a href="/rivers/">Rivers</a><a href="/guides/">Guides</a><a href="/">Conditions</a></nav>
+</div></header>
 
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">About this app</div>
-    <h1 class="hero-title">Built by an angler, for anglers</h1>
-    <p class="hero-sub">I got tired of driving 90 minutes to discover the river was blown out, the fish weren't running, or the conditions were wrong. So I built something to check first.</p>
-  </div>
-</div>
+<article id="main"><div class="wrap">
 
-<div class="content">
+  <div class="kicker">About</div>
+  <h1>Someone who fishes these rivers built this</h1>
+  <p class="standfirst">HereFishyFishy exists because I got tired of checking four websites before
+  every trip &mdash; a gauge here, a weather forecast there, the regulations PDF somewhere else
+  &mdash; and still driving to water that turned out to be blown out, too warm, or closed. It now
+  covers <a href="/rivers/">eleven Ontario rivers</a>, reach by reach.</p>
 
-  <div class="card">
-    <div class="card-title">The problem this solves</div>
-    <div class="card-body">
-      <p>Every Ontario angler knows the feeling. You block off a Saturday, load the truck, drive out to the Credit or the Grand or the Ganaraska — and when you get there, the flow is double what it should be after Tuesday's rain, or the gauge is reading 1.2 m³/s when you need at least 5, or the fish just haven't shown up yet.</p>
-      <p>There was no single place to check conditions across Southern Ontario rivers before heading out. Water Survey of Canada has gauge data but no context. Weather apps don't tell you what 57% cloud cover means for trout feeding behaviour. MNR doesn't tell you whether it's the right week for steelhead on a specific river.</p>
-      <p>HereFishyFishy pulls live flow data, estimated water temperature, and hourly cloud cover together and tells you, in plain English, whether it's worth the drive today — and if not, which nearby river might be better.</p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">How it works</div>
-    <div class="card-body">
-      <ul class="how-list">
-        <li><span class="how-num">1</span><span>Tell us where you're driving from and which species you're targeting — or just ask for the best option near you today.</span></li>
-        <li><span class="how-num">2</span><span>We pull live gauge readings from Water Survey of Canada and cross-reference them against each river's sweet spot flow range.</span></li>
-        <li><span class="how-num">3</span><span>Weather conditions — air temperature (to estimate water temp), cloud cover, and wind — are pulled from Open-Meteo for each river's exact coordinates.</span></li>
-        <li><span class="how-num">4</span><span>Seasonal fishing windows are layered on top — we know when each species runs on each river and flag if they're in season, staging, or absent.</span></li>
-        <li><span class="how-num">5</span><span>The result: a plain-English recommendation with the best access point, the right technique for today's conditions, and a go/no-go call you can act on.</span></li>
-      </ul>
-    </div>
+  <div class="pair">
+    <figure>
+      <img src="/images/about/about-steelhead-duffins.jpg" width="1200" height="904" loading="eager"
+        alt="Chrome steelhead held low over the water on Duffins Creek in spring">
+      <figcaption>Spring steelhead, <a href="/?river=Duffins%20Creek%20%E2%80%94%20Lower%20Section&species=steelhead">Duffins Creek</a>.</figcaption>
+    </figure>
+    <figure>
+      <img src="/images/about/about-chinook-bowmanville.jpg" width="900" height="1200" loading="lazy"
+        alt="A large Chinook salmon held at the water's edge on Bowmanville Creek">
+      <figcaption>Chinook, <a href="/rivers/bowmanville/salmon-run/">Bowmanville Creek</a>.</figcaption>
+    </figure>
   </div>
 
-  <div class="card">
-    <div class="card-title">Species we cover</div>
-    <div class="card-body">
-      <p>Coverage is focused on the species that Southern Ontario river anglers spend the most time chasing.</p>
-      <div class="species-grid">
-        <span class="sp-chip"><img src="/images/species/brown-trout.jpg" alt="Brown Trout">Brown Trout</span>
-        <span class="sp-chip"><img src="/images/species/rainbow-trout.jpg" alt="Rainbow Trout">Rainbow Trout</span>
-        <span class="sp-chip"><img src="/images/species/brook-trout.jpg" alt="Brook Trout">Brook Trout</span>
-        <span class="sp-chip"><img src="/images/species/steelhead.jpg" alt="Steelhead">Steelhead</span>
-        <span class="sp-chip"><img src="/images/species/chinook-salmon.jpg" alt="Chinook Salmon">Chinook Salmon</span>
-        <span class="sp-chip"><img src="/images/species/coho-salmon.jpg" alt="Coho Salmon">Coho Salmon</span>
-      </div>
-    </div>
+  <h2>What this actually is</h2>
+  <p>Every river page here pulls live flow from the Water Survey of Canada gauge that actually covers
+  that reach, current weather from Open&#8209;Meteo, and cross-references both against run timing and
+  the Ontario regulations. It tells you whether to go, where on the river to start, and what to bring
+  &mdash; and, increasingly, whether the stretch you had in mind is even open today.</p>
+  <p>That last part turned out to matter more than I expected. Ontario closes trout and salmon on most
+  water on September 30, but named lower reaches stay open &mdash; some to December 31, some all year
+  &mdash; and the boundaries are described in the regulations by bridge and railway line rather than by
+  anything you can see from the bank. Several fish sanctuaries sit in the middle of the best water at
+  exactly the wrong time of year &mdash; the
+  <a href="/rivers/ganaraska/salmon-run/">Ganaraska</a> closes its town reach for six weeks of the run,
+  and the <a href="/rivers/credit/">Credit</a> shuts a long stretch from mid-August to the end of
+  December. Getting that wrong is worse than a wasted drive.</p>
+
+  <h2>How I think about it</h2>
+  <ul class="principles">
+    <li><strong>Wrong is worse than missing.</strong>
+      <span>If I am not confident about a regulation or an access point, it does not go on the site.
+      Every page says where its facts came from, and says plainly when something needs checking on the
+      day &mdash; see the closure notes on <a href="/rivers/bowmanville/salmon-run/">Bowmanville</a>
+      for what that looks like in practice.</span></li>
+    <li><strong>Live data over general advice.</strong>
+      <span>&ldquo;Fish after rain&rdquo; is true everywhere and useful nowhere. Whether the
+      <a href="/rivers/ganaraska/salmon-run/">Ganaraska</a> is at 2.4 or 11 m&sup3;/s this morning is
+      the thing that changes your plan &mdash; and how long it takes to drop differs river to
+      river.</span></li>
+    <li><strong>Written from the water.</strong>
+      <span>The river pages are things I have learned fishing these rivers, not rewrites of other
+      people&rsquo;s pages &mdash; the
+      <a href="/guides/euro-nymphing-upper-credit/">euro nymphing session</a> that took three fly
+      changes, or what a <a href="/rivers/ganaraska/salmon-run/">October morning at Port Hope</a> is
+      really like. Where I have not fished something, I say so.</span></li>
+    <li><strong>Free, no account, no ads.</strong>
+      <span>It costs me very little to run and I would rather it just be useful.</span></li>
+  </ul>
+
+  <div class="pair">
+    <figure>
+      <img src="/images/about/about-brook-trout.jpg" width="800" height="1062" loading="lazy"
+        alt="A wild brook trout in a rubber landing net, showing yellow and red spots">
+      <figcaption>Wild brook trout &mdash; the reason the headwater reaches are worth protecting.</figcaption>
+    </figure>
+    <figure>
+      <img src="/images/about/about-brown-trout-credit.jpg" width="1200" height="675" loading="lazy"
+        alt="A butter-yellow brown trout in a landing net on the Upper Credit River">
+      <figcaption>Brown trout, <a href="/rivers/credit/">Upper Credit</a>. Artificial only, single barbless, catch and release.</figcaption>
+    </figure>
   </div>
 
-  <div class="card">
-    <div class="card-title">Rivers covered</div>
-    <div class="card-body">
-      <p>We cover rivers and creeks across Southern Ontario, from the Saugeen on Lake Huron to Wilmot Creek east of Toronto. Each river is broken into sections with its own access points, regulations, and species-specific notes.</p>
-      <p style="margin-top:.75rem"><a href="/rivers">See all rivers →</a></p>
-    </div>
+  <h2>Who I am</h2>
+  <p>I go by TJ. I fish Southern Ontario &mdash; mostly the <a href="/rivers/credit/">Credit</a>, which is where I caught my first
+  steelhead years ago and still the river I fish most, plus the eastern creeks &mdash;
+  <a href="/rivers/ganaraska/salmon-run/">the Ganaraska</a> and
+  <a href="/rivers/bowmanville/salmon-run/">Bowmanville</a> &mdash; when the salmon are in, and the
+  Grand and Saugeen when they are not. Float rod, spinning rod and fly rod, depending on the
+  water and the season. I am not a guide and I do not sell anything.</p>
+
+  <div class="yt">
+    <div class="lbl">Fishing with TJ</div>
+    <p>I also film some of it. The channel covers the same rivers this site does &mdash;
+    <a href="/guides/euro-nymphing-upper-credit/">euro nymphing the Upper Credit</a>, steelhead in
+    spring, the salmon run in autumn &mdash; and is generally where the techniques on these pages come
+    from. Several videos are embedded on the <a href="/rivers/credit/">Credit River page</a>.</p>
+    <a class="go" href="https://youtube.com/@fishingwithtj" target="_blank" rel="noopener">Fishing with TJ on YouTube &rarr;</a>
   </div>
 
-  <div class="card">
-    <div class="card-title">Free to use</div>
-    <div class="card-body">
-      <p>No account, no subscription, no app download. Works in any mobile browser. You can sign up for email alerts when conditions are excellent on rivers you follow — that's the only thing we ask for your email.</p>
-    </div>
-  </div>
+  <h2>Where the data comes from</h2>
+  <p><strong>Flow:</strong> Water Survey of Canada real-time hydrometric gauges, matched to the reach
+  rather than the river &mdash; the <a href="/rivers/credit/">lower Credit</a> reads at Streetsville, not Cataract, and getting
+  that wrong puts you 40 km off.</p>
+  <p><strong>Weather and water temperature:</strong> Open&#8209;Meteo. Water temperature is estimated
+  from air temperature where no probe exists, and the site says so rather than pretending otherwise.</p>
+  <p><strong>Regulations:</strong> the Ontario Fishing Regulations Summary, current edition. Seasons,
+  sanctuaries and gear restrictions are encoded per reach, not per river.</p>
+  <p>All of it can be wrong or out of date. Confirm the regulations for the exact stretch you plan to
+  fish before you fish it &mdash; the official summary is the authority, not me.</p>
 
-  <div class="cta-block">
-    <a href="/" class="cta-btn">Check today's conditions →</a>
-    <div class="cta-note">No account needed · Free · Works in any browser</div>
-  </div>
+  <h2>Getting in touch</h2>
+  <p>If something here is wrong &mdash; a boundary in the wrong place, an access point that no longer
+  exists, a closure I have missed &mdash; I would genuinely like to know. The
+  <a href="https://youtube.com/@fishingwithtj" target="_blank" rel="noopener">YouTube channel</a> is the
+  easiest place to reach me.</p>
 
-</div>
+  <h2>Start here</h2>
+  <p><a href="/">Check conditions for today</a> and the app will pick a river, a reach and an access
+  point for you. If you would rather browse, there is
+  <a href="/rivers/">every river we cover</a> and the full set of
+  <a href="/guides/">guides</a>.</p>
+  <p>If the salmon are in, start with the
+  <a href="/guides/salmon-run-timing/">river-by-river run timing guide</a>, then the river you are
+  thinking of: <a href="/rivers/ganaraska/salmon-run/">the Ganaraska</a>,
+  <a href="/rivers/bowmanville/salmon-run/">Bowmanville Creek</a>, or
+  <a href="/rivers/credit/">the Credit</a>. For the drift itself, the
+  <a href="/guides/salmon-float-fishing-tips/">three float fishing tips</a> that matter most in crowded
+  water. And once the salmon are done,
+  <a href="/guides/where-steelhead-hold/">where steelhead hold in a river</a> carries you through to
+  spring.</p>
 
-<div class="footer">
-  <a href="/">Home</a>
-  <a href="/rivers">Rivers</a>
-  <a href="/about">About</a>
-  <div class="footer-copy">© 2026 HereFishyFishy · Ontario river fishing conditions</div>
-</div>
+</div></article>
+
+<footer class="site"><div class="wrap">
+  <span class="brand">HereFishyFishy</span>
+  <span><a href="/rivers/">Rivers</a> &nbsp; <a href="/guides/">Guides</a> &nbsp; <a href="/about">About</a></span>
+</div></footer>
 
 </body>
 </html>
