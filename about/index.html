@@ -122,11 +122,16 @@ display:flex;align-items:center;justify-content:center}
 .vid-play svg{width:18px;height:18px;fill:#fff;margin-left:3px}
 .vid-cap{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 color:var(--muted);margin-top:.7rem}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2.6rem 0}
-.pair figure{margin:0}
-.pair img{width:100%;height:auto;border-radius:3px;display:block}
-.pair figcaption{font:400 .8rem/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-color:var(--muted);margin-top:.6rem}
+/* One image at a time, spaced through the page. Side by side looked wrong because the
+   four photos are different shapes — two landscape, two portrait — so a two-column grid
+   left ragged gaps. Portraits are capped in height instead so nothing dominates. */
+figure.shot{margin:3rem 0}
+figure.shot img{width:100%;height:auto;border-radius:3px;display:block}
+figure.shot.portrait img{max-width:440px;margin-left:auto;margin-right:auto}
+figure.shot figcaption{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+color:var(--muted);margin-top:.7rem}
+figure.shot.portrait figcaption{max-width:440px;margin-left:auto;margin-right:auto}
+@media(min-width:900px){figure.shot.wide{width:calc(100% + 180px);margin-left:-90px}}
 .sectbl td:first-child{white-space:normal}
 .speclist{list-style:none;margin:1.4rem 0 2rem}
 .speclist li{border-bottom:1px solid var(--rule);padding:.9rem 0;display:flex;
@@ -173,18 +178,12 @@ text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:
   &mdash; and still driving to water that turned out to be blown out, too warm, or closed. It now
   covers <a href="/rivers/">eleven Ontario rivers</a>, reach by reach.</p>
 
-  <div class="pair">
-    <figure>
-      <img src="/images/about/about-steelhead-duffins.jpg" width="1200" height="904" loading="eager"
-        alt="Chrome steelhead held low over the water on Duffins Creek in spring">
-      <figcaption>Spring steelhead, <a href="/?river=Duffins%20Creek%20%E2%80%94%20Lower%20Section&species=steelhead">Duffins Creek</a>.</figcaption>
-    </figure>
-    <figure>
-      <img src="/images/about/about-chinook-bowmanville.jpg" width="900" height="1200" loading="lazy"
-        alt="A large Chinook salmon held at the water's edge on Bowmanville Creek">
-      <figcaption>Chinook, <a href="/rivers/bowmanville/salmon-run/">Bowmanville Creek</a>.</figcaption>
-    </figure>
-  </div>
+  <figure class="shot wide">
+    <img src="/images/about/about-steelhead-duffins.jpg" width="1200" height="904" loading="eager"
+      alt="Chrome steelhead held low over the water on Duffins Creek in spring">
+    <figcaption>Spring steelhead, <a href="/?river=Duffins%20Creek%20%E2%80%94%20Lower%20Section&species=steelhead">Duffins Creek</a>. Fresh from the lake and still bright.</figcaption>
+  </figure>
+
 
   <h2>What this actually is</h2>
   <p>Every river page here pulls live flow from the Water Survey of Canada gauge that actually covers
@@ -222,18 +221,13 @@ text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:
       <span>It costs me very little to run and I would rather it just be useful.</span></li>
   </ul>
 
-  <div class="pair">
-    <figure>
-      <img src="/images/about/about-brook-trout.jpg" width="800" height="1062" loading="lazy"
-        alt="A wild brook trout in a rubber landing net, showing yellow and red spots">
-      <figcaption>Wild brook trout &mdash; the reason the headwater reaches are worth protecting.</figcaption>
-    </figure>
-    <figure>
-      <img src="/images/about/about-brown-trout-credit.jpg" width="1200" height="675" loading="lazy"
-        alt="A butter-yellow brown trout in a landing net on the Upper Credit River">
-      <figcaption>Brown trout, <a href="/rivers/credit/">Upper Credit</a>. Artificial only, single barbless, catch and release.</figcaption>
-    </figure>
-  </div>
+
+
+  <figure class="shot portrait">
+    <img src="/images/about/about-chinook-bowmanville.jpg" width="900" height="1200" loading="lazy"
+      alt="A large Chinook salmon held at the water's edge on Bowmanville Creek">
+    <figcaption>Chinook, <a href="/rivers/bowmanville/salmon-run/">Bowmanville Creek</a>. Coloured up and well into the run.</figcaption>
+  </figure>
 
   <h2>Who I am</h2>
   <p>I go by TJ. I fish Southern Ontario &mdash; mostly the <a href="/rivers/credit/">Credit</a>, which is where I caught my first
@@ -252,6 +246,12 @@ text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:
     <a class="go" href="https://youtube.com/@fishingwithtj" target="_blank" rel="noopener">Fishing with TJ on YouTube &rarr;</a>
   </div>
 
+  <figure class="shot wide">
+    <img src="/images/about/about-brown-trout-credit.jpg" width="1200" height="675" loading="lazy"
+      alt="A butter-yellow brown trout in a landing net on the Upper Credit River">
+    <figcaption>Brown trout, <a href="/rivers/credit/">Upper Credit</a>. Artificial only, single barbless, catch and release.</figcaption>
+  </figure>
+
   <h2>Where the data comes from</h2>
   <p><strong>Flow:</strong> Water Survey of Canada real-time hydrometric gauges, matched to the reach
   rather than the river &mdash; the <a href="/rivers/credit/">lower Credit</a> reads at Streetsville, not Cataract, and getting
@@ -262,6 +262,12 @@ text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:
   sanctuaries and gear restrictions are encoded per reach, not per river.</p>
   <p>All of it can be wrong or out of date. Confirm the regulations for the exact stretch you plan to
   fish before you fish it &mdash; the official summary is the authority, not me.</p>
+
+  <figure class="shot portrait">
+    <img src="/images/about/about-brook-trout.jpg" width="800" height="1062" loading="lazy"
+      alt="A wild brook trout in a rubber landing net, showing yellow and red spots">
+    <figcaption>Wild brook trout. Small, and the reason the headwater reaches are worth protecting.</figcaption>
+  </figure>
 
   <h2>Getting in touch</h2>
   <p>If something here is wrong &mdash; a boundary in the wrong place, an access point that no longer
