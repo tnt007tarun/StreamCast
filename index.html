@@ -2246,6 +2246,93 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .gcard-lead h3{font-size:1.25rem}
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESULTS PAGE — EDITORIAL RESTYLE (Direction B)
+   Appended last so these rules win at equal specificity. Scoped to #results.
+
+   The verdict — species, headline and the four live tiles — stays in a moss
+   band, because that part genuinely is a tool: one answer, live data, often
+   read standing in a car park. Everything below it switches to paper and
+   serif to match the guides and river pages. One colour boundary on the whole
+   site, and it always means the same thing: above it you are being told where
+   to go, below it you are reading.
+
+   Structure, data and behaviour are unchanged.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --ed-ink:#1a2e3a; --ed-text:#31414c; --ed-muted:#6b7d86; --ed-rule:#e2ded6;
+  --ed-paper:#fbf9f5;
+  --ed-serif:Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+}
+#results{background:var(--ed-paper)}
+
+/* ── masthead: paper, hairline ─────────────────────────────────────────── */
+#results .res-header{background:var(--ed-paper);border-bottom:1px solid var(--ed-rule);
+  box-shadow:none;backdrop-filter:none}
+#results .res-logo-name{font:italic 700 1rem/1 var(--ed-serif);color:var(--ed-ink);letter-spacing:0}
+#results .res-logo-wave span{background:var(--ed-muted);opacity:.5}
+#results .res-center-lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ed-muted);opacity:1}
+#results .res-center-val{font:700 .95rem/1.25 var(--ed-serif);color:var(--ed-ink);letter-spacing:0}
+#results .res-center-date{font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  color:var(--ed-muted);opacity:1}
+#results .res-center{border-left:0;border-right:0;background:none}
+#results .back-btn,#results .res-right a{background:none;border:0;color:var(--fern);
+  font-family:var(--sans,'Outfit',sans-serif);font-size:.76rem;font-weight:500;
+  border-bottom:2px solid rgba(30,122,110,.3);border-radius:0;padding:0 0 2px;box-shadow:none}
+
+/* ── the dark band: species + headline + tiles stay as one unit ────────── */
+#results #species-banner{background:var(--moss)!important;border-bottom:0!important}
+#results .tpband{background:var(--moss);border-bottom:0}
+#results .tp-headline{font-family:var(--ed-serif);font-weight:700;letter-spacing:-.015em;
+  line-height:1.22}
+#results .tp-eyebrow{font-family:'JetBrains Mono',monospace;letter-spacing:.14em}
+
+/* ── everything below the band ─────────────────────────────────────────── */
+#results .ssec{background:var(--ed-paper)}
+#results .sec-label{background:var(--ed-paper);border-bottom:1px solid var(--ed-rule)}
+#results .sec-title,#results .sec-label h2{font-family:var(--ed-serif);
+  font-weight:700;color:var(--ed-ink);letter-spacing:-.01em}
+#results .sec-sub{font-family:var(--ed-serif);color:var(--ed-text);
+  font-size:.95rem;line-height:1.6}
+#results .sec-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-style:normal}
+
+/* cards: white on paper, hairline border, no shadow */
+/* .ac and .acard are generated in renderRiverUI; .col is the conditions grid column. */
+#results .ac,#results .acard,#results .p-card,#results .col,
+#results .cond-card,#results .bpanel{background:#fff;border:1px solid var(--ed-rule);
+  border-radius:4px;box-shadow:none}
+#results .ac:hover{box-shadow:none;transform:none}
+
+/* river names and spot names in serif */
+/* bait/lure item names and the conditions column headings */
+#results .bname,#results .gn{font-family:var(--ed-serif);font-weight:700;color:var(--ed-ink)}
+#results .col-lbl,#results .p-lbl,#results .bdet{font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ed-muted)}
+#results .bcond,#results .gs{font-family:var(--ed-serif);
+  font-size:.92rem;line-height:1.6;color:var(--ed-text)}
+
+/* big readings stay serif and large */
+/* the big flow / temperature numbers */
+#results .gv,#results .bnum{font-family:var(--ed-serif);font-weight:700;color:var(--ed-ink)}
+
+/* technique pillars */
+#results .p-head{font-family:'JetBrains Mono',monospace;color:var(--ed-muted)}
+#results .p-step{background:var(--fern);color:#fff}
+#results .p-card{background:#fff;border:1px solid var(--ed-rule);box-shadow:none}
+#results .p-tech{background:var(--moss)}
+#results .p-tech h3,#results #m1n{font-family:var(--ed-serif);font-weight:700}
+
+/* pills and chips read as labels, not buttons */
+#results .spc-label,#results .brank{font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ed-muted)}
+
+#results .site-footer{background:var(--ed-paper);border-top:1px solid var(--ed-rule)}
+#results .site-footer-brand{font:italic 700 .95rem/1 var(--ed-serif);color:var(--ed-ink)}
+#results .site-footer-nav a,#results .site-footer-copy{color:var(--ed-muted);
+  text-transform:none;letter-spacing:0;font-size:.78rem}
+
 </style>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
