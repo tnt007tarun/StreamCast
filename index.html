@@ -2246,6 +2246,109 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .gcard-lead h3{font-size:1.25rem}
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESULTS PAGE — EDITORIAL RESTYLE (Direction B)
+
+   Approach: set the typeface ONCE at the container, by element type, and list
+   only the exceptions. The first attempt enumerated class names and missed
+   most of them, which produced a page in three fonts. `#results div` is
+   (1 id, 0 class, 1 type), which beats any bare `.class` rule in the base
+   stylesheet, so a single sweep covers every element without naming them.
+
+   The dark moss band holds species + headline + tiles: that is the verdict,
+   and the one place the app is a tool rather than a document. Everything
+   below is paper. One colour boundary on the site, always meaning the same
+   thing.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --ed-ink:#1a2e3a; --ed-text:#31414c; --ed-muted:#6b7d86; --ed-rule:#e2ded6;
+  --ed-paper:#fbf9f5;
+  --ed-serif:Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --ed-sans:Outfit,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ed-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+#results{background:var(--ed-paper);color:var(--ed-text)}
+
+/* ── ONE SWEEP: everything is serif unless it opts out below ───────────── */
+#results div,#results p,#results span,#results h1,#results h2,#results h3,
+#results h4,#results li,#results td,#results th,#results a,#results strong,
+#results em,#results small,#results section,#results header,#results footer{
+  font-family:var(--ed-serif)}
+
+/* ── EXCEPTION 1: small uppercase labels stay monospace ────────────────── */
+#results .sec-num,#results .sec-label,#results .col-lbl,#results .p-lbl,
+#results .p-head,#results .bdet,#results .brank,#results .spc-label,
+#results .spc-time,#results .res-center-lbl,#results .res-center-date,
+#results .bnum-u,#results .bnum-l,#results .gf,#results .gr,#results .gt,
+#results .col-status-dot,#results .bfooter,#results .land-date,
+#results .tp-eyebrow,#results .p-badge,#results [class*="-lbl"]{
+  font-family:var(--ed-mono);letter-spacing:.09em}
+
+/* ── EXCEPTION 2: controls stay sans ───────────────────────────────────── */
+#results button,#results input,#results select,#results .back-btn,
+#results .notify-bar-submit,#results .notify-bar-input,#results .btab{
+  font-family:var(--ed-sans)}
+
+/* ── masthead ──────────────────────────────────────────────────────────── */
+#results .res-header{background:var(--ed-paper);border-bottom:1px solid var(--ed-rule);
+  box-shadow:none;backdrop-filter:none}
+#results .res-logo-name{font:italic 700 1rem/1 var(--ed-serif);color:var(--ed-ink)}
+#results .res-logo-wave span{background:var(--ed-muted);opacity:.5}
+#results .res-center{background:none;border:0}
+#results .res-center-lbl,#results .res-center-date{font-size:.55rem;color:var(--ed-muted);opacity:1}
+#results .res-center-val{font:700 .95rem/1.25 var(--ed-serif);color:var(--ed-ink)}
+#results .back-btn{background:none;border:0;color:var(--fern);font-size:.76rem;
+  font-weight:500;border-bottom:2px solid rgba(30,122,110,.3);border-radius:0;
+  padding:0 0 2px;box-shadow:none}
+
+/* ── the dark band (unchanged in spirit, serif headline) ───────────────── */
+#results #species-banner{background:var(--moss)!important;border-bottom:0!important}
+#results .tpband{background:var(--moss);border-bottom:0}
+#results .tpband div,#results .tpband span,#results .tpband p{color:inherit}
+#results .tp-headline{font-family:var(--ed-serif);font-weight:700;letter-spacing:-.015em;
+  line-height:1.24}
+
+/* ── section headings ──────────────────────────────────────────────────── */
+#results .ssec{background:var(--ed-paper)}
+#results .sec-label{background:var(--ed-paper);border-bottom:1px solid var(--ed-rule)}
+#results .sec-label h2,#results .sec-label .sec-title{font-family:var(--ed-serif);
+  font-weight:700;color:var(--ed-ink);letter-spacing:-.01em}
+#results .sec-num{color:var(--amber);font-style:normal}
+
+/* ── cards: white on paper, hairline, no shadow ────────────────────────── */
+#results .ac,#results .acard,#results .p-card,#results .col,#results .bpanel,
+#results .cond-card{background:#fff;border:1px solid var(--ed-rule);
+  border-radius:4px;box-shadow:none}
+#results .ac:hover{box-shadow:none;transform:none}
+#results .col{border-right:1px solid var(--ed-rule)}
+
+/* ── technique pillar: paper, not a second dark slab ───────────────────── */
+#results .p-tech{background:#fff;border:1px solid var(--ed-rule);
+  border-left:3px solid var(--fern);border-radius:0 4px 4px 0;box-shadow:none}
+#results .p-tech h3,#results #m1n{color:var(--ed-ink);font-family:var(--ed-serif);font-weight:700}
+#results .p-tech p,#results #m1d{color:var(--ed-text)}
+#results .p-tmeta span{background:rgba(30,122,110,.07);border:1px solid var(--ed-rule);
+  color:var(--ed-muted);font-family:var(--ed-mono)}
+#results .p-tmeta span.chip-cr{background:rgba(184,98,15,.12);border-color:rgba(184,98,15,.4);
+  color:var(--amber)}
+#results .p-tmeta span.chip-closed{background:rgba(163,64,47,.12);
+  border-color:rgba(163,64,47,.45);color:var(--red)}
+#results .p-step{background:var(--fern);color:#fff;font-family:var(--ed-mono)}
+
+/* ── spacing: the pillars sat too far below the section rule ───────────── */
+#results .tgsec{margin-top:1.2rem}
+#results .pillar{margin-top:1.4rem}
+#results .pillar:first-child{margin-top:.6rem}
+
+/* ── big readings ──────────────────────────────────────────────────────── */
+#results .gv,#results .bnum{font-family:var(--ed-serif);font-weight:700;color:var(--ed-ink)}
+#results .gn,#results .bname{font-family:var(--ed-serif);font-weight:700;color:var(--ed-ink)}
+
+#results .site-footer{background:var(--ed-paper);border-top:1px solid var(--ed-rule)}
+#results .site-footer-brand{font:italic 700 .95rem/1 var(--ed-serif);color:var(--ed-ink)}
+#results .site-footer-nav a,#results .site-footer-copy{color:var(--ed-muted);
+  text-transform:none;letter-spacing:0;font-size:.78rem;font-family:var(--ed-sans)}
 </style>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
@@ -2551,7 +2654,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     <div id="species-banner-fish" style="width:56px;height:56px;border-radius:50%;background:rgba(139,181,160,0.12);border:2px solid rgba(158,207,202,0.25);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
     <div>
       <div style="font-family:'JetBrains Mono', monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.55;margin-bottom:.15rem">Target Species</div>
-      <div id="species-display" style="font-family:'Nunito', sans-serif;font-size:1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
+      <div id="species-display" style="font-family:Charter,'Iowan Old Style',Georgia,serif;font-size:1.05rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
       <div id="species-season-badge" style="font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.15rem;opacity:.8"></div>
     </div>
     <!-- hidden stubs for JS compat -->
