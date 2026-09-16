@@ -1,0 +1,365 @@
+/* ============================================================================
+   HereFishyFishy — editorial app layer  (Design Language v1)
+   ----------------------------------------------------------------------------
+   Drop-in test layer for index.html. Load it LAST, after the existing <style>
+   block, so equal-specificity rules resolve in its favour:
+
+     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="/css/editorial-app.css">
+
+   Everything here is scoped to #results, mirroring the #landing block you
+   already have in index.html. That scoping is the whole fix: the existing
+   editorial layer only ever addressed #landing, so the results view kept
+   rendering in the original vocabulary.
+
+   Nothing in this file changes markup or JS. It is a reskin for a branch test.
+   The three things CSS alone cannot do are listed at the bottom.
+   ========================================================================= */
+
+:root{
+  --ed-paper:#fbf9f5;
+  --ed-card:#ffffff;
+  --ed-ink:#1a2e3a;
+  --ed-text:#31414c;
+  --ed-muted:#6b7d86;
+  --ed-rule:#e2ded6;
+  --ed-fern:#1e7a6e;
+  --ed-amber:#b8620f;
+  --ed-deep:#0d1f2d;
+  --ed-serif:'Source Serif 4',Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --ed-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --ed-mono:'JetBrains Mono',ui-monospace,monospace;
+  --ed-measure:660px;
+}
+
+/* The landing layer is already live; point it at the webfont so both halves of
+   the site render the same serif instead of Charter-or-Georgia-by-luck. */
+#landing{--ed-serif:'Source Serif 4',Charter,'Iowan Old Style',Palatino,Georgia,serif}
+
+/* ── 1. PAPER ──────────────────────────────────────────────────────────────
+   The results view is a document on paper, not a dark instrument panel. */
+#results{background:var(--ed-paper);color:var(--ed-text);
+  font:400 19px/1.72 var(--ed-serif)}
+body:has(#results:not([style*="display: none"])){background:var(--ed-paper)}
+
+/* ── 2. THE MEASURE ────────────────────────────────────────────────────────
+   One 660px column, every section, phone and desktop alike. This single block
+   replaces the 1100/1200px multi-column wrappers. */
+#results .tpband-inner,
+#results .rrank-inner,
+#results .sec-label,
+#results .asec,
+#results .cond-card,
+#results .bsec,
+#results .ssec,
+#results .tgsec,
+#results .dam,
+#results .res-footer,
+#results .closed-notice,
+#results #staging-card-slot,
+#results .more-river-wrap > *{
+  max-width:var(--ed-measure) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  padding-left:1.4rem;
+  padding-right:1.4rem;
+}
+#results .agrid,#results .bgrid,#results .srail,#results .gear-grid,
+#results .rrank-grid,#results .dp-grid,#results .p-gearGrid,
+#results .cgrid,#results .mgrid,#results .summary-strip{
+  grid-template-columns:1fr !important;
+  gap:0 !important;
+}
+#results .agrid,#results .bgrid,#results .srail,#results .gear-grid,
+#results .rrank-grid,#results .dp-grid{gap:1.2rem !important}
+/* .col / .mc were vertical slices of a three-up grid; stacked they need rules
+   underneath rather than to the right. */
+#results .col,#results .mc{border-right:0;border-bottom:1px solid var(--ed-rule);
+  padding:1.4rem 0}
+#results .col:last-child,#results .mc:last-child{border-bottom:0}
+#results .cgrid,#results .mgrid{background:none;border:0;padding:0}
+/* Bordered section-level panels sit INSIDE the text column rather than
+   straddling it, so the hairline lines up with the prose above. */
+#results .cond-card,#results .tgsec > .p-card,#results .closed-notice{
+  max-width:calc(var(--ed-measure) - 2.8rem) !important;
+  border-radius:3px;padding:.4rem 1.25rem;margin-bottom:1.5rem}
+/* the map sits beside the spot list at 1100px; at 660 it goes underneath */
+#results .agrid-map{display:block !important;order:2}
+#results .agrid-cards{order:1}
+
+/* ── 3. THE MASTHEAD + CONTEXT STRIP ──────────────────────────────────────
+   Retires the dark app header. Row one is the quiet masthead; .res-center
+   wraps to row two and becomes the context strip (river · date · change). */
+#results .res-header{background:var(--ed-paper);backdrop-filter:none;
+  border-bottom:1px solid var(--ed-rule);padding:0;
+  display:flex;flex-wrap:wrap;align-items:center;position:sticky;top:0;z-index:30}
+#results .res-logo-wrap{order:1;flex:1 1 auto;padding:1rem 1.4rem;min-width:0}
+#results .res-right{order:2;padding:1rem 1.4rem;text-align:right}
+#results .res-logo-wave{display:none}
+#results .res-logo-name{font:italic 700 1.05rem/1 var(--ed-serif);color:var(--ed-ink)}
+#results .back-btn{font:500 .78rem/1 var(--ed-sans);color:var(--ed-muted);
+  background:none;border:0;padding:.5rem 0;letter-spacing:0;text-transform:none;
+  min-height:44px}
+#results .back-btn:hover{color:var(--ed-ink)}
+/* row two */
+#results .res-center{order:3;flex:1 0 100%;text-align:left;
+  border:0;border-top:1px solid var(--ed-rule);
+  background:rgba(26,46,58,.03);padding:.6rem 1.4rem;
+  display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+#results .res-center-lbl{display:none}
+#results .res-center-val{font:400 .74rem/1.4 var(--ed-mono);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ed-text);opacity:1;margin:0}
+#results .res-center-date{font:400 .72rem/1.4 var(--ed-mono);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ed-muted);opacity:1;margin:0}
+
+/* ── 4. THE ONE DARK BAND ─────────────────────────────────────────────────
+   #species-banner and .tpband become a single continuous band of --ed-deep.
+   Inline styles on the banner need !important; nothing else here does. */
+#results #species-banner{background:var(--ed-deep) !important;
+  border-bottom:0 !important;padding:1.6rem 1.4rem .4rem !important;
+  max-width:none;justify-content:flex-start}
+#results #species-banner > div:not(#species-banner-fish){min-width:0}
+#results #species-banner-fish{width:52px !important;height:52px !important;
+  border:1px solid rgba(251,249,245,.25) !important}
+#results #species-display{font:600 1.05rem/1.2 var(--ed-serif) !important;
+  font-style:normal !important;color:#fbf9f5 !important}
+#results #species-banner [style*="Target Species"],
+#results #species-banner div[style*="letter-spacing:.15em"]{
+  font-size:.66rem !important;letter-spacing:.14em !important;opacity:.85 !important;
+  color:#9fb3bd !important}
+#results #species-season-badge{font-size:.66rem !important;opacity:.9 !important}
+
+#results .tpband{background:var(--ed-deep);color:#fbf9f5;
+  border-bottom:0;padding:.6rem 0 2.2rem}
+#results .tp-eyebrow{font:400 .66rem/1 var(--ed-mono);letter-spacing:.16em;
+  text-transform:uppercase;color:#9fb3bd;opacity:1;margin-bottom:.9rem}
+#results .tp-headline{font:600 1.75rem/1.25 var(--ed-serif);color:#fbf9f5;
+  letter-spacing:-.01em;text-wrap:pretty}
+#results .tp-headline em{font-style:normal;color:#fbf9f5;
+  border-bottom:2px solid rgba(251,249,245,.35)}
+#results .tp-why,#results .tp-staging-note{font:400 1rem/1.6 var(--ed-serif);
+  color:#cfdae0;opacity:1;max-width:none}
+#results .tp-drive-time{font:400 1rem/1.6 var(--ed-serif);color:#cfdae0;opacity:1}
+
+/* the four numbers, as mono figures on the dark — not tiles */
+#results .tp-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));
+  gap:1.1rem;margin-top:1.6rem;padding-top:1.3rem;
+  border-top:1px solid rgba(251,249,245,.18)}
+#results .tp-tiles > *{background:none !important;border:0 !important;
+  border-top:0 !important;border-radius:0 !important;box-shadow:none !important;
+  padding:0 !important}
+#results .tp-tiles [class*="lbl"],#results .tp-tiles [class*="label"]{
+  font:400 .66rem/1 var(--ed-mono) !important;letter-spacing:.14em;
+  text-transform:uppercase;color:#9fb3bd !important;opacity:1 !important}
+#results .tp-tiles [class*="val"]{font:500 1.5rem/1.2 var(--ed-mono) !important;
+  color:#fbf9f5 !important;font-style:normal !important;margin-top:.35rem}
+#results .tp-tiles [class*="note"],#results .tp-tiles [class*="sub"]{
+  font:400 .8rem/1.4 var(--ed-sans) !important;color:#9fb3bd !important;opacity:1 !important}
+
+/* strength meter → a hairline figure, not a coloured bar */
+#results .tp-str-lbl{font:400 .66rem/1 var(--ed-mono);letter-spacing:.14em;
+  color:#9fb3bd;opacity:1}
+#results .tp-str-val{font:500 1rem/1 var(--ed-mono);color:#fbf9f5}
+#results .tp-str-bar{height:2px;border-radius:0;background:rgba(251,249,245,.2)}
+#results .tp-str-bar i{background:#fbf9f5 !important}
+#results .tp-str-scale{font:400 .66rem/1 var(--ed-mono);color:#9fb3bd;opacity:.8}
+#results .tp-chips > *{background:rgba(251,249,245,.1) !important;border:0 !important;
+  border-radius:3px !important;font:400 .7rem/1 var(--ed-mono) !important;
+  letter-spacing:.08em;color:#cfdae0 !important;padding:.35rem .6rem !important}
+
+/* The summary strip is now part of the band above it. */
+#results .res-summary{display:none}
+
+/* ── 5. SECTION HEADS → h2 ON PAPER ───────────────────────────────────────
+   No numbered bands, no fern top rule, no cream fill. */
+#results .sec-label{background:none;border:0;border-top:0;margin:3rem auto 0;
+  display:block;padding-top:0;padding-bottom:0}
+#results .sec-num{font:400 .68rem/1.6 var(--ed-mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ed-amber);font-style:normal;float:none;
+  margin:0 0 .3rem}
+#results .sec-num::before{content:'Section '}
+#results .sec-label h3{font:700 1.55rem/1.28 var(--ed-serif);color:var(--ed-ink);
+  letter-spacing:-.01em;margin:0 0 .4rem}
+#results .sec-label p{font:400 1rem/1.6 var(--ed-serif);color:var(--ed-text);margin:0}
+#results .sshdr h3,#results .gear-title,#results .dam h3{
+  font:700 1.1rem/1.35 var(--ed-serif);color:var(--ed-ink);font-style:normal}
+#results .sshdr span,#results .gear-eyebrow,#results .dlbl,#results .stag,
+#results .col-lbl,#results .tg-label,#results .mpr,#results .rrank-lbl,
+#results .gear-item-lbl,#results .tg-gear-lbl{
+  font:400 .68rem/1.4 var(--ed-mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ed-muted);opacity:1}
+
+/* ── 6. ONE PANEL, FLAT ───────────────────────────────────────────────────
+   Every card in the view collapses to the field panel: 1px rule, 3px radius,
+   white on paper, no shadow, no tint, no coloured header. */
+#results .ac,#results .bi,#results .sc,#results .p-card,#results .gear-card,
+#results .cond-card,#results .rrank-card,#results .dp-card,#results .tg-card,
+#results .closed-notice,#results .gear-item,#results .acard,
+#results .bgrid,#results .srail,#results .btabs{
+  background:var(--ed-card);border:1px solid var(--ed-rule);border-radius:3px;
+  box-shadow:none !important;transform:none !important}
+#results .bgrid,#results .srail{border:0;background:none}
+#results .bi,#results .sc{border:1px solid var(--ed-rule)}
+#results .ac{padding:1.15rem 1.25rem}
+#results .gear-item{background:var(--ed-paper)}
+#results .p-tech{background:var(--ed-card);border:1px solid var(--ed-rule);color:var(--ed-text)}
+#results .p-tech h4{font:700 1.1rem/1.35 var(--ed-serif);color:var(--ed-ink);
+  margin-bottom:.4rem}
+#results .p-tech p{font:400 1rem/1.6 var(--ed-serif);color:var(--ed-text);opacity:1}
+#results .p-tech [class*="chip"],#results .p-tech [class*="tag"]{
+  background:rgba(26,46,58,.05) !important;color:var(--ed-text) !important;
+  border-radius:3px !important}
+#results .tg-header{background:none;border-bottom:1px solid var(--ed-rule);
+  padding:1rem 0;min-height:56px}
+#results .tg-header:hover{background:rgba(26,46,58,.02)}
+#results .tg-body{padding:0 0 1.25rem}
+#results .tg-name,#results .aname,#results .bname,#results .sname,
+#results .mn,#results .rrank-name,#results .p-gearname,#results .p-bait h5,
+#results .p-alt-name,#results .rc-name{
+  font:700 1.1rem/1.35 var(--ed-serif);color:var(--ed-ink);font-style:normal}
+#results .bname,#results .p-alt-name{font-size:1rem}
+#results .sc.active{background:rgba(30,122,110,.06);color:var(--ed-ink);
+  border-color:var(--ed-fern)}
+#results .sc.active .sname{color:var(--ed-ink)}
+#results .brank{color:rgba(26,46,58,.1);font-family:var(--ed-mono);font-style:normal;
+  font-size:1.1rem}
+
+/* regulations → the amber inset */
+#results .regs-card,#results .regs-wrap{background:none;border:0;border-radius:0;
+  border-left:3px solid var(--ed-amber);padding:.2rem 0 .2rem 1.3rem;box-shadow:none}
+#results .regs-header{background:none !important;color:var(--ed-amber) !important;
+  padding:0 0 .6rem !important;border:0 !important;border-radius:0 !important}
+#results .regs-zone,#results .regs-title{font:600 .68rem/1 var(--ed-sans);
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ed-amber);
+  background:none;padding:0;opacity:1}
+#results .regs-plain,#results .regs-species-list{background:none;padding:0;
+  border:0;font:400 1rem/1.6 var(--ed-serif);color:var(--ed-text)}
+#results .regs-details-toggle,#results .regs-link{font:600 .88rem/1 var(--ed-sans);
+  color:var(--ed-fern);border-bottom:2px solid rgba(30,122,110,.3);
+  padding:0 0 2px;margin:.4rem 0 0;min-height:44px;display:inline-flex;align-items:center}
+
+/* the live aside — 2px ink rule, no box */
+#results .dam{background:none;border:0;border-top:2px solid var(--ed-ink);
+  border-bottom:1px solid var(--ed-rule);border-radius:0;padding:1.3rem 1.4rem 1.4rem;
+  color:var(--ed-text)}
+#results .dam-icon{display:none}
+#results .dam p{font:400 1rem/1.6 var(--ed-serif);color:var(--ed-text);opacity:1}
+
+/* ── 7. DATA IS READ, NOT GAUGED ──────────────────────────────────────────
+   Big display numbers stay (they are the one instrument we keep), but the
+   bars, meters and tile grids flatten to hairlines and mono. */
+#results .bnum{font:500 2.4rem/1 var(--ed-mono);color:var(--ed-ink);font-style:normal}
+#results .bnum-u{font:400 .8rem/1 var(--ed-mono);color:var(--ed-muted)}
+#results .bnum-l,#results .bdet,#results .slat,#results .mcond,#results .rrank-drive,
+#results .p-bspec,#results .gear-item-val{font-family:var(--ed-sans);
+  font-size:.86rem;line-height:1.55;color:var(--ed-muted);opacity:1}
+#results [class*="-bar"],#results [class*="meter"],#results .season-bar{
+  height:2px !important;border-radius:0 !important;
+  background:var(--ed-rule) !important;box-shadow:none !important}
+#results [class*="-bar"] i,#results [class*="-bar"] > span,
+#results [class*="meter"] > *{background:var(--ed-ink) !important;
+  box-shadow:none !important;border-radius:0 !important}
+#results .why-row,#results .why-detail{font-family:var(--ed-sans);font-size:.88rem;
+  line-height:1.6;color:var(--ed-text)}
+#results .routine .rn{font:400 .8rem/1.4 var(--ed-mono);color:var(--ed-amber);
+  font-style:normal}
+#results .rt{font:600 1rem/1.4 var(--ed-serif);color:var(--ed-ink)}
+#results .rd{font:400 .92rem/1.6 var(--ed-sans);color:var(--ed-muted)}
+
+/* status: mono words with a hairline dot. No filled pills. */
+#results .acrowd,#results .sst,#results .verdict-yes,#results .verdict-no,
+#results .verdict-maybe,#results .acard-rec-badge,#results [class*="badge"]{
+  background:none !important;border:0 !important;border-radius:0 !important;
+  padding:0 !important;font:400 .72rem/1 var(--ed-mono) !important;
+  letter-spacing:.1em;text-transform:uppercase}
+#results .acrowd.low,#results .verdict-yes{color:var(--ed-fern) !important}
+#results .acrowd.med,#results .verdict-maybe{color:var(--ed-amber) !important}
+#results .acrowd.high,#results .verdict-no{color:#9c3024 !important}
+#results .acard-rec-badge{color:var(--ed-amber) !important}
+#results .acard-rec-badge::before{content:'· '}
+
+/* ── 8. PHOTOGRAPHS ───────────────────────────────────────────────────────
+   Species keep their circles. Everything else is a square-cornered figure. */
+#results .bi-img-wrap,#results .p-bait img,#results [class*="img-wrap"]{
+  border-radius:0;background:rgba(26,46,58,.04)}
+#results .sc-species .species-btn-img,#results #species-banner-fish{border-radius:50%}
+#results .agrid-map,#results .map-placeholder,#results #access-map{
+  border:1px solid var(--ed-rule);border-radius:3px;background:var(--ed-paper);
+  filter:saturate(.55) contrast(.96)}
+#results .map-pin-dot.med{background:var(--ed-amber)}
+#results .map-pin-dot.high{background:#9c3024}
+
+/* ── 9. ACTIONS ───────────────────────────────────────────────────────────
+   One fern button, serif, 48px. Everything else is an underlined text link. */
+#results button:not(.back-btn):not(.tg-header):not(.btab):not([class*="chev"]){
+  font-family:var(--ed-serif);font-weight:600;letter-spacing:0;border-radius:3px;
+  box-shadow:none;text-transform:none}
+#results .btabs{border:0;border-bottom:1px solid var(--ed-rule);border-radius:0;
+  width:100%;display:flex;gap:2rem;background:none}
+#results .btab{background:none;border:0;border-bottom:2px solid transparent;
+  margin-bottom:-1px;border-radius:0;font:400 1.02rem/1 var(--ed-serif);
+  letter-spacing:0;text-transform:none;color:var(--ed-muted);
+  padding:0 0 .7rem;min-height:44px}
+#results .btab.active{background:none;color:var(--ed-ink);font-weight:600;
+  border-bottom-color:var(--ed-ink)}
+#results a{color:var(--ed-fern);text-decoration:none}
+#results a:hover{color:var(--ed-ink)}
+#results .more-river-toggle{font:600 .92rem/1 var(--ed-sans);color:var(--ed-fern);
+  padding:1.1rem 1.4rem;min-height:48px}
+
+/* ── 10. THE 11px FLOOR ───────────────────────────────────────────────────
+   The old view ran mono all-caps down to 7px. Nothing does now. */
+#results [class*="lbl"],#results [class*="label"],#results [class*="eyebrow"],
+#results [class*="stamp"],#results .stag,#results .mpr,#results .rrank-num,
+#results .acrowd,#results .sst,#results .regs-zone,#results .regs-title,
+#results .season-bar-labels span,#results .tg-label,#results .gear-item-lbl,
+#results .tg-gear-lbl,#results .dlbl,#results .col-lbl,#results .p-bspec,
+#results .tp-eyebrow,#results .tp-str-lbl,#results .tp-str-scale{
+  font-size:.68rem !important}
+#results .bdet,#results .slat,#results .mcond,#results .bnum-l,
+#results .rrank-drive,#results .rd,#results .sum-note{font-size:.86rem !important}
+
+/* ── 11. FOOTER ───────────────────────────────────────────────────────────*/
+#results .res-footer{background:none;border-top:1px solid var(--ed-rule);
+  padding:1.6rem 1.4rem 2.4rem;flex-wrap:wrap;gap:1rem}
+#results .res-footer p{font:500 .8rem/1.5 var(--ed-sans);color:var(--ed-muted);
+  opacity:1;letter-spacing:0}
+#results .res-flogo{font:italic 700 .95rem/1 var(--ed-serif);color:var(--ed-ink);opacity:1}
+
+/* ── 12. MOBILE ───────────────────────────────────────────────────────────
+   One column already; these are the six rules from the design language. */
+@media(max-width:640px){
+  #results{font-size:18px}
+  #results .tp-headline{font-size:1.5rem}
+  #results .sec-label h3{font-size:1.35rem;}
+  #results .sec-label{margin-top:2.4rem}
+  #results .bnum{font-size:2rem}
+  #results .tp-tiles{grid-template-columns:1fr 1fr}
+  #results .res-logo-wrap,#results .res-right{padding:.85rem 1.1rem}
+  #results .tpband-inner,#results .sec-label,#results .asec,#results .cond-card,
+  #results .bsec,#results .ssec,#results .tgsec,#results .dam,#results .res-footer{
+    padding-left:1.1rem;padding-right:1.1rem}
+  #results .ac,#results .bi,#results .sc,#results .p-card{padding:1rem 1.1rem}
+  /* tap targets */
+  #results .btab,#results .sc,#results .ac,#results .tg-header,
+  #results .regs-details-toggle{min-height:44px}
+  #results button:not(.back-btn){min-height:48px}
+}
+
+/* ── WHAT THIS LAYER CANNOT DO ────────────────────────────────────────────
+   Three items from the design language need markup, not CSS:
+
+   1. "Today's plan" — the four-line where/when/how/with block that goes
+      directly under the dark band. New component; needs a DOM node and the
+      values the verdict already computes.
+   2. The conditions table + sparkline — this layer flattens the existing
+      bars and gauges to hairlines, but turning them into one labelled table
+      with a 14-day sparkline is a markup change in the conditions renderer.
+   3. "Show the map" on phones — the map now stacks under the spot list
+      instead of being display:none'd at 900px. Collapsing it behind a text
+      toggle needs a button and a click handler.
+
+   Also worth knowing: the .res-summary strip is hidden here because its four
+   numbers belong inside the dark band (.tp-tiles already renders them). If
+   your JS writes anything to #sum-* that .tp-tiles does not, unhide it.
+   ========================================================================= */
