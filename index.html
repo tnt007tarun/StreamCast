@@ -2246,6 +2246,82 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .gcard-lead h3{font-size:1.25rem}
 }
 
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE FORM STABILITY
+   Two separate problems, both visible once a river is picked in expert mode:
+
+   1. HORIZONTAL OVERFLOW. .form-card is `display:flex; flex-direction:column`,
+      so .river-section is a flex item, and flex items default to
+      `min-width:auto` — they refuse to shrink below their content. The section
+      chips are `min-width:140px; flex-shrink:0`, so four of them give that item
+      a ~580px min-content width, which drags the whole card (and the page) past
+      the viewport. `overflow-x:auto` on .river-chips never engages because no
+      ancestor is ever constrained. `min-width:0` on the flex items is the fix;
+      the chips then scroll inside the card as intended.
+
+   2. THE FORM JUMPS. Picking a river swaps a one-line placeholder for a
+      label-plus-chips block, and reveals the river select, so the card grows
+      and the CTA is pushed off screen. Both slots are now reserved, so the
+      content changes inside a stable box instead of resizing it.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 1 ── let the flex chain shrink, so overflow-x:auto can do its job ───────── */
+#landing .form-card,
+#landing .mode-wrap,
+#landing .form-top,
+#landing .tech-section,
+#landing .river-section,
+#landing #river-section-picker,
+#landing .field-group,
+#landing .travel-row{min-width:0}
+/* .mode-wrap is the load-bearing one: it is left unclosed in the markup, so it
+   wraps the whole form and is the flex item that was refusing to shrink. */
+#landing .river-chips{min-width:0;max-width:100%;
+  /* momentum scrolling + a hint that there is more to the right */
+  -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#landing .field-input,#landing select.field-input{max-width:100%}
+/* belt and braces: nothing on the landing page may scroll the page sideways */
+#landing{overflow-x:clip}
+
+/* 2 ── reserve the section slot so picking a river doesn't resize the card ── */
+@media(max-width:700px){
+  /* one shared height for "no river yet" and "here are the sections" */
+  #landing #river-placeholder,
+  #landing .river-section{min-height:5.1rem}
+  #landing #river-placeholder{align-items:center;padding:0}
+  /* the chips strip is the scrollable part, not the card */
+  #landing .river-chips{overflow-x:auto;flex-wrap:nowrap;gap:.45rem;
+    padding-bottom:.35rem;scroll-snap-type:x proximity}
+  #landing .river-chip{min-width:9.5rem;scroll-snap-align:start;
+    padding:.55rem .7rem}
+  #landing .rc-name{font-size:.82rem}
+  #landing .rc-sub{font-size:.54rem}
+}
+
+/* 3 ── tighten the rest so the whole form still fits one screen ──────────── */
+@media(max-width:600px){
+  #landing .form-card{padding:0 .9rem}
+  #landing .form-top,#landing .tech-section{padding:.95rem}
+  #landing .form-top{gap:.6rem}
+  #landing .tech-section{gap:.5rem}
+  #landing .mode-toggle{margin-bottom:1rem}
+  #landing .hero-copy{padding:1.6rem 1.1rem 1.1rem}
+  #landing .hero-copy h1{font-size:1.6rem;margin-bottom:.5rem}
+  /* labels and tiles: smaller, and allowed to wrap rather than force width */
+  #landing .field-lbl{font-size:.58rem}
+  #landing .field-lbl.block{margin:.9rem 0 .45rem}
+  #landing .method-row,#landing .species-btn-grid{gap:.35rem}
+  #landing .tech-family-btn,#landing .species-btn{min-width:0;
+    overflow-wrap:anywhere;hyphens:auto}
+  #landing .method-row .tech-family-btn{font-size:.78rem;padding:.5rem .2rem;
+    min-height:3.4rem}
+  #landing .species-btn{min-height:4.3rem;padding:.45rem .2rem .4rem}
+  #landing .species-btn-name{font-size:.58rem !important;line-height:1.2}
+  #landing .forecast-btn{margin-top:1rem;padding:.8rem}
+}
+
 </style>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
