@@ -644,9 +644,9 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 
 /* BEGINNER MODE — hide river picker */
 .form-card.mode-beginner #river-section,
-.form-card.mode-beginner #river-placeholder{display:none!important;}
-.form-card.mode-beginner .expert-only{display:none!important;}
-.form-card.mode-expert   .beginner-only{display:none!important;}
+.form-card.mode-beginner #river-placeholder{}
+.form-card.mode-beginner .expert-only{}
+.form-card.mode-expert   .beginner-only{}
 
 /* TOP PICK BAND */
 .tpband{background:var(--moss);color:var(--cream);padding:1.5rem 2rem;border-bottom:1px solid rgba(139,181,160,.12);}
@@ -710,7 +710,7 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .rrank-badge.warn{background:rgba(232,168,90,.15);color:#a07020;}
 .rrank-badge.bad{background:rgba(224,112,112,.12);color:#a04040;}
 
-.acard-recommended{border-color:var(--fern)!important;box-shadow:0 2px 12px rgba(45,74,50,.15);}
+.acard-recommended{box-shadow:0 2px 12px rgba(45,74,50,.15);}
 .acard-rec-badge{display:inline-block;background:var(--fern);color:var(--cream);font-family:'JetBrains Mono', monospace;font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .5rem;border-radius:10px;margin-bottom:.5rem;}
 .tech-family-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.25rem;}
 .tech-family-btn{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .4rem;background:var(--white);cursor:pointer;text-align:center;transition:all .15s;font-size:.88rem;font-family:'Nunito', sans-serif;font-weight:600;color:var(--moss);}
@@ -858,13 +858,11 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 .brank, .stag, .sst, .sc-note,
 .reg-note, .aloc, .atags, .atag,
 .tp-chip, .rrank-badge, .v-meta-lbl {
-  font-size: max(11px, 0.688rem) !important;
   line-height: 1.5;
 }
 
 /* Bait condition text — was 11.2px sage, increase + darken */
 .bcond {
-  font-size: 0.8rem !important;
   line-height: 1.6;
 }
 
@@ -939,19 +937,16 @@ select:focus-visible, input:focus-visible {
 /* 6. Section label sub-paragraph — was too light */
 .sec-label p {
   color: var(--sage);
-  font-size: 0.82rem !important;
 }
 
 /* 7. Gear note — was 10.88px, too small */
 .gear-item-note {
-  font-size: 0.72rem !important;
   color: var(--sage);
   line-height: 1.5;
 }
 
 /* 8. Accordion label — was 8px (absurdly small) */
 .tg-label {
-  font-size: 0.68rem !important;
   letter-spacing: .08em;
 }
 
@@ -963,7 +958,7 @@ select:focus-visible, input:focus-visible {
   .aname, .tg-name { font-size: 1rem; }
   .tg-desc { font-size: 0.9rem; }
   .gear-item-val { font-size: 0.88rem; }
-  .bcond { font-size: 0.82rem !important; }
+  .bcond { }
   .bname { font-size: 0.88rem; }
   /* Accordion body padding */
   .tg-body { padding: 0 1rem 1rem; }
@@ -980,29 +975,24 @@ select:focus-visible, input:focus-visible {
 .logo-region, .land-date, .river-sublbl, .rc-time,
 .sec-num, .vsig, .acrowd, .atag, .bi-img-ph, .brank,
 .sum-method, .sum-window, .gs, .g-unit, .v-meta-lbl {
-  font-size: max(11px, 0.688rem) !important;
 }
 
 /* SPECIES BUTTON ACCESSIBILITY FIX */
 .species-btn-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem !important; font-weight: 700;   /* was .46rem = 7.36px — now 11.5px */
+  font-family: 'Outfit', sans-serif; font-weight: 700;   /* was .46rem = 7.36px — now 11.5px */
   letter-spacing: .02em;
   text-transform: none;
   text-align: center;
-  line-height: 1.4;
-  color: rgba(247, 245, 241, 0.85) !important;  /* bright cream — readable on dark moss */
+  line-height: 1.4;  /* bright cream — readable on dark moss */
 }
 
 /* Active state — amber */
 .species-btn.active .species-btn-name {
-  color: var(--amber-l) !important;
   font-weight: 600;
 }
 
 /* Hover state — brighten */
 .species-btn:hover .species-btn-name {
-  color: var(--cream) !important;
 }
 
 /* Responsive grid — 3 cols on mobile, 6 on desktop */
@@ -1026,16 +1016,12 @@ select:focus-visible, input:focus-visible {
 
 /* Section label above species — make sure it's readable too */
 .field-group .field-lbl {
-  font-size: 0.82rem !important;
-  color: var(--text) !important;
   font-weight: 600;
   margin-bottom: .5rem;
 }
 
 /* SPECIES BUTTON NAME — dark text on white card */
 .species-btn-name {
-  color: var(--moss) !important;
-  font-size: 0.75rem !important;
   font-weight: 400;            /* regular — not a heading */
   font-family: 'Outfit', sans-serif;
   letter-spacing: .04em;
@@ -1044,10 +1030,8 @@ select:focus-visible, input:focus-visible {
   line-height: 1.4;
 }
 .species-btn:hover .species-btn-name {
-  color: var(--fern) !important;
 }
 .species-btn.active .species-btn-name {
-  color: var(--amber-l) !important;
   font-weight: 700;
 }
 
@@ -1056,10 +1040,6 @@ select:focus-visible, input:focus-visible {
 .tech-section .beginner-only .field-lbl,
 .travel-row label,
 .travel-row .field-lbl {
-  font-size: 0.82rem !important;
-  color: var(--text) !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
 }
 
 /* REGS GLOSSARY */
@@ -1330,14 +1310,13 @@ select:focus-visible, input:focus-visible {
   right: 1.5rem;
 }
 @media (max-width: 600px) {
-  .hero-photo { height: 160px !important; }
+  .hero-photo { }
   .hero-copy {
     bottom: 1rem;
     left: 1.25rem;
     right: 1.25rem;
   }
   .hero-copy h1 {
-    font-size: 18px !important;
     font-weight: 400;
     font-style: italic;
     line-height: 1.2;
@@ -1693,7 +1672,7 @@ background-size:cover;background-position:center;position:relative}
     top: -30px;
   }
   .hero-photo { height: 160px; }
-  .hero-copy h1 { font-size: 18px !important; font-weight: 400; font-style: italic; line-height: 1.2; }
+  .hero-copy h1 { font-weight: 400; font-style: italic; line-height: 1.2; }
   .mode-toggle { margin-bottom: 0; }
 }
 
@@ -1729,9 +1708,8 @@ background-size:cover;background-position:center;position:relative}
 
 @media (max-width: 600px) {
   .species-btn-name {
-    font-size: .6rem !important;
   }
-  .species-btn-img { width: 44px !important; height: 28px !important; }
+  .species-btn-img { }
 }
 
 .sp-any-link {
@@ -2102,7 +2080,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* A mobile rule sets .hero-photo{height:160px !important}. That was right when this held
    a fixed-height photo; with the photo gone the copy is taller than 160px and spilled
    over the form. !important here is required to beat it. */
-#landing .hero-photo{position:static;height:auto !important;min-height:0;
+#landing .hero-photo{position:static;min-height:0;
   overflow:visible;background:none;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 #landing .hero-photo-bg{display:none}
@@ -2116,7 +2094,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   bottom:auto;left:auto;right:auto;transform:none}
 /* A later base rule sets .hero-copy h1{text-align:left}, so centring has to be stated
    here on the element itself rather than inherited from the container. */
-#landing .hero-copy h1{font:700 2.3rem/1.15 var(--ed-serif) !important;color:var(--ed-ink);
+#landing .hero-copy h1{color:var(--ed-ink);
   letter-spacing:-.018em;margin-bottom:.8rem;text-shadow:none;text-align:center;
   font-style:normal}
 /* The subtitle is an <h3 class="hero-sub">, not a <p> — it was still cream-coloured for
@@ -2179,7 +2157,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* Base is 44x26 and mobile forces 44x28 !important — a landscape strip. A 50% radius on
    a non-square box is what produced the squashed ovals. Force a square so the circle is
    round and object-fit:cover keeps the fish's aspect ratio at every width. */
-#landing .species-btn-img{width:44px !important;height:44px !important;aspect-ratio:1/1;
+#landing .species-btn-img{aspect-ratio:1/1;
   border-radius:50%;overflow:hidden;border:1px solid var(--ed-rule);background:#dfe7e4;
   padding:0;display:block;margin:0 auto;flex:none}
 #landing .species-btn-img img{width:100%;height:100%;object-fit:cover;display:block}
@@ -2299,8 +2277,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   border:1px solid var(--ed-rule);
   border-top:0;
   border-radius:0;
-  margin-top:-1px;
-  padding:1.25rem !important;   /* matches .form-top / .tech-section */
+  margin-top:-1px;   /* matches .form-top / .tech-section */
 }
 /* the chips strip bleeds to the panel edges, so a half-visible chip at the
    right edge signals there is more to swipe */
@@ -2328,7 +2305,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media(max-width:600px){
   #landing .form-card{padding:0 .9rem}
   #landing .form-top,#landing .tech-section{padding:.95rem}
-  #landing .river-section,#landing #river-placeholder{padding:.95rem !important}
+  #landing .river-section,#landing #river-placeholder{}
   #landing .river-chips{margin-left:-.95rem;margin-right:-.95rem;
     padding-left:.95rem;padding-right:.95rem}
   #landing .form-top{gap:.6rem}
@@ -2345,7 +2322,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .method-row .tech-family-btn{font-size:.78rem;padding:.5rem .2rem;
     min-height:3.4rem}
   #landing .species-btn{min-height:4.3rem;padding:.45rem .2rem .4rem}
-  #landing .species-btn-name{font-size:.68rem !important;line-height:1.25}
+  #landing .species-btn-name{line-height:1.25}
   #landing .forecast-btn{margin-top:1rem;padding:.8rem}
 }
 
@@ -2403,7 +2380,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 
   /* the species thumbnail is a 44px circle forced with !important upstream;
      the touch target is the whole 93px tile, so the image can come down */
-  #landing .species-btn-img{width:38px !important;height:38px !important}
+  #landing .species-btn-img{}
 
   /* label-to-control and control-to-CTA breathing room */
   #landing .tech-section .field-lbl,
@@ -2423,6 +2400,65 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @layer patches {
+
+  /* ── batch 2: the remaining 40 ──────────────────────────────────────────
+     Moved as one group in their original source order, so the winner among
+     them is unchanged: inside a layer the cascade is still specificity then
+     source order, exactly as it was when they all carried !important in
+     `app` together.
+     7 keep the flag — three `display` rules that JS overrides with inline
+     styles, two label rules whose elements carry inline letter-spacing and
+     text-transform, and two padding rules against #river-placeholder's
+     inline padding. A layer cannot outrank a style attribute; only
+     !important can. Nothing in `app` carries !important now, so these seven
+     are unopposed.
+     ──────────────────────────────────────────────────────────────────── */
+  .form-card.mode-beginner #river-section, .form-card.mode-beginner #river-placeholder{display:none !important;}
+  .form-card.mode-beginner .expert-only{display:none !important;}
+  .form-card.mode-expert .beginner-only{display:none !important;}
+  .acard-recommended{border-color:var(--fern);}
+  .bdet, .rrank-drive, .tg-label, .gear-item-note, .btab, .slat, .season-bar-labels span, .rrank-num, .acard-rec-badge, .tp-eyebrow, .gear-eyebrow, .tg-gear-lbl, .field-lbl, .sec-label p, .map-legend-lbl, .map-pin span, .brank, .stag, .sst, .sc-note, .reg-note, .aloc, .atags, .atag, .tp-chip, .rrank-badge, .v-meta-lbl{font-size:max(11px, 0.688rem);}
+  .bcond{font-size:0.8rem;}
+  .sec-label p{font-size:0.82rem;}
+  .gear-item-note{font-size:0.72rem;}
+  .tg-label{font-size:0.68rem;}
+  @media (max-width: 600px) {
+    .bcond{font-size:0.82rem;}
+  }
+  .logo-region, .land-date, .river-sublbl, .rc-time, .sec-num, .vsig, .acrowd, .atag, .bi-img-ph, .brank, .sum-method, .sum-window, .gs, .g-unit, .v-meta-lbl{font-size:max(11px, 0.688rem);}
+  .species-btn-name{font-size:0.72rem;color:rgba(247, 245, 241, 0.85);}
+  .species-btn.active .species-btn-name{color:var(--amber-l);}
+  .species-btn:hover .species-btn-name{color:var(--cream);}
+  .field-group .field-lbl{font-size:0.82rem;color:var(--text);}
+  .species-btn-name{color:var(--moss);font-size:0.75rem;}
+  .species-btn:hover .species-btn-name{color:var(--fern);}
+  .species-btn.active .species-btn-name{color:var(--amber-l);}
+  .tech-section .field-lbl, .tech-section .beginner-only .field-lbl, .travel-row label, .travel-row .field-lbl{font-size:0.82rem;color:var(--text);letter-spacing:0 !important;text-transform:none !important;}
+  @media (max-width: 600px) {
+    .hero-photo{height:160px;}
+  }
+  @media (max-width: 600px) {
+    .hero-copy h1{font-size:18px;font-size:18px;}
+  }
+  @media (max-width: 600px) {
+    .species-btn-name{font-size:.6rem;}
+  }
+  @media (max-width: 600px) {
+    .species-btn-img{width:44px;height:28px;}
+  }
+  #landing .hero-photo{height:auto;}
+  #landing .hero-copy h1{font:700 2.3rem/1.15 var(--ed-serif);}
+  #landing .species-btn-img{width:44px;height:44px;}
+  #landing .river-section, #landing #river-placeholder{padding:1.25rem !important;}
+  @media(max-width:600px) {
+    #landing .river-section,#landing #river-placeholder{padding:.95rem !important;}
+  }
+  @media(max-width:600px) {
+    #landing .species-btn-name{font-size:.68rem;}
+  }
+  @media(max-width:600px) {
+    #landing .species-btn-img{width:38px;height:38px;}
+  }
 
   .bcond{color:var(--sage);}
   .tech-section .field-lbl, .tech-section .beginner-only .field-lbl, .travel-row label, .travel-row .field-lbl{font-weight:600;}
