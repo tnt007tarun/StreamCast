@@ -2441,6 +2441,28 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 
 @layer overrides {
 
-  /* (empty — e.g. the results-page editorial restyle goes here) */
+  /* ── form card blowing out to 660px on mobile ────────────────────────────
+     #landing is display:flex / flex-direction:column, and .form-card carries
+     `margin: 1.6rem auto 1rem`. Auto margins on the cross axis DISABLE
+     align-items:stretch, so the card stops filling the container and becomes
+     fit-content instead: clamp(min-content, available, max-content).
+
+     While min-content stayed under the viewport that was invisible. Selecting
+     a river reveals .river-chips — four chips at min-width:9.5rem with
+     flex-shrink:0, a 737px min-content — which pushes the card's min-content
+     past the viewport, so it resolves to its max-width of 660px inside a
+     390px screen. Hence "it only breaks once you pick a river", and only in
+     advanced mode, where the chips exist.
+
+     width:100% restores the stretch behaviour the auto margins suppressed.
+     max-width:660px still caps it on desktop and the auto margins still
+     centre it there, because the width only binds below 660px.
+     Verified in Chromium at 390/430/600/768/1024/1440.
+
+     The same margin:auto + max-width pattern is on the other two direct
+     children of the flex column, so they get the same treatment. */
+  #landing .form-card,
+  #landing .default-preview-wrap,
+  #landing .guides-wrap{width:100%;box-sizing:border-box}
 
 }
