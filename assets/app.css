@@ -2449,9 +2449,11 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .hero-photo{height:auto;}
   #landing .hero-copy h1{font:700 2.3rem/1.15 var(--ed-serif);}
   #landing .species-btn-img{width:44px;height:44px;}
-  #landing .river-section, #landing #river-placeholder{padding:1.25rem !important;}
+  #landing #river-placeholder{padding:1.25rem !important;}
+  #landing .river-section{padding:1.25rem;}
   @media(max-width:600px) {
-    #landing .river-section,#landing #river-placeholder{padding:.95rem !important;}
+    #landing #river-placeholder{padding:.95rem !important;}
+    #landing .river-section{padding:.95rem;}
   }
   @media(max-width:600px) {
     #landing .species-btn-name{font-size:.68rem;}
@@ -2500,5 +2502,36 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .form-card,
   #landing .default-preview-wrap,
   #landing .guides-wrap{width:100%;box-sizing:border-box}
+
+  /* ── mobile spacing: two dead zones ──────────────────────────────────────
+     1. Only 5px between the headline and the form. .hero-copy is a child of
+        .hero-photo and overflows it, so padding on .hero-copy alone did
+        nothing — the photo box is what ends. Letting it size to its content
+        and adding to the card's top margin gives 21px.
+
+     2. 110px of empty white between the river select and METHOD. With no
+        river picked, JS hides BOTH #river-section-picker and
+        #river-placeholder, but .river-section kept its panel padding, border
+        and the min-height:7rem slot I had added — an empty box with nothing
+        in it. The panel treatment now lives on the two children, so the
+        wrapper collapses to nothing when they are both hidden and the two
+        white panels join directly. 110px -> -1px (borders overlapping).
+
+     margin-top and padding need the flag here to beat the picker's and the
+     placeholder's inline style attributes; a layer alone cannot. */
+  @media(max-width:600px){
+    #landing .hero-photo{height:auto;min-height:0}
+    #landing .hero-copy{padding:1.05rem 1.1rem 1.35rem}
+    #landing .form-card{margin-top:1.4rem}
+
+    #landing .river-section{padding:0;border:0;margin-top:0;background:none;
+      min-height:0;gap:0}
+    #landing #river-section-picker,
+    #landing #river-placeholder{
+      background:var(--white);border:1px solid var(--ed-rule);border-top:0;
+      border-radius:0;margin-top:-1px !important;padding:.95rem !important}
+    #landing #river-chips{margin-left:-.95rem;margin-right:-.95rem;
+      padding-left:.95rem;padding-right:.95rem}
+  }
 
 }
