@@ -26,7 +26,7 @@
    is the next planned pass.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@layer app, overrides;
+@layer app, patches, overrides;
 
 @layer app {
 
@@ -865,7 +865,6 @@ body { font-family:'Outfit',sans-serif; font-weight:300; background:var(--cream)
 /* Bait condition text — was 11.2px sage, increase + darken */
 .bcond {
   font-size: 0.8rem !important;
-  color: var(--sage) !important;
   line-height: 1.6;
 }
 
@@ -1058,7 +1057,6 @@ select:focus-visible, input:focus-visible {
 .travel-row label,
 .travel-row .field-lbl {
   font-size: 0.82rem !important;
-  font-weight: 600 !important;
   color: var(--text) !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
@@ -1732,8 +1730,6 @@ background-size:cover;background-position:center;position:relative}
 @media (max-width: 600px) {
   .species-btn-name {
     font-size: .6rem !important;
-    letter-spacing: .01em !important;
-    text-transform: none !important;
   }
   .species-btn-img { width: 44px !important; height: 28px !important; }
 }
@@ -1811,12 +1807,7 @@ background-size:cover;background-position:center;position:relative}
     margin-right: auto;
   }
 
-  /* sec-label stays full-width as visual divider — override any inherited constraint */
-  .sec-label {
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
+  /* sec-label stays full-width as visual divider — moved to @layer patches */
 
   /* tpband already constrained via tpband-inner */
 }
@@ -2422,6 +2413,25 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .method-row .tech-family-btn{padding:.4rem .2rem}
 }
 
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PATCHES — batch 1
+   Rules that used to carry !important purely to out-rank an earlier rule in
+   `app`. Layer order now does that job, so the flag is gone. Same selector,
+   same value, same media query — only the !important was dropped.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer patches {
+
+  .bcond{color:var(--sage);}
+  .tech-section .field-lbl, .tech-section .beginner-only .field-lbl, .travel-row label, .travel-row .field-lbl{font-weight:600;}
+  @media (max-width: 600px) {
+    .species-btn-name{letter-spacing:.01em;text-transform:none;}
+  }
+  @media (min-width: 900px) {
+    .sec-label{max-width:100%;margin-left:0;margin-right:0;}
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
