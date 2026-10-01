@@ -315,12 +315,12 @@
 
   <!-- one-glance summary strip -->
   <!-- Species + Summary Banner -->
-  <div id="species-banner" class="fi" style="background:var(--moss);border-bottom:1px solid rgba(139,181,160,0.15);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;">
-    <div id="species-banner-fish" style="width:56px;height:56px;border-radius:50%;background:rgba(139,181,160,0.12);border:2px solid rgba(158,207,202,0.25);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+  <div id="species-banner" class="sp-banner fi">
+    <div id="species-banner-fish" class="sp-banner-fish"></div>
     <div>
-      <div style="font-family:'JetBrains Mono', monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.55;margin-bottom:.15rem">Target Species</div>
-      <div id="species-display" style="font-family:'Nunito', sans-serif;font-size:1rem;font-weight:700;font-style:italic;color:var(--cream)">Any Species</div>
-      <div id="species-season-badge" style="font-family:'JetBrains Mono', monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.15rem;opacity:.8"></div>
+      <div class="sp-banner-lbl">Target Species</div>
+      <div id="species-display" class="sp-banner-name">Any Species</div>
+      <div id="species-season-badge" class="sp-banner-badge"></div>
     </div>
     <!-- hidden stubs for JS compat -->
     <span id="plain-summary" style="display:none"></span>
@@ -351,7 +351,7 @@
   </div>
 
   <!-- SALMON STAGING CARD — directly below hero so it's most relevant -->
-  <div id="staging-card-slot" style="margin:0 2rem"></div>
+  <div id="staging-card-slot" class="staging-slot"></div>
 
   <!-- SECTION 1 -->
   <div id="section-access">
@@ -363,7 +363,7 @@
       <div class="agrid-map" id="access-map">
         <div class="map-placeholder">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <div style="font-family:'JetBrains Mono', monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase">Map loads with access points</div>
+          <div class="map-placeholder-lbl">Map loads with access points</div>
         </div>
       </div>
     </div>
@@ -379,8 +379,7 @@
     <div class="col fi">
       <div class="col-lbl" id="flow-gauge-lbl">Flow<span class="col-status-dot" id="flow-dot"></span></div>
       <div id="flow-gauge-link" style="margin-bottom:.75rem;display:none">
-        <a id="flow-gauge-anchor" href="#" target="_blank" 
-           style="font-family:'JetBrains Mono', monospace;font-size:.58rem;letter-spacing:.06em;color:var(--water);text-decoration:none;border-bottom:1px solid rgba(58,107,120,0.4);padding-bottom:1px;">
+        <a id="flow-gauge-anchor" class="gauge-link" href="#" target="_blank" rel="noopener">
           &#8599; Check live gauge
         </a>
       </div>
@@ -432,9 +431,9 @@
         <div class="gs" id="skystat">—</div>
       </div>
       <hr class="divr">
-      <div class="col-lbl" style="margin-top:0">Best Window Today</div>
-      <div id="twin" style="font-family:'JetBrains Mono', monospace;font-size:.85rem;font-weight:500;color:var(--moss)">—</div>
-      <div id="tnote" style="font-size:.72rem;color:var(--sage);margin-top:.25rem;line-height:1.4"></div>
+      <div class="col-lbl">Best Window Today</div>
+      <div id="twin" class="best-window">—</div>
+      <div id="tnote" class="best-window-note"></div>
     </div>
 
     <div class="col fi" id="routine-col">

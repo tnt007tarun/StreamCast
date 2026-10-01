@@ -4155,7 +4155,7 @@ async function renderResults(){
     } else if (!speciesOnRiver) {
       // ALL selected species missing from this section
       badge.textContent = 'Not in this section';
-      badge.style.color = '#e07070';
+      badge.dataset.state = 'bad';
     } else {
       // At least one selected species is on this river/section
       var _migratory = ['Chinook Salmon','Coho Salmon','Steelhead'];
@@ -4171,24 +4171,24 @@ async function renderResults(){
         // Partial miss — some present, some not in this section
         var _shortNames = _missingSection.map(function(n){ return n.replace(' Salmon','').replace(' Trout',''); });
         badge.textContent = _shortNames.join('+') + ' not in this section';
-        badge.style.color = '#e8a85a';
+        badge.dataset.state = 'warn';
       } else if (speciesQuality === 'absent') {
         // All on-river species are absent/staging
         var _anyMigratorySelected = targetNames.some(function(n){ return _migratory.indexOf(n) !== -1; });
         badge.textContent = _anyMigratorySelected ? 'Staging in lake — not in river yet' : 'Out of season';
-        badge.style.color = '#e8a85a';
+        badge.dataset.state = 'warn';
       } else if (speciesQuality === 'peak') {
         badge.textContent = '★ Peak season now';
-        badge.style.color = '#6dbf8a';
+        badge.dataset.state = 'good';
       } else if (speciesQuality === 'good') {
         badge.textContent = '● In season';
-        badge.style.color = '#6dbf8a';
+        badge.dataset.state = 'good';
       } else if (speciesQuality === 'slow') {
         badge.textContent = '● Slow season';
-        badge.style.color = '#e8a85a';
+        badge.dataset.state = 'warn';
       } else {
         badge.textContent = speciesSeasonal ? speciesSeasonal.label : '';
-        badge.style.color = '#aaa';
+        badge.dataset.state = '';
       }
     }
   }
