@@ -2692,7 +2692,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* access */
   #results .asec, #results .ssec { background:var(--surface-page); border-bottom:0; }
   #results .asec { padding:0 var(--gutter) var(--sp-5); }
-  #results .agrid { border:1px solid var(--rule); background:var(--rule); border-radius:var(--r-md); }
+  #results .agrid { border:1px solid var(--rule); background:var(--surface-card); border-radius:var(--r-md); }
   .map-placeholder-lbl { font:500 var(--fs-label)/1.3 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; }
 
   /* conditions: live columns on the panel, routine on paper */
@@ -2755,5 +2755,79 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .more-river-wrap { border-top:1px solid var(--rule); }
   #results .more-river-toggle { font:700 var(--fs-md)/1.2 var(--font-serif); color:var(--text-strong);
     padding:var(--sp-4) var(--gutter); }
+
+  /* access cards */
+  #results .agrid-cards { background:var(--surface-card); }
+  #results .ac { background:var(--surface-card); padding:var(--sp-4) var(--sp-5); }
+  #results .ac + .ac { border-top:1px solid var(--rule); }
+  #results .ac-detail { border-top-color:var(--rule); }
+  #results .acard-recommended { box-shadow:none; }
+  #results .acard-rec-badge { font:500 var(--fs-label)/1 var(--font-mono); letter-spacing:.08em;
+    background:var(--good-tint); color:var(--good); border-radius:var(--r-pill); padding:var(--sp-1) var(--sp-2);
+    min-height:0; }
+  #results .aname { font:700 var(--fs-md)/1.2 var(--font-serif); color:var(--text-strong); }
+  #results .ac-summary:hover .aname { color:var(--fern); }
+  #results .ac-chevron { color:var(--text-muted); }
+  #results .acrowd { font-size:var(--fs-label); border-radius:var(--r-pill); padding:var(--sp-1) var(--sp-2); }
+  #results .acrowd.low  { color:var(--good); }
+  #results .acrowd.med  { color:var(--warn-d); }
+  #results .acrowd.high { color:var(--bad); }
+  #results .aloc { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
+  #results .adesc { font-size:var(--fs-base); color:var(--text-body); }
+  #results .atag { font-size:var(--fs-label); background:var(--surface-sunk); color:var(--text-body); border-radius:var(--r-sm); }
+
+  /* regulations strip inside a card */
+  #results .regs-panel { border:1px solid var(--rule); border-radius:var(--r-md); font-size:var(--fs-sm); }
+  #results .regs-header { background:var(--surface-sunk); color:var(--text-strong); border-bottom:1px solid var(--rule); }
+  #results .regs-zone { font-size:var(--fs-label); background:var(--surface-card); border:1px solid var(--rule); border-radius:var(--r-sm); }
+  #results .regs-title { font-size:var(--fs-label); opacity:1; color:var(--text-muted); }
+  #results .regs-link { font-size:var(--fs-label); color:var(--link); opacity:1; }
+  #results .regs-plain { font-size:var(--fs-base); color:var(--text-body); }
+  #results .regs-details-toggle { font-size:var(--fs-sm); color:var(--link); }
+  #results .regs-species-list { background:var(--surface-card); border-bottom-color:var(--rule); }
+  #results .reg-row, #results .reg-special { border-bottom-color:var(--rule); }
+  #results .reg-species { font-size:var(--fs-sm); color:var(--text-strong); }
+  #results .reg-season, #results .reg-note { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }
+  #results .reg-limit { font-size:var(--fs-label); color:var(--good); }
+  #results .regs-specials { background:var(--surface-sunk); }
+  #results .reg-special { font-size:var(--fs-sm); color:var(--text-body); }
+  #results .regs-glossary { border-top-color:var(--rule); }
+  #results .regs-glossary-title { font-size:var(--fs-label); color:var(--text-muted); }
+  #results .rg-term { color:var(--text-strong); }
+
+  /* closed on this date */
+  #results .closed-notice { background:var(--bad-tint); border:0; border-radius:var(--r-md);
+    padding:var(--sp-4); margin:var(--sp-4) var(--gutter) 0; }
+  #results .closed-notice .cn-lbl { font-size:var(--fs-label); color:var(--bad); }
+  #results .closed-notice li { font-size:var(--fs-base); color:var(--text-body); }
+  #results .closed-notice .cn-foot { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }
+
+  /* map */
+  #results .agrid-map { background:var(--surface-sunk); }
+  #results .map-placeholder { color:var(--text-muted); opacity:1; }
+  .map-frame { width:100%; height:340px; border:0; display:block; }
+  .map-cta-wrap { padding:var(--sp-3) var(--sp-4); }
+  .map-cta { display:flex; align-items:center; justify-content:center; gap:var(--sp-2);
+    background:var(--fern); color:var(--white); border-radius:var(--r-md); padding:var(--sp-3) var(--sp-4);
+    font:600 var(--fs-sm)/1.2 var(--font-body); text-decoration:none; transition:opacity .15s; }
+  .map-cta:hover { opacity:.9; }
+  .map-pin-list { background:var(--surface-sunk); padding:var(--sp-2) var(--sp-3); max-height:140px; overflow-y:auto; gap:var(--sp-1); }
+  .map-legend-lbl { font-size:var(--fs-label); color:var(--text-muted); opacity:1; padding:0; }
+  .map-pin { font-size:var(--fs-sm); color:var(--text-body); opacity:.75; }
+  .map-pin:hover { background:var(--surface-card); opacity:1; }
+  .map-pin.is-active { opacity:1; font-weight:600; color:var(--text-strong); }
+  .map-pin-dot { min-width:18px; height:18px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font:700 .6rem/1 var(--font-body); color:var(--white); }
+  .map-pin-dot.low  { background:var(--good); }
+  .map-pin-dot.med  { background:var(--warn); }
+  .map-pin-dot.high { background:var(--bad); }
+  .map-pin.is-active .map-pin-dot { box-shadow:0 0 0 2px var(--surface-card), 0 0 0 4px var(--fern); }
+
+  /* footer — one paper footer site-wide */
+  .site-footer { background:var(--surface-page); border-top:1px solid var(--rule); padding:var(--sp-4) var(--gutter); }
+  .site-footer-brand { font:italic 700 .95rem/1 var(--font-serif); color:var(--text-strong); }
+  .site-footer-nav a { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
+  .site-footer-nav a:hover { color:var(--fern); }
+  .site-footer-copy { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
 
 }
