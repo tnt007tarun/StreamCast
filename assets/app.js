@@ -440,6 +440,29 @@ function seasonClosureFor(cfg, dateStr) {
   };
 }
 
+// Fishable means all three: the species lives in this section, the section's trout and
+// salmon season is open on the date, and the species is in a good or peak window.
+// Biological season alone is not enough — resident trout are "in season" in October on
+// reaches where fishing for them closed on September 30.
+function speciesFishableIn(sectionName, speciesName, dateStr) {
+  var c = getRiverConfig(sectionName);
+  if (!c || !c.species || c.species.indexOf(speciesName) === -1) return false;
+  if (seasonClosureFor(c, dateStr)) return false;
+  var s = getCurrentSeason(speciesName, dateStr);
+  return !!s && (s.quality === 'peak' || s.quality === 'good');
+}
+// Other sections of the same river system, in RIVER_SECTIONS order.
+function sectionSiblings(sectionName) {
+  var base = String(sectionName || '').split(',')[0].trim();
+  var out = [];
+  Object.keys(RIVER_SECTIONS).forEach(function(parent) {
+    var list = RIVER_SECTIONS[parent];
+    if (list.indexOf(base) === -1) return;
+    list.forEach(function(s) { if (s !== base) out.push(s); });
+  });
+  return out;
+}
+
 // ── SEASONAL CLOSURES ─────────────────────────────────────────────────────────
 // Fish sanctuaries from the MNR 2026 summary. Recommending a spot inside a closed
 // sanctuary is the worst error this app can make, so closed spots are removed from
@@ -5205,6 +5228,13 @@ function rankRivers(rivers, speciesKey, dateStr) {
       }
     }
 
+    // Legally closed on this date. Outweighs everything above, including the species not
+    // being here at all, so a closed reach never outranks open water nearby.
+    if (seasonClosureFor(cfg, dateStr)) {
+      score -= 30;
+      warnings.unshift('Season closed on this reach');
+    }
+
     // Prefer rivers closer by
     var drive = r.driveTime || 60;
     if (drive < 30) score += 4;
@@ -5934,6 +5964,67 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       + 'Bring your <em>' + bringPhrase + '</em>.'
       + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
   }
+
+  // Legal-season pass. Runs after every branch above so none of them can send someone to
+  // water that is closed on the trip date, and so a target species that is fishable on
+  // another section of this river wins over a local substitute.
+  (function() {
+    var _trip = getTripDateStr();
+    var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _closedHere = seasonClosureFor(cfg, _trip);
+    var _targetOk = targetName ? speciesFishableIn(_here, targetName, _trip) : false;
+    if (!_closedHere && (!targetName || _targetOk)) return;
+    if (!_closedHere && _stagingHeadline) return;
+
+    var _sibs = sectionSiblings(_here);
+    var _closedNote = _closedHere ? ' Trout and salmon season on this stretch closed September 30.' : '';
+    if (_closedHere && _closedHere.band === 'extended') _closedNote = ' Trout and salmon season on this stretch closed December 31.';
+
+    if (targetName && !_targetOk) {
+      var _sib = null;
+      _sibs.forEach(function(s) { if (!_sib && speciesFishableIn(s, targetName, _trip)) _sib = s; });
+      if (_sib) {
+        var _q = getCurrentSeason(targetName, _trip);
+        var _why = _q && _q.quality === 'peak' ? 'they’re at peak season' : 'they’re in season';
+        var _listedHere = cfg.species && cfg.species.indexOf(targetName) !== -1;
+        headlineHtml = (_listedHere && _closedHere
+            ? 'The season is closed on this stretch. <em>' + targetName + '</em> are also in the <em>' + _sib + '</em>'
+            : '<em>' + targetName + '</em> aren’t fishable in this section. They are in the <em>' + _sib + '</em>')
+          + ', where ' + _why + ' and the season is open — head there instead.'
+          + (_listedHere ? '' : _closedNote);
+        window._shownSpeciesName = targetName;
+        return;
+      }
+      if (!_closedHere) return; // no better section; the local fallback above is legal
+    }
+
+    // Closed here, and the target (if any) isn't fishable anywhere else on this river.
+    // Offer the best species on an open sibling section, scored the same way as locally.
+    var _best = null;
+    _sibs.forEach(function(s) {
+      var sc = getRiverConfig(s);
+      if (!sc || seasonClosureFor(sc, _trip)) return;
+      recommendSpecies(sc).forEach(function(r) {
+        if (!r.seasonal || (r.seasonal.quality !== 'peak' && r.seasonal.quality !== 'good')) return;
+        if (_thermalStress && _TROUT.indexOf(r.name) !== -1) return;
+        if (!_best || r.score > _best.score) _best = { section: s, name: r.name, score: r.score };
+      });
+    });
+    var _lead = targetName
+      ? '<em>' + targetName + '</em> aren’t fishable on this river right now.'
+      : 'The season is closed on this stretch.';
+    if (targetName && _closedHere) _lead += _closedNote;
+    if (_best) {
+      headlineHtml = _lead + ' <em>' + _best.name + '</em> are in season in the <em>' + _best.section
+        + '</em>, which is open — head there instead.';
+      window._shownSpeciesName = _best.name;
+    } else {
+      headlineHtml = _lead + ' Nothing else on this river is both open and in season'
+        + (_closedHere ? '. ' + _closedHere.reason : '.');
+      window._shownSpeciesName = null;
+    }
+  })();
+
   document.getElementById('tp-headline').innerHTML = headlineHtml;
 
   // Update eyebrow with date context and tense
