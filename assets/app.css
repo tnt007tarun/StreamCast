@@ -127,6 +127,9 @@
   --sp-5: 1.5rem;
   --sp-6: 2rem;
   --gutter: 2rem;
+  --content-max: 1140px;
+  /* side padding that centres a --content-max column inside a full-width band */
+  --band-pad: max(var(--gutter), calc((100% - var(--content-max)) / 2));
 }
 @media (max-width:600px) { :root { --gutter: 1.1rem; } }
 }
@@ -2888,5 +2891,24 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .p-alt-chev { color:var(--text-muted); }
   #results .p-more { font-size:var(--fs-label); color:var(--link); }
   #results .p-baitfoot, #results .p-empty { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }
+
+  /* one centred content column for every results section.
+     Full-width bands (masthead, banner, headline, section labels, footer)
+     keep their edge-to-edge background and centre their content with padding;
+     boxed blocks are capped and centred with auto margins. */
+  #results .res-header,
+  #results .sp-banner,
+  #results .tpband,
+  #results .sec-label,
+  #results .asec,
+  #results .ssec,
+  #results .more-river-toggle,
+  #results .site-footer { padding-left:var(--band-pad); padding-right:var(--band-pad); }
+  #results .asec { max-width:none; }
+  #results .cond-card,
+  #results .tgsec,
+  #results .staging-slot { width:auto; max-width:none;
+    margin-left:max(var(--gutter), calc((100% - var(--content-max)) / 2));
+    margin-right:max(var(--gutter), calc((100% - var(--content-max)) / 2)); }
 
 }
