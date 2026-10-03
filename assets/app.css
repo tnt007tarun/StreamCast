@@ -2612,8 +2612,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* ══════════════════════════════════════════════════════════════════════
      RESULTS PAGE — option C: editorial page, instrument panel for live data
      The page chrome, headings and cards sit on paper like the rest of the
-     site. Only live readings (the headline tiles and the flow / temperature
-     columns) sit on the dark panel, so dark always means "measured now".
+     site. Only the headline readings sit on the dark panel; the detailed
+     conditions cards below stay light so they don't compete with it.
      ══════════════════════════════════════════════════════════════════════ */
 
   #results { background:var(--surface-page); color:var(--text-body); }
@@ -2653,8 +2653,14 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     padding:var(--sp-4) var(--gutter) var(--sp-5); border-bottom:0; }
   #results .tpband-inner { padding:0; }
   #results .tp-eyebrow { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
-  #results .tp-headline { font:700 clamp(1.45rem,4.6vw,2.1rem)/1.15 var(--font-serif);
-    color:var(--text-strong); text-wrap:balance; max-width:32ch; }
+  #results .tpband-inner { max-width:none; }
+  #results .tp-headline { font:700 clamp(1.45rem,3.6vw,2.1rem)/1.2 var(--font-serif);
+    color:var(--text-strong); text-wrap:balance; }
+  #results .drive-time { font:500 var(--fs-sm)/1.4 var(--font-mono); color:var(--text-muted); }
+  #results .drive-verdict { font-size:var(--fs-label); border-radius:var(--r-pill); }
+  #results .verdict-yes   { background:var(--good-tint); color:var(--good); }
+  #results .verdict-maybe { background:var(--warn-tint); color:var(--warn-d); }
+  #results .verdict-no    { background:var(--bad-tint);  color:var(--bad); }
   #results .tp-headline em { font-style:italic; color:var(--fern); }
   #results .tp-staging-note { color:var(--text-body); opacity:1; }
   #results .tp-str-lbl,
@@ -2700,7 +2706,6 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     margin:0 var(--gutter) var(--sp-5); }
   #results .cgrid { background:none; border:0; padding:0; gap:var(--sp-3); }
   #results .cgrid .col { border:0; border-radius:var(--r-lg); padding:var(--sp-5); }
-  #results #routine-col { background:var(--surface-card); border:1px solid var(--rule); }
   #results .rn { font:700 var(--fs-lg)/1 var(--font-serif); color:var(--amber); }
   #results .rt { font-size:var(--fs-sm); color:var(--text-strong); }
   #results .rd { font-size:var(--fs-sm); color:var(--text-muted); }
@@ -2710,32 +2715,35 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   .best-window { font:500 var(--fs-base)/1.3 var(--font-mono); color:var(--text-strong); }
   .best-window-note { font-size:var(--fs-sm); line-height:1.4; color:var(--text-muted); margin-top:var(--sp-1); }
 
-  #results .cgrid .col:not(#routine-col) { background:var(--panel-bg); color:var(--panel-text); }
-  #results .cgrid .col:not(#routine-col) .col-lbl { font-size:var(--fs-label); color:var(--panel-muted); border-bottom-color:var(--panel-rule); }
-  #results .cgrid .col:not(#routine-col) .bnum { font:500 var(--fs-num)/1 var(--font-mono); letter-spacing:-.02em; color:var(--panel-text); }
-  #results .cgrid .col:not(#routine-col) :is(.bnum-u, .bnum-l, .gr, .best-window-note) { color:var(--panel-muted); opacity:1; }
-  #results .cgrid .col:not(#routine-col) :is(.gn, .gv, .cl li, .best-window) { color:var(--panel-text); }
-  #results .cgrid .col:not(#routine-col) .gauge-link { color:var(--mist); }
-  #results .cgrid .col:not(#routine-col) .gt { background:var(--panel-rule); }
-  #results .cgrid .col:not(#routine-col) .divr { border-top-color:var(--panel-rule); }
-  #results .cgrid .col:not(#routine-col) .gf.good { background:var(--good-on-panel); }
-  #results .cgrid .col:not(#routine-col) .gf.warn { background:var(--warn-on-panel); }
-  #results .cgrid .col:not(#routine-col) .gf.bad  { background:var(--bad-on-panel); }
-  #results .cgrid .col:not(#routine-col) :is(.gs, .ci, .trd).good,
-  #results .cgrid .col:not(#routine-col) .trd.up { color:var(--good-on-panel); }
-  #results .cgrid .col:not(#routine-col) :is(.gs, .ci).warn,
-  #results .cgrid .col:not(#routine-col) .trd.stable { color:var(--warn-on-panel); }
-  #results .cgrid .col:not(#routine-col) :is(.gs, .ci).bad,
-  #results .cgrid .col:not(#routine-col) .trd.down { color:var(--bad-on-panel); }
-  #results .cgrid .col:not(#routine-col) .col-status-dot.dot-good { background:var(--good-on-panel); }
-  #results .cgrid .col:not(#routine-col) .col-status-dot.dot-warn { background:var(--warn-on-panel); }
-  #results .cgrid .col:not(#routine-col) .col-status-dot.dot-bad  { background:var(--bad-on-panel); }
-  #results .cgrid .col:not(#routine-col) .sps { border-color:var(--panel-rule); border-radius:var(--r-md); }
-  #results .cgrid .col:not(#routine-col) .spc:not(:last-child) { border-right-color:var(--panel-rule); }
-  #results .cgrid .col:not(#routine-col) .spc { background:var(--panel-raised); }
-  #results .cgrid .col:not(#routine-col) :is(.spc-time, .spc-label) { color:var(--panel-text); }
-  #results .cgrid .col:not(#routine-col) .spc-good :is(.spc-time, .spc-label) { color:var(--good-on-panel); }
-  #results .cgrid .col:not(#routine-col) .spc-bad  :is(.spc-time, .spc-label) { color:var(--warn-on-panel); }
+  /* live columns: light cards; status carried by the top edge, bars and labels */
+  #results .cgrid .col { background:var(--surface-card); border:1px solid var(--rule); border-top:3px solid var(--rule); }
+  #results .cgrid .col:has(.col-status-dot.dot-good) { border-top-color:var(--good); }
+  #results .cgrid .col:has(.col-status-dot.dot-warn) { border-top-color:var(--warn); }
+  #results .cgrid .col:has(.col-status-dot.dot-bad)  { border-top-color:var(--bad); }
+  #results .cgrid .col-lbl { font-size:var(--fs-label); color:var(--text-muted); border-bottom-color:var(--rule); }
+  #results .cgrid .bnum { font:500 var(--fs-num)/1 var(--font-mono); letter-spacing:-.02em; color:var(--text-strong); }
+  #results .cgrid :is(.bnum-u, .bnum-l, .gr) { color:var(--text-muted); opacity:1; }
+  #results .cgrid :is(.gn, .gv, .cl li) { color:var(--text-body); }
+  #results .cgrid .gv { color:var(--text-strong); }
+  #results .cgrid .gt { background:var(--surface-sunk); }
+  #results .cgrid .divr { border-top-color:var(--rule); }
+  #results .cgrid .gf.good { background:var(--good); }
+  #results .cgrid .gf.warn { background:var(--warn); }
+  #results .cgrid .gf.bad  { background:var(--bad); }
+  #results .cgrid :is(.gs, .ci, .trd).good, #results .cgrid .trd.up { color:var(--good); }
+  #results .cgrid :is(.gs, .ci).warn, #results .cgrid .trd.stable { color:var(--warn-d); }
+  #results .cgrid :is(.gs, .ci).bad, #results .cgrid .trd.down { color:var(--bad); }
+  #results .cgrid .col-status-dot.dot-good { background:var(--good); }
+  #results .cgrid .col-status-dot.dot-warn { background:var(--warn); }
+  #results .cgrid .col-status-dot.dot-bad  { background:var(--bad); }
+  #results .cgrid .sps { border-color:var(--rule); border-radius:var(--r-md); }
+  #results .cgrid .spc:not(:last-child) { border-right-color:var(--rule); }
+  #results .cgrid .spc { background:var(--surface-card); }
+  #results .cgrid :is(.spc-time, .spc-label) { color:var(--text-body); }
+  #results .cgrid .spc-good { background:var(--good-tint); }
+  #results .cgrid .spc-good :is(.spc-time, .spc-label) { color:var(--good); }
+  #results .cgrid .spc-bad { background:var(--warn-tint); }
+  #results .cgrid .spc-bad :is(.spc-time, .spc-label) { color:var(--warn-d); }
   #results .spc-time { font-size:var(--fs-label); }
   #results .spc-label { font-size:var(--fs-sm); }
 
@@ -2829,5 +2837,56 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   .site-footer-nav a { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
   .site-footer-nav a:hover { color:var(--fern); }
   .site-footer-copy { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
+
+  /* technique · gear · bait — pillar headers */
+  #results .p-head { gap:var(--sp-2); margin-bottom:var(--sp-3); }
+  #results .p-step { width:24px; height:24px; font:700 var(--fs-sm)/1 var(--font-serif); }
+  #results .p-lbl { font:700 var(--fs-md)/1.2 var(--font-serif); letter-spacing:0; text-transform:none; color:var(--text-strong); }
+  #results .pillar { margin-bottom:var(--sp-5); }
+
+  /* gear: a spec sheet of tiles */
+  #results .p-gearname { font:700 var(--fs-lg)/1.2 var(--font-serif); color:var(--text-strong);
+    border-bottom:0; padding-bottom:0; margin-bottom:var(--sp-4); }
+  #results .p-gearGrid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-2); }
+  @media (max-width:600px) { #results .p-gearGrid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  #results .gear-item { background:var(--surface-sunk); border-radius:var(--r-md); padding:var(--sp-3) var(--sp-4);
+    display:flex; flex-direction:column; gap:var(--sp-1); }
+  #results .gear-item-lbl { font:500 var(--fs-label)/1 var(--font-mono); letter-spacing:var(--tracking-label);
+    text-transform:uppercase; color:var(--fern); opacity:1; margin:0; }
+  #results .gear-item-val { font:700 var(--fs-md)/1.3 var(--font-serif); color:var(--text-strong); }
+  #results .gear-item-note { font-size:var(--fs-sm); font-style:normal; color:var(--text-muted); opacity:1; margin:0; }
+  #results .p-gearnote { font-size:var(--fs-base); font-style:normal; color:var(--text-body); opacity:1;
+    margin-top:var(--sp-4); padding:var(--sp-3) var(--sp-4); background:var(--warn-tint); border-radius:var(--r-md); }
+  #results .p-gearsec { font-size:var(--fs-sm); color:var(--text-body); opacity:1; border-top-color:var(--rule);
+    margin-top:var(--sp-4); padding-top:var(--sp-3); }
+  #results .p-gearsec b { font-size:var(--fs-label); color:var(--fern); }
+
+  /* bait: the top pick leads with its photo */
+  #results .p-bait { padding:var(--sp-4); }
+  #results .p-bait-top { gap:var(--sp-4); align-items:center; }
+  #results .p-bimg { width:112px; height:84px; border-radius:var(--r-md); background:var(--surface-sunk); border-color:var(--rule); }
+  #results .p-bimg svg { color:var(--text-muted); }
+  #results .p-badge { font:600 var(--fs-label)/1 var(--font-mono); background:var(--amber); color:var(--white);
+    border-radius:var(--r-pill); padding:var(--sp-1) var(--sp-2); margin-bottom:var(--sp-2); }
+  #results .p-bait h5 { font:700 var(--fs-lg)/1.15 var(--font-serif); color:var(--text-strong); }
+  #results .p-bspec { font-size:var(--fs-label); color:var(--text-muted); opacity:1; margin-top:var(--sp-1); }
+  #results .p-bait > .p-how { grid-template-columns:repeat(auto-fit,minmax(14rem,1fr)); gap:var(--sp-2);
+    border-top:0; padding-top:0; margin-top:var(--sp-4); }
+  #results .p-bait > .p-how > div { background:var(--surface-sunk); border-radius:var(--r-md);
+    padding:var(--sp-3) var(--sp-4); display:grid; gap:var(--sp-1); align-content:start; }
+  #results .p-how dt { font-size:var(--fs-label); color:var(--fern); }
+  #results .p-how dd { font-size:var(--fs-base); color:var(--text-body); }
+
+  /* bait: alternatives */
+  #results .p-altwrap, #results .p-more { border-top-color:var(--rule); }
+  #results .p-alt { padding:var(--sp-3) var(--sp-2); border-radius:var(--r-sm); }
+  #results .p-alt:hover { background:var(--surface-sunk); }
+  #results .p-alt-name { font:700 var(--fs-md)/1.2 var(--font-serif); color:var(--text-strong); }
+  #results .p-alt-sub { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }
+  #results .p-alt-when { font-size:var(--fs-label); background:var(--good-tint); color:var(--good);
+    padding:var(--sp-1) var(--sp-2); border-radius:var(--r-pill); }
+  #results .p-alt-chev { color:var(--text-muted); }
+  #results .p-more { font-size:var(--fs-label); color:var(--link); }
+  #results .p-baitfoot, #results .p-empty { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }
 
 }

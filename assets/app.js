@@ -6870,9 +6870,9 @@ function renderBaitPillar(topMethod) {
   }
 
   var rows = '';
-  if (top.bestFor) rows += '<dt>Best for</dt><dd>' + top.bestFor + '</dd>';
-  if (top.how)     rows += '<dt>How</dt><dd>' + top.how + '</dd>';
-  if (!rows && top.blurb) rows = '<dt>Note</dt><dd>' + top.blurb + '</dd>';
+  if (top.bestFor) rows += '<div><dt>Best for</dt><dd>' + top.bestFor + '</dd></div>';
+  if (top.how)     rows += '<div><dt>How</dt><dd>' + top.how + '</dd></div>';
+  if (!rows && top.blurb) rows = '<div><dt>Note</dt><dd>' + top.blurb + '</dd></div>';
 
   card.innerHTML =
     '<div class="p-bait-top">' + imgHtml(top) +
