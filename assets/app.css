@@ -2961,4 +2961,16 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .season-bar-labels span,
   #results .sc-species.active .season-bar-labels span { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
 
+  /* "head there" redirect: the section name in the headline and a button under it */
+  #results .tp-goto-link { color:inherit; text-decoration:underline; text-decoration-thickness:2px;
+    text-underline-offset:.18em; text-decoration-color:var(--fern); }
+  #results .tp-goto-link em { color:var(--fern); }
+  #results .tp-goto-link:hover { text-decoration-color:var(--amber); }
+  #results .tp-goto-btn { display:inline-flex; align-items:center; gap:var(--sp-2); margin:var(--sp-1) 0 var(--sp-3);
+    background:var(--fern); color:var(--white); border:0; border-radius:var(--r-md);
+    padding:var(--sp-3) var(--sp-4); font:600 var(--fs-base)/1.2 var(--font-body); cursor:pointer; }
+  #results .tp-goto-btn:hover { background:var(--moss); }
+  #results .tp-goto-btn:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
+  #results .tp-goto-btn[hidden] { display:none; }
+
 }

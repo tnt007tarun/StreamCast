@@ -690,7 +690,8 @@ function renderStagingCard(sectionName, weather) {
         var _hEl = document.getElementById('tp-headline');
         var _tgtSp = (typeof selectedSpeciesLabel !== 'undefined') ? selectedSpeciesLabel : null;
         var _isSalmonTgt = _tgtSp === 'Chinook Salmon' || _tgtSp === 'Coho Salmon';
-        if (_hEl && _isSalmonTgt) {
+        // A legal-season redirect already names where to go; staging strength doesn't change that.
+        if (_hEl && _isSalmonTgt && !_hEl.querySelector('[data-goto-section]')) {
           var _isAtMouthNow = selectedRiver && STAGING_ZONES[selectedRiver];
           if (!_isAtMouthNow) {
             var _curName = selectedRiver ? selectedRiver.split(',')[0].split(' \u2014 ')[0].trim() : '';
@@ -3291,6 +3292,36 @@ function goToResults(){
   renderResults();
   setTimeout(loadBaitImages, 800);
 }
+
+// Follow a "head there" redirect from the headline: load that section's results, and
+// switch the target species when the suggestion is a different fish.
+function goToSection(section, speciesName) {
+  var keyMap = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Steelhead':'steelhead',
+    'Brook Trout':'brook','Chinook Salmon':'chinook','Coho Salmon':'coho'};
+  var key = keyMap[speciesName];
+  if (key) {
+    selectedSpecies = [key];
+    selectedSpeciesLabel = speciesName;
+    document.querySelectorAll('.species-btn').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-value') === key);
+    });
+  }
+  var loc = null;
+  (nearbyRivers || []).forEach(function(r) { if (!loc && r.name === section && r.loc) loc = r.loc; });
+  selectedRiver = section + (loc ? ', ' + loc.replace(/–/g, '-') : '');
+  selectedRiverIsAuto = false;
+  track('Redirect Followed', { river: section, species: speciesName || '' });
+  setResHeader(selectedRiver);
+  history.pushState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+  window.scrollTo(0, 0);
+  renderResults();
+}
+document.addEventListener('click', function(e) {
+  var t = e.target.closest && e.target.closest('[data-goto-section]');
+  if (!t) return;
+  e.preventDefault();
+  goToSection(t.getAttribute('data-goto-section'), t.getAttribute('data-goto-species'));
+});
 
 function goBack(){
   track('Back to Search', {});
@@ -5968,6 +5999,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Legal-season pass. Runs after every branch above so none of them can send someone to
   // water that is closed on the trip date, and so a target species that is fishable on
   // another section of this river wins over a local substitute.
+  var _goto = null;
+  function gotoLink(section, species) {
+    return '<a href="#river" class="tp-goto-link" data-goto-section="' + section + '" data-goto-species="' + species + '"><em>'
+      + section + '</em></a>';
+  }
   (function() {
     var _trip = getTripDateStr();
     var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
@@ -5988,11 +6024,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         var _why = _q && _q.quality === 'peak' ? 'they’re at peak season' : 'they’re in season';
         var _listedHere = cfg.species && cfg.species.indexOf(targetName) !== -1;
         headlineHtml = (_listedHere && _closedHere
-            ? 'The season is closed on this stretch. <em>' + targetName + '</em> are also in the <em>' + _sib + '</em>'
-            : '<em>' + targetName + '</em> aren’t fishable in this section. They are in the <em>' + _sib + '</em>')
+            ? 'The season is closed on this stretch. <em>' + targetName + '</em> are also in the ' + gotoLink(_sib, targetName)
+            : '<em>' + targetName + '</em> aren\u2019t fishable in this section. They are in the ' + gotoLink(_sib, targetName))
           + ', where ' + _why + ' and the season is open — head there instead.'
           + (_listedHere ? '' : _closedNote);
         window._shownSpeciesName = targetName;
+        _goto = { section: _sib, species: targetName };
         return;
       }
       if (!_closedHere) return; // no better section; the local fallback above is legal
@@ -6015,9 +6052,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       : 'The season is closed on this stretch.';
     if (targetName && _closedHere) _lead += _closedNote;
     if (_best) {
-      headlineHtml = _lead + ' <em>' + _best.name + '</em> are in season in the <em>' + _best.section
-        + '</em>, which is open — head there instead.';
+      headlineHtml = _lead + ' <em>' + _best.name + '</em> are in season in the ' + gotoLink(_best.section, _best.name)
+        + ', which is open \u2014 head there instead.';
       window._shownSpeciesName = _best.name;
+      _goto = { section: _best.section, species: _best.name };
     } else {
       headlineHtml = _lead + ' Nothing else on this river is both open and in season'
         + (_closedHere ? '. ' + _closedHere.reason : '.');
@@ -6026,6 +6064,23 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   })();
 
   document.getElementById('tp-headline').innerHTML = headlineHtml;
+  (function() {
+    var _btn = document.getElementById('tp-goto');
+    if (!_btn) {
+      _btn = document.createElement('button');
+      _btn.type = 'button';
+      _btn.id = 'tp-goto';
+      _btn.className = 'tp-goto-btn';
+      var _hd = document.getElementById('tp-headline');
+      _hd.parentNode.insertBefore(_btn, _hd.nextSibling);
+    }
+    _btn.hidden = !_goto;
+    if (_goto) {
+      _btn.setAttribute('data-goto-section', _goto.section);
+      _btn.setAttribute('data-goto-species', _goto.species);
+      _btn.textContent = 'See ' + _goto.section + ' \u2192';
+    }
+  })();
 
   // Update eyebrow with date context and tense
   (function() {
