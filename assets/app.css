@@ -2809,6 +2809,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* closed on this date */
   #results .closed-notice { background:var(--bad-tint); border:0; border-radius:var(--r-md);
     padding:var(--sp-4); margin:var(--sp-4) var(--gutter) 0; }
+  #results .agrid-cards .closed-notice { margin:var(--sp-4) var(--sp-5); }
   #results .closed-notice .cn-lbl { font-size:var(--fs-label); color:var(--bad); }
   #results .closed-notice li { font-size:var(--fs-base); color:var(--text-body); }
   #results .closed-notice .cn-foot { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }

@@ -2834,7 +2834,11 @@ function renderRiverUI(cfg) {
   // Sanctuary notice — say plainly which spots are shut and why.
   (function(){
     var host = document.getElementById('access-grid');
-    if (!host || !_closedSpots.length) return;
+    if (!host) return;
+    // A notice from a previous search must not survive into this one.
+    var _old = host.parentNode.querySelectorAll('.closed-notice');
+    Array.prototype.forEach.call(_old, function(n){ n.parentNode.removeChild(n); });
+    if (!_closedSpots.length) return;
     var seen = {};
     var rows = _closedSpots.map(function(s){
       var win = accessClosureOn(s, _tripDateAcc);
@@ -2850,7 +2854,9 @@ function renderRiverUI(cfg) {
     box.innerHTML = '<div class="cn-lbl">\u26a0 Closed on this date</div><ul>' + rows + '</ul>' +
       '<div class="cn-foot">Sanctuary closures from the Ontario 2026 regulations. ' +
       'Always confirm the exact boundary before you fish.</div>';
-    host.parentNode.insertBefore(box, host.nextSibling);
+    // Top of the cards column, not beside it (the parent is the cards/map grid), and first
+    // so it isn't hidden below the fold of the scrolling card list.
+    host.insertBefore(box, host.firstChild);
   })();
 
   // Reorder coords to match _accessSorted (recommended spot first)
