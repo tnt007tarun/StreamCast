@@ -4155,7 +4155,7 @@ async function renderResults(){
     } else if (!speciesOnRiver) {
       // ALL selected species missing from this section
       badge.textContent = 'Not in this section';
-      badge.style.color = '#e07070';
+      badge.dataset.state = 'bad';
     } else {
       // At least one selected species is on this river/section
       var _migratory = ['Chinook Salmon','Coho Salmon','Steelhead'];
@@ -4171,24 +4171,24 @@ async function renderResults(){
         // Partial miss — some present, some not in this section
         var _shortNames = _missingSection.map(function(n){ return n.replace(' Salmon','').replace(' Trout',''); });
         badge.textContent = _shortNames.join('+') + ' not in this section';
-        badge.style.color = '#e8a85a';
+        badge.dataset.state = 'warn';
       } else if (speciesQuality === 'absent') {
         // All on-river species are absent/staging
         var _anyMigratorySelected = targetNames.some(function(n){ return _migratory.indexOf(n) !== -1; });
         badge.textContent = _anyMigratorySelected ? 'Staging in lake — not in river yet' : 'Out of season';
-        badge.style.color = '#e8a85a';
+        badge.dataset.state = 'warn';
       } else if (speciesQuality === 'peak') {
         badge.textContent = '★ Peak season now';
-        badge.style.color = '#6dbf8a';
+        badge.dataset.state = 'good';
       } else if (speciesQuality === 'good') {
         badge.textContent = '● In season';
-        badge.style.color = '#6dbf8a';
+        badge.dataset.state = 'good';
       } else if (speciesQuality === 'slow') {
         badge.textContent = '● Slow season';
-        badge.style.color = '#e8a85a';
+        badge.dataset.state = 'warn';
       } else {
         badge.textContent = speciesSeasonal ? speciesSeasonal.label : '';
-        badge.style.color = '#aaa';
+        badge.dataset.state = '';
       }
     }
   }
@@ -4570,11 +4570,9 @@ function updateMapPin(spotIdx) {
     var co = coords[i];
     if (!co) return '';
     var dotCls = ac.crowd === 'low' ? 'low' : ac.crowd === 'med' ? 'med' : 'high';
-    var active  = i === idx ? ' style="opacity:1;font-weight:700"' : ' style="opacity:.65"';
-    return '<div class="map-pin" data-spot-idx="' + i + '"' + active + '>'
-      + '<div class="map-pin-dot ' + dotCls + '" style="min-width:18px;height:18px;border-radius:50%;'
-      + 'display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff'
-      + (i === idx ? ';box-shadow:0 0 0 2px #fff,0 0 0 4px var(--fern)' : '') + '">'
+    var active  = i === idx ? ' is-active' : '';
+    return '<div class="map-pin' + active + '" data-spot-idx="' + i + '">'
+      + '<div class="map-pin-dot ' + dotCls + '">'
       + (i + 1) + '</div>'
       + '<span>' + ac.name.split('\u2014')[0].trim() + '</span>'
       + '</div>';
@@ -4587,13 +4585,12 @@ function updateMapPin(spotIdx) {
   } else {
     // First render — build full widget
     mapEl.innerHTML =
-      '<iframe src="' + osmUrl + '" style="width:100%;height:340px;border:none;display:block" loading="lazy"></iframe>'
-      + '<div id="map-gm-cta" style="padding:.75rem 1rem;">'
-      + '<a id="map-gm-link" href="' + gmUrl + '" target="_blank" rel="noopener" '
-      + 'style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--fern);color:#fff;border-radius:8px;padding:.65rem 1rem;font-family:\'DM Mono\',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:none;text-decoration:none;font-weight:600;box-shadow:0 2px 8px rgba(45,74,50,.3);transition:opacity .15s">'
+      '<iframe class="map-frame" src="' + osmUrl + '" loading="lazy"></iframe>'
+      + '<div id="map-gm-cta" class="map-cta-wrap">'
+      + '<a id="map-gm-link" class="map-cta" href="' + gmUrl + '" target="_blank" rel="noopener">'
       + '\uD83D\uDCCD Navigate to ' + spotName + '</a>'
       + '</div>'
-      + '<div class="map-pin-list" style="background:var(--deep);padding:.6rem .75rem;max-height:120px;overflow-y:auto" id="map-legend">'
+      + '<div class="map-pin-list" id="map-legend">'
       + '<div class="map-legend-lbl">Other spots \u2192 tap to move pin</div>'
       + legend
       + '</div>';
@@ -6873,9 +6870,9 @@ function renderBaitPillar(topMethod) {
   }
 
   var rows = '';
-  if (top.bestFor) rows += '<dt>Best for</dt><dd>' + top.bestFor + '</dd>';
-  if (top.how)     rows += '<dt>How</dt><dd>' + top.how + '</dd>';
-  if (!rows && top.blurb) rows = '<dt>Note</dt><dd>' + top.blurb + '</dd>';
+  if (top.bestFor) rows += '<div><dt>Best for</dt><dd>' + top.bestFor + '</dd></div>';
+  if (top.how)     rows += '<div><dt>How</dt><dd>' + top.how + '</dd></div>';
+  if (!rows && top.blurb) rows = '<div><dt>Note</dt><dd>' + top.blurb + '</dd></div>';
 
   card.innerHTML =
     '<div class="p-bait-top">' + imgHtml(top) +
