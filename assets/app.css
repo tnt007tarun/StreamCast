@@ -2911,4 +2911,54 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     margin-left:max(var(--gutter), calc((100% - var(--content-max)) / 2));
     margin-right:max(var(--gutter), calc((100% - var(--content-max)) / 2)); }
 
+  /* more about this river: stocking report */
+  #results .ssec { padding-top:var(--sp-5); padding-bottom:var(--sp-5); max-width:none; margin:0; }
+  #results .ssec + .ssec { border-top:1px solid var(--rule); }
+  #results .ssec .sec-label { padding:0 0 var(--sp-4); border-top:0; background:none; }
+  #results .stocking-grid { padding:0; gap:var(--sp-2); }
+  #results .stocking-row { background:var(--surface-card); border:1px solid var(--rule); border-radius:var(--r-md);
+    padding:var(--sp-3) var(--sp-4); }
+  #results .stocking-row.stocking-active { border-color:var(--rule); border-left:3px solid var(--good); background:var(--surface-card); }
+  #results .stocking-row.stocking-future { opacity:1; }
+  #results .stocking-row.stocking-future :is(.stocking-species, .stocking-detail) { color:var(--text-muted); }
+  #results .stocking-species { font:700 var(--fs-md)/1.2 var(--font-serif); color:var(--text-strong); }
+  #results .stocking-detail { font-size:var(--fs-label); color:var(--text-muted); }
+  #results .stocking-row { flex-wrap:wrap; row-gap:var(--sp-2); }
+  #results .stocking-badge { font-size:var(--fs-label); border-radius:var(--r-pill); padding:var(--sp-1) var(--sp-2);
+    white-space:nowrap; max-width:100%; }
+  #results .stocking-badge.now    { background:var(--good-tint); color:var(--good); }
+  #results .stocking-badge.soon   { background:var(--warn-tint); color:var(--warn-d); }
+  #results :is(.stocking-badge.future, .stocking-badge.past) { background:var(--surface-sunk); color:var(--text-muted); }
+  #results .stocking-source { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; padding:var(--sp-3) 0 0; }
+
+  /* more about this river: species on this river */
+  #results .sshdr { margin-bottom:var(--sp-4); gap:var(--sp-3); flex-wrap:wrap; }
+  #results .sshdr h3 { font:700 var(--fs-lg)/1.2 var(--font-serif); color:var(--text-strong); }
+  #results .sshdr span { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
+  #results .srail { border:0; border-radius:0; overflow:visible; gap:var(--sp-2);
+    grid-template-columns:repeat(3,minmax(0,1fr)); }
+  @media (max-width:600px) { #results .srail { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  #results .sc-species { background:var(--surface-card); border:1px solid var(--rule); border-top:3px solid var(--rule);
+    border-radius:var(--r-md); padding:var(--sp-4); gap:var(--sp-1); cursor:default; }
+  #results .sc-species:last-child { border-right:1px solid var(--rule); }
+  #results .sc-species:hover { background:var(--surface-card); }
+  #results .sc-species.active { background:var(--surface-card); color:inherit; border-top-color:var(--fern); }
+  #results .sc-absent { opacity:.55; filter:grayscale(.6); }
+  #results .stag { font:500 var(--fs-label)/1 var(--font-mono); color:var(--text-muted); opacity:1; margin-bottom:var(--sp-1); }
+  #results .sc-species.active .stag { color:var(--fern); }
+  #results .sname { font:700 var(--fs-md)/1.2 var(--font-serif); color:var(--text-strong); }
+  #results .slat { font-size:var(--fs-label); font-style:italic; color:var(--text-muted); opacity:1; }
+  #results .sst { font-size:var(--fs-label); margin-top:var(--sp-2); }
+  #results .sst.on   { color:var(--good); }
+  #results .sst.soon { color:var(--warn-d); }
+  #results .sst.wip  { color:var(--text-muted); }
+  #results .sc-note, #results .sc-species.active .sc-note { font-size:var(--fs-sm); font-style:normal; color:var(--text-body); opacity:1; }
+  #results .seg-peak   { background:var(--good); }
+  #results .seg-good   { background:var(--sage); }
+  #results .seg-slow   { background:var(--rule); }
+  #results .seg-absent { background:var(--surface-sunk); }
+  #results .seg-now    { outline-color:var(--amber); }
+  #results .season-bar-labels span,
+  #results .sc-species.active .season-bar-labels span { font-size:var(--fs-label); color:var(--text-muted); opacity:1; }
+
 }
