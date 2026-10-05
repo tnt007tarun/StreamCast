@@ -3128,7 +3128,6 @@ function goToResults(){
   (function(){
     var _loc = (document.getElementById('loc-input-field')||{}).value || 'unknown';
     var _spp = Array.from(document.querySelectorAll('.species-btn.active')).map(function(b){ return b.getAttribute('data-label'); }).filter(Boolean).join(',') || 'any';
-    track('CTA Clicked', { mode: appMode });
     track('Search', { location: _loc, species: _spp, mode: appMode });
   })();
   // Resolve location — needed in both beginner and expert mode
