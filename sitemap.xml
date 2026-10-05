@@ -7,16 +7,70 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://herefishyfishy.ca/rivers</loc>
+    <loc>https://herefishyfishy.ca/rivers/</loc>
     <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://herefishyfishy.ca/about</loc>
-    <lastmod>2026-06-25</lastmod>
+    <loc>https://herefishyfishy.ca/guides/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/guides/winter-steelhead/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/guides/salmon-run-timing/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/guides/where-steelhead-hold/</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/guides/salmon-float-fishing-tips/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/guides/euro-nymphing-upper-credit/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/rivers/credit/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/rivers/bronte/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/rivers/ganaraska/salmon-run/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://herefishyfishy.ca/rivers/bowmanville/salmon-run/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://herefishyfishy.ca/credit-river/brown-trout</loc>
@@ -55,15 +109,9 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://herefishyfishy.ca/guides/winter-steelhead/</loc>
-    <lastmod>2026-10-04</lastmod>
+    <loc>https://herefishyfishy.ca/about</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://herefishyfishy.ca/guides/salmon-run-timing</loc>
-    <lastmod>2026-07-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
 </urlset>
