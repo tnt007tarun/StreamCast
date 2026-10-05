@@ -2,7 +2,7 @@
 
 ```
 index.html          45 KB   markup only (was 597 KB)
-assets/app.css     103 KB   all styling, organised into cascade layers
+assets/app.css     141 KB   all styling, organised into cascade layers
 assets/app.js      460 KB   all application logic
 ```
 
@@ -27,7 +27,7 @@ Two things did change, deliberately:
 ## Cascade layers
 
 ```css
-@layer app, overrides;
+@layer tokens, app, patches, overrides;
 ```
 
 Later layers win over earlier ones **regardless of selector specificity**.
@@ -35,32 +35,34 @@ So a bare `.rrank-card { ... }` written in `overrides` beats
 `#results .rrank-card { ... }` in `app`. No specificity games, no
 `!important`.
 
-* **`app`** — everything that existed before layers. Treat as frozen.
-* **`overrides`** — all new styling. This is where the results-page
-  restyle belongs.
+* **`tokens`**: the design system. Palette, paper and panel surfaces,
+  status colours (on-paper and on-panel versions), font roles, type scale,
+  radii, spacing, and `--content-max` / `--band-pad` for the centred
+  results column. New rules should read from these instead of writing
+  literal colours or sizes.
+* **`app`**: everything that existed before layers. Frozen; don't add to it.
+  It has no `!important` declarations left.
+* **`patches`**: declarations moved out of `app` when their `!important`
+  flags were dropped, kept in original source order.
+* **`overrides`**: all new styling, including the results-page restyle
+  (editorial page, dark panel only for the headline readings).
 
 ### The caveat that will bite you
 
-`!important` **inverts** layer order: an `!important` declaration in `app`
-beats a *normal* declaration in `overrides`. 52 such declarations remain
-in `app`. The ones that have already caused trouble:
+`!important` **inverts** layer order: an `!important` declaration in an
+earlier layer beats a *normal* declaration in a later one. Ten remain, and
+each one exists to beat an inline `style` attribute set by JS, which no
+layer can outrank:
 
-| selector | property | what it forces |
-|---|---|---|
-| `.species-btn-img` | `width` / `height` | the 44×28 thumbnail box |
-| `.hero-photo` | `height` | the 160px photo hero |
-| `.bdet, .rra…` group | `font-size` | an 11px minimum |
+* `patches`: three `display` rules, two label rules against inline
+  `letter-spacing` / `text-transform`, and padding against
+  `#river-placeholder`'s inline padding.
+* `overrides`: `margin-top` and `padding` on `#river-section-picker` /
+  `#river-placeholder` (mobile).
 
 When an override silently does nothing, grep `app.css` for `!important`
-on that property before assuming the selector is wrong.
-
-### Next pass
-
-Move those 52 `!important` declarations into their own layer between `app`
-and `overrides` and drop the flags — layer order then expresses the same
-intent, and `overrides` becomes genuinely final. This needs doing in small
-batches with a visual check on each, because removing `!important` changes
-who wins *within* `app`.
+on that property, and check the element for an inline `style`, before
+assuming the selector is wrong.
 
 ## Browser support
 
