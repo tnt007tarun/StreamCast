@@ -4808,7 +4808,7 @@ var GUIDES = [
     url:'/rivers/bowmanville/salmon-run/',
     title:'When do salmon run in Bowmanville Creek?',
     blurb:'A small creek with a big run \u2014 and a fish ladder that exists because volunteers once carried 15,000 salmon over the dam by hand.',
-    img:'/images/rivers/bowmanville-creek-valley.jpg',
+    img:'/images/rivers/bowmanville-creek-valley.webp',
     peak:[9,10], on:[8,11], video:false
   },
   {
@@ -4817,14 +4817,14 @@ var GUIDES = [
     url:'/rivers/ganaraska/salmon-run/',
     title:'When do salmon run in the Ganaraska?',
     blurb:'Ontario\u2019s earliest salmon river \u2014 and one of the few where the best water is closed for six weeks of the run.',
-    img:'/images/rivers/ganaraska-gear-riverside.jpg',
+    img:'/images/rivers/ganaraska-gear-riverside.webp',
     peak:[9,10], on:[8,11], video:false
   },
   {
     url:'/guides/salmon-run-timing/',
     title:'When do salmon run in Ontario rivers?',
     blurb:'Chinook stage off the harbour mouths from late August, then push upriver on the first sustained rain. What triggers a run, how long the window lasts, and which rivers turn on first.',
-    img:'/images/guides/salmon-run-timing-card.jpg',
+    img:'/images/guides/salmon-run-timing-card.webp',
     peak:[9,10], on:[8,11], video:false
   },
   {
