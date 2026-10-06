@@ -69,8 +69,9 @@ const SSR_ROUTES = {
       'Credit River Mouth — Port Credit, ON',
     ],
     closures: 'Streetsville Road Allowances is deliberately not listed: part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31 — which covers most of the fall steelhead run. Erindale Park is downstream of Hwy 403 and open year-round.',
-    evergreen: `Steelhead start entering the Credit in late September behind the Chinook run and keep coming through winter into late April. Peak fishing is March and April, when fish push upriver on rising spring temperatures. The lower river below Hwy 403 stays open all year. Unlike Chinook, steelhead get the whole river — they swim as far as the Streetsville dam, then Credit River Anglers Association volunteers lift them through the fishway and truck them 30 km north past Norval. When CRAA rebuilt the ladder entrance in 1997, the share of steelhead finding it went from 10–20% to 99.5%.`,
-    tips: `In fall, swing large streamers or run float rigs with roe through the deeper pools. Spring fish are more willing to take nymphs dead-drifted through feeding lanes. Before 9am is consistently the most productive window on bright days.`,
+    evergreen: `Steelhead come into the Credit in October, behind the Chinook, and November is a good month. Through the winter they can be caught sporadically on the lower river below Hwy 403, which stays open all year, and spring is good again around the trout opener at the end of April. Unlike Chinook, steelhead get the whole river. They swim as far as the Streetsville dam, then Credit River Anglers Association volunteers lift them through the fishway and truck them 30 km north past Norval. When CRAA rebuilt the ladder entrance in 1997, the share of steelhead finding it went from 10 to 20% to 99.5%.`,
+    tips: `Float fish roe bags, beads or a worm through the deeper pools and runs. The most common mistake, especially once the water gets cold, is fishing too shallow and too fast. Steelhead sit deep and barely move in winter, so set the float so the bait drifts within about two feet of the bottom and slow the drift down. Expect to move, too. One November on the Credit I fished three spots before finding fish: nothing at the first two, two hooked and one landed at the third. Spring fish are more willing to take nymphs dead-drifted through feeding lanes.`,
+    readNext: `For timing on every Lake Ontario river and which reaches stay open after September 30, see <a href="/guides/steelhead-run-timing/">when steelhead run in Ontario</a>. For cold-water technique, the setup and baits, see <a href="/guides/winter-steelhead/">late fall and winter steelhead</a>.`,
   },
   'chinook-salmon': {
     river: 'Credit River',
@@ -284,6 +285,7 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
   <ul>${route.access.map(a => `<li>${a}</li>`).join('')}</ul>
 
   <h2>Read next</h2>
+${route.readNext ? `<p>${route.readNext}</p>` : ''}
   <p>For the river as a whole &mdash; the three sections, the two dams, and why which stretch you pick
   matters more here than anywhere &mdash; see <a href="/rivers/credit/">fishing the Credit River</a>.
   Timing for every Ontario river is in the <a href="/guides/salmon-run-timing/">river-by-river salmon
