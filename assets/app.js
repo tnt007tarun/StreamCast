@@ -448,6 +448,7 @@ function speciesFishableIn(sectionName, speciesName, dateStr) {
   var c = getRiverConfig(sectionName);
   if (!c || !c.species || c.species.indexOf(speciesName) === -1) return false;
   if (seasonClosureFor(c, dateStr)) return false;
+  if (allAccessClosed(c, dateStr)) return false;
   var s = getCurrentSeason(speciesName, dateStr);
   return !!s && (s.quality === 'peak' || s.quality === 'good');
 }
@@ -512,6 +513,14 @@ function accessClosureOn(spot, dateStr) {
   return null;
 }
 function isAccessOpen(spot, dateStr) { return !accessClosureOn(spot, dateStr); }
+// A section whose every listed access point is closed on the date is closed in practice,
+// even when its season band says open (e.g. Middle Credit in October: Streetsville is in
+// the Aug 15 sanctuary and Norval is above Hwy 407). Sections with no access list are
+// judged on their season band alone.
+function allAccessClosed(cfg, dateStr) {
+  if (!cfg || !cfg.access || !cfg.access.length || !dateStr) return false;
+  return !cfg.access.some(function(a){ return isAccessOpen(a, dateStr); });
+}
 
 // How strongly should we steer people to the river MOUTH right now?
 // Returns 8/6/3/0. Keyed on the season window LABEL, because quality alone cannot tell
@@ -887,13 +896,13 @@ var RIVER_CONFIG = {
     regs:[],
     methods:["fly","spin","float"],
     access:[
-      {name:"Fergus Pool — Below Shand Dam",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Fergus, ON · Below Shand Dam",crowd:"med",desc:"Closest tailwater to the dam. Cold, consistent flows year-round from depth-draw releases — prime summer water when other rivers are too warm."},
-      {name:"Elora Gorge",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Below gorge on river-right",crowd:"high",desc:"Deep pools, limestone walls, predictable brown trout habitat. Heavy weekend pressure. Gorge walls create shadow even on sunny days — a genuine advantage at midday."},
-      {name:"Racquet Club",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · North of Quarry CA on Wellington Rd 18",crowd:"low",desc:"North of Elora on Wellington Rd 18. Turn right at the next road after the Quarry Conservation Area. Park here and follow the steep trail down to the river — can be slippery during wet weather."},
-      {name:"The Trestle",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Wellington Rd 18",crowd:"low",desc:"Past the railway trestle on Wellington Rd 18. Look for a sharp right turn — a marked trail and stairs lead down to the river."},
-      {name:"Wilson's Flats",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Grand River — Wilson's Flats",crowd:"low",desc:"Continue north on Wellington Rd 18 and turn left onto 2nd Line. Limited roadside parking, and the river is a short walk away."},
-      {name:"Irvine Creek Confluence",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · Where Irvine Creek meets the Grand",crowd:"low",desc:"Underutilized. Confluence concentrates baitfish and large browns. Most anglers don't walk past the gorge — access via Wellington County trail system."},
-      {name:"Elora Gorge Conservation Area",closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Elora, ON · GRCA managed access",crowd:"high",desc:"Managed access with day-use fee. Interior sections slightly less pressured. The upstream end near the lookout bridge consistently holds large fish."}
+      {name:"Fergus Pool — Below Shand Dam",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Fergus, ON · Below Shand Dam",crowd:"med",desc:"Closest tailwater to the dam. Cold, consistent flows year-round from depth-draw releases — prime summer water when other rivers are too warm."},
+      {name:"Elora Gorge",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Elora, ON · Below gorge on river-right",crowd:"high",desc:"Deep pools, limestone walls, predictable brown trout habitat. Heavy weekend pressure. Gorge walls create shadow even on sunny days — a genuine advantage at midday."},
+      {name:"Racquet Club",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Elora, ON · North of Quarry CA on Wellington Rd 18",crowd:"low",desc:"North of Elora on Wellington Rd 18. Turn right at the next road after the Quarry Conservation Area. Park here and follow the steep trail down to the river — can be slippery during wet weather."},
+      {name:"The Trestle",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Elora, ON · Wellington Rd 18",crowd:"low",desc:"Past the railway trestle on Wellington Rd 18. Look for a sharp right turn — a marked trail and stairs lead down to the river."},
+      {name:"Wilson's Flats",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Elora, ON · Grand River — Wilson's Flats",crowd:"low",desc:"Continue north on Wellington Rd 18 and turn left onto 2nd Line. Limited roadside parking, and the river is a short walk away."},
+      {name:"Irvine Creek Confluence",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Elora, ON · Where Irvine Creek meets the Grand",crowd:"low",desc:"Underutilized. Confluence concentrates baitfish and large browns. Most anglers don't walk past the gorge — access via Wellington County trail system."},
+      {name:"Elora Gorge Conservation Area",closed:[{from:'10-01',to:'12-31',why:'Trout season is closed Oct 1 to Dec 31 on this reach. It is catch and release, artificial lures and one barbless hook when open.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Trout season is closed until the opener on the fourth Saturday in April'}],loc:"Elora, ON · GRCA managed access",crowd:"high",desc:"Managed access with day-use fee. Interior sections slightly less pressured. The upstream end near the lookout bridge consistently holds large fish."}
     ]
   },
   "Middle Grand River": {
@@ -925,7 +934,7 @@ var RIVER_CONFIG = {
     driveTime:{ toronto:100,mississauga:100,brampton:90,oakville:60,burlington:40,milton:65,hamilton:30,guelph:75,cambridge:60,kitchener:80,waterloo:80,orangeville:115,markham:120,"richmond hill":120,vaughan:115,ajax:130,pickering:130,"north york":110,scarborough:115,etobicoke:95,oshawa:145,whitby:140,bowmanville:160,clarington:165,newcastle:165,cobourg:200,"port hope":185,barrie:175,collingwood:190,"owen sound":215 },
     species:["Steelhead"],
     active:true,
-    regs:[],
+    regs:[{rule:'Paris to Lake Erie: open fourth Saturday in April to Dec 31. Below Brantford, Brown and Rainbow Trout are S-1 and C-0 from Oct 1 to Dec 31.',icon:'📋'},{rule:'Below the Caledonia dam: Walleye S-4 and C-2, any size. Walleye and Pike are closed Mar 1 to the Friday before the second Saturday in May.',icon:'📋'}],
     methods:["float","spin"],
     access:[
       {name:"Caledonia — Argyle Street Access",loc:"Caledonia, ON · Argyle Street bridge",crowd:"low",desc:"Good access to the lower Grand. Spring and fall steelhead runs from Lake Erie. Best fished from a kayak for this wider section of river."},
@@ -968,10 +977,10 @@ var RIVER_CONFIG = {
     // lifted above it.
     species:["Brown Trout","Rainbow Trout","Steelhead"],
     active:true,
-    regs:[{rule:"Check OMNR regs for this section — some areas closed during salmon season",icon:"📋"}],
+    regs:[{rule:"Britannia Rd to Hwy 407: open fourth Saturday in April to Dec 31. Hwy 403 to Britannia Rd is a sanctuary from Aug 15 to Dec 31. Above Hwy 407 (Norval) the season ends Sept 30.",icon:"📋"}],
     methods:["float"],
     access:[
-      {name:"McNab Park",loc:"Norval, ON \u00b7 Below Norval Dam",crowd:"low",desc:"Village park access on the Credit below the Norval dam. Migratory fish stack below the dam in fall \u2014 the dam is the upstream limit for salmon on this system. Quieter than the Streetsville reaches."},
+      {name:"McNab Park",closed:[{from:'10-01',to:'12-31',why:'Norval is above Hwy 407, where the trout and salmon season ends Sept 30'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Norval, ON \u00b7 Below Norval Dam",crowd:"low",desc:"Village park access on the Credit below the Norval dam. Migratory fish stack below the dam in fall \u2014 the dam is the upstream limit for salmon on this system. Quieter than the Streetsville reaches. The season here ends Sept 30, so fish it in spring and September."},
       {name:"Streetsville Road Allowances",closed:[{from:'08-15',to:'12-31',why:'Part of this reach is below the Britannia Rd bridge, inside the Hwy 403\u2013Britannia sanctuary \u2014 no fishing Aug 15 to Dec 31. Fish above Britannia only, and know exactly where the bridge is.'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:"Streetsville, ON · Multiple road allowances",crowd:"low",desc:"Several road allowance access points through this reach. Quieter than the lower river access points."}
     ]
   },
@@ -1025,8 +1034,7 @@ var RIVER_CONFIG = {
     methods:['float','fly'],
     access:[
       {name:'Bronte Creek Provincial Park',loc:'Burloak Drive · Oakville, ON · Ontario Parks managed',crowd:'med',desc:'Access via the Half Moon Valley Trail down into the shale bedrock valley. Deep, narrow holding water for migratory fish. Day-use fee applies. Popular for fly-fishing and centrepin. The valley trail hike filters out casual anglers — expect better fish-to-angler ratios than the lower section.'},
-      {name:'Lions Valley Park',loc:'Lions Valley Park · Oakville, ON',crowd:'med',desc:'Good public access to quality mid-section water. Pool and run structure holds salmon and steelhead. Resident brown trout and smallmouth bass in warmer months. Less pressure than the Provincial Park entrance on peak weekends.'},
-      {name:'Lowville Park',loc:'Lowville, ON · Lowville Park Road',crowd:'high',desc:'The pool immediately below Lowville Falls concentrates fish during migrations. Very popular with centrepin and float fishermen. Can be crowded during peak runs, but fish are reliably present.'}
+      {name:'Lowville Park',closed:[{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31 (Progreston CPR track to Hwy 407)'},{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'Fish sanctuary \u2014 closed until the trout opener'}],loc:'Lowville, ON · Lowville Park Road',crowd:'high',desc:'The pool immediately below Lowville Falls concentrates fish during migrations. Very popular with centrepin and float fishermen. Can be crowded during peak runs, but fish are reliably present.'}
     ]
   },
   'Bronte Creek — Upper Headwaters': {
@@ -1142,7 +1150,7 @@ var RIVER_CONFIG = {
       {name:'Alliston — Main River Access',loc:'Alliston, ON · Town access points',crowd:'med',desc:'Beginning of the extended-season steelhead water. Sandy and clay-based terrain can colour the water after heavy rains — a characteristic of the Notty mid-section. Drift boats and canoes are commonly used to cover water. Steelhead and Chinook push through here in season.'},
       {name:'Pine River Confluence',loc:'Pine River meets Nottawasaga · Below Alliston',crowd:'med',desc:'The Pine River is a vital spawning tributary. Fish concentrate at the confluence during peak runs. Note: between Boyne River and Pine River is catch-and-release only for rainbow trout — no harvest. Check posted signs carefully.'},
       {name:'Boyne River Confluence',loc:'Boyne River meets Nottawasaga · Angus area',crowd:'med',desc:'The Boyne is another major spawning tributary with its own fish runs. Below this confluence opens to the standard limit zone for rainbow trout (S-2, C-1). The Angus area has good drift access for float fishermen.'},
-      {name:'Nicholson Dam / Essa Township Sanctuary',loc:'Essa Township · Nicholson Dam area',crowd:'low',desc:'SANCTUARY area — closed Jan 1 to Friday before the 2nd Saturday in May, and Oct 1–Dec 31. When open, this is productive water for steelhead and brown trout. Check current year dates before fishing — regulations are strictly enforced.'}
+      {name:'Nicholson Dam / Essa Township Sanctuary',closed:[{from:'01-01',to:'FRI_BEFORE_2ND_SAT_MAY',why:'Fish sanctuary \u2014 no fishing Jan 1 to the Friday before the second Saturday in May'},{from:'10-01',to:'12-31',why:'Fish sanctuary \u2014 no fishing Oct 1 to Dec 31'}],loc:'Essa Township · Nicholson Dam area',crowd:'low',desc:'SANCTUARY area — closed Jan 1 to Friday before the 2nd Saturday in May, and Oct 1–Dec 31. When open, this is productive water for steelhead and brown trout. Check current year dates before fishing — regulations are strictly enforced.'}
     ]
   },
   'Nottawasaga River — Lower Section (Boyne to Wasaga Beach)': {
@@ -1173,7 +1181,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':40,'north york':35,'scarborough':20,'etobicoke':55,'markham':25,'richmond hill':35,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':90,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':20,'whitby':15,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':90,'collingwood':130,'owen sound':190},
     species:['Steelhead','Chinook Salmon','Coho Salmon'],
     active:true,
-    regs:[{rule:'Extended fall trout season Oct–Dec 31 in segments south of CNR track. Standard FMZ limits apply.',icon:'📋'}],
+    regs:[{rule:'South of the CNR tracks: open all year. Between the CNR and Hwy 2: open fourth Saturday in April to Dec 31. Standard FMZ 17 limits.',icon:'📋'}],
     methods:['float','spin'],
     access:[
       {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook and Coho runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
@@ -1182,7 +1190,9 @@ var RIVER_CONFIG = {
     ]
   },
   'Duffins Creek — Middle Section': {
-    season:'extended',
+    // Greenwood and Whitevale are both north of Hwy 2. Durham's extended season only
+    // covers Hwy 2 down to the CNR, so this reach closes Sept 30 like inland water.
+    season:'standard',
     gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
     sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
     lat:43.870, lng:-79.058,
@@ -1190,7 +1200,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':45,'north york':40,'scarborough':20,'etobicoke':60,'markham':25,'richmond hill':40,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':95,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':85,'collingwood':130,'owen sound':190},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Rainbow Trout','Brown Trout'],
     active:true,
-    regs:[{rule:'Fishing near Whitevale Dam and barrier north of Church Street strictly prohibited — fish sanctuaries. Check posted signs.',icon:'🚫'}],
+    regs:[{rule:'Fishing near Whitevale Dam and barrier north of Church Street strictly prohibited — fish sanctuaries. Check posted signs.',icon:'🚫'},{rule:'North of Hwy 2 the trout and salmon season ends Sept 30.',icon:'📋'}],
     methods:['float','fly','spin'],
     access:[
       {name:'Greenwood Conservation Area',loc:'Greenwood, ON · TRCA managed',crowd:'med',desc:'Deep valley lands with excellent holding water. Migratory salmon and steelhead push through in season. Resident rainbow and brown trout in cooler upper pools. TRCA managed with day-use fee.'},
@@ -1223,7 +1233,7 @@ var RIVER_CONFIG = {
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:25,bowmanville:10,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'Open year-round. Standard FMZ 17 limits apply. Extended fall season Oct 15–Dec 31 in sanctuary section upstream.',icon:'📋'}],
+    regs:[{rule:'Open all year below the CNR. Upstream, Jocelyn St to the CNR is closed Sept 1 to Oct 14, and Hwy 401 to Jocelyn St is closed all year.',icon:'📋'}],
     methods:['float','spin'],
     access:[
       {name:'Port Hope Harbour — River Mouth',mouth:true,loc:'Port Hope, ON · Lake Ontario harbour',crowd:'high',desc:'Staging area for spring steelhead and fall Chinook entering from Lake Ontario. Drift spawn sacks under floats, cast spoons or spinners for chrome fish. Heavy pressure during peak runs — arrive before dawn on fall weekends.'},
@@ -1239,10 +1249,10 @@ var RIVER_CONFIG = {
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:25,bowmanville:10,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'SANCTUARY Sep 1–Oct 14 (closed). Open Oct 15–Dec 31 for extended fall season. Check posted signs throughout.',icon:'🚫'}],
+    regs:[{rule:'Jocelyn St bridge to the CNR: open fourth Saturday in April to Aug 31 and Oct 15 to Dec 31. Closed Sept 1 to Oct 14.',icon:'🚫'},{rule:'Fish south of the Jocelyn St bridge only. Upstream to Hwy 401 is a sanctuary, closed all year.',icon:'🚫'}],
     methods:['float','fly'],
     access:[
-      {name:'Jocelyn Street Bridge Access',loc:'Jocelyn Street · Port Hope',crowd:'med',desc:'Lower boundary of the sanctuary section. Good pool and run structure. Open Oct 15 through December for the extended fall season. During open periods this stretch holds excellent numbers of Chinook and Coho waiting below Corbetts Dam.'},
+      {name:'Jocelyn Street Bridge Access',closed:[{from:'09-01',to:'10-14',why:'Fish sanctuary \u2014 no fishing Sep 1 to Oct 14 (Jocelyn St to CNR right-of-way)'}],loc:'Jocelyn Street · Port Hope',crowd:'med',desc:'Upstream end of the seasonal stretch. Fish the south side of the bridge only: above it, up to Hwy 401, is closed all year. Good pool and run structure. Open Oct 15 through December for the extended fall season. During open periods this stretch holds excellent numbers of Chinook and Coho waiting below Corbetts Dam.'},
       {name:'Port Hope Town Section — Sanctuary Area',closed:[{from:'09-01',to:'10-14',why:'Fish sanctuary \u2014 no fishing Sep 1 to Oct 14 (Jocelyn St to CNR right-of-way)'}],loc:'Port Hope · Through town',crowd:'high',desc:'When open (Oct 15–Dec 31), this downtown stretch offers surprisingly good fishing with fish stacked below the dam upstream. Fly fishing and centrepin work well in the deeper pools. Respect the Sep 1–Oct 14 closure — wardens patrol this section.'}
     ]
   },
@@ -1343,7 +1353,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':145,'north york':130,'scarborough':140,'etobicoke':135,'markham':130,'richmond hill':125,'vaughan':120,'ajax':160,'pickering':155,'mississauga':140,'brampton':110,'oakville':125,'burlington':130,'milton':105,'hamilton':130,'guelph':85,'cambridge':100,'kitchener':85,'waterloo':80,'orangeville':65,'oshawa':170,'whitby':165,'bowmanville':185,'clarington':195,'newcastle':195,'cobourg':230,'port hope':220,'barrie':100,'collingwood':70,'owen sound':60},
     species:['Brook Trout','Brown Trout','Rainbow Trout'],
     active:true,
-    regs:[{rule:'FMZ 18 — check specific tributary regulations. Rocky Saugeen is particularly sensitive — practice C&R and minimize disturbance.',icon:'📋'}],
+    regs:[{rule:'FMZ 16 — check specific tributary regulations. Rocky Saugeen is particularly sensitive — practice C&R and minimize disturbance.',icon:'📋'}],
     methods:['fly','spin'],
     access:[
       {name:'Rocky Saugeen — Public Access',loc:'Rocky Saugeen River · Durham area',crowd:'low',desc:'Highly regarded spring-fed tributary with excellent resident brown trout. Beautiful clear water, careful wading essential. The Rocky Saugeen is the premier cold-water tributary on the system. Stealth and light tackle mandatory — these fish are educated and easily spooked.'},
@@ -1373,7 +1383,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':195,'north york':185,'scarborough':190,'etobicoke':190,'markham':180,'richmond hill':175,'vaughan':170,'ajax':205,'pickering':200,'mississauga':195,'brampton':165,'oakville':180,'burlington':185,'milton':160,'hamilton':185,'guelph':135,'cambridge':150,'kitchener':135,'waterloo':130,'orangeville':115,'oshawa':220,'whitby':210,'bowmanville':230,'clarington':240,'newcastle':240,'cobourg':275,'port hope':265,'barrie':135,'collingwood':90,'owen sound':30},
     species:['Steelhead','Chinook Salmon'],
     active:true,
-    regs:[{rule:"FMZ 18 — one of the largest steelhead and Chinook salmon runs in the Great Lakes. Check OMNR regs for seasonal limits and closures near Denny's Dam.",icon:'📋'}],
+    regs:[{rule:"FMZ 16 — one of the largest steelhead and Chinook salmon runs in the Great Lakes. Walkerton to Denny's Dam: open fourth Saturday in April to Dec 31.",icon:'📋'},{rule:"Denny's Dam to the concrete abutments downstream: no night fishing Oct 1 to 31.",icon:'🚫'}],
     methods:['float','spin'],
     access:[
       {name:"Denny's Dam",loc:'Lower Saugeen · Below dam',crowd:'high',desc:"The focal point of the lower Saugeen. One of the most famous steelhead and Chinook salmon spots in Ontario. Fish concentrate below the dam before the ladder. Heavy pressure during peak runs — arrive before dawn. Marks the upper limit for the main migratory push."},
@@ -1390,7 +1400,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':20,'north york':25,'scarborough':30,'etobicoke':20,'markham':30,'richmond hill':30,'vaughan':30,'ajax':40,'pickering':35,'mississauga':20,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':15,'guelph':30,'cambridge':30,'kitchener':40,'waterloo':40,'orangeville':35,'oshawa':45,'whitby':40,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':75,'port hope':70,'barrie':60,'collingwood':70,'owen sound':90},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 17 — standard trout and salmon seasonal dates apply.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. Lakeshore Rd (Hwy 2) to Lake Ontario: open all year.',icon:'📋'}],
     methods:['spin','float'],
     access:[
       {name:'Lakeside Park — Creek Mouth',loc:'Lakeside Park · Oakville Harbour',crowd:'high',desc:'The migratory entry point for spring steelhead and fall Chinook entering from Lake Ontario. Rocky banks and harbour breakwalls hold staging fish. Cast spoons and spinners for chrome fish before they push upstream. Heavy fall salmon pressure — arrive before dawn on weekends.'},
@@ -1398,7 +1408,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Sixteen Mile Creek — Middle Reaches & Main Valley': {
-    season:'standard',
+    season:'extended',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.470, lng:-79.685,
@@ -1406,7 +1416,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':30,'north york':30,'scarborough':35,'etobicoke':20,'markham':35,'richmond hill':40,'vaughan':35,'ajax':45,'pickering':45,'mississauga':25,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':20,'guelph':30,'cambridge':40,'kitchener':45,'waterloo':45,'orangeville':40,'oshawa':55,'whitby':55,'bowmanville':65,'clarington':70,'newcastle':70,'cobourg':95,'port hope':90,'barrie':70,'collingwood':85,'owen sound':110},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 17 seasonal dates. Heavy fall rains trigger salmon and steelhead runs — conditions can change quickly.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. Hwy 2 to Hwy 407: open fourth Saturday in April to Dec 31. Heavy fall rains trigger salmon and steelhead runs — conditions can change quickly.',icon:'📋'}],
     methods:['float','fly'],
     access:[
       {name:'Lions Valley Park',loc:'Lions Valley Park · Central Oakville',crowd:'high',desc:'The most popular access point on Sixteen Mile Creek. Deep shale-bottom valley pools provide excellent holding water for migratory salmon and steelhead. Float fishing with centrepin dominates here. Heavy pressure during peak runs — the valley trail hike filters out casual anglers somewhat.'},
@@ -1414,7 +1424,9 @@ var RIVER_CONFIG = {
     ]
   },
   'Sixteen Mile Creek — Upper West Branch (Trout)': {
-    season:'standard',
+    // Road crossings are below Hwy 407 (extended, tributaries included); the Milton
+    // headwaters are above it and carry their own Oct 1 closure.
+    season:'extended',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
     sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
     lat:43.530, lng:-79.750,
@@ -1422,11 +1434,11 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':45,'north york':45,'scarborough':55,'etobicoke':35,'markham':55,'richmond hill':55,'vaughan':50,'ajax':75,'pickering':70,'mississauga':35,'brampton':25,'oakville':10,'burlington':25,'milton':15,'hamilton':35,'guelph':45,'cambridge':55,'kitchener':70,'waterloo':70,'orangeville':55,'oshawa':90,'whitby':85,'bowmanville':105,'clarington':115,'newcastle':115,'cobourg':150,'port hope':140,'barrie':105,'collingwood':130,'owen sound':170},
     species:['Brook Trout','Brown Trout','Rainbow Trout'],
     active:true,
-    regs:[{rule:'FMZ 17 — cold-water tributary regulations may apply. Check OMNR for West Branch specific rules.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. Below Hwy 407: open fourth Saturday in April to Dec 31. Above Hwy 407 (Milton) the season ends Sept 30.',icon:'📋'}],
     methods:['fly','spin'],
     access:[
       {name:'West Branch — Road Allowance Crossings',loc:'West Branch · North Oakville / Milton border',crowd:'low',desc:'Cold-water habitat supporting resident brook, brown, and rainbow trout. The West Branch maintains cooler temperatures than the main creek, making it the only section with viable year-round trout habitat. Access via road allowances at bridge crossings. Light tackle and stealth required.'},
-      {name:'Upper West Branch Tributaries',loc:'West Branch headwaters · Milton area',crowd:'low',desc:'Small stream fishing for resident trout in spring-fed water. The least pressured section of the entire Sixteen Mile Creek system. Brook trout in the coldest, most shaded sections.'}
+      {name:'Upper West Branch Tributaries',closed:[{from:'10-01',to:'12-31',why:'These headwaters are north of Hwy 407, where the trout and salmon season ends Sept 30'}],loc:'West Branch headwaters · Milton area',crowd:'low',desc:'Small stream fishing for resident trout in spring-fed water. The least pressured section of the entire Sixteen Mile Creek system. Brook trout in the coldest, most shaded sections.'}
     ]
   },
   'Sixteen Mile Creek — Upper Middle/East Branches': {
@@ -1450,7 +1462,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':30,'north york':30,'scarborough':10,'etobicoke':50,'markham':20,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':75,'brampton':65,'oakville':65,'burlington':85,'milton':75,'hamilton':95,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':45,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':90,'collingwood':130,'owen sound':185},
     species:['Steelhead','Chinook Salmon'],
     active:true,
-    regs:[{rule:'FMZ 17 — standard trout and salmon limits. Check seasonal dates for migratory species.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. Kingston Rd (Hwy 2) to Lake Ontario: open all year.',icon:'📋'}],
     methods:['spin','float'],
     access:[
       {name:'Rouge Beach — River Mouth',mouth:true,loc:'Rouge Beach Park · Pickering / Scarborough border',crowd:'high',desc:'Entry point for migratory Chinook, steelhead, and brown trout from Lake Ontario. Casting spoons and spinners around the rocks and under railway bridges near the mouth is highly productive during seasonal runs. Spring pike fishing in the shallow marsh areas with shiners or crankbaits.'},
@@ -1459,7 +1471,7 @@ var RIVER_CONFIG = {
     ]
   },
   'Rouge River — Mid-Section (Rouge National Urban Park)': {
-    season:'standard',
+    season:'extended',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
     sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
     lat:43.835, lng:-79.142,
@@ -1467,7 +1479,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':35,'north york':30,'scarborough':15,'etobicoke':50,'markham':15,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':80,'brampton':65,'oakville':65,'burlington':85,'milton':80,'hamilton':100,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':40,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':85,'collingwood':125,'owen sound':185},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'Parks Canada managed — Rouge National Urban Park. Respect all park regulations. Check FMZ 17 seasonal dates.',icon:'📋'}],
+    regs:[{rule:'Parks Canada managed — Rouge National Urban Park. Respect all park regulations. Hwy 2 to Hwy 407: open fourth Saturday in April to Dec 31 (FMZ 16).',icon:'📋'}],
     methods:['float','fly'],
     access:[
       {name:'Rouge National Urban Park — Main Access',loc:'Rouge National Urban Park · Parks Canada',crowd:'med',desc:'Cool to cold-water fishery best known for migratory salmon and steelhead runs in fall and spring. Target deeper pools and runs below structural barriers. Parks Canada managed — respect all posted regulations within park boundaries.'},
@@ -1484,7 +1496,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':35,'north york':25,'scarborough':15,'etobicoke':50,'markham':10,'richmond hill':20,'vaughan':30,'ajax':20,'pickering':15,'mississauga':75,'brampton':55,'oakville':65,'burlington':85,'milton':70,'hamilton':95,'guelph':100,'cambridge':115,'kitchener':125,'waterloo':125,'orangeville':75,'oshawa':35,'whitby':30,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':100,'port hope':85,'barrie':75,'collingwood':115,'owen sound':175},
     species:['Rainbow Trout','Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 17 — urban watershed. Check TRCA rules for Milne Dam Conservation Park. Heavily influenced by urban development.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. North of Hwy 407 the trout and salmon season ends Sept 30. Urban watershed. Check TRCA rules for Milne Dam Conservation Park. Heavily influenced by urban development.',icon:'📋'}],
     methods:['spin','fly'],
     access:[
       {name:'Milne Dam Conservation Park',loc:'Milne Dam · Markham, ON · TRCA managed',crowd:'med',desc:'Resident rainbow and brown trout in the tailwater below Milne Dam. Slower, urban-influenced water but surprisingly productive for trout anglers in spring. The dam creates a barrier concentrating fish. Largemouth and smallmouth bass also present throughout.'},
@@ -1562,7 +1574,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':70,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':35,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':115,'hamilton':135,'guelph':145,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 16 — check OMNR regs for seasonal closures near the pier and creek mouth',icon:'📋'}],
+    regs:[{rule:'FMZ 17. South of the CNR: open all year.',icon:'📋'}],
     methods:['spin','float'],
     access:[
       {name:'Bowmanville Marina Pier',loc:'Bowmanville Marina · Lake Ontario',crowd:'med',desc:'Staging area for incoming salmon in late summer and fall, and steelhead in spring. Cast off the pier with spoons, crankbaits, or spawn sacks. Action can be explosive during peak staging.'},
@@ -1578,10 +1590,10 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':70,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':35,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':120,'hamilton':135,'guelph':145,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 16 — year-round fishing south of CNR railway bridge. Check boundary markers.',icon:'📋'}],
+    regs:[{rule:'FMZ 17. Open all year south of the CNR bridge. Between the CNR and Hwy 2, including Baseline Rd, the season is the fourth Saturday in April to Dec 31.',icon:'📋'}],
     methods:['float','spin'],
     access:[
-      {name:'Baseline Road Bridge — Parking Lot',loc:'Baseline Road · East of Highway 57',crowd:'high',desc:'Most popular access on the lower creek. Deep pools and shallow runs hold fish through fall and spring runs. Float fishing with centrepin or spinning setup. Drift roe bags, jigs, or worms as fish push upstream.'},
+      {name:'Baseline Road Bridge — Parking Lot',closed:[{from:'01-01',to:'FRI_BEFORE_4TH_SAT_APRIL',why:'North of the CNR, where the season runs from the fourth Saturday in April to Dec 31'}],loc:'Baseline Road · East of Highway 57',crowd:'high',desc:'Most popular access on the lower creek. Deep pools and shallow runs hold fish through fall and spring runs. Float fishing with centrepin or spinning setup. Drift roe bags, jigs, or worms as fish push upstream.'},
       {name:'CNR Railway Bridge — South Side',loc:'South of CNR bridge · Lower creek',crowd:'med',desc:'Open year-round south of the railway bridge. Good pool structure. Salmon in fall, steelhead in spring. Less crowded than the Baseline Rd lot.'}
     ]
   },
@@ -1594,7 +1606,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':75,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':40,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':120,'hamilton':135,'guelph':150,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
-    regs:[{rule:'Fishing strictly prohibited at the fish ladder and dam — sanctuary signs posted. FMZ 16 applies.',icon:'🚫'}],
+    regs:[{rule:'Fishing strictly prohibited at the fish ladder and dam — sanctuary signs posted. No fishing within 23 m below a fishway entrance. FMZ 17: open fourth Saturday in April to Dec 31 between the CNR and Hwy 2.',icon:'🚫'}],
     methods:['float','fly'],
     access:[
       {name:'Bowmanville Valley Trail Access',loc:'Bowmanville Valley Trail · Middle creek',crowd:'high',desc:'Fish concentrate in pools below the Goodyear Dam waiting to pass the fish ladder. Heavy pressure during peak fall runs. Respect sanctuary signs — wardens patrol regularly during salmon season.'},
@@ -1610,7 +1622,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':75,'north york':70,'scarborough':55,'etobicoke':95,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':40,'mississauga':120,'brampton':110,'oakville':110,'burlington':125,'milton':120,'hamilton':135,'guelph':150,'cambridge':165,'kitchener':175,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':5,'newcastle':10,'cobourg':45,'port hope':35,'barrie':105,'collingwood':155,'owen sound':215},
     species:['Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 16 — critical spawning habitat. Check for seasonal closures and C&R requirements above the dam.',icon:'📋'}],
+    regs:[{rule:'FMZ 17. North of Hwy 2 the trout and salmon season ends Sept 30. Critical spawning habitat. Check for seasonal closures and C&R requirements above the dam.',icon:'📋'}],
     methods:['fly','spin'],
     access:[
       {name:'Upper Creek — Road Allowance Crossings',loc:'Above Goodyear Dam · Various bridge crossings',crowd:'low',desc:'Narrow, shallow, cool water with resident Brown Trout. Fly fishing with dry flies and nymphs or light spinning with small spinners. Critical spawning habitat — handle fish carefully and check for closures.'},
@@ -1713,7 +1725,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':25,'north york':10,'scarborough':20,'etobicoke':25,'markham':20,'richmond hill':20,'vaughan':15,'ajax':45,'pickering':40,'mississauga':50,'brampton':30,'oakville':40,'burlington':60,'milton':45,'hamilton':70,'guelph':75,'cambridge':90,'kitchener':100,'waterloo':100,'orangeville':55,'oshawa':60,'whitby':50,'bowmanville':75,'clarington':85,'newcastle':85,'cobourg':120,'port hope':110,'barrie':80,'collingwood':115,'owen sound':165},
     species:['Brown Trout'],
     active:true,
-    regs:[{rule:'FMZ 17 — urban waterway, flashy conditions. Water levels can surge rapidly after rain — check conditions before visiting.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. Urban waterway, flashy conditions. Water levels can surge rapidly after rain — check conditions before visiting.',icon:'📋'}],
     methods:['spin','fly'],
     access:[
       {name:'Black Creek Parkland — Upper',loc:'North York · Black Creek Parkland',crowd:'low',desc:'Naturalized ravines and wooded parklands with undercut stream banks and riffle-pool sequences. Brown trout present along with smallmouth bass, rock bass, and carp. A surprising urban fishery for those willing to explore. Best in early spring before water temperatures rise.'},
@@ -1733,7 +1745,8 @@ var RIVER_CONFIG = {
     access:[]
   },
   'Black Creek — Lower Watershed & Humber Confluence': {
-    season:'all-year',
+    // The all-year rule covers the Humber main stem below Eglinton, not its tributaries.
+    season:'standard',
     gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
     sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
     lat:43.670, lng:-79.500,
@@ -1741,7 +1754,7 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':20,'north york':15,'scarborough':25,'etobicoke':15,'markham':30,'richmond hill':30,'vaughan':25,'ajax':50,'pickering':45,'mississauga':40,'brampton':30,'oakville':30,'burlington':50,'milton':40,'hamilton':60,'guelph':70,'cambridge':85,'kitchener':95,'waterloo':95,'orangeville':60,'oshawa':65,'whitby':55,'bowmanville':80,'clarington':85,'newcastle':90,'cobourg':125,'port hope':115,'barrie':90,'collingwood':120,'owen sound':170},
     species:['Steelhead','Chinook Salmon'],
     active:true,
-    regs:[{rule:'FMZ 17 — highly accessible urban fishery. Migratory fish push up from the Humber during spring and fall runs.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. Trout and salmon season on Black Creek ends Sept 30; the Humber main stem below Eglinton is open all year. Highly accessible urban fishery. Migratory fish push up from the Humber during spring and fall runs.',icon:'📋'}],
     methods:['float','spin'],
     access:[
       {name:'Smythe Park',loc:'Smythe Park · Etobicoke near Eglinton',crowd:'med',desc:'Where the creek regains its natural banks with deep pools, overhanging vegetation, and natural structure. Migratory steelhead and Chinook push up from the Humber during spring and fall runs. Brown bullhead, pumpkinseed, panfish, and carp year-round. Highly accessible urban spot.'},
@@ -1804,7 +1817,7 @@ var RIVER_REGS = {
       "Fergus\u2013Elora reach: ARTIFICIAL LURE ONLY \u2014 no bait of any kind",
       "ONE barbless hook maximum throughout designated reach",
       "Brown, Rainbow & Brook Trout: S-0 / C-0 (catch & release only) in Fergus\u2013Elora",
-      "Fish Sanctuary: no fishing March 1 \u2013 Fri. before 4th Sat. in April",
+      "Paris to Brantford: Fish Sanctuary: no fishing March 1 \u2013 Fri. before 4th Sat. in April",
       "Southern Bait Management Zone \u2014 no live baitfish transport"
     ]
   },
@@ -1833,7 +1846,9 @@ var RIVER_REGS = {
     "special": [
       "Above Old Baseline Road, Town of Caledon: ARTIFICIAL LURE ONLY, one barbless hook, trout C&R only",
       "Multiple fish sanctuary periods apply to different reaches \u2014 check your exact location",
+      "Britannia Rd. to Hwy 407: open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
       "Britannia to Old Baseline Rd.: sanctuary Jan. 1 \u2013 Fri. before 4th Sat. April",
+      "Old Baseline Rd. to Hwy 9: sanctuary Jan. 1\u2013Fri. before 4th Sat. April & Oct. 1\u2013Dec. 31",
       "Hwy 403 to Britannia Rd.: sanctuary Jan. 1\u2013Apr. & Aug. 15\u2013Dec. 31",
       "Southern Bait Management Zone"
     ]
@@ -1861,7 +1876,7 @@ var RIVER_REGS = {
       }
     ],
     "special": [
-      "Burlington section (CPR track to south side Hwy 407): sanctuary Jan. 1\u2013Fri. before 4th Sat. April & Oct. 1\u2013Dec. 31",
+      "Progreston CPR track to Hwy 407, including Lowville: sanctuary Jan. 1\u2013Fri. before 4th Sat. April & Oct. 1\u2013Dec. 31",
       "Lower reach (Hwy 2 to Lake Ontario): open all year for Atlantic/Brown/Rainbow/Pacific Salmon",
       "Southern Bait Management Zone \u2014 no live baitfish transport",
       "Aggregate trout and salmon limit: S-5 / C-2 combined"
@@ -1925,9 +1940,9 @@ var RIVER_REGS = {
       }
     ],
     "special": [
-      "Boyne River downstream to Pine River: sanctuary Jan. 1\u2013Fri. before 2nd Sat. in May & Oct. 1\u2013Dec. 31",
+      "Nicholson Dam (Hwy 89 down to near the Boyne): sanctuary Jan. 1\u2013Fri. before 2nd Sat. in May & Oct. 1\u2013Dec. 31",
       "Lower Nottawasaga (Boyne to Georgian Bay): open all year for Brown, Rainbow & Pacific Salmon",
-      "Rainbow Trout sanctuary in certain sections: S-0 / C-0 \u2014 check exact location",
+      "Boyne River to Pine River: Rainbow Trout catch and release only (S-0 / C-0)",
       "Southern Bait Management Zone"
     ]
   },
@@ -1954,6 +1969,7 @@ var RIVER_REGS = {
       }
     ],
     "special": [
+      "Durham Region waters between Hwy 2 and the CNR: open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
       "Durham Region waters between CNR right-of-way and Lake Ontario: open all year",
       "Aggregate trout and salmon limit applies: S-5 / C-2 combined",
       "Southern Bait Management Zone",
@@ -1986,7 +2002,9 @@ var RIVER_REGS = {
       "Ganaraska River (CNR right-of-way to Lake Ontario): open all year for all salmonids",
       "Aggregate trout & salmon limit: S-5 / C-2 combined",
       "Southern Bait Management Zone",
-      "Check Ganaraska Region CA for current access and any local sanctuary periods"
+      "Jocelyn St bridge to CNR: closed Sept. 1 \u2013 Oct. 14; open 4th Sat. April \u2013 Aug. 31 and Oct. 15 \u2013 Dec. 31",
+      "Hwy 401 to Jocelyn St bridge (Corbetts Dam): fish sanctuary closed all year",
+      "Check Ganaraska Region CA for current access"
     ]
   },
   "Beaver River": {
@@ -2083,14 +2101,14 @@ var RIVER_REGS = {
       }
     ],
     "special": [
-      "Sixteen Mile Creek (Oakville, Hwy 407 to Hwy 2): sanctuary Jan. 1\u2013Fri. before 4th Sat. April & Oct. 1\u2013Dec. 31",
+      "Sixteen Mile Creek and tributaries (Hwy 2 to Hwy 407): open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
       "Lower reach (Hwy 2 to Lake Ontario): open all year for Atlantic/Brown/Rainbow/Pacific Salmon",
       "Southern Bait Management Zone",
       "Aggregate trout & salmon limit: S-5 / C-2 combined"
     ]
   },
   "Rouge River": {
-    "zone": "FMZ 17",
+    "zone": "FMZ 16",
     "species": [
       {
         "name": "Brown Trout",
@@ -2113,6 +2131,7 @@ var RIVER_REGS = {
     ],
     "special": [
       "Rouge River (Kingston Rd. to Lake Ontario, City of Toronto): open all year for salmonids",
+      "Rouge River (Kingston Rd. to Hwy 407): open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
       "Rouge National Urban Park \u2014 check Parks Canada for any additional access restrictions",
       "Aggregate trout & salmon limit: S-5 / C-2 combined",
       "Southern Bait Management Zone"
@@ -2141,6 +2160,7 @@ var RIVER_REGS = {
       }
     ],
     "special": [
+      "Durham Region waters between Hwy 2 and the CNR: open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
       "Durham Region \u2014 all waters between CNR right-of-way and Lake Ontario: open all year",
       "Aggregate trout & salmon limit: S-5 / C-2 combined",
       "Southern Bait Management Zone"
@@ -2169,10 +2189,10 @@ var RIVER_REGS = {
       }
     ],
     "special": [
+      "Durham Region waters between Hwy 2 and the CNR: open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
       "Durham Region waters between CNR and Lake Ontario: open all year",
       "Aggregate trout & salmon limit: S-5 / C-2 combined",
       "Southern Bait Management Zone",
-      "Northumberland County \u2014 waters downstream of Hwy 2 (except Ganaraska): extended season 4th Sat. April \u2013 Dec. 31"
     ]
   },
   "Speed River": {
@@ -2253,7 +2273,7 @@ var RIVER_REGS = {
       "Standard Zone 16 trout seasons apply",
       "Southern Bait Management Zone",
       "Wild brook trout present \u2014 catch & release only strongly recommended",
-      "No active real-time gauge \u2014 contact Grey Sauble CA for conditions"
+      "No active real-time gauge \u2014 contact TRCA for conditions"
     ]
   }
 };
@@ -2328,7 +2348,6 @@ var ACCESS_COORDS = {
   ],
   "Bronte Creek — Mid-Section & Provincial Park": [
     {lat:43.4423,lng:-79.7567}, // Bronte Creek Provincial Park
-    {lat:43.4712,lng:-79.7034}, // Lions Valley Park
     {lat:43.4912,lng:-79.7934}, // Lowville Park
   ],
   "Bronte Creek — Upper Headwaters": [
@@ -2665,7 +2684,10 @@ function renderRiverUI(cfg) {
   }) : []);
   // An empty access list means a blank section with no explanation, which is worse than
   // slightly generic guidance. Fall back to the parent river's config, then the default.
-  if (!_accessSorted.length) {
+  // Only when the section has no spots at all: if its spots exist but are all closed, the
+  // closed-spots notice explains that, and borrowing another config's spots would put
+  // open-looking cards on closed water.
+  if (!_accessSorted.length && !_closedSpots.length) {
     var _apName = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
     var _apParent = _apName.indexOf(' \u2014 ') !== -1 ? _apName.split(' \u2014 ')[0].trim() : _apName;
     var _apCfg = RIVER_CONFIG[_apParent];
@@ -5269,6 +5291,9 @@ function rankRivers(rivers, speciesKey, dateStr) {
     if (seasonClosureFor(cfg, dateStr)) {
       score -= 30;
       warnings.unshift('Season closed on this reach');
+    } else if (allAccessClosed(cfg, dateStr)) {
+      score -= 30;
+      warnings.unshift('Every access point on this reach is closed on this date');
     }
 
     // Prefer rivers closer by
@@ -6501,19 +6526,21 @@ function filterAndSummariseRegs(regs, tripDateStr, selectedSpeciesArr) {
     // ── Date-bearing patterns ────────────────────────────────────────────────
     var dated = false;
 
-    // "sanctuary Jan. 1 – Fri. before 4th Sat. April" (Jan 1 – early April)
-    if (/sanctuary jan\.?\s*1.*(fri.*before.*4th sat.*april|4th sat.*april)/i.test(s)) {
-      dated = true;
-      var sanctEnd = sat4AprFri;
-      if (betweenDates(new Date(year,0,1), sanctEnd)) active.push(s);
-      else inactive.push(s);
-    }
     // "sanctuary Jan. 1–Fri. before 4th Sat. April & Oct. 1–Dec. 31"
-    else if (/jan\.?\s*1.*4th sat.*april.*oct\.?\s*1.*dec\.?\s*31/i.test(s)) {
+    // Must be tested before the single-window pattern below, which also matches this
+    // text and used to drop the Oct–Dec half (Humber above 407, Bronte at Lowville).
+    if (/jan\.?\s*1.*4th sat.*april.*oct\.?\s*1.*dec\.?\s*31/i.test(s)) {
       dated = true;
       var p1 = betweenDates(new Date(year,0,1), sat4AprFri);
       var p2 = inRange(9,1,11,31);
       if (p1 || p2) active.push(s); else inactive.push(s);
+    }
+    // "sanctuary Jan. 1 – Fri. before 4th Sat. April" (Jan 1 – early April)
+    else if (/sanctuary jan\.?\s*1.*(fri.*before.*4th sat.*april|4th sat.*april)/i.test(s)) {
+      dated = true;
+      var sanctEnd = sat4AprFri;
+      if (betweenDates(new Date(year,0,1), sanctEnd)) active.push(s);
+      else inactive.push(s);
     }
     // "sanctuary Jan. 1–Fri. before 2nd Sat. in May & Oct. 1–Dec. 31"
     else if (/jan\.?\s*1.*2nd sat.*may.*oct\.?\s*1.*dec\.?\s*31/i.test(s)) {
