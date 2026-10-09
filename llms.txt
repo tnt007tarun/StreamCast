@@ -35,5 +35,12 @@ Runs in any mobile browser at herefishyfishy.ca. Free, no account required to us
 - https://herefishyfishy.ca/ — Live conditions app (main tool)
 - https://herefishyfishy.ca/rivers — All covered rivers with species
 - https://herefishyfishy.ca/guides/salmon-run-timing — When salmon run in Ontario, river-by-river timing table (staging begins July on eastern rivers, late July on the Credit/Humber; runs peak mid-September to mid-October)
+- https://herefishyfishy.ca/guides/steelhead-run-timing/ — When steelhead run in Ontario: late September on the Ganaraska and eastern creeks, October further west, sporadic through winter, good again around the late-April opener; table of reaches open all year and to Dec 31
+- https://herefishyfishy.ca/guides/winter-steelhead/ — Late fall and winter steelhead: open water after Sept 30, where fish sit in cold water, float setup and baits
+- https://herefishyfishy.ca/rivers/humber/ — Humber River salmon and steelhead: timing, Old Mill in fall, winter and spring, rules below and above Eglinton
+- https://herefishyfishy.ca/rivers/ganaraska/salmon-run/ — Port Hope / Ganaraska salmon run dates and the Sept 1 to Oct 14 closure
+- https://herefishyfishy.ca/rivers/bowmanville/salmon-run/ — Bowmanville Creek salmon run
+- https://herefishyfishy.ca/rivers/bronte/ — Bronte Creek, the latest salmon run of the season
+- https://herefishyfishy.ca/rivers/credit/ — Credit River overview by section
 - https://herefishyfishy.ca/credit-river/chinook-salmon — Live Credit River Chinook conditions (also: /brown-trout, /rainbow-trout, /brook-trout, /steelhead, /coho-salmon)
 - https://herefishyfishy.ca/about — Who built this and how it works

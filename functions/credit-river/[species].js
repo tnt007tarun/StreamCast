@@ -16,11 +16,11 @@ const SSR_ROUTES = {
     lat: 43.870, lng: -80.010,
     seasonMonths: [3, 8],   // April – September (season closes Sept 30)
     access: [
-      'Forks of the Credit Provincial Park — Cataract, ON',
-      'Belfountain Conservation Area — Belfountain, ON',
-      'Upper Credit Conservation Area — Caledon, ON',
+      'Forks of the Credit Provincial Park, Cataract, ON',
+      'Belfountain Conservation Area, Belfountain, ON',
+      'Upper Credit Conservation Area, Caledon, ON',
     ],
-    closures: 'Above Old Baseline Road: artificial lures only, one single-pointed barbless hook, and catch-and-release for Brook, Brown and Rainbow Trout. Season runs from the fourth Saturday in April to September 30 — this water is closed October 1 to December 31.',
+    closures: 'Above Old Baseline Road: artificial lures only, one single-pointed barbless hook, and catch-and-release for Brook, Brown and Rainbow Trout. Season runs from the fourth Saturday in April to September 30, and this water is closed October 1 to December 31.',
     evergreen: `The Upper Credit is one of Southern Ontario's best wild brown trout fisheries. The river runs cold year-round through the Niagara Escarpment gorge, holding resident browns from Cataract down through Belfountain. Best action is April through June on nymphs and dry flies, and again in September as the water cools.`,
     tips: `Fish the seams at the head of pools in the morning before the sun hits the water. Hendrickson hatches in late April and early May bring fish to the surface. In summer, switch to a dropper rig with a small nymph off a dry fly.`,
   },
@@ -33,12 +33,12 @@ const SSR_ROUTES = {
     lat: 43.660, lng: -79.880,
     seasonMonths: [2, 4],   // March – May
     access: [
-      'McNab Park — Norval, ON (below the Norval dam)',
-      'Forks of the Credit Provincial Park — Cataract, ON',
+      'McNab Park, Norval, ON (below the Norval dam)',
+      'Forks of the Credit Provincial Park, Cataract, ON',
     ],
-    closures: 'The Forks reach is artificial lures only, single barbless hook, and catch-and-release for trout. Streetsville Road Allowances is deliberately not listed here: part of that reach sits below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary that closes August 15 to December 31.',
-    evergreen: `Rainbow trout run the Credit in spring, typically March through May, and resident rainbows hold in the upper reaches year-round in smaller numbers. Worth knowing how they get there: migratory fish stop at the Streetsville dam, and the water above it is stocked by hand — Credit River Anglers Association volunteers lift fish through the fishway and truck them 30 km north past the Norval dam. The ladder runs daily from ice-out to late April, which is exactly the spring run.`,
-    tips: `Drift roe, beads or large nymphs through the deep pools during peak flows — but note that the artificial-only reaches above Old Baseline allow no bait at all. As levels drop through April, switch to lighter nymphing rigs with smaller flies. Before 9am is consistently the most productive window. Below Streetsville you are fishing fish that arrived under their own power; above it, fish that were carried.`,
+    closures: 'The Forks reach is artificial lures only, single barbless hook, and catch-and-release for trout. Streetsville Road Allowances isn\u2019t listed here, because part of that reach sits below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary that closes August 15 to December 31.',
+    evergreen: `Rainbow trout run the Credit in spring, typically March through May, and resident rainbows hold in the upper reaches year-round in smaller numbers. Worth knowing how they get there: migratory fish stop at the Streetsville dam, and the water above it is stocked by hand. Credit River Anglers Association volunteers lift fish through the fishway and truck them 30 km north past the Norval dam. The ladder runs daily from ice-out to late April, which is exactly the spring run.`,
+    tips: `Drift roe, beads or large nymphs through the deep pools during peak flows, but the artificial-only reaches above Old Baseline allow no bait at all. As levels drop through April, switch to lighter nymphing rigs with smaller flies. Before 9am is consistently the most productive window. Below Streetsville you are fishing fish that arrived under their own power; above it, fish that were carried.`,
   },
   'brook-trout': {
     river: 'Credit River',
@@ -49,12 +49,12 @@ const SSR_ROUTES = {
     lat: 43.870, lng: -80.010,
     seasonMonths: [3, 8],
     access: [
-      'Upper Credit Conservation Area — Caledon, ON',
-      'Belfountain Conservation Area — Belfountain, ON',
+      'Upper Credit Conservation Area, Caledon, ON',
+      'Belfountain Conservation Area, Belfountain, ON',
     ],
     closures: 'Catch-and-release only for Brook Trout on this stretch, artificial lures only, one single-pointed barbless hook. Season closes September 30.',
-    evergreen: `Brook trout hold in the coldest headwater reaches of the Upper Credit, particularly above Old Baseline Road in Caledon. These are wild fish — smaller than the browns below but extraordinarily beautiful. Water temperature is the whole game: brookies go off the feed above 18°C, so midsummer is unproductive. Best fishing is May–June and again in September.`,
-    tips: `Use light tackle — a 3 or 4 weight, 5x or 6x tippet, flies in the 14–18 range. Brook trout in clear headwater streams spook easily. Wade carefully, stay low, and cast to specific fish rather than covering water at random.`,
+    evergreen: `Brook trout hold in the coldest headwater reaches of the Upper Credit, particularly above Old Baseline Road in Caledon. These are wild fish, smaller than the browns below and beautiful to look at. Water temperature is the whole game: brookies go off the feed above 18°C, so midsummer is unproductive. Best fishing is May–June and again in September.`,
+    tips: `Use light tackle: a 3 or 4 weight, 5x or 6x tippet, flies in the 14–18 range. Brook trout in clear headwater streams spook easily. Wade carefully, stay low, and cast to specific fish rather than covering water at random.`,
   },
   'steelhead': {
     river: 'Credit River',
@@ -65,10 +65,10 @@ const SSR_ROUTES = {
     lat: 43.560, lng: -79.720,
     seasonMonths: [8, 4],   // September – May
     access: [
-      'Erindale Park — Mississauga, ON',
-      'Credit River Mouth — Port Credit, ON',
+      'Erindale Park, Mississauga, ON',
+      'Credit River Mouth, Port Credit, ON',
     ],
-    closures: 'Streetsville Road Allowances is deliberately not listed: part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31 — which covers most of the fall steelhead run. Erindale Park is downstream of Hwy 403 and open year-round.',
+    closures: 'Streetsville Road Allowances isn\u2019t listed, because part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31, which covers most of the fall steelhead run. Erindale Park is downstream of Hwy 403 and open year-round.',
     evergreen: `Steelhead come into the Credit in October, behind the Chinook, and November is a good month. Through the winter they can be caught sporadically on the lower river below Hwy 403, which stays open all year, and spring is good again around the trout opener at the end of April. Unlike Chinook, steelhead get the whole river. They swim as far as the Streetsville dam, then Credit River Anglers Association volunteers lift them through the fishway and truck them 30 km north past Norval. When CRAA rebuilt the ladder entrance in 1997, the share of steelhead finding it went from 10 to 20% to 99.5%.`,
     tips: `Float fish roe bags, beads or a worm through the deeper pools and runs. The most common mistake, especially once the water gets cold, is fishing too shallow and too fast. Steelhead sit deep and barely move in winter, so set the float so the bait drifts within about two feet of the bottom and slow the drift down. Expect to move, too. One November on the Credit I fished three spots before finding fish: nothing at the first two, two hooked and one landed at the third. Spring fish are more willing to take nymphs dead-drifted through feeding lanes.`,
     readNext: `For timing on every Lake Ontario river and which reaches stay open after September 30, see <a href="/guides/steelhead-run-timing/">when steelhead run in Ontario</a>. For cold-water technique, the setup and baits, see <a href="/guides/winter-steelhead/">late fall and winter steelhead</a>.`,
@@ -82,10 +82,10 @@ const SSR_ROUTES = {
     lat: 43.560, lng: -79.720,
     seasonMonths: [7, 10],  // August – November
     access: [
-      'Credit River Mouth — Port Credit, ON',
-      'Erindale Park — Mississauga, ON',
+      'Credit River Mouth, Port Credit, ON',
+      'Erindale Park, Mississauga, ON',
     ],
-    closures: 'Streetsville Road Allowances is deliberately not listed: part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31 — the whole of the salmon run. Fish the mouth and Erindale instead; both are open.',
+    closures: 'Streetsville Road Allowances isn\u2019t listed, because part of that reach is below the Britannia Road bridge, inside the Hwy 403–Britannia sanctuary closed August 15 to December 31, which is the whole salmon run. Fish the mouth and Erindale instead; both are open.',
     evergreen: `Chinook stage off Port Credit harbour from late July and enter the Credit from late August, with peak numbers moving through in late September and October. Fish hold near the harbour mouth waiting for flow, then push upriver after rain. Until they commit, the pier and beach fish better than the river does.`,
     tips: `Target the Credit during and just after rain, when fresh fish push on rising water. While fish are still staging, cast spoons and spinners from the pier at dawn and dusk. Once they are in the river, float-fished roe or beads through the deepest pools is the more productive approach.`,
   },
@@ -98,12 +98,12 @@ const SSR_ROUTES = {
     lat: 43.560, lng: -79.720,
     seasonMonths: [8, 10],
     access: [
-      'Credit River Mouth — Port Credit, ON',
-      'Erindale Park — Mississauga, ON',
+      'Credit River Mouth, Port Credit, ON',
+      'Erindale Park, Mississauga, ON',
     ],
     closures: 'The Hwy 403–Britannia reach is closed August 15 to December 31. Erindale Park is downstream of Hwy 403 and open.',
     evergreen: `Coho arrive on the Credit in October, behind the main Chinook push. Smaller and more acrobatic than Chinook, they hold higher in the water column and are far more willing to chase a fly or a lure.`,
-    tips: `Coho respond well to swung flies and small spoons — a size 2 silver spoon retrieved steadily through a pool can be deadly. Focus on the lower river, particularly the pools below Erindale Park.`,
+    tips: `Coho respond well to swung flies and small spoons. A size 2 silver spoon retrieved steadily through a pool can be deadly. Focus on the lower river, particularly the pools below Erindale Park.`,
   },
 };
 
@@ -171,10 +171,10 @@ function renderPage(route, cond, speciesSlug) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Credit River ${route.species} — Conditions Today</title>
-<meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : '— check gauge'}, water ${cond.waterTemp != null ? '~' + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
+<title>Credit River ${route.species}: Conditions Today</title>
+<meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : 'not available, check the gauge'}, water ${cond.waterTemp != null ? '~' + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
 <link rel="canonical" href="https://herefishyfishy.ca/credit-river/${speciesSlug}">
-<meta property="og:title" content="Credit River ${route.species} — ${cond.qualityLabel} today">
+<meta property="og:title" content="Credit River ${route.species}: ${cond.qualityLabel} today">
 <meta property="og:description" content="Live flow, water temperature and access points for ${route.species} on the Credit River.">
 <meta property="og:url" content="https://herefishyfishy.ca/credit-river/${speciesSlug}">
 <meta property="og:type" content="article">
@@ -286,8 +286,8 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
 
   <h2>Read next</h2>
 ${route.readNext ? `<p>${route.readNext}</p>` : ''}
-  <p>For the river as a whole &mdash; the three sections, the two dams, and why which stretch you pick
-  matters more here than anywhere &mdash; see <a href="/rivers/credit/">fishing the Credit River</a>.
+  <p>For the river as a whole, including the three sections, the two dams and why the stretch you pick
+  matters more here than anywhere, see <a href="/rivers/credit/">fishing the Credit River</a>.
   Timing for every Ontario river is in the <a href="/guides/salmon-run-timing/">river-by-river salmon
   run guide</a>, and for the drift itself, <a href="/guides/salmon-float-fishing-tips/">three float
   fishing tips</a>.</p>
@@ -298,7 +298,7 @@ ${route.readNext ? `<p>${route.readNext}</p>` : ''}
   <div class="endnote">
     <strong>Sources.</strong> Flow: Water Survey of Canada, ${route.gaugeName} (${route.gauge}) &middot;
     Weather: Open-Meteo &middot; Ontario Fishing Regulations Summary 2026, Zone 16. Conditions refresh
-    every 30 minutes. Regulations change and vary by reach — always confirm the rules for the exact
+    every 30 minutes. Regulations change and vary by reach, so always confirm the rules for the exact
     stretch you plan to fish.
   </div>
 </div></article>
