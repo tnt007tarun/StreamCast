@@ -3767,9 +3767,36 @@ function renderTechniquePillars(spec) {
 // selectedSpecies[0], so "Steelhead + Chinook" was judged on steelhead alone and the
 // Chinook was ignored. Salmon lead (their staging phase changes the method), then
 // steelhead, then whatever was picked first. Species the section can't hold are skipped.
+// The species the hero names when the angler hasn't picked one ("Try Chinook Salmon at...").
+// Top of recommendSpecies() over the spots open on the trip date, without trout when the
+// water is thermally stressful, peak or good season only, and none on a closed section.
+// buildTopPick names it, and renderResults stores it in window._defaultTargetSpecies
+// before updateMethods so the gear matches. Without it the Technique panel fell back to trout nymphing for Chinook.
+var TROUT_NAMES = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
+function defaultTargetSpecies(cfg, wt) {
+  if (!cfg) return null;
+  var trip = (typeof getTripDateStr === 'function') ? getTripDateStr() : null;
+  if (sectionClosedOn(cfg, trip)) return null; // nothing to recommend on closed water
+  var open = Object.create(cfg);
+  open.access = (cfg.access || []).filter(function(a){ return isAccessOpen(a, trip); });
+  var thermal = wt != null && wt >= 18 && window._weatherOk !== false;
+  var recs = recommendSpecies(open).filter(function(r){
+    if (thermal && TROUT_NAMES.indexOf(r.name) !== -1) return false;
+    return r.seasonal && (r.seasonal.quality === 'peak' || r.seasonal.quality === 'good');
+  });
+  return recs.length ? recs[0].name : null;
+}
+
 function methodSpeciesKey(sectionName) {
   var sel = (typeof selectedSpecies !== 'undefined' && selectedSpecies) ? selectedSpecies : [];
   var cfg = (typeof getRiverConfig === 'function' && sectionName) ? getRiverConfig(sectionName) : null;
+  // Only if it lives here: a value left over from the previous river must not set the gear.
+  if (!sel.length && window._defaultTargetSpecies && cfg && cfg.species &&
+      cfg.species.indexOf(window._defaultTargetSpecies) !== -1) {
+    var dk = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Brook Trout':'brook','Steelhead':'steelhead',
+              'Chinook Salmon':'chinook','Coho Salmon':'coho'}[window._defaultTargetSpecies];
+    if (dk) sel = [dk];
+  }
   var has = function(k) {
     var nm = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'}[k];
     return !cfg || !cfg.species || !nm || cfg.species.indexOf(nm) !== -1;
@@ -4578,6 +4605,7 @@ async function renderResults(){
   document.getElementById("twin").textContent=tw;
   document.getElementById("tnote").textContent=_bwNote;
 
+  window._defaultTargetSpecies = defaultTargetSpecies(cfg, wt);
   updateMethods(fc,tc,sc,flow,wt);
   // If migratory fish physically cannot reach this section, say so in the conditions
   // subtitle rather than presenting upper-river access points as if they were an option.
@@ -5891,7 +5919,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     }
   } else {
     if (recs.length > 0) {
-      fallbackSpecies = recs[0].name; window._shownSpeciesName = fallbackSpecies;
+      // Same pick as the gear: see defaultTargetSpecies.
+      fallbackSpecies = defaultTargetSpecies(cfg, wt) || recs[0].name; window._shownSpeciesName = fallbackSpecies;
       speciesNote = 'Best bet: ' + recs[0].name + ' (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
       if (recs.length > 1) speciesNote += recs[1].name + ' also good. ';
     }
