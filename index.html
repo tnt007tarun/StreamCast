@@ -447,7 +447,7 @@
   <!-- SECTION 2: Technique & Gear (accordion) -->
   <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p id="tg-subtitle">Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
-  <!-- Hidden bait source panels — cloned by JS into accordion -->
+  <!-- Hidden bait data. renderBaitPillar() in app.js reads these cards to build the Bait pillar. Not dead code: keep it. -->
   <div id="bait-source" style="display:none">
     <div class="bpanel" id="p-nymphs">
       <div class="bgrid">
@@ -456,7 +456,6 @@
         <div class="bi" data-bait-name="Perdigon"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">3</div><div class="bname">Perdigon</div><div class="bdet">#12–16 · Olive / Brown</div><div class="bcond">Heavy bead gets to the bottom fast in higher flows.</div></div>
         <div class="bi" data-bait-name="Stonefly Nymph"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">4</div><div class="bname">Stonefly Nymph</div><div class="bdet">#8–12 · Black / Brown, heavy</div><div class="bcond">Big meal for big fish. Fish along the bottom in fast runs.</div></div>
         <div class="bi" data-bait-name="Zebra Midge"><div class="bi-img-wrap"><div class="bi-img-ph"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M18 7 C16 3,12 2,8 3 C5 4,2 6,2 7 C2 8,5 10,8 11 C12 12,16 11,18 7Z"/><path d="M18 7 L21 5 L20 7 L21 9Z"/><circle cx="5" cy="6.5" r="0.8" fill="currentColor"/></svg></div></div><div class="brank">5</div><div class="bname">Zebra Midge</div><div class="bdet">#18–22 · Black/silver or red/silver</div><div class="bcond">When nothing else works in low clear water.</div></div>
-      </div>
       </div>
     </div>
     <div class="bpanel" id="p-streamers">
@@ -502,7 +501,7 @@
       </div>
       <div class="bfooter">Fishing a harbour mouth? Check the regulations for seasonal closures near river mouths.</div>
     </div>
-  
+  </div>
 
   <div class="tgsec fi" id="tg-section" role="region" aria-label="Technique and Gear">
 

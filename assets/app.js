@@ -525,6 +525,30 @@ function allAccessClosed(cfg, dateStr) {
   if (!cfg || !cfg.access || !cfg.access.length || !dateStr) return false;
   return !cfg.access.some(function(a){ return isAccessOpen(a, dateStr); });
 }
+// The recommended access spot, shared by the hero headline and the access cards so they
+// never name different spots. Pass open spots only.
+// Staging: the mouth. Otherwise fish are IN THE RIVER, so prefer in-river spots and only
+// fall back to a mouth spot if the section has nothing else. Picking by crowd alone sent
+// people to the harbour after the fish had left it (the Ganaraska has two spots, both
+// 'high', and index 0 is the harbour).
+function bestAccessSpot(access, atMouth) {
+  if (!access || !access.length) return null;
+  if (atMouth) {
+    return access.filter(function(a){ return a.mouth === true; })[0] ||
+           access.find(function(a){ return a.crowd === 'low'; }) || access[0];
+  }
+  var inRiver = access.filter(function(a){ return a.mouth !== true; });
+  var pool = inRiver.length ? inRiver : access;
+  return pool.find(function(a){ return a.crowd === 'low'; }) ||
+         pool.find(function(a){ return a.crowd === 'med'; }) ||
+         pool[0];
+}
+// Closed to fishing on the date: season shut, or every access point closed. Anything that
+// rates a section (the Conditions pill, the drive verdict) checks this first, because a
+// water rating on closed water reads as a go.
+function sectionClosedOn(cfg, dateStr) {
+  return !!(seasonClosureFor(cfg, dateStr) || allAccessClosed(cfg, dateStr));
+}
 
 // How strongly should we steer people to the river MOUTH right now?
 // Returns 8/6/3/0. Keyed on the season window LABEL, because quality alone cannot tell
@@ -719,6 +743,8 @@ function renderStagingCard(sectionName, weather) {
         }
       }
 
+      // Staging strength rates the lake, not legality. Leave a closed section's pill and verdict alone.
+      if (sectionClosedOn(getRiverConfig(selectedRiver), getTripDateStr())) return;
       var _confEl2 = document.getElementById('tp-confidence');
       if (_confEl2) {
         var _conf2 = scoreToConfidence(_newScore);
@@ -1471,7 +1497,6 @@ var RIVER_CONFIG = {
     access:[
       {name:'Rouge Beach · River Mouth',mouth:true,loc:'Rouge Beach Park · Pickering / Scarborough border',crowd:'high',desc:'Entry point for migratory Chinook, steelhead, and brown trout from Lake Ontario. Casting spoons and spinners around the rocks and under railway bridges near the mouth is highly productive during seasonal runs. Spring pike fishing in the shallow marsh areas with shiners or crankbaits.'},
       {name:'CNR Railway Bridge Area',loc:'Below CNR bridge · Lower Rouge',crowd:'high',desc:'Fish concentrate below structures near the mouth during the runs. Good holding water for steelhead in spring and Chinook in fall. Heavy pressure on peak run weekends, so arrive early.'},
-      {name:'Rouge Marsh',loc:'Rouge Beach · Marsh habitat',crowd:'med',desc:'Warmwater and pike fishery only, and not a productive spot for trout or salmon. The shallow marsh holds good spring pike, largemouth bass, black crappie and white bass year-round. Cast crankbaits and swimbaits along the weedy edges. For salmon and steelhead, go to the river mouth or the CNR bridge area instead.'}
     ]
   },
   'Rouge River — Mid-Section (Rouge National Urban Park)': {
@@ -2444,7 +2469,6 @@ var ACCESS_COORDS = {
   "Rouge River — Marsh & Mouth (Lake Ontario)": [
     {lat:43.8034,lng:-79.1312}, // Rouge Beach · River Mouth  [mouth]
     {lat:43.8056,lng:-79.1323}, // CNR Railway Bridge Area
-    {lat:43.805,lng:-79.132}, // Rouge Marsh
   ],
   "Rouge River — Mid-Section (Rouge National Urban Park)": [
     {lat:43.8289,lng:-79.1456}, // Rouge National Urban Park · Main Access
@@ -2702,6 +2726,7 @@ function renderRiverUI(cfg) {
     }
     if (_accessSorted.length) console.warn('access: fell back for "' + _apName + '"');
   }
+  var _cardsAtMouth = false;
   (function() {
     var _stgSp = window._effectiveRecommendedSpecies;
     if (!_stgSp && selectedSpecies && selectedSpecies.length === 1) {
@@ -2716,12 +2741,10 @@ function renderRiverUI(cfg) {
     if (!shouldPointAtMouth(_stgSp, getTripDateStr())) return;
     var _mouthOnly = _accessSorted.filter(function(a){ return a.mouth === true; });
     if (_mouthOnly.length > 0) _accessSorted = _mouthOnly;
+    _cardsAtMouth = true;
   })();
-  // Find the bestSpot index — same logic as buildTopPick (first low crowd, else first med)
-  var _bestIdx = 0;
-  var _lowIdx = _accessSorted.findIndex(function(a){ return a.crowd === 'low'; });
-  var _medIdx = _accessSorted.findIndex(function(a){ return a.crowd === 'med'; });
-  _bestIdx = _lowIdx !== -1 ? _lowIdx : _medIdx !== -1 ? _medIdx : 0;
+  // Recommended spot first. Same pick as the hero headline in buildTopPick.
+  var _bestIdx = _accessSorted.indexOf(bestAccessSpot(_accessSorted, _cardsAtMouth));
   if (_bestIdx > 0) {
     // Move best spot to front
     var _best = _accessSorted.splice(_bestIdx, 1)[0];
@@ -4080,10 +4103,7 @@ function updateMethods(fc,tc,sc,flow,wt){
     cfg: _cfgUM
   });
 
-  // Adapt lure copy to species and conditions, then load photos
   setTimeout(function(){
-    var _sp = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
-    try { adaptLurePanel(_sp, {cold:cold, high:high, low:low}); } catch(_alErr) {}
     // Read the CURRENT method from the DOM, not the closed-over m1.n. If the staging
     // override landed in the intervening 50 ms, m1.n is stale and re-rendering from it
     // silently replaced the salmon spoons with trout nymphs.
@@ -5639,23 +5659,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     cfg = Object.create(cfg);           // shadow, don't mutate the shared config
     cfg.access = _openAccess.length ? _openAccess : [];
   }
-  if (cfg.access && cfg.access.length) {
-    if (_stagingActive) {
-      var _mouthSpots = cfg.access.filter(function(a){ return a.mouth === true; });
-      bestSpot = _mouthSpots[0] || cfg.access.find(function(a){ return a.crowd === 'low'; }) || cfg.access[0];
-    } else {
-      // Fish are IN THE RIVER. Prefer in-river spots and only fall back to a mouth spot
-      // if the section has nothing else. The old chain looked for low crowd, then med,
-      // then cfg.access[0] — and on rivers where every spot is 'high' (the Ganaraska has
-      // exactly two, both high) index 0 happened to be the harbour, so the hero sent
-      // people to the mouth on the very dates the fish had left it.
-      var _inRiver = cfg.access.filter(function(a){ return a.mouth !== true; });
-      var _pool = _inRiver.length ? _inRiver : cfg.access;
-      bestSpot = _pool.find(function(a){ return a.crowd === 'low'; }) ||
-                 _pool.find(function(a){ return a.crowd === 'med'; }) ||
-                 _pool[0];
-    }
-  }
+  bestSpot = bestAccessSpot(cfg.access, _stagingActive);
 
   // Best time window
   var skyl = cloudPct >= 80 ? 'Overcast' : cloudPct >= 50 ? 'Mostly Cloudy' : cloudPct >= 20 ? 'Partly Cloudy' : 'Clear';
@@ -6118,7 +6122,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _best = null;
     _sibs.forEach(function(s) {
       var sc = getRiverConfig(s);
-      if (!sc || seasonClosureFor(sc, _trip)) return;
+      if (!sc || sectionClosedOn(sc, _trip)) return;
       recommendSpecies(sc).forEach(function(r) {
         if (!r.seasonal || (r.seasonal.quality !== 'peak' && r.seasonal.quality !== 'good')) return;
         if (_thermalStress && _TROUT.indexOf(r.name) !== -1) return;
@@ -6204,6 +6208,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   if (_driveElHide && appMode === 'expert') _driveElHide.style.display = 'none';
 
   // Confidence badge
+  var _sectionClosed = sectionClosedOn(getRiverConfig(selectedRiver), getTripDateStr());
   var _confEl = document.getElementById('tp-confidence');
   if (_confEl) {
     var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
@@ -6235,8 +6240,13 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // (live conditions already applied above)
     var _conf = scoreToConfidence(_topScore);
     var _confWords = {3:'Excellent',2:'Good',1:'Marginal',0:'Tough'};
-    _confEl.textContent = 'Conditions: ' + (_confWords[_conf.stars] || _conf.label);
-    _confEl.className = 'tp-confidence ' + _conf.cls;
+    if (_sectionClosed) {
+      _confEl.textContent = 'Closed to fishing';
+      _confEl.className = 'tp-confidence conf-tough';
+    } else {
+      _confEl.textContent = 'Conditions: ' + (_confWords[_conf.stars] || _conf.label);
+      _confEl.className = 'tp-confidence ' + _conf.cls;
+    }
     _confEl.style.display = 'inline-block';
   }
   // Drive time — show prominently below the headline
@@ -6258,7 +6268,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
     // Drive worthiness verdict — combines score and distance
     var _worthIt, _verdictCls;
-    if (_topScore >= 10 && _dt <= 60) {
+    if (_sectionClosed) {
+      _worthIt = '✕ Closed on this date'; _verdictCls = 'verdict-no';
+    } else if (_topScore >= 10 && _dt <= 60) {
       _worthIt = '\u2713 Worth the drive'; _verdictCls = 'verdict-yes';
     } else if (_topScore >= 6 && _dt <= 90) {
       _worthIt = '\u2713 Worth the drive'; _verdictCls = 'verdict-yes';
@@ -7196,66 +7208,6 @@ function methodToBaitTab(methodName) {
 }
 
 
-// Build a bait tab + panel set for a given method, inserting into btabs/bpanels containers
-function populateMethodBaits(methodName, btabsId, bpanelsId) {
-  var btabsEl   = document.getElementById(btabsId);
-  var bpanelsEl = document.getElementById(bpanelsId);
-  if (!btabsEl || !bpanelsEl) return;
-
-  var primaryTab = methodToBaitTab(methodName);
-
-  // Tabs to show for this method (always show at least the primary + one related)
-  var tabSets = {
-    dries:     ['dries', 'nymphs'],
-    streamers: ['streamers', 'nymphs'],
-    nymphs:    ['nymphs', 'dries', 'streamers'],
-    float:        ['float'],
-    lures:        ['lures'],
-    'salmon-lures': ['salmon-lures'],
-  };
-  var tabsToShow = tabSets[primaryTab] || ['nymphs'];
-
-  // Tab labels
-  var tabLabels = {nymphs:'Nymphs', dries:'Dry Flies', streamers:'Streamers', lures:'Lures & Bait', float:'Float Baits', 'salmon-lures':'Salmon Lures'};
-
-  // Build tab buttons
-  btabsEl.innerHTML = tabsToShow.map(function(t, i) {
-    return '<button class="btab' + (i===0?' active':'') + '" data-tab="' + t + '" data-container="' + bpanelsId + '">' + tabLabels[t] + '</button>';
-  }).join('');
-
-  // Clone the relevant bpanel(s) from the primary panels
-  bpanelsEl.innerHTML = '';
-  tabsToShow.forEach(function(t, i) {
-    var src = document.getElementById('p-' + t);
-    if (src) {
-      var clone = src.cloneNode(true);
-      clone.id = bpanelsId + '-p-' + t;
-      clone.className = 'bpanel' + (i===0?' active':'');
-      bpanelsEl.appendChild(clone);
-    }
-  });
-
-  // Explicitly activate first tab and panel
-  var firstBtn = btabsEl.querySelector('.btab');
-  var firstPanel = bpanelsEl.querySelector('.bpanel');
-  btabsEl.querySelectorAll('.btab').forEach(function(b){ b.classList.remove('active'); });
-  bpanelsEl.querySelectorAll('.bpanel').forEach(function(p){ p.classList.remove('active'); });
-  if (firstBtn) firstBtn.classList.add('active');
-  if (firstPanel) firstPanel.classList.add('active');
-
-  // Wire tab clicks for this method's btabs
-  btabsEl.querySelectorAll('.btab').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var tab = this.getAttribute('data-tab');
-      btabsEl.querySelectorAll('.btab').forEach(function(b){ b.classList.remove('active'); });
-      this.classList.add('active');
-      bpanelsEl.querySelectorAll('.bpanel').forEach(function(p){ p.classList.remove('active'); });
-      var target = bpanelsEl.querySelector('[id$="-p-' + tab + '"]');
-      if (target) target.classList.add('active');
-    });
-  });
-}
-
 function toggleRranker() {
   var inner = document.getElementById('rrank-inner');
   var btn   = document.getElementById('rrank-toggle-btn');
@@ -7325,65 +7277,6 @@ function renderStockingSection(riverName) {
   sec.style.display = 'block';
 }
 
-// ── LURE PANEL ADAPTER ────────────────────────────────────────────────────────
-// Re-ranks lure bait cards based on selected species and conditions
-function adaptLurePanel(species, conditions) {
-  var panel = document.getElementById('bpanels-primary');
-  if (!panel) return;
-  var activePanelClone = panel.querySelector('.bpanel.active');
-  if (!activePanelClone) return;
-
-  // Check if this is a lures panel
-  var baitLabel = document.getElementById('tg-baits-primary-lbl');
-  if (!baitLabel || !baitLabel.textContent.includes('Lure')) return;
-
-  var isSalmon = species === 'chinook' || species === 'coho';
-  var isTrout  = species === 'brown' || species === 'rainbow' || species === 'brook';
-  var isLow    = conditions && conditions.low;
-  var isCold   = conditions && conditions.cold;
-
-  // Re-rank cards: move most relevant to top
-  var cards = Array.from(activePanelClone.querySelectorAll('.bi'));
-  if (!cards.length) return;
-
-  var order = [];
-  if (isSalmon) {
-    // Salmon: spoons and larger spinners, skip small crankbaits
-    order = ['Kastmaster Spoon', 'Mepps Aglia Spinner', 'Blue Fox Vibrax Spinner', 'Rapala Original Floating'];
-  } else if (isCold) {
-    // Cold water: slow spinners, blade baits
-    order = ['Blue Fox Vibrax Spinner', 'Mepps Aglia Spinner', 'Kastmaster Spoon', 'Rapala Original Floating'];
-  } else if (isLow) {
-    // Low clear water: small spinners, natural colours
-    order = ['Mepps Aglia Spinner', 'Blue Fox Vibrax Spinner', 'Rapala Original Floating', 'Kastmaster Spoon'];
-  } else {
-    // Normal trout conditions: spinners first
-    order = ['Blue Fox Vibrax Spinner', 'Mepps Aglia Spinner', 'Rapala Original Floating', 'Kastmaster Spoon'];
-  }
-
-  var cardMap = {};
-  cards.forEach(function(c) { cardMap[c.getAttribute('data-bait-name')] = c; });
-
-  var grid = activePanelClone.querySelector('.bgrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  // Add in preferred order, then any remaining
-  order.forEach(function(name) {
-    if (cardMap[name]) {
-      var rank = order.indexOf(name) + 1;
-      cardMap[name].querySelector('.brank').textContent = rank;
-      grid.appendChild(cardMap[name]);
-      delete cardMap[name];
-    }
-  });
-  // Append any remaining cards not in the order list
-  Object.values(cardMap).forEach(function(c, i) {
-    c.querySelector('.brank').textContent = order.length + i + 1;
-    grid.appendChild(c);
-  });
-}
-
 // ── CONFIDENCE SCORE ──────────────────────────────────────────────────────────
 
 // ── LIVE CONDITIONS SCORING ───────────────────────────────────────────────────
@@ -7426,36 +7319,6 @@ async function fetchLandingWeather(lat, lng) {
     var cloudPct = data.hourly && data.hourly.cloudcover       ? data.hourly.cloudcover[hour]       : null;
     return { tempC: tempC, cloudPct: cloudPct };
   } catch(e) { return null; }
-}
-
-// ── BAIT SHOW MORE ────────────────────────────────────────────────────────────
-function applyBaitShowMore(panel, showCount) {
-  var grid = panel.querySelector('.bgrid');
-  if (!grid) return;
-  var items = Array.from(grid.querySelectorAll('.bi'));
-  if (items.length <= showCount) return; // nothing to hide
-
-  // Hide items beyond showCount
-  items.forEach(function(item, i) {
-    if (i >= showCount) item.style.display = 'none';
-  });
-
-  // Add "Show more" button after grid
-  var hiddenCount = items.length - showCount;
-  var btn = document.createElement('button');
-  btn.className = 'bait-show-more';
-  btn.textContent = 'Show ' + hiddenCount + ' more \u25b8';
-  btn.addEventListener('click', function() {
-    var expanded = btn.getAttribute('data-expanded') === 'true';
-    items.forEach(function(item, i) {
-      if (i >= showCount) item.style.display = expanded ? 'none' : '';
-    });
-    btn.setAttribute('data-expanded', String(!expanded));
-    btn.textContent = expanded
-      ? 'Show ' + hiddenCount + ' more \u25b8'
-      : 'Show fewer \u25be';
-  });
-  panel.appendChild(btn);
 }
 
 // ── SPECIES GRID — annotate pre-run migratory species ────────────────────────
