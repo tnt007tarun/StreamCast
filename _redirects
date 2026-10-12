@@ -1,0 +1,6 @@
+# Repo docs are published with the site because the repo root is the Pages output
+# directory. Redirect them home so they can't be read on herefishyfishy.ca.
+# Redirects take precedence over static files on Cloudflare Pages.
+/CLAUDE.md          /  301
+/README.md          /  301
+/assets/README.md   /  301

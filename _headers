@@ -1,0 +1,7 @@
+# Belt and braces: if any repo doc is ever served, keep it out of search results.
+/CLAUDE.md
+  X-Robots-Tag: noindex, nofollow
+/README.md
+  X-Robots-Tag: noindex, nofollow
+/assets/README.md
+  X-Robots-Tag: noindex, nofollow

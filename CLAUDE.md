@@ -28,6 +28,7 @@ build, and the Cloudflare check on the PR links to it.
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
 | `guides/*/index.html`, `rivers/*/index.html`, `about/` | Hand-written static pages, each self-contained with its own `<style>` |
 | `sitemap.xml`, `llms.txt`, `robots.txt` | Keep in sync when pages are added |
+| `_redirects`, `_headers` | Cloudflare Pages config. They keep repo docs (`CLAUDE.md`, the READMEs) off the live site and out of search. Add any new repo-only doc to both |
 | `images/`, `video/` | Photos (WebP for pages, JPG kept for og:image) and short clips |
 
 The lake-temperature Cloudflare Worker (`worker.js`) lives outside this repo.
