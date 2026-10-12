@@ -3489,14 +3489,15 @@ function goBack(){
 
     // Set global state
     selectedRiver      = _river; // URLSearchParams.get() already decodes
-    selectedSpecies    = _sp ? [_sp] : [];
+    // Links can carry more than one species: ?species=steelhead,chinook
+    selectedSpecies    = _sp ? _sp.split(',').map(function(x){ return x.trim(); }).filter(Boolean) : [];
     selectedTechFamily = [];
     appMode            = 'expert';
 
     // Pre-select species button visually
     if (_sp) {
       document.querySelectorAll('.species-btn').forEach(function(b) {
-        b.classList.toggle('active', b.getAttribute('data-value') === _sp);
+        b.classList.toggle('active', selectedSpecies.indexOf(b.getAttribute('data-value')) !== -1);
       });
     }
 
@@ -3739,6 +3740,24 @@ function renderTechniquePillars(spec) {
   try { applyCatchReleaseNotice(spec.shownSpecies, spec.cfg); } catch(e) {}
 }
 
+// Which selected species decides the gear. The method code used to read only
+// selectedSpecies[0], so "Steelhead + Chinook" was judged on steelhead alone and the
+// Chinook was ignored. Salmon lead (their staging phase changes the method), then
+// steelhead, then whatever was picked first. Species the section can't hold are skipped.
+function methodSpeciesKey(sectionName) {
+  var sel = (typeof selectedSpecies !== 'undefined' && selectedSpecies) ? selectedSpecies : [];
+  var cfg = (typeof getRiverConfig === 'function' && sectionName) ? getRiverConfig(sectionName) : null;
+  var has = function(k) {
+    var nm = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'}[k];
+    return !cfg || !cfg.species || !nm || cfg.species.indexOf(nm) !== -1;
+  };
+  var order = ['chinook', 'coho', 'steelhead'];
+  for (var i = 0; i < order.length; i++) {
+    if (sel.indexOf(order[i]) !== -1 && has(order[i])) return order[i];
+  }
+  return sel[0] || '';
+}
+
 function salmonMethodMode(opts) {
   opts = opts || {};
   var speciesKey = opts.speciesKey || null;
@@ -3748,7 +3767,8 @@ function salmonMethodMode(opts) {
   var blocked    = !!opts.migratoryBlocked;
 
   var isSalmon = speciesKey === 'chinook' || speciesKey === 'coho';
-  if (!isSalmon) return null;
+  var isSteelhead = speciesKey === 'steelhead';
+  if (!isSalmon && !isSteelhead) return null;
   // The angler forced a gear family — respect their kit over our preference.
   if (fam === 'fly' || fam === 'spin') return null;
   // Species can't physically reach this section, so we're recommending a fallback
@@ -3756,6 +3776,9 @@ function salmonMethodMode(opts) {
   if (blocked) return null;
   // Artificial lures only: roe, beads and worms are illegal, so no float recommendation.
   if (cfg && cfg.artificialOnly) return null;
+  // Steelhead in a river are a float-fishing fish. The staging-spoons call is a salmon
+  // phase, so it only applies when the deciding species is a salmon.
+  if (isSteelhead) return 'float';
   return staging ? 'spin' : 'float';
 }
 
@@ -3774,7 +3797,7 @@ function updateMethods(fc,tc,sc,flow,wt){
   var m1,m2,m3;
 
   // Species context — drives method choice when no technique family is forced
-  var _sp = selectedSpecies.length > 0 ? selectedSpecies[0] : '';
+  var _sp = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
   var isSalmonSp = _sp === 'chinook' || _sp === 'coho';
   var isResidentTrout = _sp === 'brown' || _sp === 'rainbow' || _sp === 'brook';
   var warmEnoughForDries = wt != null && wt >= 10;
@@ -3997,13 +4020,14 @@ function updateMethods(fc,tc,sc,flow,wt){
     fam = 'spin';
   } else if (_salmonMode === 'float') {
     var _fDepth = high ? 'Run deeper and heavier. High water pushes fish to the edges.'
-                : low  ? 'Downsize and lengthen your leader. Low, clear water makes salmon spooky.'
+                : low  ? 'Downsize and lengthen your leader. Low, clear water makes fish spooky.'
                 : 'Set the float so the bait drifts just above the bottom.';
     var _fWhere = high ? 'Fish: Slower edge water, seams, back eddies'
                 : low  ? 'Fish: Deepest pools and tailouts'
                 : 'Fish: Deep pools, tailouts, current seams';
+    var _fishWord = _sp === 'steelhead' ? 'steelhead' : 'salmon';
     m1 = {n:'Float Fishing · Roe & Beads',
-          d:'For salmon in the river, drift roe bags or beads under a float through holding water. This is the most productive salmon method on Ontario rivers.',
+          d:'For ' + _fishWord + ' in the river, drift roe bags or beads under a float through holding water. This is the most productive ' + _fishWord + ' method on Ontario rivers.',
           tip:_fDepth + ' Cast upstream, keep the line tight and watch for the float to dip. That’s your bite.',
           c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>' + _fWhere + '</span>'};
     m2 = {n:'Bottom Bouncing',
@@ -4011,8 +4035,8 @@ function updateMethods(fc,tc,sc,flow,wt){
           tip:'Use enough weight to feel the bottom every other tap. Keep the rod tip high, follow the drift, and set on any pause or tick.',
           c:'<span>Bait: Roe, beads, yarn</span><span>Add split shot to reach bottom</span><span>Fish: Fast runs, deep pockets</span>'};
     m3 = {n:'Swung Streamers / Spoons',
-          d:'Swing large streamers or cast spoons through runs to trigger aggressive salmon. Usually less consistent than float fishing, but it can be the better choice on fresh, active fish.',
-          tip:'Take one step downstream after each cast and cover the run systematically. Active salmon will be somewhere in the run, and you need to find them.',
+          d:'Swing large streamers or cast spoons through runs to trigger aggressive fish. Usually less consistent than float fishing, but it can be the better choice on fresh, active fish.',
+          tip:'Take one step downstream after each cast and cover the run systematically. Active fish will be somewhere in the run, and you need to find them.',
           c:'<span>Lures: Spoons, large streamers</span><span>Swing across current</span><span>Best on fresh-run fish</span>'};
   }
 
@@ -4058,7 +4082,7 @@ function updateMethods(fc,tc,sc,flow,wt){
 
   // Adapt lure copy to species and conditions, then load photos
   setTimeout(function(){
-    var _sp = selectedSpecies.length > 0 ? selectedSpecies[0] : '';
+    var _sp = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
     try { adaptLurePanel(_sp, {cold:cold, high:high, low:low}); } catch(_alErr) {}
     // Read the CURRENT method from the DOM, not the closed-over m1.n. If the staging
     // override landed in the intervening 50 ms, m1.n is stale and re-rendering from it
@@ -4425,14 +4449,13 @@ async function renderResults(){
   // staging *zone* is a property of the river; being in a staging *phase* is a property
   // of the date, and only the latter should change the recommended method.
   (function(){
-    var _sk = selectedSpecies && selectedSpecies[0];
-    var _isSalmonTarget = _sk === 'chinook' || _sk === 'coho';
-    if (!_isSalmonTarget) return;
-    if (_stagingModeActive) {
-      topMethod = 'Spinning · Spoons & Lures';   // fish still in the lake
-    } else if (window._salmonInRiver) {
-      topMethod = 'Float Fishing · Roe & Beads'; // fish in the river
-    }
+    var _sk = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
+    var _mm = salmonMethodMode({ speciesKey:_sk, fam:(selectedTechFamily[0]||''), cfg:cfg,
+      stagingModeActive:_stagingModeActive, migratoryBlocked:window._migratoryBlockedSection });
+    // Same decision as the hero and the Technique panel. This tile used to keep its own
+    // rule (float only if window._salmonInRiver), so it could disagree with both.
+    if (_mm === 'spin')  topMethod = 'Spinning · Spoons & Lures';   // fish still in the lake
+    if (_mm === 'float') topMethod = 'Float Fishing · Roe & Beads'; // fish in the river
   })();
   document.getElementById("sum-method").textContent=topMethod;
   document.getElementById("sum-method-note").textContent="Current pick";
@@ -5691,7 +5714,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Same decision as the Technique panel, from the same function — see salmonMethodMode.
   (function(){
     var _mode = salmonMethodMode({
-      speciesKey: selectedSpecies && selectedSpecies[0],
+      speciesKey: methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : ''),
       fam: _fam, cfg: cfg,
       stagingModeActive: _stagingModeActive,
       migratoryBlocked: window._migratoryBlockedSection
@@ -6783,7 +6806,8 @@ function autoSelectBaitTab() {
   var topMethod = document.getElementById('m1n') ? document.getElementById('m1n').textContent : '';
 
   // Chinook or Coho at a staging zone → salmon lures panel
-  var _isSalmonSp = selectedSpecies.length > 0 && (selectedSpecies[0] === 'chinook' || selectedSpecies[0] === 'coho');
+  var _mk = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
+  var _isSalmonSp = _mk === 'chinook' || _mk === 'coho';
   // Phase, not geography — a staging ZONE is permanent, a staging PHASE is not. This
   // forced the salmon-lures panel year-round on every mouth section.
   if (_isSalmonSp && _stagingModeActive && (fam === 'spin' || fam === '')) {
