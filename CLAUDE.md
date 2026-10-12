@@ -61,6 +61,7 @@ Technique panel and the summary tile each kept their own rule and disagreed.
 - Gear and method: `methodSpeciesKey(section)` plus `salmonMethodMode()`. **Never read
   `selectedSpecies[0]` for a decision.** The user can select several species.
 - If two parts of the UI show the same idea, they must call the same function.
+- Recommended access spot: `bestAccessSpot(access, atMouth)`. The hero headline and the access cards both use it.
 
 ### Section names are keys
 Names like `"Ganaraska River — Lower (Lake to CNR Bridge)"` are used in URLs, Umami
@@ -128,6 +129,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    `adaptLurePanel` (no-op: `#bpanels-primary` does not exist) and `assets/Test`. **`#bait-source` is NOT dead.**
    It is hidden, but `renderBaitPillar()` reads its cards to build the Bait pillar. Keep it.
 6. **Thumbnails:** every `maxresdefault.jpg` swapped to `hqdefault.jpg` in the same PR (none left).
+   Also in #66: Rouge Marsh removed from the Rouge mouth section (warmwater only; it ranked #1 on crowd alone).
 7. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine

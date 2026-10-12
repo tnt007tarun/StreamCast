@@ -525,6 +525,24 @@ function allAccessClosed(cfg, dateStr) {
   if (!cfg || !cfg.access || !cfg.access.length || !dateStr) return false;
   return !cfg.access.some(function(a){ return isAccessOpen(a, dateStr); });
 }
+// The recommended access spot, shared by the hero headline and the access cards so they
+// never name different spots. Pass open spots only.
+// Staging: the mouth. Otherwise fish are IN THE RIVER, so prefer in-river spots and only
+// fall back to a mouth spot if the section has nothing else. Picking by crowd alone sent
+// people to the harbour after the fish had left it (the Ganaraska has two spots, both
+// 'high', and index 0 is the harbour).
+function bestAccessSpot(access, atMouth) {
+  if (!access || !access.length) return null;
+  if (atMouth) {
+    return access.filter(function(a){ return a.mouth === true; })[0] ||
+           access.find(function(a){ return a.crowd === 'low'; }) || access[0];
+  }
+  var inRiver = access.filter(function(a){ return a.mouth !== true; });
+  var pool = inRiver.length ? inRiver : access;
+  return pool.find(function(a){ return a.crowd === 'low'; }) ||
+         pool.find(function(a){ return a.crowd === 'med'; }) ||
+         pool[0];
+}
 // Closed to fishing on the date: season shut, or every access point closed. Anything that
 // rates a section (the Conditions pill, the drive verdict) checks this first, because a
 // water rating on closed water reads as a go.
@@ -1479,7 +1497,6 @@ var RIVER_CONFIG = {
     access:[
       {name:'Rouge Beach · River Mouth',mouth:true,loc:'Rouge Beach Park · Pickering / Scarborough border',crowd:'high',desc:'Entry point for migratory Chinook, steelhead, and brown trout from Lake Ontario. Casting spoons and spinners around the rocks and under railway bridges near the mouth is highly productive during seasonal runs. Spring pike fishing in the shallow marsh areas with shiners or crankbaits.'},
       {name:'CNR Railway Bridge Area',loc:'Below CNR bridge · Lower Rouge',crowd:'high',desc:'Fish concentrate below structures near the mouth during the runs. Good holding water for steelhead in spring and Chinook in fall. Heavy pressure on peak run weekends, so arrive early.'},
-      {name:'Rouge Marsh',loc:'Rouge Beach · Marsh habitat',crowd:'med',desc:'Warmwater and pike fishery only, and not a productive spot for trout or salmon. The shallow marsh holds good spring pike, largemouth bass, black crappie and white bass year-round. Cast crankbaits and swimbaits along the weedy edges. For salmon and steelhead, go to the river mouth or the CNR bridge area instead.'}
     ]
   },
   'Rouge River — Mid-Section (Rouge National Urban Park)': {
@@ -2452,7 +2469,6 @@ var ACCESS_COORDS = {
   "Rouge River — Marsh & Mouth (Lake Ontario)": [
     {lat:43.8034,lng:-79.1312}, // Rouge Beach · River Mouth  [mouth]
     {lat:43.8056,lng:-79.1323}, // CNR Railway Bridge Area
-    {lat:43.805,lng:-79.132}, // Rouge Marsh
   ],
   "Rouge River — Mid-Section (Rouge National Urban Park)": [
     {lat:43.8289,lng:-79.1456}, // Rouge National Urban Park · Main Access
@@ -2710,6 +2726,7 @@ function renderRiverUI(cfg) {
     }
     if (_accessSorted.length) console.warn('access: fell back for "' + _apName + '"');
   }
+  var _cardsAtMouth = false;
   (function() {
     var _stgSp = window._effectiveRecommendedSpecies;
     if (!_stgSp && selectedSpecies && selectedSpecies.length === 1) {
@@ -2724,12 +2741,10 @@ function renderRiverUI(cfg) {
     if (!shouldPointAtMouth(_stgSp, getTripDateStr())) return;
     var _mouthOnly = _accessSorted.filter(function(a){ return a.mouth === true; });
     if (_mouthOnly.length > 0) _accessSorted = _mouthOnly;
+    _cardsAtMouth = true;
   })();
-  // Find the bestSpot index — same logic as buildTopPick (first low crowd, else first med)
-  var _bestIdx = 0;
-  var _lowIdx = _accessSorted.findIndex(function(a){ return a.crowd === 'low'; });
-  var _medIdx = _accessSorted.findIndex(function(a){ return a.crowd === 'med'; });
-  _bestIdx = _lowIdx !== -1 ? _lowIdx : _medIdx !== -1 ? _medIdx : 0;
+  // Recommended spot first. Same pick as the hero headline in buildTopPick.
+  var _bestIdx = _accessSorted.indexOf(bestAccessSpot(_accessSorted, _cardsAtMouth));
   if (_bestIdx > 0) {
     // Move best spot to front
     var _best = _accessSorted.splice(_bestIdx, 1)[0];
@@ -5644,23 +5659,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     cfg = Object.create(cfg);           // shadow, don't mutate the shared config
     cfg.access = _openAccess.length ? _openAccess : [];
   }
-  if (cfg.access && cfg.access.length) {
-    if (_stagingActive) {
-      var _mouthSpots = cfg.access.filter(function(a){ return a.mouth === true; });
-      bestSpot = _mouthSpots[0] || cfg.access.find(function(a){ return a.crowd === 'low'; }) || cfg.access[0];
-    } else {
-      // Fish are IN THE RIVER. Prefer in-river spots and only fall back to a mouth spot
-      // if the section has nothing else. The old chain looked for low crowd, then med,
-      // then cfg.access[0] — and on rivers where every spot is 'high' (the Ganaraska has
-      // exactly two, both high) index 0 happened to be the harbour, so the hero sent
-      // people to the mouth on the very dates the fish had left it.
-      var _inRiver = cfg.access.filter(function(a){ return a.mouth !== true; });
-      var _pool = _inRiver.length ? _inRiver : cfg.access;
-      bestSpot = _pool.find(function(a){ return a.crowd === 'low'; }) ||
-                 _pool.find(function(a){ return a.crowd === 'med'; }) ||
-                 _pool[0];
-    }
-  }
+  bestSpot = bestAccessSpot(cfg.access, _stagingActive);
 
   // Best time window
   var skyl = cloudPct >= 80 ? 'Overcast' : cloudPct >= 50 ? 'Mostly Cloudy' : cloudPct >= 20 ? 'Partly Cloudy' : 'Clear';
