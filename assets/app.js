@@ -4088,10 +4088,7 @@ function updateMethods(fc,tc,sc,flow,wt){
     cfg: _cfgUM
   });
 
-  // Adapt lure copy to species and conditions, then load photos
   setTimeout(function(){
-    var _sp = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
-    try { adaptLurePanel(_sp, {cold:cold, high:high, low:low}); } catch(_alErr) {}
     // Read the CURRENT method from the DOM, not the closed-over m1.n. If the staging
     // override landed in the intervening 50 ms, m1.n is stale and re-rendering from it
     // silently replaced the salmon spoons with trout nymphs.
@@ -7212,66 +7209,6 @@ function methodToBaitTab(methodName) {
 }
 
 
-// Build a bait tab + panel set for a given method, inserting into btabs/bpanels containers
-function populateMethodBaits(methodName, btabsId, bpanelsId) {
-  var btabsEl   = document.getElementById(btabsId);
-  var bpanelsEl = document.getElementById(bpanelsId);
-  if (!btabsEl || !bpanelsEl) return;
-
-  var primaryTab = methodToBaitTab(methodName);
-
-  // Tabs to show for this method (always show at least the primary + one related)
-  var tabSets = {
-    dries:     ['dries', 'nymphs'],
-    streamers: ['streamers', 'nymphs'],
-    nymphs:    ['nymphs', 'dries', 'streamers'],
-    float:        ['float'],
-    lures:        ['lures'],
-    'salmon-lures': ['salmon-lures'],
-  };
-  var tabsToShow = tabSets[primaryTab] || ['nymphs'];
-
-  // Tab labels
-  var tabLabels = {nymphs:'Nymphs', dries:'Dry Flies', streamers:'Streamers', lures:'Lures & Bait', float:'Float Baits', 'salmon-lures':'Salmon Lures'};
-
-  // Build tab buttons
-  btabsEl.innerHTML = tabsToShow.map(function(t, i) {
-    return '<button class="btab' + (i===0?' active':'') + '" data-tab="' + t + '" data-container="' + bpanelsId + '">' + tabLabels[t] + '</button>';
-  }).join('');
-
-  // Clone the relevant bpanel(s) from the primary panels
-  bpanelsEl.innerHTML = '';
-  tabsToShow.forEach(function(t, i) {
-    var src = document.getElementById('p-' + t);
-    if (src) {
-      var clone = src.cloneNode(true);
-      clone.id = bpanelsId + '-p-' + t;
-      clone.className = 'bpanel' + (i===0?' active':'');
-      bpanelsEl.appendChild(clone);
-    }
-  });
-
-  // Explicitly activate first tab and panel
-  var firstBtn = btabsEl.querySelector('.btab');
-  var firstPanel = bpanelsEl.querySelector('.bpanel');
-  btabsEl.querySelectorAll('.btab').forEach(function(b){ b.classList.remove('active'); });
-  bpanelsEl.querySelectorAll('.bpanel').forEach(function(p){ p.classList.remove('active'); });
-  if (firstBtn) firstBtn.classList.add('active');
-  if (firstPanel) firstPanel.classList.add('active');
-
-  // Wire tab clicks for this method's btabs
-  btabsEl.querySelectorAll('.btab').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var tab = this.getAttribute('data-tab');
-      btabsEl.querySelectorAll('.btab').forEach(function(b){ b.classList.remove('active'); });
-      this.classList.add('active');
-      bpanelsEl.querySelectorAll('.bpanel').forEach(function(p){ p.classList.remove('active'); });
-      var target = bpanelsEl.querySelector('[id$="-p-' + tab + '"]');
-      if (target) target.classList.add('active');
-    });
-  });
-}
-
 function toggleRranker() {
   var inner = document.getElementById('rrank-inner');
   var btn   = document.getElementById('rrank-toggle-btn');
@@ -7341,65 +7278,6 @@ function renderStockingSection(riverName) {
   sec.style.display = 'block';
 }
 
-// ── LURE PANEL ADAPTER ────────────────────────────────────────────────────────
-// Re-ranks lure bait cards based on selected species and conditions
-function adaptLurePanel(species, conditions) {
-  var panel = document.getElementById('bpanels-primary');
-  if (!panel) return;
-  var activePanelClone = panel.querySelector('.bpanel.active');
-  if (!activePanelClone) return;
-
-  // Check if this is a lures panel
-  var baitLabel = document.getElementById('tg-baits-primary-lbl');
-  if (!baitLabel || !baitLabel.textContent.includes('Lure')) return;
-
-  var isSalmon = species === 'chinook' || species === 'coho';
-  var isTrout  = species === 'brown' || species === 'rainbow' || species === 'brook';
-  var isLow    = conditions && conditions.low;
-  var isCold   = conditions && conditions.cold;
-
-  // Re-rank cards: move most relevant to top
-  var cards = Array.from(activePanelClone.querySelectorAll('.bi'));
-  if (!cards.length) return;
-
-  var order = [];
-  if (isSalmon) {
-    // Salmon: spoons and larger spinners, skip small crankbaits
-    order = ['Kastmaster Spoon', 'Mepps Aglia Spinner', 'Blue Fox Vibrax Spinner', 'Rapala Original Floating'];
-  } else if (isCold) {
-    // Cold water: slow spinners, blade baits
-    order = ['Blue Fox Vibrax Spinner', 'Mepps Aglia Spinner', 'Kastmaster Spoon', 'Rapala Original Floating'];
-  } else if (isLow) {
-    // Low clear water: small spinners, natural colours
-    order = ['Mepps Aglia Spinner', 'Blue Fox Vibrax Spinner', 'Rapala Original Floating', 'Kastmaster Spoon'];
-  } else {
-    // Normal trout conditions: spinners first
-    order = ['Blue Fox Vibrax Spinner', 'Mepps Aglia Spinner', 'Rapala Original Floating', 'Kastmaster Spoon'];
-  }
-
-  var cardMap = {};
-  cards.forEach(function(c) { cardMap[c.getAttribute('data-bait-name')] = c; });
-
-  var grid = activePanelClone.querySelector('.bgrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  // Add in preferred order, then any remaining
-  order.forEach(function(name) {
-    if (cardMap[name]) {
-      var rank = order.indexOf(name) + 1;
-      cardMap[name].querySelector('.brank').textContent = rank;
-      grid.appendChild(cardMap[name]);
-      delete cardMap[name];
-    }
-  });
-  // Append any remaining cards not in the order list
-  Object.values(cardMap).forEach(function(c, i) {
-    c.querySelector('.brank').textContent = order.length + i + 1;
-    grid.appendChild(c);
-  });
-}
-
 // ── CONFIDENCE SCORE ──────────────────────────────────────────────────────────
 
 // ── LIVE CONDITIONS SCORING ───────────────────────────────────────────────────
@@ -7442,36 +7320,6 @@ async function fetchLandingWeather(lat, lng) {
     var cloudPct = data.hourly && data.hourly.cloudcover       ? data.hourly.cloudcover[hour]       : null;
     return { tempC: tempC, cloudPct: cloudPct };
   } catch(e) { return null; }
-}
-
-// ── BAIT SHOW MORE ────────────────────────────────────────────────────────────
-function applyBaitShowMore(panel, showCount) {
-  var grid = panel.querySelector('.bgrid');
-  if (!grid) return;
-  var items = Array.from(grid.querySelectorAll('.bi'));
-  if (items.length <= showCount) return; // nothing to hide
-
-  // Hide items beyond showCount
-  items.forEach(function(item, i) {
-    if (i >= showCount) item.style.display = 'none';
-  });
-
-  // Add "Show more" button after grid
-  var hiddenCount = items.length - showCount;
-  var btn = document.createElement('button');
-  btn.className = 'bait-show-more';
-  btn.textContent = 'Show ' + hiddenCount + ' more \u25b8';
-  btn.addEventListener('click', function() {
-    var expanded = btn.getAttribute('data-expanded') === 'true';
-    items.forEach(function(item, i) {
-      if (i >= showCount) item.style.display = expanded ? 'none' : '';
-    });
-    btn.setAttribute('data-expanded', String(!expanded));
-    btn.textContent = expanded
-      ? 'Show ' + hiddenCount + ' more \u25b8'
-      : 'Show fewer \u25be';
-  });
-  panel.appendChild(btn);
 }
 
 // ── SPECIES GRID — annotate pre-run migratory species ────────────────────────

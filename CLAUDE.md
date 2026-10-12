@@ -122,11 +122,12 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    Search Console Page indexing and Manual actions.
 2. **Request indexing** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, in Search Console).
 3. **Umami species breakdown** hasn't been reviewed. The river breakdown has.
-4. **Closed-water pill:** fixed in the `claude/closed-pill` PR (awaiting merge). The pill and drive verdict read
+4. **Closed-water pill:** fixed in PR #66 (`claude/closed-pill`, awaiting merge). The pill and drive verdict read
    "Closed" via `sectionClosedOn()`, and the open-sibling fallback no longer suggests all-access-closed sections.
-5. **Dead code:** `#bait-source` panels in `index.html` and `populateMethodBaits` in `app.js`
-   are never shown. A stray `assets/Test` file is in the repo.
-6. **Old `maxresdefault.jpg` thumbnails** remain on some older pages.
+5. **Dead code:** cleaned up in the same PR. Removed `populateMethodBaits`, `applyBaitShowMore`,
+   `adaptLurePanel` (no-op: `#bpanels-primary` does not exist) and `assets/Test`. **`#bait-source` is NOT dead.**
+   It is hidden, but `renderBaitPillar()` reads its cards to build the Bait pillar. Keep it.
+6. **Thumbnails:** every `maxresdefault.jpg` swapped to `hqdefault.jpg` in the same PR (none left).
 7. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
