@@ -525,6 +525,12 @@ function allAccessClosed(cfg, dateStr) {
   if (!cfg || !cfg.access || !cfg.access.length || !dateStr) return false;
   return !cfg.access.some(function(a){ return isAccessOpen(a, dateStr); });
 }
+// Closed to fishing on the date: season shut, or every access point closed. Anything that
+// rates a section (the Conditions pill, the drive verdict) checks this first, because a
+// water rating on closed water reads as a go.
+function sectionClosedOn(cfg, dateStr) {
+  return !!(seasonClosureFor(cfg, dateStr) || allAccessClosed(cfg, dateStr));
+}
 
 // How strongly should we steer people to the river MOUTH right now?
 // Returns 8/6/3/0. Keyed on the season window LABEL, because quality alone cannot tell
@@ -719,6 +725,8 @@ function renderStagingCard(sectionName, weather) {
         }
       }
 
+      // Staging strength rates the lake, not legality. Leave a closed section's pill and verdict alone.
+      if (sectionClosedOn(getRiverConfig(selectedRiver), getTripDateStr())) return;
       var _confEl2 = document.getElementById('tp-confidence');
       if (_confEl2) {
         var _conf2 = scoreToConfidence(_newScore);
@@ -6118,7 +6126,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _best = null;
     _sibs.forEach(function(s) {
       var sc = getRiverConfig(s);
-      if (!sc || seasonClosureFor(sc, _trip)) return;
+      if (!sc || sectionClosedOn(sc, _trip)) return;
       recommendSpecies(sc).forEach(function(r) {
         if (!r.seasonal || (r.seasonal.quality !== 'peak' && r.seasonal.quality !== 'good')) return;
         if (_thermalStress && _TROUT.indexOf(r.name) !== -1) return;
@@ -6204,6 +6212,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   if (_driveElHide && appMode === 'expert') _driveElHide.style.display = 'none';
 
   // Confidence badge
+  var _sectionClosed = sectionClosedOn(getRiverConfig(selectedRiver), getTripDateStr());
   var _confEl = document.getElementById('tp-confidence');
   if (_confEl) {
     var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
@@ -6235,8 +6244,13 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // (live conditions already applied above)
     var _conf = scoreToConfidence(_topScore);
     var _confWords = {3:'Excellent',2:'Good',1:'Marginal',0:'Tough'};
-    _confEl.textContent = 'Conditions: ' + (_confWords[_conf.stars] || _conf.label);
-    _confEl.className = 'tp-confidence ' + _conf.cls;
+    if (_sectionClosed) {
+      _confEl.textContent = 'Closed to fishing';
+      _confEl.className = 'tp-confidence conf-tough';
+    } else {
+      _confEl.textContent = 'Conditions: ' + (_confWords[_conf.stars] || _conf.label);
+      _confEl.className = 'tp-confidence ' + _conf.cls;
+    }
     _confEl.style.display = 'inline-block';
   }
   // Drive time — show prominently below the headline
@@ -6258,7 +6272,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
     // Drive worthiness verdict — combines score and distance
     var _worthIt, _verdictCls;
-    if (_topScore >= 10 && _dt <= 60) {
+    if (_sectionClosed) {
+      _worthIt = '✕ Closed on this date'; _verdictCls = 'verdict-no';
+    } else if (_topScore >= 10 && _dt <= 60) {
       _worthIt = '\u2713 Worth the drive'; _verdictCls = 'verdict-yes';
     } else if (_topScore >= 6 && _dt <= 90) {
       _worthIt = '\u2713 Worth the drive'; _verdictCls = 'verdict-yes';

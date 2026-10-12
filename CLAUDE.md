@@ -50,7 +50,7 @@ The lake-temperature Cloudflare Worker (`worker.js`) lives outside this repo.
   the claude.ai project. If it isn't available, ask TJ to attach the PDF. Never work from memory.
 - Season bands: `all-year`, `extended` (4th Sat in April to Dec 31), `standard` (4th Sat in
   April to Sept 30). Sanctuaries go in `access[].closed`.
-- `speciesFishableIn()`, `seasonClosureFor()`, `accessClosureOn()` and `allAccessClosed()` decide
+- `speciesFishableIn()`, `seasonClosureFor()`, `accessClosureOn()`, `allAccessClosed()` and `sectionClosedOn()` decide
   legality. Use them. Don't write a new check.
 - Before changing seasons or closures, run a date-by-date check of every access spot against
   the regulations (see PR #60 for the approach).
@@ -103,7 +103,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-11)
+## Current state (updated 2026-10-12)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -122,7 +122,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    Search Console Page indexing and Manual actions.
 2. **Request indexing** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, in Search Console).
 3. **Umami species breakdown** hasn't been reviewed. The river breakdown has.
-4. **"Conditions: Good" pill** still shows on legally closed water. It rates the water, not legality.
+4. **Closed-water pill:** fixed in the `claude/closed-pill` PR (awaiting merge). The pill and drive verdict read
+   "Closed" via `sectionClosedOn()`, and the open-sibling fallback no longer suggests all-access-closed sections.
 5. **Dead code:** `#bait-source` panels in `index.html` and `populateMethodBaits` in `app.js`
    are never shown. A stray `assets/Test` file is in the repo.
 6. **Old `maxresdefault.jpg` thumbnails** remain on some older pages.
