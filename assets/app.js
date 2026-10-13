@@ -264,6 +264,8 @@ function getSalmonPhase(groupKey, month, day) {
 // lakeTemp may be null; if so we fall back to calendar-only for spring.
 function getSteelheadPhase(month, day, lakeTemp) {
   var m = _mfrac(month, day);
+  // Fall staging: steelhead stage off the mouths from September (TJ, 2026-10-13), then run.
+  if (m >= 8.0 && m < 8.7) return {active:true, intensity:0.4, label:"Fall staging", mode:"stage"};
   // Fall run: late Sept - Oct, following salmon
   if (m >= 8.7 && m < 10.3) return {active:true, intensity:0.6, label:"Fall run", mode:"run"};
   // Winter trickle: Nov - Feb
@@ -453,7 +455,7 @@ function speciesFishableIn(sectionName, speciesName, dateStr) {
   if (!c || !c.species || c.species.indexOf(speciesName) === -1) return false;
   if (seasonClosureFor(c, dateStr)) return false;
   if (allAccessClosed(c, dateStr)) return false;
-  var s = getCurrentSeason(speciesName, dateStr);
+  var s = getCurrentSeason(speciesName, dateStr, sectionName);
   return !!s && (s.quality === 'peak' || s.quality === 'good');
 }
 // Other sections of the same river system, in RIVER_SECTIONS order.
@@ -625,6 +627,11 @@ var _stagingModeActive = false;
 // is authoritative because it accounts for lake temperature, not just the calendar.
 var _stagingPhaseResolved = false;
 function applyStagingTechniqueOverride() {
+  // Spoons at the mouth are for staging fish. If the angler picked only non-migratory species
+  // (e.g. Brown Trout in August), the Technique panel stays on their species. Both callers
+  // go through here, so neither can skip this.
+  var _selST = (typeof selectedSpecies !== 'undefined' && selectedSpecies) ? selectedSpecies : [];
+  if (_selST.length && !_selST.some(function(k){ return k === 'chinook' || k === 'coho' || k === 'steelhead'; })) return;
   var _cfgST = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
   renderTechniquePillars({
     name: 'Throwing spoons at the river mouth',
@@ -1025,7 +1032,7 @@ var RIVER_CONFIG = {
     // Erindale and the river mouth — and never sends anyone to water salmon cannot reach.
     loc:"Norval Dam to Port Credit / Lake Ontario",
     driveTime:{ toronto:20,mississauga:15,brampton:10,oakville:5,burlington:15,milton:10,hamilton:20,guelph:25,cambridge:30,kitchener:35,waterloo:40,orangeville:30,markham:25,"richmond hill":25,vaughan:20,ajax:35,pickering:30,"north york":20,scarborough:25,etobicoke:15,oshawa:40,whitby:40,bowmanville:50,clarington:55,newcastle:55,cobourg:75,"port hope":70,barrie:50,collingwood:60,"owen sound":80 },
-    species:["Steelhead","Chinook Salmon","Coho Salmon"],
+    species:["Steelhead","Chinook Salmon","Coho Salmon","Brown Trout"],
     active:true,
     regs:[{rule:"Check the regulations. This section has specific rules around the river mouth",icon:"📋"}],
     methods:["float","spin"],
@@ -1107,7 +1114,7 @@ var RIVER_CONFIG = {
     lat:43.670, lng:-79.490,
     loc:"Old Mill area north to Eglinton Avenue (Etienne Brulé Park)",
     driveTime:{ toronto:20,mississauga:40,brampton:30,oakville:30,burlington:50,milton:40,hamilton:60,guelph:70,cambridge:85,kitchener:95,waterloo:95,orangeville:60,markham:25,"richmond hill":30,vaughan:25,ajax:50,pickering:40,"north york":15,scarborough:25,etobicoke:15,oshawa:65,whitby:55,bowmanville:80,clarington:85,newcastle:85,cobourg:125,"port hope":115,barrie:90,collingwood:120,"owen sound":170 },
-    species:["Steelhead","Chinook Salmon"],
+    species:["Steelhead","Chinook Salmon","Brown Trout"],
     active:true,
     regs:[{rule:"TRCA managed. Check the regulations",icon:"📋"}],
     methods:["float","spin"],
@@ -1381,7 +1388,8 @@ var RIVER_CONFIG = {
     lat:44.100, lng:-80.750,
     loc:'Rocky Saugeen, North Saugeen, South Saugeen and Beatty Saugeen, above Hanover',
     driveTime:{'toronto':145,'north york':130,'scarborough':140,'etobicoke':135,'markham':130,'richmond hill':125,'vaughan':120,'ajax':160,'pickering':155,'mississauga':140,'brampton':110,'oakville':125,'burlington':130,'milton':105,'hamilton':130,'guelph':85,'cambridge':100,'kitchener':85,'waterloo':80,'orangeville':65,'oshawa':170,'whitby':165,'bowmanville':185,'clarington':195,'newcastle':195,'cobourg':230,'port hope':220,'barrie':100,'collingwood':70,'owen sound':60},
-    species:['Brook Trout','Brown Trout','Rainbow Trout'],
+    species:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
+    residentBrowns:true, // steelhead reach here in small numbers; the browns are stream residents,
     active:true,
     regs:[{rule:'FMZ 16. Check specific tributary regulations. The Rocky Saugeen is particularly sensitive, so practise catch-and-release and disturb as little as you can.',icon:'📋'}],
     methods:['fly','spin'],
@@ -2591,6 +2599,43 @@ function getAccessFlowNote(riverName, spotIndex, flow) {
 }
 
 // ── GET CONFIG FOR SELECTED RIVER ─────────────────────────────────────────────
+// Every config knows its own section name, so code holding only a cfg (recommendSpecies on a
+// sibling section, a shadowed cfg in buildTopPick) can still ask section-specific questions.
+Object.keys(RIVER_CONFIG).forEach(function(k){ if (RIVER_CONFIG[k]) RIVER_CONFIG[k]._section = k; });
+
+// ── LAKE-RUN BROWN TROUT ─────────────────────────────────────────────────────
+// Below the first impassable barrier (Norval on the Credit, Whitevale on Duffins, Milne
+// Dam on the Rouge, above Bolton on the Humber...), browns are lake-run fish, not stream
+// residents. The section species lists already follow those barriers: a section that
+// lists Steelhead or salmon is below one. Timing is TJ's (2026-10-13): they push in with
+// cooler water in October and November, earlier (September) on the FMZ 17 rivers, hold
+// over through winter, spike again in March and April, and are out in the lake in summer.
+// TJ also confirmed lake-run browns in the Credit and the Humber. On the Rouge they are minimal,
+// so the Rouge mouth does not list them.
+var LAKE_RUN_BROWN_WINDOWS = [
+  { months: [9,10], quality: "good",   label: "Fall Run",   note: "Lake-run browns push in as the water cools. Drift roe bags under a float." },
+  { months: [11,1], quality: "good",   label: "Winter",     note: "Lake-run browns hold over in the deeper pools through winter. Slow float with roe." },
+  { months: [2,3],  quality: "good",   label: "Spring Run", note: "A second push of lake-run browns in March and April, alongside the steelhead." },
+  { months: [4,7],  quality: "absent", label: "Lake",       note: "Lake-run browns are out in the lake. They enter the river in October and November." }
+];
+var LAKE_RUN_BROWN_SEPT = {
+  early: { months: [8,8], quality: "good",   label: "Early Fall Run", note: "On the eastern rivers lake-run browns can start in September. Drift roe bags under a float." },
+  late:  { months: [8,8], quality: "absent", label: "Lake",           note: "Lake-run browns are out in the lake. They enter the river in October and November." }
+};
+function sectionBaseName(section) { return String(section || '').split(',')[0].trim(); }
+function isLakeRunBrownSection(section) {
+  var c = RIVER_CONFIG[sectionBaseName(section)];
+  var sp = (c && c.species) || [];
+  if (!c || c.residentBrowns) return false; // a few migratory fish pass, but the browns are residents
+  return sp.indexOf('Brown Trout') !== -1 &&
+    sp.some(function(n){ return n === 'Steelhead' || n === 'Chinook Salmon' || n === 'Coho Salmon'; });
+}
+function lakeRunBrownWindows(section) {
+  var regs = (typeof getRiverRegs === 'function') ? getRiverRegs(sectionBaseName(section)) : null;
+  var fmz17 = !!(regs && regs.zone === 'FMZ 17');
+  return LAKE_RUN_BROWN_WINDOWS.concat([fmz17 ? LAKE_RUN_BROWN_SEPT.early : LAKE_RUN_BROWN_SEPT.late]);
+}
+
 function getRiverConfig(riverName) {
   if (!riverName) return RIVER_CONFIG["default"];
   var name = riverName.split(",")[0].trim();
@@ -3827,7 +3872,9 @@ function salmonMethodMode(opts) {
   var blocked    = !!opts.migratoryBlocked;
 
   var isSalmon = speciesKey === 'chinook' || speciesKey === 'coho';
-  var isSteelhead = speciesKey === 'steelhead';
+  // Lake-run browns are fished like steelhead: roe bags drifted under a float (TJ).
+  var isSteelhead = speciesKey === 'steelhead' ||
+    (speciesKey === 'brown' && typeof selectedRiver !== 'undefined' && isLakeRunBrownSection(selectedRiver));
   if (!isSalmon && !isSteelhead) return null;
   // The angler forced a gear family — respect their kit over our preference.
   if (fam === 'fly' || fam === 'spin') return null;
@@ -3836,8 +3883,8 @@ function salmonMethodMode(opts) {
   if (blocked) return null;
   // Artificial lures only: roe, beads and worms are illegal, so no float recommendation.
   if (cfg && cfg.artificialOnly) return null;
-  // Steelhead in a river are a float-fishing fish. The staging-spoons call is a salmon
-  // phase, so it only applies when the deciding species is a salmon.
+  // Steelhead and lake-run browns in a river are float-fishing fish. The staging-spoons
+  // call is a salmon phase, so it only applies when the deciding species is a salmon.
   if (isSteelhead) return 'float';
   return staging ? 'spin' : 'float';
 }
@@ -5063,15 +5110,22 @@ function getTripDateStr() {
   return (di && di.value) ? di.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
 }
 
-function getCurrentSeason(speciesName, dateStr) {
+function getCurrentSeason(speciesName, dateStr, section) {
   // Use trip date if provided, else today
   var now = dateStr ? new Date(dateStr + 'T12:00:00') : new Date();
   var month = now.getMonth(); // 0-indexed
   var data = SPECIES_SEASONS[speciesName];
   if (!data) return null;
+  var windows = data.windows;
+  // Brown Trout below a barrier are lake-run fish with their own calendar. Section defaults
+  // to the one being viewed; callers looking at another section pass it.
+  if (speciesName === 'Brown Trout') {
+    var sec = (section !== undefined) ? section : (typeof selectedRiver !== 'undefined' ? selectedRiver : null);
+    if (sec && isLakeRunBrownSection(sec)) windows = lakeRunBrownWindows(sec);
+  }
   // Find the window that contains current month
-  for (var i = 0; i < data.windows.length; i++) {
-    var w = data.windows[i];
+  for (var i = 0; i < windows.length; i++) {
+    var w = windows[i];
     var start = w.months[0], end = w.months[1];
     if (start <= end) {
       if (month >= start && month <= end) return w;
@@ -5080,7 +5134,7 @@ function getCurrentSeason(speciesName, dateStr) {
       if (month >= start || month <= end) return w;
     }
   }
-  return data.windows[0]; // fallback
+  return windows[0]; // fallback
 }
 
 function getUpcomingPeak(speciesName) {
@@ -6028,6 +6082,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         } else if (_sp2 && _sp2.active && _sp2.mode === 'run') {
           _stagingHeadline = '<em>' + _tgtName + '</em> are running into the river now. '
             + 'See the staging report below, and fish the lower river on rising water.';
+        } else if (/Steelhead/i.test(_tgtName)) {
+          // Steelhead have their own timing: out in the lake all summer, staging off the
+          // mouths from September. The salmon copy below gave them a late-July timeline.
+          _stagingHeadline = '<em>Steelhead</em> are out in the lake. They start staging off the river mouths '
+            + 'in September and push into the river through the fall.';
         } else {
           // Pre-staging: too early for salmon to be running, but early Chinook can show
           // near east harbour mouths opportunistically in June under cold lake temps.
@@ -6056,6 +6115,18 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     headlineHtml = _stagingHeadline;
     // Override method accordion to show spinning/harbour setup instead of fly methods
     setTimeout(applyStagingTechniqueOverride, 50);
+  } else if (fallbackSpecies && targetName && seasonal && seasonal.quality === 'slow'
+             && _riverSpecies.indexOf(targetName) !== -1) {
+    // Slow season: the species IS here but conditions discourage fishing. This sat after
+    // the generic fallback branch below and never ran, so slow fish (lake-run browns
+    // holding over in winter) were reported as "aren't here yet".
+    var _slowNote = seasonal.note ? seasonal.note.split('.')[0] + '.' : 'Fishing is slow this time of year.';
+    headlineHtml = '<em>' + targetName + '</em> are here, but it’s tough going. '
+      + _slowNote + ' '
+      + 'Try <em>' + fallbackSpecies + '</em> instead: '
+      + 'head to <em>' + spotName + '</em>, '
+      + timeShort.toLowerCase() + ', '
+      + bringPhrase + '.';
   } else if (fallbackSpecies && targetName) {
     // Distinguish geographic mismatch from seasonal absence
     var _geoMismatch = _riverSpecies.indexOf(targetName) === -1;
@@ -6098,16 +6169,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Thermal stress, trout-only river — no safe recommendation possible
     headlineHtml = 'Water is <em>' + (wt || '—') + '°C</em>, above the safe limit for trout. '
       + 'Consider waiting for cooler conditions or fishing early morning before 8 AM.';
-  } else if (fallbackSpecies && targetName && seasonal && seasonal.quality === 'slow') {
-    // Slow season — species IS resident/present but conditions discourage fishing
-    // Pull the season note for the real reason (e.g. heat stress, cold water)
-    var _slowNote = seasonal.note ? seasonal.note.split('.')[0] + '.' : 'Fishing is slow this time of year.';
-    headlineHtml = '<em>' + targetName + '</em> are here, but it’s tough going. '
-      + _slowNote + ' '
-      + 'Try <em>' + fallbackSpecies + '</em> instead: '
-      + 'head to <em>' + spotName + '</em>, '
-      + timeShort.toLowerCase() + ', '
-      + bringPhrase + '.';
+  } else if (targetName && !fallbackSpecies &&
+             (_riverSpecies.indexOf(targetName) === -1 || (seasonal && seasonal.quality === 'absent'))) {
+    // Not in this section, or out of season, with nothing to suggest instead. The absent
+    // branch above set this headline but the generic one below overwrote it with
+    // "Head to <spot>... Target <species>", which sent people to the pier for lake-run
+    // browns in August and to Rouge Beach for browns that don't use it.
+    headlineHtml = _riverSpecies.indexOf(targetName) === -1
+      ? '<em>' + targetName + '</em> aren’t found in this section.'
+      : '<em>' + targetName + '</em> aren’t here yet. ' + (seasonal.note || '');
   } else if (!targetName && _multiTarget) {
     // Multi-species selection: both are on this river, name them both
     headlineHtml = 'Head to <em>' + spotName + '</em>. '
@@ -6135,7 +6205,16 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   (function() {
     var _trip = getTripDateStr();
     var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
-    var _closedHere = seasonClosureFor(cfg, _trip);
+    // Closed means the season is shut OR every access point is closed (a sanctuary such as
+    // Port Hope from Sep 1 to Oct 14). The season-only check let the hero say "Try Chinook
+    // Salmon at Port Hope Sanctuary" while the pill said Closed to fishing.
+    // Use the section's full config: cfg here is shadowed down to the open spots only, so
+    // when every spot is closed its access list is empty and reads as "nothing closed".
+    var _cfgFull = getRiverConfig(selectedRiver);
+    var _accessShut = !seasonClosureFor(cfg, _trip) && allAccessClosed(_cfgFull, _trip);
+    var _closedHere = seasonClosureFor(cfg, _trip) || (_accessShut
+      ? { band: 'access', reason: 'Every access point on this stretch is closed on this date.' } : null);
+    var _closedLead = _accessShut ? 'Every access point on this stretch is closed on this date.' : 'The season is closed on this stretch.';
     var _targetOk = targetName ? speciesFishableIn(_here, targetName, _trip) : false;
     if (!_closedHere && (!targetName || _targetOk)) return;
     if (!_closedHere && _stagingHeadline) return;
@@ -6143,16 +6222,17 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _sibs = sectionSiblings(_here);
     var _closedNote = _closedHere ? ' Trout and salmon season on this stretch closed September 30.' : '';
     if (_closedHere && _closedHere.band === 'extended') _closedNote = ' Trout and salmon season on this stretch closed December 31.';
+    if (_accessShut) _closedNote = ' ' + _closedLead;
 
     if (targetName && !_targetOk) {
       var _sib = null;
       _sibs.forEach(function(s) { if (!_sib && speciesFishableIn(s, targetName, _trip)) _sib = s; });
       if (_sib) {
-        var _q = getCurrentSeason(targetName, _trip);
+        var _q = getCurrentSeason(targetName, _trip, _sib);
         var _why = _q && _q.quality === 'peak' ? 'they’re at peak season' : 'they’re in season';
         var _listedHere = cfg.species && cfg.species.indexOf(targetName) !== -1;
         headlineHtml = (_listedHere && _closedHere
-            ? 'The season is closed on this stretch. <em>' + targetName + '</em> are also in the ' + gotoLink(_sib, targetName)
+            ? _closedLead + ' <em>' + targetName + '</em> are also in the ' + gotoLink(_sib, targetName)
             : '<em>' + targetName + '</em> aren\u2019t fishable in this section. They are in the ' + gotoLink(_sib, targetName))
           + ', where ' + _why + ' and the season is open. Head there instead.'
           + (_listedHere ? '' : _closedNote);
@@ -6177,7 +6257,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     });
     var _lead = targetName
       ? '<em>' + targetName + '</em> aren’t fishable on this river right now.'
-      : 'The season is closed on this stretch.';
+      : _closedLead;
     if (targetName && _closedHere) _lead += _closedNote;
     if (_best) {
       headlineHtml = _lead + ' <em>' + _best.name + '</em> are in season in the ' + gotoLink(_best.section, _best.name)
@@ -6773,7 +6853,9 @@ function recommendSpecies(cfg) {
   // Steelhead must be here. It is a distinct SPECIES_SEASONS entry (migratory O. mykiss)
   // listed on 29 river sections, but it was missing from this list — so it could never be
   // scored or offered as a fallback, even in November when it is the obvious answer.
-  var allSpecies = ['Brown Trout','Rainbow Trout','Steelhead','Brook Trout','Chinook Salmon','Coho Salmon'];
+  // Steelhead before Brown Trout: on lake-run water they score the same in winter, and a tie
+  // should go to the steelhead (the main winter fish), not the browns.
+  var allSpecies = ['Steelhead','Brown Trout','Rainbow Trout','Brook Trout','Chinook Salmon','Coho Salmon'];
   var riverSpecies = cfg.species || [];
 
   var scored = [];
@@ -6786,7 +6868,7 @@ function recommendSpecies(cfg) {
     var caveats = [];
 
     // Season quality
-    var seasonal = getCurrentSeason(name, getTripDateStr());
+    var seasonal = getCurrentSeason(name, getTripDateStr(), cfg && cfg._section);
     if (!seasonal || seasonal.quality === 'absent') return; // not in river
     if (seasonal.quality === 'peak')      { score += 10; reasons.push('peak season right now'); }
     else if (seasonal.quality === 'good') { score +=  6; reasons.push('in season'); }
@@ -6799,16 +6881,18 @@ function recommendSpecies(cfg) {
     else if (hasMedCrowd) { score += 1; }
     else { caveats.push('expect crowds'); }
 
-    // Resident vs migratory — residents are always available, migratory needs timing
+    // Resident vs migratory — residents are always available, migratory needs timing.
+    // Lake-run browns are migratory here, so no resident or easy-trout bonus.
     var data = SPECIES_SEASONS[name];
-    if (data && data.type === 'resident') {
+    var lakeRun = name === 'Brown Trout' && isLakeRunBrownSection(cfg && cfg._section);
+    if (data && data.type === 'resident' && !lakeRun) {
       score += 2; reasons.push('resident year-round');
-    } else if (data && data.type === 'migratory') {
+    } else if ((data && data.type === 'migratory') || lakeRun) {
       reasons.push('run is in');
     }
 
     // Beginner friendliness — trout are easier than salmon
-    if (name.indexOf('Trout') !== -1) { score += 1; }
+    if (name.indexOf('Trout') !== -1 && !lakeRun) { score += 1; }
 
     scored.push({
       name: name,

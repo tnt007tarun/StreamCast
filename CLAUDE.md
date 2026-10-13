@@ -55,6 +55,16 @@ The lake-temperature Cloudflare Worker (`worker.js`) lives outside this repo.
 - Before changing seasons or closures, run a date-by-date check of every access spot against
   the regulations (see PR #60 for the approach).
 
+### Migratory reach and lake-run browns
+- A section's `species` list encodes the barriers: listing Steelhead or salmon means it is below the
+  first impassable barrier (Norval on the Credit, Whitevale on Duffins, Milne Dam on the Rouge, below
+  Bolton on the Humber). Researched river by river and confirmed by TJ on 2026-10-13.
+- Brown Trout in such a section are **lake-run** (`isLakeRunBrownSection()`), unless the config sets
+  `residentBrowns:true` (Saugeen headwaters). Their calendar is TJ's: Sep in on FMZ 17 rivers only,
+  Oct-Nov fall run, Dec-Feb holding over (good), Mar-Apr spring run, May-Aug in the lake. Gear is
+  float with roe, like steelhead.
+- `getCurrentSeason(species, date, section)`: pass the section when it isn't the one being viewed.
+
 ### One decision, one function
 The most common bug in this codebase is duplicated logic drifting apart: the hero, the
 Technique panel and the summary tile each kept their own rule and disagreed.
@@ -138,13 +148,15 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
-10. **Staging, no species picked:** fixed on `claude/default-species-gear` (PR #67, awaiting merge). The hero now names
-    the staging salmon at the mouth with spinning gear. Still open: with **Brown Trout picked** on a staging day at a
-    mouth section (Bronte, Lower Humber, Nottawasaga Lower, Sixteen Mile), the Technique panel says spoons and the hero
-    says nymphing. Needs TJ's call on how to fish browns at the mouth in August.
+10. **Staging, no species picked:** fixed in PR #67 (awaiting merge). The Brown Trout case is fixed on
+    `claude/lake-run-browns` (stacked on #67): browns aren't in yet in August, and spoons only show for salmon.
 11. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
     below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
     per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
+12. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
+    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ: fine to keep). Steelhead at Hogs Falls above Kimberley: one fishing site only, no fisheries source, and Upper
+    Beaver is a `standard` section (closed through the spring run), so it stays resident-only. Steelhead stage off
+    the mouths from September (TJ); `getSteelheadPhase()` has a Sep 1 to ~Sep 21 staging phase.
 
 A scheduled task runs on 2026-10-15 to ask TJ for Search Console and Umami data and recommend
 the next pages to build.
