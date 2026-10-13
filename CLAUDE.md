@@ -154,7 +154,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
     below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
     per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
 12. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
-    doesn't list them. Steelhead at Hogs Falls above Kimberley: one fishing site only, no fisheries source, and Upper
+    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ: fine to keep). Steelhead at Hogs Falls above Kimberley: one fishing site only, no fisheries source, and Upper
     Beaver is a `standard` section (closed through the spring run), so it stays resident-only. Steelhead stage off
     the mouths from September (TJ); `getSteelheadPhase()` has a Sep 1 to ~Sep 21 staging phase.
 
