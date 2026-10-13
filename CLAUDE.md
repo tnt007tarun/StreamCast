@@ -106,7 +106,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-12)
+## Current state (updated 2026-10-13)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -114,6 +114,8 @@ Merged recently:
 - **#62** `/rivers/humber/` (Old Mill in fall, winter and spring; TJ's photos, video and redhorse clip).
 - **#63** Em-dash and wording pass across the site; About page "Who I am" in TJ's voice; `secLabel()`; new homepage guide cards.
 - **#64** Method pick looks at every selected migratory species. Steelhead now gets float fishing.
+- **#66** "Closed to fishing" pill and drive verdict on closed water; headline no longer suggests all-access-closed
+  sections; dead bait code removed; `hqdefault` thumbnails; Rouge Marsh removed; hero and cards share `bestAccessSpot()`.
 
 Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project doc
 `claude/analytics-2026-10-06.md`. Most clicks come from searches that name a place and a year
@@ -125,14 +127,13 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    Search Console Page indexing and Manual actions.
 2. **Request indexing** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, in Search Console).
 3. **Umami species breakdown** hasn't been reviewed. The river breakdown has.
-4. **Closed-water pill:** fixed in PR #66 (`claude/closed-pill`, awaiting merge). The pill and drive verdict read
-   "Closed" via `sectionClosedOn()`, and the open-sibling fallback no longer suggests all-access-closed sections.
-5. **Dead code:** cleaned up in the same PR. Removed `populateMethodBaits`, `applyBaitShowMore`,
+4. **Closed-water pill:** done in #66 (merged).
+5. **Dead code:** done in #66. Removed `populateMethodBaits`, `applyBaitShowMore`,
    `adaptLurePanel` (no-op: `#bpanels-primary` does not exist) and `assets/Test`. **`#bait-source` is NOT dead.**
    It is hidden, but `renderBaitPillar()` reads its cards to build the Bait pillar. Keep it.
-6. **Thumbnails:** every `maxresdefault.jpg` swapped to `hqdefault.jpg` in the same PR (none left).
-   Also in #66: Rouge Marsh removed from the Rouge mouth section (warmwater only; it ranked #1 on crowd alone).
-   Also in #66: with no species picked, gear follows the hero's species (was trout nymphing for Chinook).
+6. **Thumbnails:** done in #66 (no `maxresdefault` left). #66 also removed Rouge Marsh (warmwater only; it ranked #1
+   on crowd alone). **Awaiting merge** on `claude/default-species-gear`: with no species picked, gear follows the hero's
+   species (it was trout nymphing for Chinook).
 7. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
