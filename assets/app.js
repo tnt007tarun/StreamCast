@@ -3770,6 +3770,7 @@ function renderTechniquePillars(spec) {
 // The species the hero names when the angler hasn't picked one ("Try Chinook Salmon at...").
 // Top of recommendSpecies() over the spots open on the trip date, without trout when the
 // water is thermally stressful, peak or good season only, and none on a closed section.
+// While salmon are staging at this section, the staging salmon comes first.
 // buildTopPick names it, and renderResults stores it in window._defaultTargetSpecies
 // before updateMethods so the gear matches. Without it the Technique panel fell back to trout nymphing for Chinook.
 var TROUT_NAMES = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
@@ -3777,6 +3778,15 @@ function defaultTargetSpecies(cfg, wt) {
   if (!cfg) return null;
   var trip = (typeof getTripDateStr === 'function') ? getTripDateStr() : null;
   if (sectionClosedOn(cfg, trip)) return null; // nothing to recommend on closed water
+  // Staging at this section: the Technique panel is already on spoons at the mouth
+  // (applyStagingTechniqueOverride), so the species is the salmon that is staging, even
+  // while its season window still reads 'slow'.
+  if (_stagingModeActive) {
+    var stg = ['Chinook Salmon', 'Coho Salmon'].filter(function(n){
+      return cfg.species && cfg.species.indexOf(n) !== -1;
+    })[0];
+    if (stg) return stg;
+  }
   var open = Object.create(cfg);
   open.access = (cfg.access || []).filter(function(a){ return isAccessOpen(a, trip); });
   var thermal = wt != null && wt >= 18 && window._weatherOk !== false;
@@ -5668,7 +5678,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // in which case only harbour/port mouth spots are relevant (fish aren't in the river yet).
   var _stagingActive = false;
   (function() {
-    var _stgTarget = targetName || (_targetNamesNowFishable.length === 1 ? _targetNamesNowFishable[0] : null);
+    var _stgTarget = targetName || (_targetNamesNowFishable.length === 1 ? _targetNamesNowFishable[0] : null)
+      || (!_bka.length ? defaultTargetSpecies(getRiverConfig(selectedRiver), wt) : null);
     if (!_stgTarget || !selectedRiver || typeof STAGING_ZONES === 'undefined') return;
     // Only when this section IS the harbour/mouth section — inland sections keep their own spots.
     if (!resolveStagingSection(selectedRiver) || !STAGING_ZONES[selectedRiver.split(',')[0].trim()]) return;
@@ -5918,11 +5929,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       }
     }
   } else {
-    if (recs.length > 0) {
-      // Same pick as the gear: see defaultTargetSpecies.
-      fallbackSpecies = defaultTargetSpecies(cfg, wt) || recs[0].name; window._shownSpeciesName = fallbackSpecies;
-      speciesNote = 'Best bet: ' + recs[0].name + ' (' + (recs[0].reasons[0] || recs[0].seasonal.label) + '). ';
-      if (recs.length > 1) speciesNote += recs[1].name + ' also good. ';
+    // Same pick as the gear: see defaultTargetSpecies. It can name a staging salmon whose
+    // season window is still 'slow', so it is not always in recs.
+    var _def = defaultTargetSpecies(cfg, wt) || (recs.length > 0 ? recs[0].name : null);
+    if (_def) {
+      fallbackSpecies = _def; window._shownSpeciesName = fallbackSpecies;
+      var _defRec = recs.filter(function(r){ return r.name === _def; })[0];
+      speciesNote = 'Best bet: ' + _def + (_defRec ? ' (' + (_defRec.reasons[0] || _defRec.seasonal.label) + ')' : ', staging at the mouth') + '. ';
+      var _altRec = recs.filter(function(r){ return r.name !== _def; })[0];
+      if (_altRec) speciesNote += _altRec.name + ' also good. ';
     }
   }
 
@@ -5947,8 +5962,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var methodPhrase = topMethod.toLowerCase();
   var bringPhrase;
   // Compound method names carry their own gear noun, so the generic branches below would
-  // stutter ("spinning gear — spinning — spoons & lures"). Handle them explicitly.
-  if (/^spinning\s*\u2014/i.test(topMethod)) bringPhrase = 'spinning gear with spoons & lures';
+  // stutter ("spinning gear and spinning · spoons & lures"). Handle them explicitly. Spinning
+  // takes either separator (the copy pass swapped the em dash for a middot). Float keeps
+  // falling through to "float rod and bait" on purpose: that is the wording on the live site.
+  if (/^spinning\s*[\u2014\u00b7]/i.test(topMethod)) bringPhrase = 'spinning gear with spoons & lures';
   else if (/^float fishing\s*\u2014/i.test(topMethod)) bringPhrase = 'float rod with roe bags or beads';
   else if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
   else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear and ' + methodPhrase;
