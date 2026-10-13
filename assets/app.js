@@ -1030,7 +1030,7 @@ var RIVER_CONFIG = {
     // Erindale and the river mouth — and never sends anyone to water salmon cannot reach.
     loc:"Norval Dam to Port Credit / Lake Ontario",
     driveTime:{ toronto:20,mississauga:15,brampton:10,oakville:5,burlington:15,milton:10,hamilton:20,guelph:25,cambridge:30,kitchener:35,waterloo:40,orangeville:30,markham:25,"richmond hill":25,vaughan:20,ajax:35,pickering:30,"north york":20,scarborough:25,etobicoke:15,oshawa:40,whitby:40,bowmanville:50,clarington:55,newcastle:55,cobourg:75,"port hope":70,barrie:50,collingwood:60,"owen sound":80 },
-    species:["Steelhead","Chinook Salmon","Coho Salmon"],
+    species:["Steelhead","Chinook Salmon","Coho Salmon","Brown Trout"],
     active:true,
     regs:[{rule:"Check the regulations. This section has specific rules around the river mouth",icon:"📋"}],
     methods:["float","spin"],
@@ -1112,7 +1112,7 @@ var RIVER_CONFIG = {
     lat:43.670, lng:-79.490,
     loc:"Old Mill area north to Eglinton Avenue (Etienne Brulé Park)",
     driveTime:{ toronto:20,mississauga:40,brampton:30,oakville:30,burlington:50,milton:40,hamilton:60,guelph:70,cambridge:85,kitchener:95,waterloo:95,orangeville:60,markham:25,"richmond hill":30,vaughan:25,ajax:50,pickering:40,"north york":15,scarborough:25,etobicoke:15,oshawa:65,whitby:55,bowmanville:80,clarington:85,newcastle:85,cobourg:125,"port hope":115,barrie:90,collingwood:120,"owen sound":170 },
-    species:["Steelhead","Chinook Salmon"],
+    species:["Steelhead","Chinook Salmon","Brown Trout"],
     active:true,
     regs:[{rule:"TRCA managed. Check the regulations",icon:"📋"}],
     methods:["float","spin"],
@@ -1386,7 +1386,8 @@ var RIVER_CONFIG = {
     lat:44.100, lng:-80.750,
     loc:'Rocky Saugeen, North Saugeen, South Saugeen and Beatty Saugeen, above Hanover',
     driveTime:{'toronto':145,'north york':130,'scarborough':140,'etobicoke':135,'markham':130,'richmond hill':125,'vaughan':120,'ajax':160,'pickering':155,'mississauga':140,'brampton':110,'oakville':125,'burlington':130,'milton':105,'hamilton':130,'guelph':85,'cambridge':100,'kitchener':85,'waterloo':80,'orangeville':65,'oshawa':170,'whitby':165,'bowmanville':185,'clarington':195,'newcastle':195,'cobourg':230,'port hope':220,'barrie':100,'collingwood':70,'owen sound':60},
-    species:['Brook Trout','Brown Trout','Rainbow Trout'],
+    species:['Brook Trout','Brown Trout','Rainbow Trout','Steelhead'],
+    residentBrowns:true, // steelhead reach here in small numbers; the browns are stream residents,
     active:true,
     regs:[{rule:'FMZ 16. Check specific tributary regulations. The Rocky Saugeen is particularly sensitive, so practise catch-and-release and disturb as little as you can.',icon:'📋'}],
     methods:['fly','spin'],
@@ -1495,7 +1496,7 @@ var RIVER_CONFIG = {
     lat:43.803, lng:-79.134,
     loc:'Lake Ontario mouth (Rouge Beach, Pickering / Scarborough)',
     driveTime:{'toronto':30,'north york':30,'scarborough':10,'etobicoke':50,'markham':20,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':75,'brampton':65,'oakville':65,'burlington':85,'milton':75,'hamilton':95,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':45,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':90,'collingwood':130,'owen sound':185},
-    species:['Steelhead','Chinook Salmon'],
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16. Kingston Rd (Hwy 2) to Lake Ontario: open all year.',icon:'📋'}],
     methods:['spin','float'],
@@ -2607,9 +2608,10 @@ Object.keys(RIVER_CONFIG).forEach(function(k){ if (RIVER_CONFIG[k]) RIVER_CONFIG
 // lists Steelhead or salmon is below one. Timing is TJ's (2026-10-13): they push in with
 // cooler water in October and November, earlier (September) on the FMZ 17 rivers, hold
 // over through winter, spike again in March and April, and are out in the lake in summer.
+// TJ also confirmed lake-run browns in the Credit and the Humber; the Rouge is likely.
 var LAKE_RUN_BROWN_WINDOWS = [
   { months: [9,10], quality: "good",   label: "Fall Run",   note: "Lake-run browns push in as the water cools. Drift roe bags under a float." },
-  { months: [11,1], quality: "slow",   label: "Winter",     note: "Lake-run browns hold over in the deeper pools through winter. Slow float with roe." },
+  { months: [11,1], quality: "good",   label: "Winter",     note: "Lake-run browns hold over in the deeper pools through winter. Slow float with roe." },
   { months: [2,3],  quality: "good",   label: "Spring Run", note: "A second push of lake-run browns in March and April, alongside the steelhead." },
   { months: [4,7],  quality: "absent", label: "Lake",       note: "Lake-run browns are out in the lake. They enter the river in October and November." }
 ];
@@ -2621,6 +2623,7 @@ function sectionBaseName(section) { return String(section || '').split(',')[0].t
 function isLakeRunBrownSection(section) {
   var c = RIVER_CONFIG[sectionBaseName(section)];
   var sp = (c && c.species) || [];
+  if (!c || c.residentBrowns) return false; // a few migratory fish pass, but the browns are residents
   return sp.indexOf('Brown Trout') !== -1 &&
     sp.some(function(n){ return n === 'Steelhead' || n === 'Chinook Salmon' || n === 'Coho Salmon'; });
 }
@@ -6190,7 +6193,16 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   (function() {
     var _trip = getTripDateStr();
     var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
-    var _closedHere = seasonClosureFor(cfg, _trip);
+    // Closed means the season is shut OR every access point is closed (a sanctuary such as
+    // Port Hope from Sep 1 to Oct 14). The season-only check let the hero say "Try Chinook
+    // Salmon at Port Hope Sanctuary" while the pill said Closed to fishing.
+    // Use the section's full config: cfg here is shadowed down to the open spots only, so
+    // when every spot is closed its access list is empty and reads as "nothing closed".
+    var _cfgFull = getRiverConfig(selectedRiver);
+    var _accessShut = !seasonClosureFor(cfg, _trip) && allAccessClosed(_cfgFull, _trip);
+    var _closedHere = seasonClosureFor(cfg, _trip) || (_accessShut
+      ? { band: 'access', reason: 'Every access point on this stretch is closed on this date.' } : null);
+    var _closedLead = _accessShut ? 'Every access point on this stretch is closed on this date.' : 'The season is closed on this stretch.';
     var _targetOk = targetName ? speciesFishableIn(_here, targetName, _trip) : false;
     if (!_closedHere && (!targetName || _targetOk)) return;
     if (!_closedHere && _stagingHeadline) return;
@@ -6198,16 +6210,17 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _sibs = sectionSiblings(_here);
     var _closedNote = _closedHere ? ' Trout and salmon season on this stretch closed September 30.' : '';
     if (_closedHere && _closedHere.band === 'extended') _closedNote = ' Trout and salmon season on this stretch closed December 31.';
+    if (_accessShut) _closedNote = ' ' + _closedLead;
 
     if (targetName && !_targetOk) {
       var _sib = null;
       _sibs.forEach(function(s) { if (!_sib && speciesFishableIn(s, targetName, _trip)) _sib = s; });
       if (_sib) {
-        var _q = getCurrentSeason(targetName, _trip);
+        var _q = getCurrentSeason(targetName, _trip, _sib);
         var _why = _q && _q.quality === 'peak' ? 'they’re at peak season' : 'they’re in season';
         var _listedHere = cfg.species && cfg.species.indexOf(targetName) !== -1;
         headlineHtml = (_listedHere && _closedHere
-            ? 'The season is closed on this stretch. <em>' + targetName + '</em> are also in the ' + gotoLink(_sib, targetName)
+            ? _closedLead + ' <em>' + targetName + '</em> are also in the ' + gotoLink(_sib, targetName)
             : '<em>' + targetName + '</em> aren\u2019t fishable in this section. They are in the ' + gotoLink(_sib, targetName))
           + ', where ' + _why + ' and the season is open. Head there instead.'
           + (_listedHere ? '' : _closedNote);
@@ -6232,7 +6245,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     });
     var _lead = targetName
       ? '<em>' + targetName + '</em> aren’t fishable on this river right now.'
-      : 'The season is closed on this stretch.';
+      : _closedLead;
     if (targetName && _closedHere) _lead += _closedNote;
     if (_best) {
       headlineHtml = _lead + ' <em>' + _best.name + '</em> are in season in the ' + gotoLink(_best.section, _best.name)
