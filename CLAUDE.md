@@ -62,6 +62,8 @@ Technique panel and the summary tile each kept their own rule and disagreed.
   `selectedSpecies[0]` for a decision.** The user can select several species.
 - If two parts of the UI show the same idea, they must call the same function.
 - Recommended access spot: `bestAccessSpot(access, atMouth)`. The hero headline and the access cards both use it.
+- Species when none is picked: `defaultTargetSpecies(cfg, wt)`, stored in `window._defaultTargetSpecies` before
+  `updateMethods()`. The hero names it and `methodSpeciesKey()` falls back to it for the gear.
 
 ### Section names are keys
 Names like `"Ganaraska River — Lower (Lake to CNR Bridge)"` are used in URLs, Umami
@@ -130,10 +132,16 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    It is hidden, but `renderBaitPillar()` reads its cards to build the Bait pillar. Keep it.
 6. **Thumbnails:** every `maxresdefault.jpg` swapped to `hqdefault.jpg` in the same PR (none left).
    Also in #66: Rouge Marsh removed from the Rouge mouth section (warmwater only; it ranked #1 on crowd alone).
+   Also in #66: with no species picked, gear follows the hero's species (was trout nymphing for Chinook).
 7. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
+10. **Staging, no species picked:** the hero says "Head to Erindale Park… fly rod and nymphing" while the
+    Technique panel says "Throwing spoons at the river mouth" (e.g. Lower Credit, Aug 25). Pre-existing; not fixed yet.
+11. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
+    below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
+    per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
 
 A scheduled task runs on 2026-10-15 to ask TJ for Search Console and Umami data and recommend
 the next pages to build.
