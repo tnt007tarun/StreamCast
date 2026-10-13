@@ -625,11 +625,11 @@ var _stagingModeActive = false;
 // is authoritative because it accounts for lake temperature, not just the calendar.
 var _stagingPhaseResolved = false;
 function applyStagingTechniqueOverride() {
-  // Spoons at the mouth are for staging salmon. If the angler picked only non-salmon species
+  // Spoons at the mouth are for staging fish. If the angler picked only non-migratory species
   // (e.g. Brown Trout in August), the Technique panel stays on their species. Both callers
   // go through here, so neither can skip this.
   var _selST = (typeof selectedSpecies !== 'undefined' && selectedSpecies) ? selectedSpecies : [];
-  if (_selST.length && !_selST.some(function(k){ return k === 'chinook' || k === 'coho'; })) return;
+  if (_selST.length && !_selST.some(function(k){ return k === 'chinook' || k === 'coho' || k === 'steelhead'; })) return;
   var _cfgST = (typeof getRiverConfig === 'function') ? getRiverConfig(selectedRiver) : null;
   renderTechniquePillars({
     name: 'Throwing spoons at the river mouth',
@@ -6841,7 +6841,9 @@ function recommendSpecies(cfg) {
   // Steelhead must be here. It is a distinct SPECIES_SEASONS entry (migratory O. mykiss)
   // listed on 29 river sections, but it was missing from this list — so it could never be
   // scored or offered as a fallback, even in November when it is the obvious answer.
-  var allSpecies = ['Brown Trout','Rainbow Trout','Steelhead','Brook Trout','Chinook Salmon','Coho Salmon'];
+  // Steelhead before Brown Trout: on lake-run water they score the same in winter, and a tie
+  // should go to the steelhead (the main winter fish), not the browns.
+  var allSpecies = ['Steelhead','Brown Trout','Rainbow Trout','Brook Trout','Chinook Salmon','Coho Salmon'];
   var riverSpecies = cfg.species || [];
 
   var scored = [];
@@ -6867,16 +6869,18 @@ function recommendSpecies(cfg) {
     else if (hasMedCrowd) { score += 1; }
     else { caveats.push('expect crowds'); }
 
-    // Resident vs migratory — residents are always available, migratory needs timing
+    // Resident vs migratory — residents are always available, migratory needs timing.
+    // Lake-run browns are migratory here, so no resident or easy-trout bonus.
     var data = SPECIES_SEASONS[name];
-    if (data && data.type === 'resident') {
+    var lakeRun = name === 'Brown Trout' && isLakeRunBrownSection(cfg && cfg._section);
+    if (data && data.type === 'resident' && !lakeRun) {
       score += 2; reasons.push('resident year-round');
-    } else if (data && data.type === 'migratory') {
+    } else if ((data && data.type === 'migratory') || lakeRun) {
       reasons.push('run is in');
     }
 
     // Beginner friendliness — trout are easier than salmon
-    if (name.indexOf('Trout') !== -1) { score += 1; }
+    if (name.indexOf('Trout') !== -1 && !lakeRun) { score += 1; }
 
     scored.push({
       name: name,
