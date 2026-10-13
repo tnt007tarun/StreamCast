@@ -42,6 +42,7 @@ The lake-temperature Cloudflare Worker (`worker.js`) lives outside this repo.
 - `ACCESS_COORDS[section]`: lined up **by index** with `access[]`. Keep both in the same order.
 - `GUIDES`: the homepage guide cards. Add new guide and river pages here, ordered by season.
 - `STAGING_ZONES`: river mouths used for the salmon staging model.
+- `#bait-source` in `index.html` is hidden but **not dead**: `renderBaitPillar()` reads its cards to build the Bait pillar.
 
 ## House rules
 
@@ -116,7 +117,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-13)
+## Current state (updated 2026-10-14)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -126,6 +127,10 @@ Merged recently:
 - **#64** Method pick looks at every selected migratory species. Steelhead now gets float fishing.
 - **#66** "Closed to fishing" pill and drive verdict on closed water; headline no longer suggests all-access-closed
   sections; dead bait code removed; `hqdefault` thumbnails; Rouge Marsh removed; hero and cards share `bestAccessSpot()`.
+- **#67** With no species picked, gear and headline follow one species (`defaultTargetSpecies()`), in-river and on
+  staging days. Fixed "spinning gear and spinning" stutter.
+- **#68** Lake-run brown trout (own calendar, float gear); steelhead stage from September; headlines for closed
+  sanctuaries, out-of-season and unlisted species no longer fall through to "Head to <spot>".
 
 Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project doc
 `claude/analytics-2026-10-06.md`. Most clicks come from searches that name a place and a year
@@ -137,26 +142,20 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    Search Console Page indexing and Manual actions.
 2. **Request indexing** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, in Search Console).
 3. **Umami species breakdown** hasn't been reviewed. The river breakdown has.
-4. **Closed-water pill:** done in #66 (merged).
-5. **Dead code:** done in #66. Removed `populateMethodBaits`, `applyBaitShowMore`,
-   `adaptLurePanel` (no-op: `#bpanels-primary` does not exist) and `assets/Test`. **`#bait-source` is NOT dead.**
-   It is hidden, but `renderBaitPillar()` reads its cards to build the Bait pillar. Keep it.
-6. **Thumbnails:** done in #66 (no `maxresdefault` left). #66 also removed Rouge Marsh (warmwater only; it ranked #1
-   on crowd alone). **Awaiting merge** in PR #67: with no species picked, gear follows the hero's species (it was trout
-   nymphing for Chinook).
-7. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
-8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
-9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
+4. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
+5. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
+6. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
-10. **Staging, no species picked:** fixed in PR #67 (awaiting merge). The Brown Trout case is fixed on
-    `claude/lake-run-browns` (stacked on #67): browns aren't in yet in August, and spoons only show for salmon.
-11. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
-    below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
-    per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
-12. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
-    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ: fine to keep). Steelhead at Hogs Falls above Kimberley: one fishing site only, no fisheries source, and Upper
-    Beaver is a `standard` section (closed through the spring run), so it stays resident-only. Steelhead stage off
-    the mouths from September (TJ); `getSteelheadPhase()` has a Sep 1 to ~Sep 21 staging phase.
+7. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
+   below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
+   per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
+8. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
+   doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ). Steelhead at Hogs Falls above Kimberley: one
+   fishing site only, no fisheries source, and Upper Beaver is a `standard` section (closed through the spring
+   run), so it stays resident-only.
+9. **Float wording:** in-river float headlines say "float rod and bait"; the intended "float rod with roe bags or
+   beads" never matches (it checks for an em dash, the method name uses a middot). Left as is on purpose; change
+   only if TJ wants the longer wording.
 
 A scheduled task runs on 2026-10-15 to ask TJ for Search Console and Umami data and recommend
 the next pages to build.
