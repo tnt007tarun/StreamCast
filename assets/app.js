@@ -264,6 +264,8 @@ function getSalmonPhase(groupKey, month, day) {
 // lakeTemp may be null; if so we fall back to calendar-only for spring.
 function getSteelheadPhase(month, day, lakeTemp) {
   var m = _mfrac(month, day);
+  // Fall staging: steelhead stage off the mouths from September (TJ, 2026-10-13), then run.
+  if (m >= 8.0 && m < 8.7) return {active:true, intensity:0.4, label:"Fall staging", mode:"stage"};
   // Fall run: late Sept - Oct, following salmon
   if (m >= 8.7 && m < 10.3) return {active:true, intensity:0.6, label:"Fall run", mode:"run"};
   // Winter trickle: Nov - Feb
@@ -1496,7 +1498,7 @@ var RIVER_CONFIG = {
     lat:43.803, lng:-79.134,
     loc:'Lake Ontario mouth (Rouge Beach, Pickering / Scarborough)',
     driveTime:{'toronto':30,'north york':30,'scarborough':10,'etobicoke':50,'markham':20,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':75,'brampton':65,'oakville':65,'burlington':85,'milton':75,'hamilton':95,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':45,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':90,'collingwood':130,'owen sound':185},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon'],
     active:true,
     regs:[{rule:'FMZ 16. Kingston Rd (Hwy 2) to Lake Ontario: open all year.',icon:'📋'}],
     methods:['spin','float'],
@@ -2608,7 +2610,8 @@ Object.keys(RIVER_CONFIG).forEach(function(k){ if (RIVER_CONFIG[k]) RIVER_CONFIG
 // lists Steelhead or salmon is below one. Timing is TJ's (2026-10-13): they push in with
 // cooler water in October and November, earlier (September) on the FMZ 17 rivers, hold
 // over through winter, spike again in March and April, and are out in the lake in summer.
-// TJ also confirmed lake-run browns in the Credit and the Humber; the Rouge is likely.
+// TJ also confirmed lake-run browns in the Credit and the Humber. On the Rouge they are minimal,
+// so the Rouge mouth does not list them.
 var LAKE_RUN_BROWN_WINDOWS = [
   { months: [9,10], quality: "good",   label: "Fall Run",   note: "Lake-run browns push in as the water cools. Drift roe bags under a float." },
   { months: [11,1], quality: "good",   label: "Winter",     note: "Lake-run browns hold over in the deeper pools through winter. Slow float with roe." },
@@ -6079,6 +6082,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         } else if (_sp2 && _sp2.active && _sp2.mode === 'run') {
           _stagingHeadline = '<em>' + _tgtName + '</em> are running into the river now. '
             + 'See the staging report below, and fish the lower river on rising water.';
+        } else if (/Steelhead/i.test(_tgtName)) {
+          // Steelhead have their own timing: out in the lake all summer, staging off the
+          // mouths from September. The salmon copy below gave them a late-July timeline.
+          _stagingHeadline = '<em>Steelhead</em> are out in the lake. They start staging off the river mouths '
+            + 'in September and push into the river through the fall.';
         } else {
           // Pre-staging: too early for salmon to be running, but early Chinook can show
           // near east harbour mouths opportunistically in June under cold lake temps.
@@ -6161,11 +6169,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Thermal stress, trout-only river — no safe recommendation possible
     headlineHtml = 'Water is <em>' + (wt || '—') + '°C</em>, above the safe limit for trout. '
       + 'Consider waiting for cooler conditions or fishing early morning before 8 AM.';
-  } else if (targetName && seasonal && seasonal.quality === 'absent' && !fallbackSpecies) {
-    // Out of season with nothing to suggest instead. The absent branch above set this
-    // headline but the generic one below overwrote it with "Head to <spot>", which sent
-    // people to the pier for lake-run browns in August.
-    headlineHtml = '<em>' + targetName + '</em> aren’t here yet. ' + (seasonal.note || '');
+  } else if (targetName && !fallbackSpecies &&
+             (_riverSpecies.indexOf(targetName) === -1 || (seasonal && seasonal.quality === 'absent'))) {
+    // Not in this section, or out of season, with nothing to suggest instead. The absent
+    // branch above set this headline but the generic one below overwrote it with
+    // "Head to <spot>... Target <species>", which sent people to the pier for lake-run
+    // browns in August and to Rouge Beach for browns that don't use it.
+    headlineHtml = _riverSpecies.indexOf(targetName) === -1
+      ? '<em>' + targetName + '</em> aren’t found in this section.'
+      : '<em>' + targetName + '</em> aren’t here yet. ' + (seasonal.note || '');
   } else if (!targetName && _multiTarget) {
     // Multi-species selection: both are on this river, name them both
     headlineHtml = 'Head to <em>' + spotName + '</em>. '

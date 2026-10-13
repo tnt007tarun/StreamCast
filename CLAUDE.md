@@ -153,8 +153,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 11. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
     below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
     per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
-12. **Unconfirmed migratory data:** lake-run browns on the Rouge mouth (TJ: likely); steelhead reaching Hogs Falls
-    above Kimberley on the Beaver (one fishing site says so; left out). Confirm when someone knows.
+12. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
+    doesn't list them. Steelhead at Hogs Falls above Kimberley: one fishing site only, no fisheries source, and Upper
+    Beaver is a `standard` section (closed through the spring run), so it stays resident-only. Steelhead stage off
+    the mouths from September (TJ); `getSteelheadPhase()` has a Sep 1 to ~Sep 21 staging phase.
 
 A scheduled task runs on 2026-10-15 to ask TJ for Search Console and Umami data and recommend
 the next pages to build.
