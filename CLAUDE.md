@@ -132,14 +132,16 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    `adaptLurePanel` (no-op: `#bpanels-primary` does not exist) and `assets/Test`. **`#bait-source` is NOT dead.**
    It is hidden, but `renderBaitPillar()` reads its cards to build the Bait pillar. Keep it.
 6. **Thumbnails:** done in #66 (no `maxresdefault` left). #66 also removed Rouge Marsh (warmwater only; it ranked #1
-   on crowd alone). **Awaiting merge** on `claude/default-species-gear`: with no species picked, gear follows the hero's
-   species (it was trout nymphing for Chinook).
+   on crowd alone). **Awaiting merge** in PR #67: with no species picked, gear follows the hero's species (it was trout
+   nymphing for Chinook).
 7. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 8. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 9. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
-10. **Staging, no species picked:** the hero says "Head to Erindale Park… fly rod and nymphing" while the
-    Technique panel says "Throwing spoons at the river mouth" (e.g. Lower Credit, Aug 25). Pre-existing; not fixed yet.
+10. **Staging, no species picked:** fixed on `claude/default-species-gear` (PR #67, awaiting merge). The hero now names
+    the staging salmon at the mouth with spinning gear. Still open: with **Brown Trout picked** on a staging day at a
+    mouth section (Bronte, Lower Humber, Nottawasaga Lower, Sixteen Mile), the Technique panel says spoons and the hero
+    says nymphing. Needs TJ's call on how to fish browns at the mouth in August.
 11. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
     below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
     per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
