@@ -140,7 +140,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 1. **Sep 9 to 25 search drop.** Cause unknown. Need Umami daily visitors for September, plus
    Search Console Page indexing and Manual actions.
-2. **Request indexing** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, in Search Console).
+2. **Indexing requested** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, 2026-10-14). Check they show
+   as indexed in Search Console's Page indexing report at the next analytics review.
 3. **Umami species breakdown** hasn't been reviewed. The river breakdown has.
 4. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 5. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
