@@ -270,7 +270,7 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
     <div class="verdict" style="color:${stateColor(cond.quality === 'excellent' || cond.quality === 'good' ? 'good' : cond.quality === 'marginal' ? 'ok' : 'poor')}">
       Conditions: ${cond.qualityLabel}${route.sweetMin ? ` &middot; aim for ${route.sweetMin}&ndash;${route.sweetMax} m³/s` : ''}
     </div>
-    <div class="cta-line"><a href="${appLink}">See access points, technique and gear for today &rarr;</a></div>
+    <div class="cta-line"><a href="${appLink}" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/credit-river/${speciesSlug}" data-umami-event-river="Credit River">See access points, technique and gear for today &rarr;</a></div>
   </div>
 
   <h2>How to fish it</h2>
