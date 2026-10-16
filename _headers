@@ -5,3 +5,8 @@
   X-Robots-Tag: noindex, nofollow
 /assets/README.md
   X-Robots-Tag: noindex, nofollow
+/worker/*
+  X-Robots-Tag: noindex, nofollow
+/unsubscribe/*
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer

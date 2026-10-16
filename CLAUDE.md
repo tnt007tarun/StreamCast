@@ -30,8 +30,11 @@ build, and the Cloudflare check on the PR links to it.
 | `sitemap.xml`, `llms.txt`, `robots.txt` | Keep in sync when pages are added |
 | `_redirects`, `_headers` | Cloudflare Pages config. They keep repo docs (`CLAUDE.md`, the READMEs) off the live site and out of search. Add any new repo-only doc to both |
 | `images/`, `video/` | Photos (WebP for pages, JPG kept for og:image) and short clips |
+| `worker/` | The `streamcast-proxy` Worker (flow, lake temps, stocking, subscribe, unsubscribe) and its `wrangler.toml`. Not deployed by Pages. See `worker/README.md` |
+| `unsubscribe/` | Unsubscribe page (noindex). Talks to the Worker's `/unsubscribe` |
 
-The lake-temperature Cloudflare Worker (`worker.js`) lives outside this repo.
+Deploy the Worker only from `worker/` (`npx wrangler deploy`) so `wrangler.toml` supplies the bindings. A deploy
+without them broke every signup from June to October 2026.
 
 ### Key structures in `app.js`
 
@@ -137,9 +140,12 @@ Merged recently:
   lower Credit no longer says "artificial lures only"). Wrong `catchRelease` tags removed from the Lower Grand (C&R is Paris to
   Brantford only) and the Nottawasaga Lower Section (C&R is Boyne to Pine only; McKinnon Road is below the Pine, per TJ).
 
-- **(this PR)** Funnel tracking and honest signup handling (see "Analytics events" below). The notify bar used to
+- **#72** Funnel tracking and honest signup handling (see "Analytics events" below). The notify bar used to
   show success and fire `Email Signup` even when `/subscribe` returned 500. It now checks `{ok:true}`, shows an
   error and fires `Email Signup Failed` otherwise.
+
+- **(this PR)** Unsubscribe: `/unsubscribe/` page plus the Worker's `/unsubscribe` (signed links, one-click headers).
+  Worker source and `wrangler.toml` now live in `worker/`.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -150,12 +156,17 @@ Merged recently:
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app, `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
+- Unsubscribe page: `Unsubscribe Completed`, `Unsubscribe Failed {reason}`, `Unsubscribe Link Bad {reason}`. Its Umami
+  script has `data-exclude-search` so emails in the link never reach Umami.
 
-### Signup Worker (outside the repo)
-`streamcast-proxy` handles `/subscribe`: writes `sub:<email>` to KV `SUBSCRIBERS`, adds the contact to Resend
+### Email list
+`streamcast-proxy` (`worker/worker.js`) handles `/subscribe`: writes `sub:<email>` to KV `SUBSCRIBERS`, adds the contact to Resend
 (`RESEND_AUDIENCE_ID`, segment "General" `7c4ef108-3d3d-41ba-95f4-3776f957330e`), sends the welcome email. Bindings it
 needs: KV `SUBSCRIBERS` (HEREFISHYFISHY_SUBSCRIBERS), KV `CACHE` (HEREFISHYFISHY_CACHE), secret `RESEND_API_KEY`,
-var `RESEND_AUDIENCE_ID`. A redeploy in June or August dropped the bindings, so every signup after 2026-06-08 failed.
+var `RESEND_AUDIENCE_ID`, secret `UNSUBSCRIBE_SECRET` (HMAC for unsubscribe links). A redeploy dropped the bindings, so
+every signup from 2026-06-08 to 2026-10-15 failed; fixed 2026-10-15. Every email to the list needs `unsubLinks()` and the
+`List-Unsubscribe` headers, and must skip KV records with `unsubscribed: true`. CASL also wants a mailing address in
+commercial emails (open thread).
 
 Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project doc
 `claude/analytics-2026-10-06.md`. Most clicks come from searches that name a place and a year
@@ -163,10 +174,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-0. **Signups (2026-10-15, in order):** (a) TJ restores the Worker bindings in the Cloudflare dashboard, then verify a
-   test signup lands in KV and Resend. (b) Unsubscribe page: the welcome email links to `/unsubscribe?email=`, which
-   404s (CASL). (c) Worker code into the repo with a wrangler config listing the bindings. (d) Umami review with the
-   new events. (e) Better signup offer: the bar promises "alerts when conditions are excellent", which aren't sent yet.
+0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
+   in the repo are done (this PR); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.
+   Still to do: TJ's end-to-end unsubscribe test, a mailing address for the email footer (CASL), an Umami review with
+   the new events, and a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
 
 1. **Sep 9 to 25 search drop.** Cause unknown. Need Umami daily visitors for September, plus
    Search Console Page indexing and Manual actions.

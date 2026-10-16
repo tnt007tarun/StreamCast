@@ -1,0 +1,29 @@
+# streamcast-proxy: flow, lake temps, stocking, email signup and unsubscribe.
+# Deploy from this folder with `npx wrangler deploy`. The bindings below are the
+# reason this file exists: a deploy without them wiped the KV and Resend settings
+# and every signup failed from June to October 2026.
+name = "streamcast-proxy"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+routes = [
+  { pattern = "proxy.herefishyfishy.ca", custom_domain = true }
+]
+
+[[kv_namespaces]]
+binding = "SUBSCRIBERS"   # HEREFISHYFISHY_SUBSCRIBERS
+id = "e1a4ee90500d422582252031d6b7625b"
+
+[[kv_namespaces]]
+binding = "CACHE"         # HEREFISHYFISHY_CACHE
+id = "e4a3b79bb0c647d797d83f79056cdbdc"
+
+[vars]
+RESEND_AUDIENCE_ID = "7c4ef108-3d3d-41ba-95f4-3776f957330e"   # Resend segment "General"
+
+[observability]
+enabled = true
+
+# Secrets (set once with `npx wrangler secret put NAME`, never committed):
+#   RESEND_API_KEY       Resend API key
+#   UNSUBSCRIBE_SECRET   HMAC key for unsubscribe links. Changing it breaks every link already sent.
