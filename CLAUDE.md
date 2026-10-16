@@ -144,8 +144,11 @@ Merged recently:
   show success and fire `Email Signup` even when `/subscribe` returned 500. It now checks `{ok:true}`, shows an
   error and fires `Email Signup Failed` otherwise.
 
-- **(this PR)** Unsubscribe: `/unsubscribe/` page plus the Worker's `/unsubscribe` (signed links, one-click headers).
+- **#73** Unsubscribe: `/unsubscribe/` page plus the Worker's `/unsubscribe` (signed links, one-click headers).
   Worker source and `wrangler.toml` now live in `worker/`.
+- **(this PR)** Notify bar rides above the mobile keyboard (`visualViewport`), and its listeners bind once (opening a
+  second river used to stack handlers, so one tap sent one signup per river viewed). Email footer has `SENDER_FOOTER`
+  (deployed 2026-10-15).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -166,7 +169,8 @@ needs: KV `SUBSCRIBERS` (HEREFISHYFISHY_SUBSCRIBERS), KV `CACHE` (HEREFISHYFISHY
 var `RESEND_AUDIENCE_ID`, secret `UNSUBSCRIBE_SECRET` (HMAC for unsubscribe links). A redeploy dropped the bindings, so
 every signup from 2026-06-08 to 2026-10-15 failed; fixed 2026-10-15. Every email to the list needs `unsubLinks()` and the
 `List-Unsubscribe` headers, and must skip KV records with `unsubscribed: true`. CASL also wants a mailing address in
-commercial emails (open thread).
+commercial emails: `SENDER_FOOTER` in `worker.js`. `hello@herefishyfishy.ca` forwards to TJ's Gmail (Cloudflare
+Email Routing, 2026-10-15).
 
 Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project doc
 `claude/analytics-2026-10-06.md`. Most clicks come from searches that name a place and a year
@@ -176,8 +180,9 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
    in the repo are done (this PR); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.
-   Still to do: TJ's end-to-end unsubscribe test, a mailing address for the email footer (CASL), an Umami review with
-   the new events, and a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
+   TJ tested unsubscribe end to end (2026-10-15). The footer address is a placeholder ("Shawnmarr Rd, Mississauga ON",
+   no street number); TJ will swap in a virtual mailbox address. Still to do: an Umami review with the new events, and
+   a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
 
 1. **Sep 9 to 25 search drop.** Cause unknown. Need Umami daily visitors for September, plus
    Search Console Page indexing and Manual actions.

@@ -693,6 +693,8 @@ async function handleSSR(request, env) {
 var SITE = "https://herefishyfishy.ca";
 var PROXY_PUBLIC = "https://proxy.herefishyfishy.ca";
 var FROM = "HereFishyFishy <hello@herefishyfishy.ca>";
+// CASL sender identification: name, mailing address, contact. Shown in every email footer.
+var SENDER_FOOTER = "HereFishyFishy \xB7 Shawnmarr Rd, Mississauga ON \xB7 hello@herefishyfishy.ca";
 function resend(env, path, method, body) {
   return fetch("https://api.resend.com" + path, {
     method,
@@ -769,7 +771,8 @@ async function handleSubscribe(request, env) {
             <a href="${SITE}" style="color:#1e7a6e">herefishyfishy.ca</a>.</p>
             <p style="color:#999;font-size:11px;margin-top:32px">
               You're getting this because you signed up at herefishyfishy.ca.
-              <a href="${links.page}" style="color:#999">Unsubscribe</a>
+              <a href="${links.page}" style="color:#999">Unsubscribe</a><br>
+              ${SENDER_FOOTER}
             </p>
           </div>`
     });

@@ -7845,7 +7845,29 @@ function initNotifyBar() {
       window.removeEventListener('scroll', onScroll);
     }
   }
+  // One scroll listener at a time: this runs again each time a river is opened.
+  if (bar._onScroll) window.removeEventListener('scroll', bar._onScroll);
+  bar._onScroll = onScroll;
   window.addEventListener('scroll', onScroll);
+
+  // Listeners below are bound once. initNotifyBar() runs every time a river is opened, and
+  // binding again stacked handlers, so one tap on Subscribe sent one request per river viewed.
+  if (bar._bound) return;
+  bar._bound = true;
+
+  // Keep the bar above the on-screen keyboard. Android Chrome and iOS Safari shrink only
+  // the visual viewport when the keyboard opens, so a bottom:0 fixed bar ends up behind it.
+  // Lift it by the gap between the layout viewport and the visible area.
+  if (window.visualViewport) {
+    var vv = window.visualViewport;
+    var liftBar = function() {
+      var gap = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      bar.style.bottom = gap > 0 ? gap + 'px' : '';
+      bar.classList.toggle('keyboard-up', gap > 0);
+    };
+    vv.addEventListener('resize', liftBar);
+    vv.addEventListener('scroll', liftBar);
+  }
 
   // Dismiss
   if (dismiss) {

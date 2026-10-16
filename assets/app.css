@@ -2559,6 +2559,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 
   /* Shown when a signup fails, so nobody leaves thinking they're subscribed. */
   .notify-bar-error { color: #f3b0a6; font-size: .8rem; margin-top: .5rem; }
+  /* Keyboard open: the bar already sits above the keyboard, so drop the home-bar inset. */
+  .notify-bar.keyboard-up { padding-bottom: .85rem; }
 
   /* Season-by-reach block at the top of the regs Details. Same inset as the glossary. */
   .regs-reaches { padding: .75rem 1rem .25rem 1rem; }
