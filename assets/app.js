@@ -37,6 +37,54 @@ function track(event, props) {
     // Analytics must never break the app. Swallow and carry on.
   }
 }
+// Analytics funnel (Umami):
+//   page view -> River Viewed (results shown) -> engagement (Regs Details Opened, Gauge Link
+//   Clicked, Full Regs Clicked) -> Navigate Clicked (the angler is heading out).
+//   Side path: Notify Bar Shown -> Email Signup | Email Signup Failed | Notify Bar Dismissed.
+// Every results render goes through trackRiverViewed(), so this is the one place the
+// "results shown" event fires. Callers set window._viewSource first.
+var _lastViewKey = '';
+function trackRiverViewed() {
+  try {
+    var river = selectedRiver ? selectedRiver.split(',')[0].trim() : 'unknown';
+    var species = (selectedSpecies && selectedSpecies.length) ? selectedSpecies.join(',') : 'any';
+    var td = document.getElementById('trip-date');
+    var ds = td && td.value ? td.value : '';
+    var day = 'today';
+    if (ds) {
+      var n = new Date(), t = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+      var diff = Math.round((new Date(ds + 'T12:00:00') - new Date(t + 'T12:00:00')) / 86400000);
+      day = diff <= 0 ? 'today' : diff === 1 ? 'tomorrow' : 'later';
+    }
+    var key = river + '|' + species + '|' + ds;
+    if (key === _lastViewKey) return;          // a re-render of the same view, not a new view
+    _lastViewKey = key;
+    track('River Viewed', { river: river, species: species, source: window._viewSource || 'search', day: day });
+    window._viewSource = null;
+  } catch (e) {}
+}
+
+// Clicks that show intent, wired once at the document so cards rendered later are covered.
+document.addEventListener('click', function(e) {
+  try {
+    var el = e.target.closest && e.target.closest('a, button');
+    if (!el) return;
+    var river = (typeof selectedRiver !== 'undefined' && selectedRiver) ? selectedRiver.split(',')[0].trim() : 'unknown';
+    var href = el.getAttribute('href') || '';
+    if (/maps\.google\.com/.test(href)) {
+      track('Navigate Clicked', { river: river, spot: (el.textContent || '').replace(/^\W*Navigate to\s*/, '').trim() });
+    } else if (el.closest('#flow-gauge-link') || /wateroffice\.ec\.gc\.ca/.test(href)) {
+      track('Gauge Link Clicked', { river: river });
+    } else if (el.classList.contains('regs-link')) {
+      track('Full Regs Clicked', { river: river });
+    } else if (el.classList.contains('regs-details-toggle')) {
+      // The inline handler has already run, so the label shows the new state.
+      if (/\u2212/.test(el.textContent)) track('Regs Details Opened', { river: river });
+    } else if (el.classList.contains('gcard')) {
+      track('Guide Card Clicked', { url: href });
+    }
+  } catch (err) {}
+}, false); // bubble phase, so inline handlers (the regs toggle) have already run
 // ── END ANALYTICS HELPER ────────────────────────────────────────────────────
 
 var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle Beaver River (Clarksburg to Heathcote)", "Upper Beaver River (Kimberley)"], "Black Creek": ["Black Creek — Upper Reaches (Vaughan to North York)", "Black Creek — Lower Watershed & Humber Confluence"], "Bowmanville Creek": ["Bowmanville Creek — River Mouth & Piers", "Lower Bowmanville Creek", "Middle Bowmanville Creek (Fish Ladder)", "Upper Bowmanville Creek"], "Bronte Creek": ["Bronte Creek — Lower Estuary & Mouth", "Bronte Creek — Mid-Section & Provincial Park", "Bronte Creek — Upper Headwaters"], "Credit River": ["Upper Credit River", "Middle Credit River", "Lower Credit River"], "Duffins Creek": ["Duffins Creek — Lower Section", "Duffins Creek — Middle Section", "Duffins Creek — Upper Reaches"], "Eramosa River": ["Eramosa River — Upper Headwaters (Above Rockwood)", "Eramosa River — Mid-Section (Rockwood to Eden Mills)"], "Ganaraska River": ["Ganaraska River — Lower (Lake to CNR Bridge)", "Ganaraska River — Port Hope Sanctuary", "Ganaraska River — Upper & Conservation Areas"], "Grand River": ["Upper Grand River (Tailwater)", "Lower Grand River"], "Humber River": ["Lower Humber River", "Lower-Mid Humber (Old Mill to Eglinton)", "Upper Humber River (Headwaters)"], "Nottawasaga River": ["Nottawasaga River — Headwaters (Niagara Escarpment)", "Nottawasaga River — Middle Section (Alliston to Angus)", "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)"], "Rouge River": ["Rouge River — Marsh & Mouth (Lake Ontario)", "Rouge River — Mid-Section (Rouge National Urban Park)", "Rouge River — Upper & Milne Dam (Markham)"], "Saugeen River": ["Saugeen River — Headwaters & Upper Tributaries", "Saugeen River — Lower Main Stem (Paisley to Southampton)"], "Sixteen Mile Creek": ["Sixteen Mile Creek — Lower Reaches & Oakville Harbour", "Sixteen Mile Creek — Middle Reaches & Main Valley", "Sixteen Mile Creek — Upper West Branch (Trout)"], "Speed River": ["Speed River — Upper (Above Guelph Lake)"], "Wilmot Creek": ["Wilmot Creek — Mouth & Marsh (Lake Ontario)", "Wilmot Creek — Lower River (to CN Rail Tracks)", "Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)", "Wilmot Creek — Upper Watershed & Orono Crown Lands"]};
@@ -3446,11 +3494,7 @@ function goToResults(){
   document.getElementById("results").style.display=""; document.getElementById("results").classList.add("active");
   window.scrollTo(0,0);
   initNotifyBar();
-  // Track river page view
-  (function(){
-    var _rv = selectedRiver ? selectedRiver.split(",")[0].trim() : "unknown";
-    track("River Viewed", { river: _rv });
-  })();
+  window._viewSource = 'search';
   // Push history state so browser back button returns to dashboard
   history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
   renderResults();
@@ -3475,6 +3519,7 @@ function goToSection(section, speciesName) {
   selectedRiver = section + (loc ? ', ' + loc.replace(/–/g, '-') : '');
   selectedRiverIsAuto = false;
   track('Redirect Followed', { river: section, species: speciesName || '' });
+  window._viewSource = 'redirect';
   setResHeader(selectedRiver);
   history.pushState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
   window.scrollTo(0, 0);
@@ -3643,7 +3688,7 @@ function goBack(){
     _results.classList.add('active');
     window.scrollTo(0, 0);
     initNotifyBar();
-    if (typeof track === 'function') track('River Viewed', { river: selectedRiver, source: 'deep-link' });
+    window._viewSource = 'deep-link';
     history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
     renderResults();
     setTimeout(loadBaitImages, 800);
@@ -4282,6 +4327,7 @@ function showTab(tab,btn){
 // ── RENDER RESULTS ────────────────────────────────────────────────────────────
 async function renderResults(){
   var cfg = getRiverConfig(selectedRiver);
+  trackRiverViewed();
   // Keep the header in sync on every path. Deep links set selectedRiver and call
   // renderResults directly without going through selectRiver, which previously left
   // the hardcoded "Grand River, Fergus" placeholder showing.
@@ -6607,6 +6653,7 @@ function renderRiverRanker(locKey, maxMinutes) {
       setResHeader(selectedRiver);
       grid.querySelectorAll('.rrank-card').forEach(function(c){ c.style.outline = ''; });
       this.style.outline = '2px solid var(--fern)';
+      window._viewSource = 'nearby';
       renderResults();
     });
   });
@@ -7680,6 +7727,7 @@ function renderDefaultPreview() {
       document.getElementById('results').style.display = ''; document.getElementById('results').classList.add('active');
       window.scrollTo(0, 0);
       initNotifyBar();
+      window._viewSource = 'home-list';
       renderResults();
       setTimeout(loadBaitImages, 800);
     });
@@ -7793,6 +7841,7 @@ function initNotifyBar() {
     if (!shown && window.scrollY > 300) {
       shown = true;
       bar.classList.add('visible');
+      track('Notify Bar Shown', { river: (selectedRiver || '').split(',')[0] || 'unknown' });
       window.removeEventListener('scroll', onScroll);
     }
   }
@@ -7802,6 +7851,7 @@ function initNotifyBar() {
   if (dismiss) {
     dismiss.addEventListener('click', function() {
       bar.classList.remove('visible');
+      track('Notify Bar Dismissed', { river: (selectedRiver || '').split(',')[0] || 'unknown' });
       localStorage.setItem('hff_bar_dismissed', '1');
       setTimeout(function(){ bar.style.display = 'none'; }, 400);
     });
@@ -7829,10 +7879,18 @@ function initNotifyBar() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, rivers: rivers, species: species, source: 'river-bar' }),
       })
-      .then(function(r){ return r.json(); })
+      // Only a confirmed save counts. The bar used to show "you're on the list" and record
+      // a signup whatever the Worker returned, so months of failed saves looked like signups.
+      .then(function(r){
+        return r.json().catch(function(){ return {}; }).then(function(d){
+          if (!r.ok || !d || d.ok !== true) throw new Error('subscribe ' + r.status);
+          return d;
+        });
+      })
       .then(function(data) {
         localStorage.setItem('hff_subscribed', '1');
-        track('Email Signup', { river: (selectedRiver || '').split(',')[0] || 'unknown' });
+        track('Email Signup', { river: (selectedRiver || '').split(',')[0] || 'unknown',
+                                species: species.join(',') || 'any' });
         if (form)    form.style.display    = 'none';
         if (success) success.style.display = 'block';
         setTimeout(function() {
@@ -7840,10 +7898,20 @@ function initNotifyBar() {
           setTimeout(function(){ bar.style.display = 'none'; }, 400);
         }, 2500);
       })
-      .catch(function() {
-        localStorage.setItem('hff_subscribed', '1');
-        if (form)    form.style.display    = 'none';
-        if (success) success.style.display = 'block';
+      .catch(function(err) {
+        track('Email Signup Failed', { river: (selectedRiver || '').split(',')[0] || 'unknown',
+                                       reason: String(err && err.message || 'network').slice(0, 60) });
+        submit.disabled = false;
+        submit.textContent = 'Try again';
+        var _err = document.getElementById('notify-bar-error');
+        if (!_err && form) {
+          _err = document.createElement('div');
+          _err.id = 'notify-bar-error';
+          _err.className = 'notify-bar-error';
+          _err.setAttribute('role', 'alert');
+          form.parentNode.insertBefore(_err, form.nextSibling);
+        }
+        if (_err) _err.textContent = 'Something went wrong and your email wasn\u2019t saved. Please try again.';
       });
     });
 

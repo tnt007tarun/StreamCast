@@ -131,17 +131,42 @@ Merged recently:
   staging days. Fixed "spinning gear and spinning" stutter.
 - **#68** Lake-run brown trout (own calendar, float gear); steelhead stage from September; headlines for closed
   sanctuaries, out-of-season and unlisted species no longer fall through to "Head to <spot>".
-- **(this PR)** Regs panel by reach: `reachSeasons()` shows every reach's season band and whether it's open on the
+- **#71** Regs panel by reach: `reachSeasons()` shows every reach's season band and whether it's open on the
   trip date (Details, plus a sentence in the summary). The species filter now uses `regsRowMatches()`, so
   "Chinook / Coho Salmon" rows show. Gear rules and C&R come from the reach config, not river-wide text (the
   lower Credit no longer says "artificial lures only"). Wrong `catchRelease` tags removed from the Lower Grand (C&R is Paris to
   Brantford only) and the Nottawasaga Lower Section (C&R is Boyne to Pine only; McKinnon Road is below the Pine, per TJ).
+
+- **(this PR)** Funnel tracking and honest signup handling (see "Analytics events" below). The notify bar used to
+  show success and fire `Email Signup` even when `/subscribe` returned 500. It now checks `{ok:true}`, shows an
+  error and fires `Email Signup Failed` otherwise.
+
+### Analytics events (Umami)
+- App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
+  `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
+  `window._viewSource`), `Notify Bar Shown`, `Notify Bar Dismissed`, `Email Signup {river, species}`,
+  `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
+  `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url}`. Click events come from one delegated listener
+  next to `track()`. Add new click events there.
+- Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
+  every link into the app, `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
+
+### Signup Worker (outside the repo)
+`streamcast-proxy` handles `/subscribe`: writes `sub:<email>` to KV `SUBSCRIBERS`, adds the contact to Resend
+(`RESEND_AUDIENCE_ID`, segment "General" `7c4ef108-3d3d-41ba-95f4-3776f957330e`), sends the welcome email. Bindings it
+needs: KV `SUBSCRIBERS` (HEREFISHYFISHY_SUBSCRIBERS), KV `CACHE` (HEREFISHYFISHY_CACHE), secret `RESEND_API_KEY`,
+var `RESEND_AUDIENCE_ID`. A redeploy in June or August dropped the bindings, so every signup after 2026-06-08 failed.
 
 Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project doc
 `claude/analytics-2026-10-06.md`. Most clicks come from searches that name a place and a year
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+0. **Signups (2026-10-15, in order):** (a) TJ restores the Worker bindings in the Cloudflare dashboard, then verify a
+   test signup lands in KV and Resend. (b) Unsubscribe page: the welcome email links to `/unsubscribe?email=`, which
+   404s (CASL). (c) Worker code into the repo with a wrangler config listing the bindings. (d) Umami review with the
+   new events. (e) Better signup offer: the bar promises "alerts when conditions are excellent", which aren't sent yet.
 
 1. **Sep 9 to 25 search drop.** Cause unknown. Need Umami daily visitors for September, plus
    Search Console Page indexing and Manual actions.
