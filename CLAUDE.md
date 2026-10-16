@@ -117,7 +117,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-14)
+## Current state (updated 2026-10-15)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -131,6 +131,11 @@ Merged recently:
   staging days. Fixed "spinning gear and spinning" stutter.
 - **#68** Lake-run brown trout (own calendar, float gear); steelhead stage from September; headlines for closed
   sanctuaries, out-of-season and unlisted species no longer fall through to "Head to <spot>".
+- **(this PR)** Regs panel by reach: `reachSeasons()` shows every reach's season band and whether it's open on the
+  trip date (Details, plus a sentence in the summary). The species filter now uses `regsRowMatches()`, so
+  "Chinook / Coho Salmon" rows show. Gear rules and C&R come from the reach config, not river-wide text (the
+  lower Credit no longer says "artificial lures only"). Wrong `catchRelease` tags removed from the Lower Grand (C&R is Paris to
+  Brantford only) and the Nottawasaga Lower Section (C&R is Boyne to Pine only; McKinnon Road is below the Pine, per TJ).
 
 Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project doc
 `claude/analytics-2026-10-06.md`. Most clicks come from searches that name a place and a year

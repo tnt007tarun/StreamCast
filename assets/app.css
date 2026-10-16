@@ -2557,6 +2557,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 
 @layer overrides {
 
+  /* Season-by-reach block at the top of the regs Details. Same inset as the glossary. */
+  .regs-reaches { padding: .75rem 1rem .25rem 1rem; }
+
   /* ── form card blowing out to 660px on mobile ────────────────────────────
      #landing is display:flex / flex-direction:column, and .form-card carries
      `margin: 1.6rem auto 1rem`. Auto margins on the cross axis DISABLE
