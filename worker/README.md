@@ -20,3 +20,6 @@ Unsubscribe links are `https://herefishyfishy.ca/unsubscribe/?e=<email>&t=<token
 token is an HMAC of the email with `UNSUBSCRIBE_SECRET`. Any email sent to the list must include
 one (build it with `unsubLinks()`) plus the `List-Unsubscribe` headers, and must skip KV records
 with `unsubscribed: true`.
+
+Every email footer also carries `SENDER_FOOTER` (name, mailing address, contact) for CASL.
+Change the address there when it changes, and keep the old one working for 60 days.
