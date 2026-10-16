@@ -149,7 +149,7 @@ Merged recently:
 - **#74** Notify bar rides above the mobile keyboard (`visualViewport`), and its listeners bind once (opening a
   second river used to stack handlers, so one tap sent one signup per river viewed). Email footer has `SENDER_FOOTER`
   (deployed 2026-10-15).
-- **(this PR)** Clean Umami data: every tracker tag has `data-domains` (live domain only, so PR previews and local
+- **#75** Clean Umami data: every tracker tag has `data-domains` (live domain only, so PR previews and local
   runs don't count), and `/?notrack=1` sets `umami.disabled` on that browser so TJ's own visits drop out (`=0` undoes it).
 
 ### Analytics events (Umami)
@@ -190,11 +190,18 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    no street number); TJ will swap in a virtual mailbox address. Still to do: an Umami review with the new events, and
    a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
 
-1. **Sep 9 to 25 search drop.** Cause unknown. Need Umami daily visitors for September, plus
-   Search Console Page indexing and Manual actions.
+1. **Sep 9 to 25 search drop.** Cause unknown. Umami (live from Sep 11) shows no matching collapse in app events
+   (Sep 12, 14, 21, 25 at 110 to 120 events vs 156 on Sep 26), but TJ's own testing is in those numbers. Next: Umami
+   Overview filtered to Referrer contains google, visitors by day, Sep 1 to 30. Flat means a Search Console reporting
+   artifact (close the thread); a dip means check Page indexing and Manual actions.
 2. **Indexing requested** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, 2026-10-14). Check they show
    as indexed in Search Console's Page indexing report at the next analytics review.
-3. **Umami species breakdown** hasn't been reviewed. The river breakdown has.
+3. **Umami review (2026-10-15, partial)** in project doc `claude/analytics-2026-10-15.md`. Still to get from TJ:
+   species by river, and the Google-referrer daily visitors above. Then recommend the next pages. Ideas so far: a
+   "where to trout fish after Sep 30" page (Brook Trout searches appear in October; verify every claim against MNR
+   2026), and a clearer species prompt ("any" is one of the biggest species values). Also check a Brook Trout search
+   on a closed reach shows as closed.
+   TJ: open `herefishyfishy.ca/?notrack=1` on each browser after #75 deploys.
 4. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 5. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
 6. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
@@ -210,5 +217,3 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    beads" never matches (it checks for an em dash, the method name uses a middot). Left as is on purpose; change
    only if TJ wants the longer wording.
 
-A scheduled task runs on 2026-10-15 to ask TJ for Search Console and Umami data and recommend
-the next pages to build.
