@@ -100,6 +100,9 @@ short-name splits accept either character.
 - YouTube thumbnails: `hqdefault.jpg` (`maxresdefault` doesn't exist for every video).
 - Photos: WebP, max 1200 px wide, quality 72. Keep the JPG for og:image and JSON-LD.
 - Videos: compress (720p, CRF 28, `+faststart`), `preload="none"`, with a poster frame.
+- Site icon: `favicon.svg` is the source (white fish on teal `#1e7a6e`). `favicon.ico` (16/32/48), `apple-touch-icon.png`,
+  `icon-192.png`, `icon-512.png` and `site.webmanifest` are rendered from it. Every page head carries the same four
+  icon tags (copy them from any page). The header logo `images/brand/logo.png` is separate and stays.
 
 ## Workflow
 
@@ -151,6 +154,8 @@ Merged recently:
   (deployed 2026-10-15).
 - **(this PR)** Clean Umami data: every tracker tag has `data-domains` (live domain only, so PR previews and local
   runs don't count), and `/?notrack=1` sets `umami.disabled` on that browser so TJ's own visits drop out (`=0` undoes it).
+- **(this PR)** New site icon (fish mark, TJ's pick 2026-10-16). The old icon was the full logo shrunk to 16 px and was
+  invisible in tabs, and Google needs a square icon of 48 px or more for search results.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
