@@ -1246,8 +1246,9 @@ var RIVER_CONFIG = {
   },
   'Nottawasaga River — Lower Section (Boyne to Wasaga Beach)': {
     season:'all-year',
-    // MNR 2026: Boyne River downstream to the Pine River \u2014 Rainbow Trout S-0 / C-0.
-    catchRelease:['Rainbow Trout','Steelhead'],
+    // MNR 2026: Rainbow Trout are S-0 / C-0 from the Boyne River down to the Pine River
+    // only. Both access points here (McKinnon Road, confirmed below the Pine by TJ, and the
+    // Wasaga Beach mouth) are below the Pine, where rainbows are S-2 / C-1. No C&R tag.
     gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
     sweetMin:8, sweetMax:30, flowLow:2, flowHigh:60,
     lat:44.300, lng:-79.980,
@@ -3824,7 +3825,7 @@ async function fetchFlow(gaugeId) {
 // updateMethods and applyStagingTechniqueOverride both wrote the three pillars, by hand,
 // in slightly different ways. Beyond the drift that caused, the override rewrote the
 // chip row wholesale — which silently erased the catch-and-release chip on water that is
-// both a staging zone AND C-0 (the lower Nottawasaga, for steelhead). Both callers now
+// both a staging zone AND C-0. Both callers now
 // go through here, and the C&R notice is applied last so it can never be overwritten.
 function applyCatchReleaseNotice(shownSpeciesName, cfg) {
   var cr = (cfg && cfg.catchRelease) || null;
