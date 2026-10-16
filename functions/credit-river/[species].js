@@ -178,7 +178,7 @@ function renderPage(route, cond, speciesSlug) {
 <meta property="og:description" content="Live flow, water temperature and access points for ${route.species} on the Credit River.">
 <meta property="og:url" content="https://herefishyfishy.ca/credit-river/${speciesSlug}">
 <meta property="og:type" content="article">
-<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c" data-domains="herefishyfishy.ca,www.herefishyfishy.ca"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Credit River ${route.species} Fishing Conditions","url":"https://herefishyfishy.ca/credit-river/${speciesSlug}","isPartOf":{"@type":"WebSite","name":"HereFishyFishy","url":"https://herefishyfishy.ca"}}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}

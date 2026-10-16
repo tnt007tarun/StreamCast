@@ -5,7 +5,14 @@
   <!-- Privacy-friendly analytics by Umami. Cookieless, no consent banner needed.
        REPLACE data-website-id with the ID from your Umami dashboard before deploying;
        until then the script loads but records nothing against your site. -->
-<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c"></script>
+<script>
+// Owner opt-out. Open herefishyfishy.ca/?notrack=1 once on each device and browser you use, and Umami
+// stops counting your visits there (it checks localStorage "umami.disabled"). /?notrack=0 turns it back on.
+try { var _nt = /[?&]notrack=([01])/.exec(location.search);
+  if (_nt) { if (_nt[1] === '1') localStorage.setItem('umami.disabled', '1'); else localStorage.removeItem('umami.disabled'); }
+} catch (e) {}
+</script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c" data-domains="herefishyfishy.ca,www.herefishyfishy.ca"></script>
 <!-- MS Clarity -->
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){

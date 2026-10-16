@@ -146,9 +146,11 @@ Merged recently:
 
 - **#73** Unsubscribe: `/unsubscribe/` page plus the Worker's `/unsubscribe` (signed links, one-click headers).
   Worker source and `wrangler.toml` now live in `worker/`.
-- **(this PR)** Notify bar rides above the mobile keyboard (`visualViewport`), and its listeners bind once (opening a
+- **#74** Notify bar rides above the mobile keyboard (`visualViewport`), and its listeners bind once (opening a
   second river used to stack handlers, so one tap sent one signup per river viewed). Email footer has `SENDER_FOOTER`
   (deployed 2026-10-15).
+- **(this PR)** Clean Umami data: every tracker tag has `data-domains` (live domain only, so PR previews and local
+  runs don't count), and `/?notrack=1` sets `umami.disabled` on that browser so TJ's own visits drop out (`=0` undoes it).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -159,6 +161,10 @@ Merged recently:
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app, `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
+- Umami started 2026-09-11 (replaced Plausible). Its Events view counts visitors who fired an event, not all
+  visitors. `Email Signup` counts before 2026-10-15 are not real signups (the Worker was failing). `CTA Clicked`
+  stops 2026-10-04 (duplicate removed). Data before this PR includes TJ's own visits and preview builds.
+- New tracker tags need `data-domains="herefishyfishy.ca,www.herefishyfishy.ca"`.
 - Unsubscribe page: `Unsubscribe Completed`, `Unsubscribe Failed {reason}`, `Unsubscribe Link Bad {reason}`. Its Umami
   script has `data-exclude-search` so emails in the link never reach Umami.
 
