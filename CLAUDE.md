@@ -167,13 +167,14 @@ Merged recently:
   where-steelhead-hold and the Bowmanville page. Fixed the salmon table's Bowmanville row (linked to `/`) and tracked the
   Credit row. Homepage guides: up to 4 in-season picks as cards, the rest in a collapsed "More guides" list; pictures
   are lazy `<img>` from `images/thumbs/` (480 px), so the section loads about 80 KB instead of 573 KB.
-- **(this PR)** Upstream reach suggestion (TJ's rule, 2026-10-16): from Oct 1 to Dec 31, the hero adds a link and
+- **(this PR)** Upstream reach suggestion (TJ's rule, 2026-10-16): in `upstreamWindowOn()` dates (Oct 1 to Dec 31, and
+  the trout opener to May 31, TJ), the hero adds a link and
   "See … →" button to the furthest reach upstream that is open on the trip date for a migratory target species
   (`furthestUpstreamOpen()` over `UPSTREAM_OF`). Suggest, not switch (TJ's choice). The Ganaraska town reach displays as
   "Port Hope Town Reach (Jocelyn St to CNR)" via `SECTION_DISPLAY` (key unchanged). The regs summary now says other
   reaches are "open" on the date instead of quoting their season band, which hid the Sep 1 to Oct 14 closure.
   "Best for species" (`resolveAutoSection()` / `bestSectionForSpecies()`) follows the same rule: it skips reaches where
-  the species isn't fishable on the trip date, and for steelhead and salmon from Oct 1 moves up via
+  the species isn't fishable on the trip date, and for steelhead and salmon in the same window moves up via
   `furthestUpstreamOpen()`. Steelhead was missing from two species-label maps (`_sm`, `_sm2`), so a steelhead search
   showed "Any Species" and skipped the species seasonal check.
 
@@ -232,7 +233,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 6. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
 7. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
-   below it"). Across reaches this is done (upstream pass, 2026-10-16). Within a reach the pick still only knows "not
+   below it"); TJ extended it to the trout opener through May (2026-10-16). Across reaches this is done (upstream pass
+   and Best for species, 2026-10-16). Within a reach the pick still only knows "not
    the mouth" (the `mouth` flag); a per-spot upstream order for `access[]` is still skipped (TJ, 2026-10-13).
 8. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ). Steelhead at Hogs Falls above Kimberley: one

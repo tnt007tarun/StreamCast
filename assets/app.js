@@ -110,8 +110,8 @@ function resolveAutoSection(riverName) {
   var sections = RIVER_SECTIONS[riverName] || [];
   var sp = (typeof selectedSpecies !== 'undefined' && selectedSpecies.length) ? selectedSpecies[0] : null;
   var best = sp ? bestSectionForSpecies(riverName, sp) : null;
-  // After September 30, migratory fish spread up the river, so the pick moves to the furthest
-  // reach upstream that is open on the trip date (TJ's rule). Same check as the hero's
+  // When the run is in the river (from Oct 1, and from the trout opener to May 31), the pick
+  // moves to the furthest reach upstream that is open on the trip date (TJ's rule). Same check as the hero's
   // upstream pass, so the two never disagree.
   if (best) {
     var _keyName = {steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
@@ -573,13 +573,23 @@ var UPSTREAM_OF = {
   'Lower Beaver River (Thornbury)': 'Middle Beaver River (Clarksburg to Heathcote)',
   'Middle Beaver River (Clarksburg to Heathcote)': 'Upper Beaver River (Kimberley)'
 };
-// TJ's rule: after September 30, fish as far upstream as the regulations allow. Returns the
-// furthest reach above this one where one of the species is fishable on the date, as
-// {section, species}, or null. Closed reaches in between are skipped, not a stop: fish pass
-// through a sanctuary to the open water above it.
+// TJ's rule: when the run is in the river, fish as far upstream as the regulations allow.
+// That's after September 30 (Oct 1 to Dec 31) and from the trout opener (fourth Saturday in
+// April) to May 31. In between, fish are staging at the mouths or back in the lake.
+function upstreamWindowOn(dateStr) {
+  if (!dateStr) return false;
+  var p = dateStr.split('-'), y = parseInt(p[0], 10);
+  var d = new Date(y, parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+  if (d.getMonth() >= 9) return true;                              // Oct 1 to Dec 31
+  var opener = seasonWindowFor('standard', y);
+  return !!(opener && d >= opener.open && d <= new Date(y, 4, 31)); // opener to May 31
+}
+// Returns the furthest reach above this one where one of the species is fishable on the
+// date, as {section, species}, or null. Closed reaches in between are skipped, not a stop:
+// fish pass through a sanctuary to the open water above it.
 function furthestUpstreamOpen(sectionName, speciesNames, dateStr) {
   if (!dateStr || !speciesNames || !speciesNames.length) return null;
-  if (parseInt(dateStr.split('-')[1], 10) < 10) return null;   // October 1 to December 31
+  if (!upstreamWindowOn(dateStr)) return null;
   var cur = String(sectionName || '').split(',')[0].trim(), best = null, seen = {};
   while (UPSTREAM_OF[cur] && !seen[cur]) {
     seen[cur] = true;
@@ -6475,7 +6485,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   })();
 
   // Upstream pass (TJ's rule). Only when nothing above already sent the reader elsewhere and
-  // the fish aren't staging at the mouth: from October, point to the furthest reach upstream
+  // the fish aren't staging at the mouth: in upstreamWindowOn() dates, point to the furthest reach upstream
   // that is open on the trip date for a migratory species the reader is after.
   (function() {
     if (_goto || _stagingHeadline) return;
@@ -6492,7 +6502,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Same river, so name the reach only.
     var _upLink = '<a href="#river" class="tp-goto-link" data-goto-section="' + _up.section + '" data-goto-species="'
       + _up.species + '"><em>' + secShort(_up.section) + '</em></a>';
-    headlineHtml += ' After September 30 the fish keep pushing upstream, and the ' + _upLink
+    headlineHtml += ' The fish are pushing upstream now, and the ' + _upLink
       + ' is open on your date. Start there if you can.';
     _goto = { section: _up.section, species: _up.species };
   })();
