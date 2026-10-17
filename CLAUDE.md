@@ -47,6 +47,9 @@ without them broke every signup from June to October 2026.
   up-to-4 cards shown; the rest go in the collapsed list. A local `img` needs a 480 px copy in `images/thumbs/` (same file name).
 - `STAGING_ZONES`: river mouths used for the salmon staging model.
 - `UPSTREAM_OF[section]`: the next reach upstream (geography only). Add new migratory sections to it.
+- `waterTempFor()`: water temperature. Live CVC reading on the Credit (today), else `modelWaterTemp()` over 30 days of
+  daily mean air plus the forecast to the trip date, with per-reach `waterModelParams()` (groundwater pull `gw`, memory
+  `tau`; overrides in `WATER_MODEL_OVERRIDES`), else the old `waterTempEst()`. Label from `waterTempSourceText()`.
 - `SECTION_DISPLAY[section]`: display name for a key that reads wrong on screen. `secLabel()` and `secShort()` use it;
   never split a section key yourself for display.
 - `#bait-source` in `index.html` is hidden but **not dead**: `renderBaitPillar()` reads its cards to build the Bait pillar.
@@ -167,6 +170,11 @@ Merged recently:
   where-steelhead-hold and the Bowmanville page. Fixed the salmon table's Bowmanville row (linked to `/`) and tracked the
   Credit row. Homepage guides: up to 4 in-season picks as cards, the rest in a collapsed "More guides" list; pictures
   are lazy `<img>` from `images/thumbs/` (480 px), so the section loads about 80 KB instead of 573 KB.
+- **(this PR)** Water temperature: live CVC readings on the Credit (today), a weather-memory model everywhere else
+  (`waterTempFor()`), and the Credit SSR pages use the live reading. Worker `/water-temps` plus an hourly cron logging
+  readings to KV `wt:log:*` (deployed 2026-10-16). First calibration on 4 CVC stations: mean error 0.4 °C (was 1.3 °C with
+  the default curve; the old air-now rule ranged about 6.5 to 18 °C over that same day). Plan and sources: project doc
+  `claude/water-temperature-plan-2026-10-16.md`.
 - **(this PR)** Upstream reach suggestion (TJ's rule, 2026-10-16): in `upstreamWindowOn()` dates (Oct 1 to Dec 31, and
   the trout opener to May 31, TJ), the hero adds a link and
   "See … →" button to the furthest reach upstream that is open on the trip date for a migratory target species
@@ -240,6 +248,11 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ). Steelhead at Hogs Falls above Kimberley: one
    fishing site only, no fisheries source, and Upper Beaver is a `standard` section (closed through the spring
    run), so it stays resident-only.
+10. **Water temperature (2026-10-16):** refit `WATER_CURVE_MID` and per-reach `gw`/`tau` from `wt:log:*` once a few weeks
+   (and later winter and spring) of readings exist; read them with the Cloudflare API, compute in the API sandbox. Find
+   which GRCA (Grand, Speed, Eramosa) and SVCA (Saugeen) stations report water temperature and add them as live sources.
+   TJ to ask Conservation Halton for Bronte and Sixteen Mile logger data, and CLOCA for Bowmanville probe data.
+   "Credit River at Highway 10 N" location unknown (coordinates in `CVC_STATIONS` are a guess); not used by the app.
 9. **Float wording:** in-river float headlines say "float rod and bait"; the intended "float rod with roe bags or
    beads" never matches (it checks for an em dash, the method name uses a middot). Left as is on purpose; change
    only if TJ wants the longer wording.

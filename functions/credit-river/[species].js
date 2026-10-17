@@ -108,7 +108,7 @@ const SSR_ROUTES = {
 };
 
 // ── SCORING LOGIC ────────────────────────────────────────────────────────────
-function scoreConditions(flow, airTemp, cloudPct, route, month) {
+function scoreConditions(flow, airTemp, cloudPct, route, month, measuredWater) {
   let flowState = 'unknown', flowLabel = 'Check gauge';
   if (flow != null) {
     if (flow >= route.sweetMin && flow <= route.sweetMax) { flowState = 'good'; flowLabel = 'In range'; }
@@ -116,7 +116,10 @@ function scoreConditions(flow, airTemp, cloudPct, route, month) {
     else { flowState = flow <= route.sweetMax * 1.8 ? 'ok' : 'poor'; flowLabel = 'High'; }
   }
 
-  const waterTemp = airTemp != null ? Math.round((airTemp * 0.7 + 4) * 10) / 10 : null;
+  // Live CVC reading for this reach when there is one; otherwise the rough air-based estimate.
+  const waterMeasured = measuredWater != null;
+  const waterTemp = waterMeasured ? measuredWater
+    : (airTemp != null ? Math.round((airTemp * 0.7 + 4) * 10) / 10 : null);
   let tempState = 'unknown', tempLabel = 'Unknown';
   if (waterTemp != null) {
     if (waterTemp >= 8 && waterTemp <= 14) { tempState = 'good'; tempLabel = 'Ideal'; }
@@ -149,7 +152,7 @@ function scoreConditions(flow, airTemp, cloudPct, route, month) {
 
   return { quality, qualityLabel, inSeason,
     flow: flow != null ? Math.round(flow * 10) / 10 : null,
-    flowState, flowLabel, waterTemp, tempState, tempLabel, cloudPct, skyState, skyLabel };
+    flowState, flowLabel, waterTemp, waterMeasured, tempState, tempLabel, cloudPct, skyState, skyLabel };
 }
 
 // ── HTML TEMPLATE ────────────────────────────────────────────────────────────
@@ -176,7 +179,7 @@ function renderPage(route, cond, speciesSlug) {
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <title>Credit River ${route.species}: Conditions Today</title>
-<meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : 'not available, check the gauge'}, water ${cond.waterTemp != null ? '~' + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
+<meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : 'not available, check the gauge'}, water ${cond.waterTemp != null ? (cond.waterMeasured ? '' : '~') + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
 <link rel="canonical" href="https://herefishyfishy.ca/credit-river/${speciesSlug}">
 <meta property="og:title" content="Credit River ${route.species}: ${cond.qualityLabel} today">
 <meta property="og:description" content="Live flow, water temperature and access points for ${route.species} on the Credit River.">
@@ -265,7 +268,7 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
         <div class="tile-val">${cond.flow != null ? cond.flow + ' <span style="font-size:.8rem">m³/s</span>' : '&mdash;'}</div>
         <div class="tile-meaning" style="color:${stateColor(cond.flowState)}">${cond.flowLabel}</div></div>
       <div><div class="tile-lbl">Water temp</div>
-        <div class="tile-val">${cond.waterTemp != null ? '~' + cond.waterTemp + '&deg;' : '&mdash;'}</div>
+        <div class="tile-val">${cond.waterTemp != null ? (cond.waterMeasured ? '' : '~') + cond.waterTemp + '&deg;' : '&mdash;'}</div>
         <div class="tile-meaning" style="color:${stateColor(cond.tempState)}">${cond.tempLabel}</div></div>
       <div><div class="tile-lbl">Sky</div>
         <div class="tile-val">${cond.cloudPct != null ? cond.cloudPct + '%' : '&mdash;'}</div>
@@ -334,16 +337,24 @@ export async function onRequest(context) {
   }
 
   const PROXY = 'https://streamcast-proxy.tnt-tarun.workers.dev';
-  const [flowRes, wxRes] = await Promise.allSettled([
+  const [flowRes, wxRes, wtRes] = await Promise.allSettled([
     fetch(`${PROXY}/flow?station=${route.gauge}`).then(r => r.json()).catch(() => null),
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${route.lat}&longitude=${route.lng}&current=temperature_2m,cloudcover&timezone=America%2FToronto`).then(r => r.json()).catch(() => null),
+    fetch(`${PROXY}/water-temps`).then(r => r.ok ? r.json() : null).catch(() => null),
   ]);
+  // Same station map as LIVE_WATER_STATIONS in assets/app.js.
+  const CVC_STATION = { 'Lower Credit River': 'Credit River at Mississaugua Golf and Country Club',
+    'Middle Credit River': 'Credit River at Old Derry Road', 'Upper Credit River': 'Credit River at Cataract Falls' };
+  const wtData = wtRes.status === 'fulfilled' ? wtRes.value : null;
+  const wtFresh = wtData && wtData.updated && (Date.now() - Date.parse(wtData.updated) < 6 * 3600 * 1000);
+  const wtRead = wtFresh && wtData.water ? wtData.water[CVC_STATION[route.section]] : null;
+  const measuredWater = wtRead && wtRead.latest != null ? wtRead.latest : null;
 
   const flow = flowRes.status === 'fulfilled' && flowRes.value?.flow != null ? flowRes.value.flow : null;
   const airTemp = wxRes.status === 'fulfilled' && wxRes.value?.current?.temperature_2m != null ? wxRes.value.current.temperature_2m : null;
   const cloudPct = wxRes.status === 'fulfilled' && wxRes.value?.current?.cloudcover != null ? wxRes.value.current.cloudcover : null;
 
-  const cond = scoreConditions(flow, airTemp, cloudPct, route, new Date().getMonth());
+  const cond = scoreConditions(flow, airTemp, cloudPct, route, new Date().getMonth(), measuredWater);
   const html = renderPage(route, cond, speciesSlug);
 
   if (env.CACHE) {
