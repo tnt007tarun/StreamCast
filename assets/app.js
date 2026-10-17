@@ -2211,7 +2211,7 @@ var RIVER_REGS = {
         "name": "Rainbow Trout (Steelhead)",
         "season": "4th Sat. April \u2013 Sept. 30; open all year (lower)",
         "limit": "S-2 / C-1",
-        "notes": "Extended season applies at lower Ganaraska."
+        "notes": "Open all year below the CNR. Jocelyn St to the CNR is open from the fourth Saturday in April to Aug 31 and Oct 15 to Dec 31."
       },
       {
         "name": "Chinook / Coho Salmon",
@@ -3021,12 +3021,18 @@ function renderRiverUI(cfg) {
         }).join("");
       }
 
+      // When the river has several reaches, the reach table above gives each reach's season, so
+      // the river-wide season text ("Sept. 30; open all year (lower)") and season notes would
+      // repeat it in a vaguer, sometimes contradictory form. Keep the species and its limit.
+      var _multiReach = reachSeasons(selectedRiver, '').length > 1;
+      var _seasonNote = /season|open all year|closed|sept|dec\.? 31|april/i;
       var rows = filteredSpecies.map(function(s) {
-        return '<div class="reg-row">' +
+        var note = s.notes && !(_multiReach && _seasonNote.test(s.notes)) ? s.notes : '';
+        return '<div class="reg-row' + (_multiReach ? ' reg-row-nos' : '') + '">' +
           '<div class="reg-species">' + s.name + '</div>' +
-          '<div class="reg-season">' + s.season + '</div>' +
+          (_multiReach ? '' : '<div class="reg-season">' + s.season + '</div>') +
           '<div class="reg-limit">' + s.limit + '</div>' +
-          (s.notes ? '<div class="reg-note">' + s.notes + '</div>' : '') +
+          (note ? '<div class="reg-note">' + note + '</div>' : '') +
         '</div>';
       }).join("");
       var regsSummary = filterAndSummariseRegs(regs, document.getElementById('trip-date') ? document.getElementById('trip-date').value : '', selectedSpecies);
@@ -3046,13 +3052,19 @@ function renderRiverUI(cfg) {
         var _plainEnglish = buildRegsPlainEnglish(regs, filteredSpecies, window._effectiveRecommendedSpecies, _reaches);
         var _reachHtml = _reaches.length > 1
           ? '<div class="regs-reaches"><div class="regs-glossary-title">Trout and salmon season by reach</div>' +
-            _reaches.map(function(rc) {
-              return '<div class="regs-glossary-row"><span class="rg-term">' + rc.label + (rc.here ? ' \u00b7 this reach' : '') +
-                '</span><span class="rg-def">' + rc.bandText.charAt(0).toUpperCase() + rc.bandText.slice(1) + '. ' +
-                (_tripDS ? (rc.status === 'open' ? '<strong>Open</strong> on this date' : '<strong>Closed</strong> on this date') +
-                  (rc.why ? ' (' + rc.why + ')' : '') + '.' : '') +
-                '</span></div>';
-            }).join('') + '</div>'
+            '<div class="rr-list">' + _reaches.map(function(rc) {
+              // One aligned row per reach: name on the left, today's status and the season band on the right.
+              var band = rc.band === 'all-year' ? 'Season: open all year'
+                : 'Season: ' + rc.bandText.replace(/^open from (the )?/, '');
+              var status = _tripDS
+                ? '<div class="rr-status ' + (rc.status === 'open' ? 'rr-open' : 'rr-closed') + '"><span class="rr-dot" aria-hidden="true"></span>' +
+                    (rc.status === 'open' ? 'Open' : 'Closed') + ' on this date' + (rc.why ? '<span class="rr-why">, ' + rc.why + '</span>' : '') + '</div>'
+                : '';
+              return '<div class="rr-row' + (rc.here ? ' rr-here' : '') + '">' +
+                '<div class="rr-name">' + rc.label + (rc.here ? ' <span class="rr-tag">This reach</span>' : '') + '</div>' +
+                '<div class="rr-info">' + status + '<div class="rr-band">' + band + '</div></div>' +
+              '</div>';
+            }).join('') + '</div></div>'
           : '';
         var _detailsId = 'regs-det-' + idx;
         return '<div class="regs-panel">' +

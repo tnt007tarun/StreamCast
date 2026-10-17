@@ -2585,6 +2585,25 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 
   /* Season-by-reach block at the top of the regs Details. Same inset as the glossary. */
   .regs-reaches { padding: .75rem 1rem .25rem 1rem; }
+  /* Season by reach: one aligned row per reach, same columns on every row. */
+  .rr-list { display: flex; flex-direction: column; }
+  .rr-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: .25rem 1rem;
+    padding: .55rem 0; border-top: 1px solid var(--rule, rgba(45,74,50,.1)); align-items: start; }
+  .rr-row:first-child { border-top: 0; }
+  .rr-name { font: 600 .82rem/1.35 var(--sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif); color: var(--text-strong, var(--moss)); }
+  .rr-tag { display: inline-block; margin-left: .35rem; padding: .05rem .4rem; border-radius: 999px; vertical-align: 1px;
+    background: rgba(30,122,110,.1); color: var(--fern); font-size: .66rem; font-weight: 600; white-space: nowrap; }
+  .rr-status { font-size: .82rem; font-weight: 600; line-height: 1.35; }
+  .rr-status.rr-open { color: var(--fern); }
+  .rr-status.rr-closed { color: var(--red); }
+  .rr-dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; margin-right: .4rem; transform: translateY(-1px); }
+  .rr-why { font-weight: 400; color: var(--text-muted, var(--sage)); }
+  .rr-band { font-size: .76rem; line-height: 1.4; color: var(--text-muted, var(--sage)); margin-top: .1rem; }
+  @media (max-width: 560px) {
+    .rr-row { grid-template-columns: 1fr; }
+  }
+  /* Species rows without the river-wide season column (the reach table covers seasons). */
+  .reg-row.reg-row-nos { grid-template-columns: 1fr auto; }
 
   /* ── form card blowing out to 660px on mobile ────────────────────────────
      #landing is display:flex / flex-direction:column, and .form-card carries
