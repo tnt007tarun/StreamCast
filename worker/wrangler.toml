@@ -24,6 +24,10 @@ RESEND_AUDIENCE_ID = "7c4ef108-3d3d-41ba-95f4-3776f957330e"   # Resend segment "
 [observability]
 enabled = true
 
+# Hourly: log CVC water temperature readings (and recent air temperature) for calibration.
+[triggers]
+crons = ["5 * * * *"]
+
 # Secrets (set once with `npx wrangler secret put NAME`, never committed):
 #   RESEND_API_KEY       Resend API key
 #   UNSUBSCRIBE_SECRET   HMAC key for unsubscribe links. Changing it breaks every link already sent.

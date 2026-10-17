@@ -3831,10 +3831,136 @@ async function fetchWeather(cfg){
   }
 }
 
-function waterTempEst(airTemp){
-  var m=new Date().getMonth();
+// ── WATER TEMPERATURE ──────────────────────────────────────────────────────────
+// Rivers don't follow today's air temperature. Water carries the weather of the last week
+// or two, spring-fed reaches are pulled toward groundwater temperature (cooler than the air
+// in summer, warmer in winter), and it rarely moves more than a degree or so a day.
+// Order of preference: a live reading (CVC on the Credit, today only), the model below run
+// over recent daily air temperatures plus the forecast to the trip date, then the old rough
+// rule if the weather history can't be fetched.
+
+// Last resort: air temperature plus a seasonal offset, keyed to the trip month.
+function waterTempEst(airTemp, dateStr){
+  var m=(dateStr ? new Date(dateStr+'T12:00:00') : new Date()).getMonth();
   var off=(m>=5&&m<=8)?-4:(m>=3&&m<=10)?-1:1;
   return Math.round((airTemp+off)*10)/10;
+}
+
+var GROUNDWATER_C = 8.5;   // shallow groundwater in southern Ontario, about the mean annual air temperature plus a little
+// Midpoint of the air-to-water curve. Fitted to CVC's Credit stations on 2026-10-16 (four stations, mean error
+// 0.4 °C vs 1.3 °C at 14). One fall evening only: refit from the Worker's wt:log:* history as seasons pass.
+var WATER_CURVE_MID = 12.5;
+// Per-reach settings. gw: pull toward groundwater temperature (0 = none, 1 = spring water);
+// tau: how many days of weather the water "remembers" (small creeks react faster).
+// Defaults come from the reach's position; overrides are reaches we know behave differently.
+var WATER_MODEL_OVERRIDES = {
+  'Lower Humber River': { gw: 0.05 },                                    // urban runoff, warm
+  'Black Creek \u2014 Lower Watershed & Humber Confluence': { gw: 0.05 },
+  'Black Creek \u2014 Upper Reaches (Vaughan to North York)': { gw: 0.15 },
+  'Upper Grand River (Tailwater)': { gw: 0.35, tau: 5 },                  // cold bottom release from the dam, not springs
+  'Lower Grand River': { gw: 0.05, tau: 6 },                              // big, runoff-fed river
+  // Bowmanville: small, short creek. TJ sees it cool faster than other rivers (unverified, no public data).
+  'Bowmanville Creek \u2014 River Mouth & Piers': { tau: 3 },
+  'Lower Bowmanville Creek': { tau: 3 },
+  'Middle Bowmanville Creek (Fish Ladder)': { tau: 2.5 },
+  'Upper Bowmanville Creek': { tau: 2 }
+};
+function waterModelParams(section) {
+  var s = String(section || '').split(',')[0].trim();
+  var p;
+  if (/mouth|harbour|estuary|marsh|pier/i.test(s)) p = { gw: 0.10, tau: 5 };
+  else if (/lower-mid|middle|mid-/i.test(s))      p = { gw: 0.25, tau: 4 };
+  else if (/lower/i.test(s))                       p = { gw: 0.15, tau: 5 };
+  else if (/upper|headwater/i.test(s))             p = { gw: 0.40, tau: 3 };
+  else                                             p = { gw: 0.25, tau: 4 };
+  var o = WATER_MODEL_OVERRIDES[s];
+  if (o) { if (o.gw != null) p.gw = o.gw; if (o.tau != null) p.tau = o.tau; }
+  return p;
+}
+// series: daily mean air temperatures, oldest first, ending on the trip date.
+function modelWaterTemp(series, p) {
+  var vals = (series || []).filter(function(t){ return t != null && !isNaN(t); });
+  if (vals.length < 7) return null;
+  var k = 1 - Math.exp(-1 / p.tau);
+  var a = vals.slice(0, 7).reduce(function(x, y){ return x + y; }, 0) / 7;  // warm start
+  var w = null;
+  vals.forEach(function(t) {
+    a += (t - a) * k;
+    // Equilibrium temperature of open water for this smoothed air temperature: near 0 in
+    // winter, close to the air in spring and fall, flattening out in the mid 20s.
+    var surf = 26 / (1 + Math.exp(0.18 * (WATER_CURVE_MID - a)));
+    var target = p.gw * GROUNDWATER_C + (1 - p.gw) * surf;
+    w = (w == null) ? target : Math.max(w - 1.5, Math.min(w + 1.5, target));
+  });
+  return Math.round(Math.max(0, w) * 10) / 10;
+}
+
+// Live readings: Credit Valley Conservation, via the Worker's /water-temps.
+var LIVE_WATER_STATIONS = {
+  'Lower Credit River':  { station: 'Credit River at Mississaugua Golf and Country Club', place: 'Mississauga' },
+  'Middle Credit River': { station: 'Credit River at Old Derry Road', place: 'Meadowvale' },
+  'Upper Credit River':  { station: 'Credit River at Cataract Falls', place: 'Cataract' }
+};
+var _liveWaterPromise = null;
+function fetchLiveWaterTemps() {
+  if (!_liveWaterPromise) {
+    _liveWaterPromise = fetch(PROXY_URL + '/water-temps')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+  return _liveWaterPromise;
+}
+var _airHistoryCache = {};
+function fetchAirHistory(lat, lng) {
+  var key = lat + ',' + lng;
+  if (!_airHistoryCache[key]) {
+    _airHistoryCache[key] = fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng +
+        '&daily=temperature_2m_mean&past_days=30&forecast_days=16&timezone=America%2FToronto')
+      .then(function(r){ return r.json(); })
+      .then(function(d){ return d && d.daily ? { time: d.daily.time, mean: d.daily.temperature_2m_mean } : null; })
+      .catch(function(){ return null; });
+  }
+  return _airHistoryCache[key];
+}
+function _airSeriesTo(hist, dateStr) {
+  if (!hist) return null;
+  var i = hist.time.indexOf(dateStr);
+  return i === -1 ? null : hist.mean.slice(0, i + 1);
+}
+// Returns { value, kind: 'measured' | 'model' | 'rough', place }.
+async function waterTempFor(section, cfg, dateStr, isToday, airTemp) {
+  var base = String(section || '').split(',')[0].trim();
+  var live = LIVE_WATER_STATIONS[base];
+  var liveVal = null;
+  if (live) {
+    var lw = await fetchLiveWaterTemps();
+    var rd = lw && lw.water && lw.water[live.station];
+    var fresh = lw && lw.updated && (Date.now() - Date.parse(lw.updated) < 6 * 3600 * 1000);
+    if (rd && fresh && rd.latest != null) liveVal = rd.latest;
+  }
+  if (liveVal != null && isToday) return { value: liveVal, kind: 'measured', place: live.place };
+
+  var p = waterModelParams(base);
+  var hist = cfg ? await fetchAirHistory(cfg.lat, cfg.lng) : null;
+  var model = modelWaterTemp(_airSeriesTo(hist, dateStr), p);
+  if (model != null) {
+    // A future date on a river with a live station: start from today's reading and let the
+    // difference from the model fade over a few days.
+    if (liveVal != null) {
+      var todayStr = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+      var mToday = modelWaterTemp(_airSeriesTo(hist, todayStr), p);
+      var days = Math.round((new Date(dateStr + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / 86400000);
+      if (mToday != null && days > 0) model = Math.round((model + (liveVal - mToday) * Math.exp(-days / 4)) * 10) / 10;
+    }
+    return { value: model, kind: 'model', place: null };
+  }
+  return { value: waterTempEst(airTemp, dateStr), kind: 'rough', place: null };
+}
+function waterTempSourceText(info, airTemp) {
+  if (!info) return 'Est. water temp (air: ' + airTemp + '\u00b0C). ';
+  if (info.kind === 'measured') return 'Measured water temp, ' + info.place + ' (Credit Valley Conservation, live). ';
+  if (info.kind === 'model') return 'Est. water temp from the last few weeks of weather (air: ' + airTemp + '\u00b0C). ';
+  return 'Rough est. water temp (air: ' + airTemp + '\u00b0C). ';
 }
 
 // ── FLOW ──────────────────────────────────────────────────────────────────────
@@ -4439,7 +4565,10 @@ async function renderResults(){
   // Fall back to seasonal-typical only if the fetch genuinely failed
   if(!weatherOk){ airTemp=12; cloudPct=50; }
   window._weatherOk = weatherOk; // expose — used to avoid false-confidence thermal reads on stale/fallback data
-  var wt=waterTempEst(airTemp);
+  var _wtInfo = null;
+  try { _wtInfo = await waterTempFor(selectedRiver, cfg, dateStr, isToday, airTemp); } catch(_wtErr) { _wtInfo = null; }
+  var wt = (_wtInfo && _wtInfo.value != null) ? _wtInfo.value : waterTempEst(airTemp, dateStr);
+  window._waterTempInfo = _wtInfo;
   // Salmon staging card (mouth sections, staging species, in-season)
   var _stagingPromise = null;
   try {
@@ -4819,7 +4948,7 @@ async function renderResults(){
 
   // Temp column
   document.getElementById("tval").textContent=wt;
-  document.getElementById("tlbl").textContent="Est. water temp (air: "+airTemp+"\u00b0C). "+(tc==="good"?"Prime feeding range for trout.":tc==="warn"?(wt<TEMP_MIN?"Below prime. Fish sluggish.":"Warming. Early morning only."):(wt>=TEMP_STRESS?"Conservation advisory: stop fishing above 18\u00b0C.":"Too cold. Fish inactive."));
+  document.getElementById("tlbl").textContent=waterTempSourceText(_wtInfo, airTemp)+(tc==="good"?"Prime feeding range for trout.":tc==="warn"?(wt<TEMP_MIN?"Below prime. Fish sluggish.":"Warming. Early morning only."):(wt>=TEMP_STRESS?"Conservation advisory: stop fishing above 18\u00b0C.":"Too cold. Fish inactive."));
   document.getElementById("tgv").textContent=wt+"\u00b0C";
   var tb=document.getElementById("tbar");tb.style.width=barW(wt,0,22)+"%";tb.className="gf "+tc;
   document.getElementById("tstat").innerHTML=clsLbl(tc);document.getElementById("tstat").className="gs "+tc;
@@ -5864,7 +5993,7 @@ function renderConditionTiles(opts) {
   var wt = opts.wt;
   var waterState, waterMeaning;
   if (wt == null) { waterState = 'na'; waterMeaning = 'No data'; }
-  else if (window._weatherOk === false) { waterState = 'na'; waterMeaning = 'Est. only'; }
+  else if (window._weatherOk === false && !(window._waterTempInfo && window._waterTempInfo.kind === 'measured')) { waterState = 'na'; waterMeaning = 'Est. only'; }
   else if (wt >= 8 && wt <= 14) { waterState = 'good'; waterMeaning = 'Ideal'; }
   else if (wt >= 5 && wt < 8) { waterState = 'ok'; waterMeaning = 'Cool'; }
   else if (wt > 14 && wt <= 18) { waterState = 'ok'; waterMeaning = 'Warm'; }

@@ -818,7 +818,98 @@ async function handleUnsubscribe(request, env, url) {
   const r = await resend(env, "/audiences/" + env.RESEND_AUDIENCE_ID + "/contacts/" + encodeURIComponent(clean), "PATCH", { unsubscribed: true });
   return jsonResponse({ ok: true, resend: r.status });
 }
+// Live water temperature
+// CVC publishes the latest reading and the 24 h range for its real-time stations as a
+// server-rendered table (one table per parameter, each headed by the parameter name).
+// The hourly cron also logs readings plus the station's recent daily air temperature, which
+// is what the app's water temperature model is calibrated against.
+var CVC_WQ_URL = "https://cvc.ca/water-quality-table/";
+var CVC_STATIONS = {
+  "Credit River at Mississaugua Golf and Country Club": { lat: 43.566, lng: -79.622 },
+  "Credit River at Old Derry Road": { lat: 43.626, lng: -79.734 },
+  "Credit River at Highway 10 N": { lat: 43.87, lng: -80.02 },
+  "Credit River at Cataract Falls": { lat: 43.829, lng: -80.03 },
+  "West Credit River at Belfountain Conservation Area": { lat: 43.795, lng: -80.01 }
+};
+function htmlText(s) {
+  return String(s).replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#0?39;|&rsquo;/g, "'").replace(/\s+/g, " ").trim();
+}
+function parseCvcTable(html, label) {
+  var re = new RegExp(label, "i");
+  var tables = html.split(/<table/i).slice(1).map(function(t) { return t.split(/<\/table>/i)[0]; });
+  var body = tables.find(function(t) { return re.test(htmlText(t).slice(0, 300)); });
+  if (!body) return null;
+  var out = {};
+  (body.match(/<tr[\s\S]*?<\/tr>/gi) || []).forEach(function(row) {
+    if (/<th[\s>]/i.test(row)) return;   // header row ("24 Hour Min" would parse as 24)
+    var cells = (row.match(/<t[dh][^>]*>[\s\S]*?<\/t[dh]>/gi) || []).map(htmlText);
+    if (cells.length < 2 || !cells[0] || /^station$/i.test(cells[0])) return;
+    var nums = cells.slice(1).map(function(c) { return parseFloat(c); }).filter(function(n) { return isFinite(n); });
+    if (!nums.length) return;
+    out[cells[0]] = { latest: nums[0], min: nums.length > 1 ? nums[1] : null, max: nums.length > 2 ? nums[2] : null };
+  });
+  return out;
+}
+async function fetchCvcTemps() {
+  var res = await fetch(CVC_WQ_URL, { headers: { "User-Agent": "HereFishyFishy/1.0 (herefishyfishy.ca)" } });
+  if (!res.ok) throw new Error("CVC " + res.status);
+  var html = await res.text();
+  var water = parseCvcTable(html, "Water Temperature") || {};
+  // Drop impossible readings (a dead sensor reports 0.0 across the board).
+  Object.keys(water).forEach(function(k) {
+    var w = water[k];
+    if (w.latest < -1 || w.latest > 35 || (w.latest === 0 && w.min === 0 && w.max === 0)) delete water[k];
+  });
+  return { updated: (new Date()).toISOString(), source: "Credit Valley Conservation", water: water, air: parseCvcTable(html, "Air Temperature") || {}, html: html };
+}
+async function handleWaterTemps(env) {
+  var cached = env.CACHE ? await env.CACHE.get("wt:latest", "json") : null;
+  if (cached && Date.now() - Date.parse(cached.updated) < 45 * 60 * 1e3) return jsonResponse(cached, 200, 900);
+  try {
+    var d = await fetchCvcTemps();
+    delete d.html;
+    if (env.CACHE) await env.CACHE.put("wt:latest", JSON.stringify(d));
+    return jsonResponse(d, 200, 900);
+  } catch (e) {
+    if (cached) return jsonResponse(cached, 200, 300);
+    return errorResponse("Water temperature unavailable: " + e.message, 502);
+  }
+}
+function torontoDate(d) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+}
+async function logWaterTemps(env) {
+  if (!env.CACHE) return;
+  var d = await fetchCvcTemps();
+  var html = d.html; delete d.html;
+  await env.CACHE.put("wt:latest", JSON.stringify(d));
+  var day = torontoDate(new Date());
+  var key = "wt:log:" + day;
+  var log = await env.CACHE.get(key, "json") || { date: day, readings: [], airDaily: null };
+  var pick = function(tbl) { var o = {}; Object.keys(tbl || {}).forEach(function(k) { o[k] = tbl[k].latest; }); return o; };
+  log.readings.push({ t: d.updated, water: pick(d.water), air: pick(d.air) });
+  if (!log.airDaily) {
+    log.airDaily = {};
+    for (var name of Object.keys(CVC_STATIONS)) {
+      var s = CVC_STATIONS[name];
+      try {
+        var r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + s.lat + "&longitude=" + s.lng +
+          "&daily=temperature_2m_mean&past_days=60&forecast_days=1&timezone=America%2FToronto");
+        var j = await r.json();
+        if (j.daily) log.airDaily[name] = { time: j.daily.time, mean: j.daily.temperature_2m_mean };
+      } catch (e) {}
+    }
+  }
+  await env.CACHE.put(key, JSON.stringify(log), { expirationTtl: 400 * 86400 });
+  if (!await env.CACHE.get("wt:debug")) {
+    var i = html.search(/Water Temperature/i);
+    await env.CACHE.put("wt:debug", html.slice(Math.max(0, i - 600), i + 3000), { expirationTtl: 30 * 86400 });
+  }
+}
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(logWaterTemps(env));
+  },
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS });
@@ -842,6 +933,8 @@ export default {
       return handleFields();
     if (path === "/lake-temps")
       return handleLakeTemps(url, ctx);
-    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /subscribe, /unsubscribe" }, 404);
+    if (path === "/water-temps")
+      return handleWaterTemps(env);
+    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /water-temps, /subscribe, /unsubscribe" }, 404);
   }
 };
