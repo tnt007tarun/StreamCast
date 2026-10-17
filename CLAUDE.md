@@ -146,7 +146,9 @@ Merged recently:
   (Upper Credit, closed after Sep 30). Now `autoSectionNoSpecies()`. Spinning plus salmon or steelhead in the river now
   gets float fishing on a spinning rod (hero, Technique panel, gear kit) instead of spinners. `buildGearSetup()` takes the
   species from `methodSpeciesKey()`, not `selectedSpecies[0]`.
-- **(this PR)** Hero float wording: "centrepin or spinning rod with float gear" instead of "float rod and bait".
+- **(this PR)** Hero float wording: "centrepin or spinning rod with float gear" instead of "float rod and bait". Float
+  gear box offers a centrepin for resident trout too, with lighter line (4 to 6 lb main, 3 to 4 lb leader) and #12 to 16
+  hooks (TJ: centrepin works for trout, lighter terminal tackle); steelhead and lake-run browns get the heavier kit.
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
 - **#61** `/guides/steelhead-run-timing/`, plus the Credit steelhead SSR page rewrite.
 - **#62** `/rivers/humber/` (Old Mill in fall, winter and spring; TJ's photos, video and redhorse clip).
@@ -279,6 +281,6 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    TJ to ask Conservation Halton for Bronte and Sixteen Mile logger data, and CLOCA for Bowmanville probe data.
    "Credit River at Highway 10 N" location unknown (coordinates in `CVC_STATIONS` are a guess); not used by the app.
 9. **Float wording (done, 2026-10-17):** the hero says "centrepin or spinning rod with float gear" for in-river salmon,
-   steelhead and lake-run browns, "spinning rod with float gear" when Spin Fishing is picked, and "spinning rod with a
-   float and bait" for other float or bait methods (TJ: "float rod" means different things to different anglers).
+   steelhead and lake-run browns, "spinning rod with float gear" when Spin Fishing is picked, "centrepin or spinning
+   rod with a float and bait" for other float methods, and "spinning rod with bait" for bait without a float (TJ: "float rod" means different things to different anglers).
 
