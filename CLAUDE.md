@@ -170,12 +170,12 @@ Merged recently:
   where-steelhead-hold and the Bowmanville page. Fixed the salmon table's Bowmanville row (linked to `/`) and tracked the
   Credit row. Homepage guides: up to 4 in-season picks as cards, the rest in a collapsed "More guides" list; pictures
   are lazy `<img>` from `images/thumbs/` (480 px), so the section loads about 80 KB instead of 573 KB.
-- **(this PR)** Water temperature: live CVC readings on the Credit (today), a weather-memory model everywhere else
+- **#80** Water temperature: live CVC readings on the Credit (today), a weather-memory model everywhere else
   (`waterTempFor()`), and the Credit SSR pages use the live reading. Worker `/water-temps` plus an hourly cron logging
   readings to KV `wt:log:*` (deployed 2026-10-16). First calibration on 4 CVC stations: mean error 0.4 °C (was 1.3 °C with
   the default curve; the old air-now rule ranged about 6.5 to 18 °C over that same day). Plan and sources: project doc
   `claude/water-temperature-plan-2026-10-16.md`.
-- **(this PR)** Upstream reach suggestion (TJ's rule, 2026-10-16): in `upstreamWindowOn()` dates (Oct 1 to Dec 31, and
+- **#79** Upstream reach suggestion (TJ's rule, 2026-10-16): in `upstreamWindowOn()` dates (Oct 1 to Dec 31, and
   the trout opener to May 31, TJ), the hero adds a link and
   "See … →" button to the furthest reach upstream that is open on the trip date for a migratory target species
   (`furthestUpstreamOpen()` over `UPSTREAM_OF`). Suggest, not switch (TJ's choice). The Ganaraska town reach displays as
@@ -185,6 +185,10 @@ Merged recently:
   the species isn't fishable on the trip date, and for steelhead and salmon in the same window moves up via
   `furthestUpstreamOpen()`. Steelhead was missing from two species-label maps (`_sm`, `_sm2`), so a steelhead search
   showed "Any Species" and skipped the species seasonal check.
+- **(this PR)** Regs panel Details: the season-by-reach table is an aligned two-column list (`.rr-row`: name and
+  "This reach" tag; open/closed on the date plus the season band). On multi-reach rivers the species rows drop the
+  river-wide season text and season notes, which repeated the reach table vaguely or wrongly; species and limit stay.
+  Fixed the Ganaraska steelhead note ("Extended season applies at lower Ganaraska" was wrong).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
