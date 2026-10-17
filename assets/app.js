@@ -6455,14 +6455,17 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var bringPhrase;
   // Compound method names carry their own gear noun, so the generic branches below would
   // stutter ("spinning gear and spinning · spoons & lures"). Handle them explicitly. Spinning
-  // takes either separator (the copy pass swapped the em dash for a middot). Float keeps
-  // falling through to "float rod and bait" on purpose: that is the wording on the live site.
+  // takes either separator (the copy pass swapped the em dash for a middot).
+  // "Float rod" means different things to different anglers. Float fishing for salmon,
+  // steelhead and lake-run browns is done on a centrepin or a long spinning rod (TJ), so say so.
+  // Spin Fishing picked: the spinning rod with float gear.
   if (/^spinning\s*[\u2014\u00b7]/i.test(topMethod)) bringPhrase = 'spinning gear with spoons & lures';
-  else if (/^float fishing\s*\u2014/i.test(topMethod)) bringPhrase = 'float rod with roe bags or beads';
+  else if (window._spinFloat && /float/i.test(topMethod)) bringPhrase = 'spinning rod with float gear';
+  else if (/^float fishing\s*[\u2014\u00b7]\s*roe/i.test(topMethod)) bringPhrase = 'centrepin or spinning rod with float gear';
   else if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
   else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear and ' + methodPhrase;
-  else if (window._spinFloat && /float/i.test(topMethod)) bringPhrase = 'spinning rod set up with a float and bait';
-  else if (/float|bait|drift/i.test(topMethod)) bringPhrase = 'float rod and bait';
+  else if (/float/i.test(topMethod)) bringPhrase = 'centrepin or spinning rod with a float and bait';
+  else if (/bait|drift/i.test(topMethod)) bringPhrase = 'spinning rod with bait';
   else bringPhrase = topMethod.toLowerCase() + ' gear';
 
   // Build headline — lead with species warning when target is out of season
@@ -7532,23 +7535,25 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
 
   // ── FLOAT ──────────────────────────────────────────────────────────────
   } else if (fam === 'float' || (!fam && /float|drift|bait|roe|bead|centrepin|bottom bounc/i.test(topMethod))) {
-    kitName = spinFloat ? 'Float setup on a spinning rod' : isSalmon ? 'Centrepin setup' : 'Float setup';
+    var _bigFish = isSalmon || /steelhead|chinook|coho/.test(_gk) || (_gk === 'brown' && isLakeRunBrownSection(selectedRiver));
+    kitName = spinFloat ? 'Float setup on a spinning rod' : 'Float setup';
     kitNote = high ? 'Water is up, so use a heavier float and more shot than usual.'
             : low  ? 'Flow is low, so use a smaller float and a longer leader than usual.' : null;
     if (spinFloat) {
-      g('Rod', isSalmon ? '9\u201311 ft medium-heavy spinning' : '9\u201311 ft medium spinning',
+      g('Rod', isSalmon ? '9\u201311 ft medium-heavy spinning' : _bigFish ? '9\u201311 ft medium spinning' : '9\u201311 ft medium-light spinning',
         'Your spinning rod works. Longer gives better float control', {wide:true});
-      g('Reel', isSalmon ? '3000\u20134000 spinning, smooth drag' : '2500\u20133000 spinning');
+      g('Reel', isSalmon ? '3000\u20134000 spinning, smooth drag' : _bigFish ? '2500\u20133000 spinning' : '2500 spinning');
     } else {
-    g('Rod', isSalmon ? '10\u201312 ft centrepin or spinning' : '9\u201311 ft medium-light spinning',
+    // A centrepin works for resident trout too, with lighter line, floats and hooks (TJ).
+    g('Rod', _bigFish ? 'Centrepin or 10\u201312 ft spinning' : 'Centrepin or 9\u201311 ft medium-light spinning',
       'Long rod = better float control', {wide:true});
-    g('Reel', isSalmon ? 'Centrepin or large arbor' : 'Light spinning, 2500');
+    g('Reel', _bigFish ? 'Centrepin or 3000 spinning' : 'Centrepin or light spinning, 2500');
     }
-    g('Main line', '8\u201312 lb mono', 'Mono floats');
-    g('Leader', '6\u20138 lb fluoro, 18\u201324 in', null, {wide:true});
+    g('Main line', _bigFish ? '8\u201312 lb mono' : '4\u20136 lb mono', 'Mono floats');
+    g('Leader', _bigFish ? '6\u20138 lb fluoro, 18\u201324 in' : '3\u20134 lb fluoro, 18\u201324 in', null, {wide:true});
     g('Float', high ? 'Large balsa, 4\u20136 g' : 'Small balsa or pencil, 1\u20133 g');
     g('Weights', high ? 'Shot pattern to hold depth' : 'Light shot, strung out');
-    g('Hook', '#8\u201312 single octopus', 'Barbless where required');
+    g('Hook', _bigFish ? '#8\u201312 single octopus' : '#12\u201316 single', 'Barbless where required');
     g('Also bring', 'Split shot, bait needles, pliers', null, {secondary:true});
 
   // ── SPIN ───────────────────────────────────────────────────────────────
