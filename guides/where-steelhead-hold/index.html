@@ -170,6 +170,18 @@ footer.site .ft-copy{display:none}
   .gitem .thumb{width:100%;height:auto;aspect-ratio:16/9}
   .guide-img.portrait img{max-width:100%}
 }
+
+/* Today's conditions block: links straight into the app, near the top of the page */
+.cond-now{margin:1.5rem 0 1.9rem;padding:1rem 1.1rem 1.1rem;background:#eef5f3;border-radius:10px}
+.cond-now .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.13em;
+text-transform:uppercase;color:var(--fern);margin-bottom:.45rem}
+.cond-now p{font:400 .95rem/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);margin:0 0 .8rem}
+.cond-now-links{display:flex;flex-wrap:wrap;gap:.5rem}
+.cond-now-links a{display:inline-flex;align-items:center;gap:.35rem;min-height:40px;padding:.4rem .85rem;border-radius:999px;
+background:#fff;border:1px solid #c9ddd8;color:var(--ink);text-decoration:none;
+font:600 .9rem/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.cond-now-links a span{font-weight:400;font-size:.8rem;color:var(--muted)}
+.cond-now-links a:hover,.cond-now-links a:focus-visible{border-color:var(--fern);color:var(--fern)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "datePublished": "2026-04-18", "dateModified": "2026-04-18", "headline": "Where steelhead actually hold in a river", "author": {"@type": "Person", "name": "Tarun"}, "publisher": {"@type": "Organization", "name": "HereFishyFishy"}, "mainEntityOfPage": "https://herefishyfishy.ca/guides/where-steelhead-hold/", "video": {"@type": "VideoObject", "name": "How to catch your first steelhead, Part 1: Location", "thumbnailUrl": "https://i.ytimg.com/vi/vlj1AhJQRrA/hqdefault.jpg", "embedUrl": "https://www.youtube.com/embed/vlj1AhJQRrA", "uploadDate": "2026-04-18", "description": "Part 1 of 3: where steelhead hold in a river."}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where do steelhead hold in a river?", "acceptedAnswer": {"@type": "Answer", "text": "In water with depth, a current break and cover all in one place. That means the heads and tail-outs of pools, the deeper slots in runs, and the slow side of seams where fast water meets slow. Fresh fish often stop at the head of a pool where oxygenated water tumbles in, and stage in tail-outs before moving upstream."}}, {"@type": "Question", "name": "What is a seam and why does it matter for steelhead?", "acceptedAnswer": {"@type": "Answer", "text": "A seam is the visible line where fast water runs alongside slower water. Steelhead hold on the slow side and feed on what the fast side carries past, which costs them very little energy. Seams form beside the main current tongue, behind boulders, on the inside of bends, and at tributary mouths. Drift the slow edge of the line rather than the fast water itself."}}, {"@type": "Question", "name": "Why am I not catching steelhead?", "acceptedAnswer": {"@type": "Answer", "text": "Usually it's where you're fishing, not what you're fishing with. Steelhead stack into a small number of specific lies, and much of a river is dead water: uniform shallow riffle, flat featureless glides and slack backwaters. If you cannot say why a fish would hold in the spot you are fishing, move."}}]}</script>
@@ -199,6 +211,19 @@ water that never held a fish. Your gear is rarely the problem.</p>
   tail-out and head of pools, the deeper slots inside runs, and along seams where fast water meets
   slow. Most of a river's surface area is dead water. Learn to skip it and you'll spend your time on water that holds fish.</p>
 </div>
+
+<aside class="cond-now" aria-label="Today’s conditions">
+  <div class="lbl">Today’s conditions</div>
+  <p>Live flow and water temperature on a river near you, and the access spot to start at.</p>
+  <div class="cond-now-links">
+    <a href="/?river=Ganaraska%20River%20%E2%80%94%20Lower%20(Lake%20to%20CNR%20Bridge)&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/guides/where-steelhead-hold/" data-umami-event-river="Ganaraska River" data-umami-event-placement="top">Ganaraska <span>Port Hope</span></a>
+    <a href="/?river=Lower%20Bowmanville%20Creek&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/guides/where-steelhead-hold/" data-umami-event-river="Bowmanville Creek" data-umami-event-placement="top">Bowmanville <span>Bowmanville</span></a>
+    <a href="/?river=Lower%20Credit%20River&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/guides/where-steelhead-hold/" data-umami-event-river="Credit River" data-umami-event-placement="top">Credit <span>Mississauga</span></a>
+    <a href="/?river=Lower%20Humber%20River&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/guides/where-steelhead-hold/" data-umami-event-river="Humber River" data-umami-event-placement="top">Humber <span>Toronto</span></a>
+    <a href="/?river=Bronte%20Creek%20%E2%80%94%20Lower%20Estuary%20%26%20Mouth&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/guides/where-steelhead-hold/" data-umami-event-river="Bronte Creek" data-umami-event-placement="top">Bronte <span>Oakville</span></a>
+    <a href="/?river=Duffins%20Creek%20%E2%80%94%20Lower%20Section&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/guides/where-steelhead-hold/" data-umami-event-river="Duffins Creek" data-umami-event-placement="top">Duffins <span>Ajax</span></a>
+  </div>
+</aside>
 
 <p>This is the first of three parts on catching your first steelhead around Toronto. It's about
 location, and I put it first on purpose. If you're fishing empty water, a perfect drift and the right

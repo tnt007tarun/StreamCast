@@ -119,6 +119,18 @@ footer.site .brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--in
 .fieldnote p:last-child{margin-bottom:0}
 .credit{display:block;margin-top:.3rem;font-size:.78rem;opacity:.8}
 .stamp{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.62rem;letter-spacing:.04em;color:var(--muted);margin-top:.7rem}
+
+/* Today's conditions block: links straight into the app, near the top of the page */
+.cond-now{margin:1.5rem 0 1.9rem;padding:1rem 1.1rem 1.1rem;background:#eef5f3;border-radius:10px}
+.cond-now .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.13em;
+text-transform:uppercase;color:var(--fern);margin-bottom:.45rem}
+.cond-now p{font:400 .95rem/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);margin:0 0 .8rem}
+.cond-now-links{display:flex;flex-wrap:wrap;gap:.5rem}
+.cond-now-links a{display:inline-flex;align-items:center;gap:.35rem;min-height:40px;padding:.4rem .85rem;border-radius:999px;
+background:#fff;border:1px solid #c9ddd8;color:var(--ink);text-decoration:none;
+font:600 .9rem/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.cond-now-links a span{font-weight:400;font-size:.8rem;color:var(--muted)}
+.cond-now-links a:hover,.cond-now-links a:focus-visible{border-color:var(--fern);color:var(--fern)}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "When Do Salmon Run in Bowmanville Creek?", "description": "Chinook enter Bowmanville Creek from mid-to-late August, peaking mid-September to mid-October. Which reaches stay open past September 30, fish ladder rules, access and live conditions.", "author": {"@type": "Person", "name": "Tarun"}, "publisher": {"@type": "Organization", "name": "HereFishyFishy", "url": "https://herefishyfishy.ca"}, "datePublished": "2026-09-10", "dateModified": "2026-09-10", "mainEntityOfPage": "https://herefishyfishy.ca/rivers/bowmanville/salmon-run/", "image": "https://herefishyfishy.ca/images/rivers/bowmanville-creek-valley.jpg", "about": {"@type": "Place", "name": "Bowmanville Creek, Clarington, Ontario"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When do salmon run in Bowmanville Creek?", "acceptedAnswer": {"@type": "Answer", "text": "Chinook stage off Port Darlington from early July and enter Bowmanville Creek from mid-to-late August, peaking mid-September to mid-October. Seasons differ by reach: below the CNR right-of-way is open all year, between Highway 2 and the CNR the season runs to December 31, and above Highway 2 trout and salmon fishing closes on September 30."}}, {"@type": "Question", "name": "Can you fish at the Bowmanville fish ladder?", "acceptedAnswer": {"@type": "Answer", "text": "No. Fishing is prohibited within 120 metres upstream and downstream of it. You can watch (and you should), but you can't fish that stretch."}}, {"@type": "Question", "name": "How long does Bowmanville Creek take to clear after rain?", "acceptedAnswer": {"@type": "Answer", "text": "One to two days, much faster than the Ganaraska. Time your trip for the falling half of that window."}}, {"@type": "Question", "name": "Is Bowmanville Creek crowded during the salmon run?", "acceptedAnswer": {"@type": "Answer", "text": "Busy through September and October on the open water, but noticeably quieter than Port Hope, and the valley draws plenty of people who are there for the walk rather than the fish."}}]}</script>
@@ -141,6 +153,15 @@ footer.site .brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--in
   mid-October</strong>. It's a small creek with a big run. The fish only get upstream because a few hundred
   volunteers once carried them over a dam by hand.</p>
   <p class="byline">Written from the water &middot; Gauge: Bowmanville Creek at Bowmanville &middot; Updated September 2026</p>
+
+<aside class="cond-now" aria-label="Today’s conditions">
+  <div class="lbl">Today’s conditions</div>
+  <p>Live flow, water temperature, whether fish are staging or in the creek, and what’s open on your date.</p>
+  <div class="cond-now-links">
+    <a href="/?river=Bowmanville%20Creek%20%E2%80%94%20River%20Mouth%20%26%20Piers&amp;species=chinook,steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/rivers/bowmanville/salmon-run/" data-umami-event-river="Bowmanville Creek" data-umami-event-placement="top">River mouth and piers</a>
+    <a href="/?river=Lower%20Bowmanville%20Creek&amp;species=chinook,steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/rivers/bowmanville/salmon-run/" data-umami-event-river="Bowmanville Creek" data-umami-event-placement="top">Lower creek</a>
+  </div>
+</aside>
 
   <figure class="wide">
     <img src="/images/rivers/bowmanville-creek-valley.webp" width="1400" height="933" loading="eager"
