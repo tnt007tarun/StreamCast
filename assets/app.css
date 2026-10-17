@@ -2297,8 +2297,6 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media(max-width:520px){
   #landing .hero-copy h1{font-size:1.85rem}
   #landing .hero-copy{padding:2.2rem 1.1rem 1.5rem}
-  #landing .gcard-side{flex-direction:column}
-  #landing .gcard-side .gimg{width:100%;height:auto;aspect-ratio:16/9}
   #landing .gcard-lead h3{font-size:1.25rem}
 }
 
@@ -2561,6 +2559,29 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   .notify-bar-error { color: #f3b0a6; font-size: .8rem; margin-top: .5rem; }
   /* Keyboard open: the bar already sits above the keyboard, so drop the home-bar inset. */
   .notify-bar.keyboard-up { padding-bottom: .85rem; }
+
+  /* Homepage guides: pictures are <img loading=lazy> from small thumbnails, not CSS
+     backgrounds (those load straight away). Picks stay as rows with a thumbnail on phones. */
+  .gimg { overflow: hidden; }
+  .gimg > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  #landing .gcard-side .gimg { width: 96px; height: 64px; }
+  #landing .gmore { border-bottom: 1px solid var(--ed-rule); }
+  #landing .gmore > summary { cursor: pointer; list-style: none; padding: 1rem 0;
+    font: 600 .95rem/1.3 var(--ed-serif); color: var(--fern); }
+  #landing .gmore > summary::-webkit-details-marker { display: none; }
+  #landing .gmore > summary::after { content: ' +'; }
+  #landing .gmore[open] > summary::after { content: ' \2212'; }
+  #landing .gmore > summary span { color: var(--ed-muted); font-weight: 400; }
+  #landing .gmore ul { list-style: none; margin: 0; padding: 0 0 .6rem; }
+  #landing .gmore li { border-top: 1px solid var(--ed-rule); }
+  #landing .gmini { display: block; padding: .7rem 0; text-decoration: none; }
+  #landing .gmini-t { display: block; font: 600 1rem/1.35 var(--ed-serif); color: var(--ed-ink); }
+  #landing .gmini-s { display: block; margin-top: .2rem; font-family: 'JetBrains Mono', monospace;
+    font-size: .61rem; letter-spacing: .11em; text-transform: uppercase; color: var(--ed-muted); }
+  #landing .gmini.live .gmini-s { color: var(--amber); }
+  #landing .gmini:hover .gmini-t { color: var(--fern); }
+  #landing .gmore-all { display: inline-block; margin: .2rem 0 1rem; color: var(--fern);
+    font: 600 .9rem/1.3 var(--ed-serif); }
 
   /* Season-by-reach block at the top of the regs Details. Same inset as the glossary. */
   .regs-reaches { padding: .75rem 1rem .25rem 1rem; }

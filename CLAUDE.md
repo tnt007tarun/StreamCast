@@ -43,7 +43,8 @@ without them broke every signup from June to October 2026.
 - `access[].closed[]`: date windows (`MM-DD` or a floating token like `FRI_BEFORE_4TH_SAT_APRIL`) when a spot is closed.
 - `RIVER_REGS[river]`: the regulations panel text. Its `special[]` lines are parsed for dates.
 - `ACCESS_COORDS[section]`: lined up **by index** with `access[]`. Keep both in the same order.
-- `GUIDES`: the homepage guide cards. Add new guide and river pages here, ordered by season.
+- `GUIDES`: the homepage guide cards. Add new guide and river pages here, ordered by season. `peak`/`on` months pick the
+  up-to-4 cards shown; the rest go in the collapsed list. A local `img` needs a 480 px copy in `images/thumbs/` (same file name).
 - `STAGING_ZONES`: river mouths used for the salmon staging model.
 - `#bait-source` in `index.html` is hidden but **not dead**: `renderBaitPillar()` reads its cards to build the Bait pillar.
 
@@ -154,18 +155,23 @@ Merged recently:
   (deployed 2026-10-15).
 - **#75** Clean Umami data: every tracker tag has `data-domains` (live domain only, so PR previews and local
   runs don't count), and `/?notrack=1` sets `umami.disabled` on that browser so TJ's own visits drop out (`=0` undoes it).
-- **(this PR)** New site icon (fish mark, TJ's pick 2026-10-16). The old icon was the full logo shrunk to 16 px and was
+- **#77** New site icon (fish mark, TJ's pick 2026-10-16). The old icon was the full logo shrunk to 16 px and was
   invisible in tabs, and Google needs a square icon of 48 px or more for search results.
+- **(this PR)** Funnel from search pages into the app: a "Today's conditions" block (`.cond-now`, links tagged
+  `placement: top`) right after the short answer on salmon-run-timing, steelhead-run-timing, winter-steelhead,
+  where-steelhead-hold and the Bowmanville page. Fixed the salmon table's Bowmanville row (linked to `/`) and tracked the
+  Credit row. Homepage guides: up to 4 in-season picks as cards, the rest in a collapsed "More guides" list; pictures
+  are lazy `<img>` from `images/thumbs/` (480 px), so the section loads about 80 KB instead of 573 KB.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
   `window._viewSource`), `Notify Bar Shown`, `Notify Bar Dismissed`, `Email Signup {river, species}`,
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
-  `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url}`. Click events come from one delegated listener
+  `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
-  every link into the app, `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
+  every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
 - Umami started 2026-09-11 (replaced Plausible). Its Events view counts visitors who fired an event, not all
   visitors. `Email Signup` counts before 2026-10-15 are not real signups (the Worker was failing). `CTA Clicked`
   stops 2026-10-04 (duplicate removed). Data before this PR includes TJ's own visits and preview builds.

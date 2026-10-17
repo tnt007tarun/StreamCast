@@ -80,8 +80,8 @@ document.addEventListener('click', function(e) {
     } else if (el.classList.contains('regs-details-toggle')) {
       // The inline handler has already run, so the label shows the new state.
       if (/\u2212/.test(el.textContent)) track('Regs Details Opened', { river: river });
-    } else if (el.classList.contains('gcard')) {
-      track('Guide Card Clicked', { url: href });
+    } else if (el.classList.contains('gcard') || el.classList.contains('gmini')) {
+      track('Guide Card Clicked', { url: href, slot: el.classList.contains('gmini') ? 'list' : 'card' });
     }
   } catch (err) {}
 }, false); // bubble phase, so inline handlers (the regs toggle) have already run
@@ -5173,12 +5173,17 @@ function renderGuides() {
   var sorted = GUIDES.slice().sort(function(a,b){
     return (rank(a) - rank(b)) || (monthsOut(a) - monthsOut(b));
   });
-  // Every guide is shown. The old lead-plus-two slice hid half the library once there were
-  // more than three, which cost visibility on the pages that exist for search.
-  var lead = sorted[0], rest = sorted.slice(1);
+  // A few picks for this month get cards; the rest sit in a collapsed text list below. Every
+  // guide stays linked from the homepage (they exist for search), but only the picks load
+  // pictures, and those load lazily from small thumbnails.
+  var FEATURED = 4, MIN_FEATURED = 3;
+  var picks = sorted.filter(function(g){ return rank(g) <= 1; }).slice(0, FEATURED);
+  if (picks.length < MIN_FEATURED) picks = sorted.slice(0, MIN_FEATURED);
+  var more = sorted.filter(function(g){ return picks.indexOf(g) === -1; });
+  var lead = picks[0], rest = picks.slice(1);
 
   function statusText(g) {
-    if (g.peak.indexOf(m) !== -1) return 'Peak season \u00b7 in the water now';
+    if (g.peak.indexOf(m) !== -1) return 'Peak season · in the water now';
     if (!g.peak.length) return 'Useful year round';
     if (g.on.indexOf(m) !== -1) return 'Season starting';
     var n = nextOpen(g);
@@ -5198,12 +5203,20 @@ function renderGuides() {
   function playIcon(g) {
     return g.video ? '<span class="gvid"><svg viewBox="0 0 10 10"><path d="M2 1 L9 5 L2 9 Z"/></svg></span>' : '';
   }
+  // Local photos have a 480 px copy in /images/thumbs/; YouTube thumbnails are already small.
+  function picture(g, isLead) {
+    if (!g.img) return '';
+    var local = g.img.charAt(0) === '/';
+    var thumb = local ? g.img.replace(/^\/images\/[^\/]+\//, '/images/thumbs/') : g.img;
+    var srcset = local ? ' srcset="' + thumb + ' 480w, ' + g.img + ' 1200w" sizes="' +
+      (isLead ? '(max-width:700px) 100vw, 620px' : '96px') + '"' : '';
+    return '<img src="' + thumb + '"' + srcset + ' alt="" loading="lazy" decoding="async" onerror="this.remove()">';
+  }
   function card(g, isLead) {
     var live = g.peak.indexOf(m) !== -1;
-    var bg = g.img ? ' style="background-image:url(\'' + g.img + '\')"' : '';
     return '<a class="gcard ' + (isLead ? 'gcard-lead' : 'gcard-side') + (live ? ' live' : '') + '" href="' + g.url + '">' +
       '<div class="gspine"></div>' +
-      '<div class="gimg"' + bg + '>' + playIcon(g) + '</div>' +
+      '<div class="gimg">' + picture(g, isLead) + playIcon(g) + '</div>' +
       '<div class="ginner">' +
         monthStrip(g, isLead) +
         '<h3>' + g.title + '</h3>' +
@@ -5211,9 +5224,16 @@ function renderGuides() {
         '<div class="gstatus">' + statusText(g) + '</div>' +
       '</div></a>';
   }
+  function mini(g) {
+    return '<li><a class="gmini' + (g.peak.indexOf(m) !== -1 ? ' live' : '') + '" href="' + g.url + '">' +
+      '<span class="gmini-t">' + g.title + '</span><span class="gmini-s">' + statusText(g) + '</span></a></li>';
+  }
 
   grid.innerHTML = card(lead, true) +
-    '<div class="guides-list">' + rest.map(function(g){ return card(g, false); }).join('') + '</div>';
+    '<div class="guides-list">' + rest.map(function(g){ return card(g, false); }).join('') + '</div>' +
+    (more.length ? '<details class="gmore"><summary>More guides <span>(' + more.length + ')</span></summary>' +
+      '<ul>' + more.map(mini).join('') + '</ul>' +
+      '<a class="gmore-all" href="/guides/">Browse every guide</a></details>' : '');
 }
 
 function getTripDateStr() {
