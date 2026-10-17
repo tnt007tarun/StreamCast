@@ -194,10 +194,13 @@ Merged recently:
   Fixed the Ganaraska steelhead note ("Extended season applies at lower Ganaraska" was wrong).
 - **(this PR)** Regs rows filled from the MNR 2026 zone-wide rules where a listed species had none: Chinook/Coho on the
   Credit and Black Creek, Rainbow (Steelhead) on the Humber, Rainbow on the Eramosa, Brook on Bronte, Sixteen Mile
-  (Zone 16, S-5/C-2), Duffins and Wilmot (Zone 17, S-2/C-1). The grey summary (`filterAndSummariseRegs`, now given the
-  section) uses reach gear rules and says "On this reach" on multi-reach rivers, drops the river-wide "season is closed"
-  warning there, and matches combined rows. C&R reaches show "S-0 / C-0 (C&R on this reach)" (`reachLimitText()`).
-  "How to read these rules" lists only terms the panel uses (`regsGlossary()`).
+  (Zone 16, S-5/C-2), Duffins and Wilmot (Zone 17, S-2/C-1). The regs panel is now plain-English bullets
+  (`buildRegsBullets()`, TJ's ask 2026-10-17) instead of S-x/C-x codes, a grey summary and a legend: open or closed on
+  the trip date for this reach, "Keep up to N … a day with a Sport licence, or M with a Conservation licence" per
+  species (or catch and release on C&R reaches), the FMZ 16/17 aggregate only when it adds something, artificial-only
+  when the reach config says so, and the bait zone rule. A closed reach shows only the closed bullet. The
+  season-by-reach list sits behind "Season by reach +". `filterAndSummariseRegs()` (given the section) still feeds the
+  hero chip.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

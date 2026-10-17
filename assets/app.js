@@ -3083,7 +3083,6 @@ function renderRiverUI(cfg) {
           (note ? '<div class="reg-note">' + note + '</div>' : '') +
         '</div>';
       }).join("");
-      var regsSummary = filterAndSummariseRegs(regs, document.getElementById('trip-date') ? document.getElementById('trip-date').value : '', selectedSpecies, selectedRiver);
       // Use effective recommended species for label if it differs from selection
       var _effSpLabel = window._effectiveRecommendedSpecies || null;
       // For multi-species label (e.g. "Brown Trout + Brook Trout"), use the selected keys directly
@@ -3097,7 +3096,7 @@ function renderRiverUI(cfg) {
       regsHtml = (function() {
         var _tripDS = document.getElementById('trip-date') ? document.getElementById('trip-date').value : '';
         var _reaches = reachSeasons(selectedRiver, _tripDS);
-        var _plainEnglish = buildRegsPlainEnglish(regs, filteredSpecies, window._effectiveRecommendedSpecies, _reaches);
+        var _bullets = buildRegsBullets(regs, filteredSpecies, window._effectiveRecommendedSpecies, _reaches, selectedRiver, _tripDS);
         var _reachHtml = _reaches.length > 1
           ? '<div class="regs-reaches"><div class="regs-glossary-title">Trout and salmon season by reach</div>' +
             '<div class="rr-list">' + _reaches.map(function(rc) {
@@ -3121,14 +3120,14 @@ function renderRiverUI(cfg) {
             '<span class="regs-title">' + regsLabel + '</span>' +
             '<a class="regs-link" href="https://www.ontario.ca/page/ontario-fishing-regulations-summary" target="_blank">Full Regs ↗</a>' +
           '</div>' +
-          (_plainEnglish ? '<p class="regs-plain">' + _plainEnglish + '</p>' : '') +
-          '<button class="regs-details-toggle" onclick="(function(b){var d=document.getElementById(\'' + _detailsId + '\');var o=d.style.display!==\'none\';d.style.display=o?\'none\':\'block\';b.textContent=o?\'Details +\':\'Details −\';})(this)">Details +</button>' +
-          '<div id="' + _detailsId + '" style="display:none">' +
-            _reachHtml +
-            '<div class="regs-species-list">' + rows + '</div>' +
-            (regsSummary ? '<div class="regs-specials"><div class="reg-special">📋 ' + regsSummary + '</div></div>' : '') +
-            regsGlossary(_reachHtml + rows + (regsSummary || '') + (_plainEnglish || ''), regs.zone) +
-          '</div>' +
+          (_bullets.length ? '<ul class="regs-bullets">' + _bullets.map(function(it){
+              return '<li' + (it.sp ? ' data-sp="' + it.sp.replace(/"/g, '&quot;') + '"' : '') + '>' + it.html + '</li>'; }).join('') + '</ul>'
+            : '<p class="regs-plain">No specific rules listed for this species here. Check the full regulations.</p>') +
+          '<p class="regs-foot">' + regs.zone + ' rules from the 2026 Ontario Fishing Regulations Summary. Check posted signs where you fish.</p>' +
+          (_reachHtml
+            ? '<button class="regs-details-toggle" onclick="(function(b){var d=document.getElementById(\'' + _detailsId + '\');var o=d.style.display!==\'none\';d.style.display=o?\'none\':\'block\';b.textContent=o?\'Season by reach +\':\'Season by reach \u2212\';})(this)">Season by reach +</button>' +
+              '<div id="' + _detailsId + '" style="display:none">' + _reachHtml + '</div>'
+            : '') +
         '</div>';
       })()
     }
@@ -6448,6 +6447,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       var matches = name.indexOf(_sp.split(' ')[0].toLowerCase()) !== -1;
       row.style.display = matches ? '' : 'none';
     });
+    // Same for the limit bullets in the regs panel.
+    document.querySelectorAll('.regs-bullets').forEach(function(ul) {
+      var lis = Array.from(ul.querySelectorAll('li[data-sp]'));
+      lis.forEach(function(li){ li.style.display = li.getAttribute('data-sp').toLowerCase().indexOf(_sp.split(' ')[0].toLowerCase()) !== -1 ? '' : 'none'; });
+      if (lis.length && lis.every(function(li){ return li.style.display === 'none'; })) lis.forEach(function(li){ li.style.display = ''; });
+    });
     // If all rows hidden, show all (fallback)
     document.querySelectorAll('.regs-species-list').forEach(function(list) {
       var rows = list.querySelectorAll('.reg-row');
@@ -6860,7 +6865,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _tpRegs = RIVER_REGS[riverShort];
   if (_tpRegs) {
     var _tripDate = document.getElementById('trip-date') ? document.getElementById('trip-date').value : '';
-    var _regSum = filterAndSummariseRegs(_tpRegs, _tripDate, Array.isArray(selectedSpecies)?selectedSpecies:[]);
+    var _regSum = filterAndSummariseRegs(_tpRegs, _tripDate, Array.isArray(selectedSpecies)?selectedSpecies:[], selectedRiver);
     if (_regSum) chips.push({ text: '📋 ' + _regSum.slice(0,80) + (_regSum.length>80?'\u2026':''), cls: 'warn' });
   }
 
@@ -6971,125 +6976,76 @@ function renderRiverRanker(locKey, maxMinutes) {
 // Returns a single plain-English sentence (or null) summarising ACTIVE
 // regulations for the given date and selected species.
 
-function buildRegsPlainEnglish(regs, filteredSpecies, effectiveSpecies, reaches) {
-  if (!regs || !filteredSpecies || filteredSpecies.length === 0) return null;
-
-  // Sort filteredSpecies so the effective recommended species comes first
-  var sortedSpecies = filteredSpecies.slice();
-  if (effectiveSpecies) {
-    sortedSpecies.sort(function(a, b) {
-      var aMatch = a.name.toLowerCase().indexOf(effectiveSpecies.toLowerCase()) !== -1;
-      var bMatch = b.name.toLowerCase().indexOf(effectiveSpecies.toLowerCase()) !== -1;
-      return aMatch ? -1 : bMatch ? 1 : 0;
-    });
-  }
-
-  var limitMap = {
-    'S-5 / C-2': 'you can keep up to 5 fish on a Sport licence or 2 on a Conservation licence',
-    'S-5 / C-2 (agg': 'combined limit of 5 fish (Sport) or 2 (Conservation) across species',
-    'S-2 / C-1': 'you can keep up to 2 fish on a Sport licence or 1 on a Conservation licence',
-    'S-1 / C-1': 'you can keep 1 fish on either licence type',
-    'S-0 / C-0': 'catch and release only, no fish may be kept',
-    'C&R': 'catch and release only, no fish may be kept',
-    'C&R Only': 'catch and release only, no fish may be kept'
-  };
-
-  function translateLimit(limit) {
-    if (!limit) return null;
-    var l = limit.trim();
-    // Check map
-    for (var k in limitMap) {
-      if (l.indexOf(k) === 0) return limitMap[k];
-    }
-    // Fallback: parse S-X / C-Y
-    var m = l.match(/S-(\d+)\s*\/\s*C-(\d+)/i);
-    if (m) {
-      var s = parseInt(m[1]), c = parseInt(m[2]);
-      if (s === 0) return 'catch and release only, no fish may be kept';
-      return 'you can keep up to ' + s + ' fish on a Sport licence or ' + c + ' on a Conservation licence';
-    }
-    return null;
-  }
-
-  var sentences = [];
-
-  // Sentence 1: Season open/closed
-  var sp = sortedSpecies[0];
-  var seasonText = sp.season || '';
-  // Simplify common season strings
-  seasonText = seasonText
-    .replace('4th Sat. April', 'late April')
-    .replace('4th Sat. in April', 'late April')
-    .replace('Sept. 30', 'September 30')
-    .replace('Dec. 31', 'December 31')
-    .replace(/open all year/i, 'open year-round');
-
-  var _here = (reaches || []).filter(function(rc){ return rc.here; })[0];
-  if (_here && /trout|salmon|steelhead/i.test(sp.name)) {
-    // Trout and salmon seasons are set per reach, so say what applies HERE, then what the
-    // rest of the river is doing on this date. The river-wide row can't do either.
-    sentences.push('On this reach the trout and salmon season is ' + _here.bandText + '.');
-    var _others = reaches.filter(function(rc){ return !rc.here; });
-    var _closed = _others.filter(function(rc){ return rc.status === 'closed'; });
-    var _open   = _others.filter(function(rc){ return rc.status === 'open'; });
-    if (_closed.length) {
-      sentences.push('Elsewhere on this river, ' + _closed.map(function(rc){ return rc.label; }).join(' and ') +
-        (_closed.length === 1 ? ' is' : ' are') + ' closed on this date' +
-        (_open.length ? ', while ' + _open.map(function(rc){ return rc.label + ' is open' + (rc.why ? ' (' + rc.why + ')' : ''); }).join(' and ') : '') + '.');
-    }
-  } else if (/open year.round|open all year/i.test(sp.season || '')) {
-    sentences.push('The season is open year-round for ' + sp.name + '.');
-  } else {
-    sentences.push('Season runs from ' + seasonText + '.');
-  }
-
-  // Sentence 2: Keep limit
-  var limitSentence = translateLimit(sp.limit);
-  // A reach-level catch-and-release rule overrides the river-wide limit row.
-  var _crCfg = (_here && typeof getRiverConfig === 'function') ? getRiverConfig(_here.name) : null;
-  if (_crCfg && _crCfg.catchRelease && _crCfg.catchRelease.some(function(c){
-        return sp.name.toLowerCase().indexOf(c.toLowerCase().split(' ')[0]) !== -1; })) {
-    limitSentence = 'catch and release only on this reach, no fish may be kept';
-  }
-  if (limitSentence) {
-    sentences.push('For ' + sp.name + ', ' + limitSentence + '.');
-  }
-
-  // Sentence 3: Key special rules (bait, barbless, C&R)
-  // Gear rules come from THIS reach's config. River-wide special lines and species notes
-  // describe particular reaches ("Above Old Baseline Road: artificial lures only"), and
-  // reading them here told anglers on the lower Credit that roe was illegal.
-  var keyRules = [];
-  var _hereCfg = (_here && typeof getRiverConfig === 'function') ? getRiverConfig(_here.name) : null;
-  if (_hereCfg && _hereCfg.artificialOnly) keyRules.push('artificial lures only, one single barbless hook (no bait or roe)');
-  if (_hereCfg && _hereCfg.catchRelease) {
-    var _crHit = filteredSpecies.filter(function(f){
-      return _hereCfg.catchRelease.some(function(c){ return f.name.toLowerCase().indexOf(c.toLowerCase().split(' ')[0]) !== -1; });
-    });
-    // The first species' C&R rule is already in the limit sentence; list any others here.
-    _crHit = _crHit.filter(function(f){ return f !== sp; });
-    if (_crHit.length) keyRules.push('catch and release only for ' + _crHit.map(function(f){ return f.name; }).join(' and ') + ' on this reach');
-  }
-  if ((regs.special || []).some(function(x){ return /bait management/i.test(x); })) keyRules.push('Southern Bait Management Zone (no live baitfish)');
-  if (!_here) {
-    // No reach context (shouldn't happen from the access cards): fall back to the old reading.
-    (regs.special || []).forEach(function(x) {
-      var sl = x.toLowerCase();
-      if (sl.indexOf('artificial') !== -1) keyRules.push('artificial lures only on some reaches');
-    });
-  }
-  // Deduplicate
-  keyRules = keyRules.filter(function(v, i, a) { return a.indexOf(v) === i; });
-  if (keyRules.length > 0) {
-    sentences.push('Key rules: ' + keyRules.join('; ') + '.');
-  }
-
-  // Sentence 4: Zone note
-  sentences.push('These rules apply in ' + regs.zone + '. Always check your exact location.');
-
-  return sentences.join(' ');
+// The regs panel as a few plain-English bullets: open or closed on the date, what you can keep,
+// and only the gear rules that apply on this reach. Replaces the S-x / C-y codes, the
+// river-wide summary line and the legend that explained them.
+function regsSpeciesPhrase(name) {
+  return String(name || '').replace(/\s*\/\s*/g, ' or ')
+    .replace(/\b(Trout|Salmon|Brown|Rainbow|Brook|Steelhead|Chinook|Coho)\b/g, function(m){ return m.toLowerCase(); });
 }
+function buildRegsBullets(regs, filteredSpecies, effectiveSpecies, reaches, sectionName, dateStr) {
+  var items = [];
+  if (!regs) return items;
+  var here = (reaches || []).filter(function(rc){ return rc.here; })[0];
+  var cfg = (typeof getRiverConfig === 'function') ? getRiverConfig(sectionName) : null;
+  var when = dateStr ? new Date(dateStr + 'T12:00:00').toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }) : 'this date';
 
+  // 1. Open or closed on the trip date, and this reach's season.
+  if (here) {
+    var bandSentence = here.band === 'all-year' ? 'This reach is open all year.'
+      : 'This reach is open from the ' + here.bandText.replace(/^open from (the )?/, '') + '.';
+    if (here.status === 'open') {
+      items.push({ html: '<strong class="rb-open">Open on ' + when + '.</strong> ' + bandSentence +
+        (here.why ? ' Some access points are closed on this date; the spots below show which.' : '') });
+    } else {
+      var reason = /september 30/i.test(here.why) ? 'The trout and salmon season here ended September 30.'
+        : /december 31/i.test(here.why) ? 'The trout and salmon season here ended December 31.'
+        : /fourth saturday/i.test(here.why) ? 'The season here opens on the fourth Saturday in April.'
+        : 'Every access point we list on this reach is closed on this date.';
+      items.push({ html: '<strong class="rb-closed">Closed on ' + when + '.</strong> ' + reason });
+      // Limits and gear rules don't apply to water you can't fish; listing them read as a go.
+      return items;
+    }
+  }
+
+  // 2. What you can keep, one bullet per species shown.
+  var sorted = (filteredSpecies || []).slice();
+  if (effectiveSpecies) {
+    var e = effectiveSpecies.toLowerCase().split(' ')[0];
+    sorted.sort(function(a, b){ return (b.name.toLowerCase().indexOf(e) !== -1) - (a.name.toLowerCase().indexOf(e) !== -1); });
+  }
+  var anyKeep = false, anyUnder5 = false;
+  sorted.forEach(function(row) {
+    var sp = regsSpeciesPhrase(row.name);
+    var txt;
+    if (reachCatchReleaseFor(sectionName, row.name)) {
+      txt = 'Catch and release only for ' + sp + ' on this reach. You can’t keep any.';
+    } else {
+      var m = String(row.limit || '').match(/S-(\d+)\s*\/\s*C-(\d+)/i);
+      if (!m) return;
+      var sN = parseInt(m[1], 10), cN = parseInt(m[2], 10);
+      if (sN === 0) txt = 'Catch and release only for ' + sp + '. You can’t keep any.';
+      else {
+        anyKeep = true;
+        if (sN < 5) anyUnder5 = true;
+        txt = 'Keep up to ' + sN + ' ' + sp + ' a day with a Sport licence, or ' + cN + ' with a Conservation licence.';
+      }
+    }
+    items.push({ html: txt, sp: row.name });
+  });
+  // Zones 16 and 17: all trout and salmon share one daily limit (MNR 2026, zone-wide aggregate).
+  // Only worth saying when it adds something: a species limit under 5, or several species listed.
+  if (anyKeep && (anyUnder5 || sorted.length > 1) && /FMZ 1[67]\b/.test(regs.zone || '')) {
+    items.push({ html: 'All the trout and salmon you keep count toward one daily total: 5 with a Sport licence, 2 with a Conservation licence.' });
+  }
+
+  // 3. Gear and bait rules that apply here.
+  if (cfg && cfg.artificialOnly) items.push({ html: 'Artificial lures or flies only, with one barbless hook. No bait or roe.' });
+  if ((regs.special || []).some(function(x){ return /bait management/i.test(x); })) {
+    items.push({ html: 'Don’t move baitfish or leeches into or out of the area unless they’re dead and preserved (Southern Bait Management Zone).' });
+  }
+  return items;
+}
 function filterAndSummariseRegs(regs, tripDateStr, selectedSpeciesArr, sectionName) {
   if (!regs) return null;
   // On a river with several reaches, season and gear rules belong to the reach: the reach table
@@ -7314,22 +7270,6 @@ function reachLimitText(sectionName, row) {
 }
 // "How to read these rules": only the terms that appear in this panel. The fixed list explained
 // limits, C&R and gear rules even when none of them were shown.
-function regsGlossary(panelHtml, zone) {
-  var t = String(panelHtml || '');
-  var items = [];
-  if (/S-\d+\s*\/\s*C-\d+/.test(t)) items.push(['S-5 / C-2', 'Daily catch limit: 5 fish on a Sport licence, 2 on a Conservation licence. S-0 / C-0 means catch &amp; release only.']);
-  if (/C&amp;R|C&R|catch &amp; release|catch & release|catch and release/i.test(t)) items.push(['C&amp;R', 'Catch and release. Return the fish to the water right away, unharmed.']);
-  if (/4th Sat|fourth Saturday/i.test(t)) items.push(['4th Sat. April', 'The season opens on the fourth Saturday of April, the traditional Ontario trout opener.']);
-  if (/artificial/i.test(t)) items.push(['Artificial only', 'Artificial lures or flies only. No live bait, worms or roe.']);
-  if (/barbless/i.test(t)) items.push(['Barbless hook', 'The hook must have no barb (or be pinched flat).']);
-  if (/Bait Management Zone/i.test(t)) items.push(['Bait Management Zone', 'Live or dead baitfish and leeches can\u2019t be moved into or out of the zone, unless both dead and preserved.']);
-  if (zone) items.push([zone, 'Fisheries Management Zone. Ontario is divided into zones, each with its own rules.']);
-  return '<div class="regs-glossary"><div class="regs-glossary-title">How to read these rules</div>' +
-    items.map(function(it){ return '<div class="regs-glossary-row"><span class="rg-term">' + it[0] + '</span><span class="rg-def">' + it[1] + '</span></div>'; }).join('') +
-    '</div>';
-}
-
-// ── SPECIES RECOMMENDATION (when none selected) ──────────────────────────────
 function recommendSpecies(cfg) {
   // Score each species on the river and return ranked list with reasons
   // Steelhead must be here. It is a distinct SPECIES_SEASONS entry (migratory O. mykiss)
