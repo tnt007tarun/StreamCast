@@ -61,6 +61,9 @@ without them broke every signup from June to October 2026.
   the claude.ai project. If it isn't available, ask TJ to attach the PDF. Never work from memory.
 - Season bands: `all-year`, `extended` (4th Sat in April to Dec 31), `standard` (4th Sat in
   April to Sept 30). Sanctuaries go in `access[].closed`.
+- Every species a river's sections list needs a matching `RIVER_REGS[river].species` row (`regsRowMatches()`), or the
+  regs panel shows no summary and no limit for it. Rows come from the zone-wide table in the MNR summary unless an
+  exception applies.
 - `speciesFishableIn()`, `seasonClosureFor()`, `accessClosureOn()`, `allAccessClosed()` and `sectionClosedOn()` decide
   legality. Use them. Don't write a new check.
 - Before changing seasons or closures, run a date-by-date check of every access spot against
@@ -185,10 +188,16 @@ Merged recently:
   the species isn't fishable on the trip date, and for steelhead and salmon in the same window moves up via
   `furthestUpstreamOpen()`. Steelhead was missing from two species-label maps (`_sm`, `_sm2`), so a steelhead search
   showed "Any Species" and skipped the species seasonal check.
-- **(this PR)** Regs panel Details: the season-by-reach table is an aligned two-column list (`.rr-row`: name and
+- **#81** Regs panel Details: the season-by-reach table is an aligned two-column list (`.rr-row`: name and
   "This reach" tag; open/closed on the date plus the season band). On multi-reach rivers the species rows drop the
   river-wide season text and season notes, which repeated the reach table vaguely or wrongly; species and limit stay.
   Fixed the Ganaraska steelhead note ("Extended season applies at lower Ganaraska" was wrong).
+- **(this PR)** Regs rows filled from the MNR 2026 zone-wide rules where a listed species had none: Chinook/Coho on the
+  Credit and Black Creek, Rainbow (Steelhead) on the Humber, Rainbow on the Eramosa, Brook on Bronte, Sixteen Mile
+  (Zone 16, S-5/C-2), Duffins and Wilmot (Zone 17, S-2/C-1). The grey summary (`filterAndSummariseRegs`, now given the
+  section) uses reach gear rules and says "On this reach" on multi-reach rivers, drops the river-wide "season is closed"
+  warning there, and matches combined rows. C&R reaches show "S-0 / C-0 (C&R on this reach)" (`reachLimitText()`).
+  "How to read these rules" lists only terms the panel uses (`regsGlossary()`).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
