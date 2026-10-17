@@ -6455,14 +6455,16 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var bringPhrase;
   // Compound method names carry their own gear noun, so the generic branches below would
   // stutter ("spinning gear and spinning · spoons & lures"). Handle them explicitly. Spinning
-  // takes either separator (the copy pass swapped the em dash for a middot). Float keeps
-  // falling through to "float rod and bait" on purpose: that is the wording on the live site.
+  // takes either separator (the copy pass swapped the em dash for a middot).
+  // "Float rod" means different things to different anglers. Float fishing for salmon,
+  // steelhead and lake-run browns is done on a centrepin or a long spinning rod (TJ), so say so.
+  // Spin Fishing picked: the spinning rod with float gear.
   if (/^spinning\s*[\u2014\u00b7]/i.test(topMethod)) bringPhrase = 'spinning gear with spoons & lures';
-  else if (/^float fishing\s*\u2014/i.test(topMethod)) bringPhrase = 'float rod with roe bags or beads';
+  else if (window._spinFloat && /float/i.test(topMethod)) bringPhrase = 'spinning rod with float gear';
+  else if (/^float fishing\s*[\u2014\u00b7]\s*roe/i.test(topMethod)) bringPhrase = 'centrepin or spinning rod with float gear';
   else if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
   else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear and ' + methodPhrase;
-  else if (window._spinFloat && /float/i.test(topMethod)) bringPhrase = 'spinning rod set up with a float and bait';
-  else if (/float|bait|drift/i.test(topMethod)) bringPhrase = 'float rod and bait';
+  else if (/float|bait|drift/i.test(topMethod)) bringPhrase = 'spinning rod with a float and bait';
   else bringPhrase = topMethod.toLowerCase() + ' gear';
 
   // Build headline — lead with species warning when target is out of season

@@ -146,6 +146,7 @@ Merged recently:
   (Upper Credit, closed after Sep 30). Now `autoSectionNoSpecies()`. Spinning plus salmon or steelhead in the river now
   gets float fishing on a spinning rod (hero, Technique panel, gear kit) instead of spinners. `buildGearSetup()` takes the
   species from `methodSpeciesKey()`, not `selectedSpecies[0]`.
+- **(this PR)** Hero float wording: "centrepin or spinning rod with float gear" instead of "float rod and bait".
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
 - **#61** `/guides/steelhead-run-timing/`, plus the Credit steelhead SSR page rewrite.
 - **#62** `/rivers/humber/` (Old Mill in fall, winter and spring; TJ's photos, video and redhorse clip).
@@ -277,7 +278,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    which GRCA (Grand, Speed, Eramosa) and SVCA (Saugeen) stations report water temperature and add them as live sources.
    TJ to ask Conservation Halton for Bronte and Sixteen Mile logger data, and CLOCA for Bowmanville probe data.
    "Credit River at Highway 10 N" location unknown (coordinates in `CVC_STATIONS` are a guess); not used by the app.
-9. **Float wording:** in-river float headlines say "float rod and bait"; the intended "float rod with roe bags or
-   beads" never matches (it checks for an em dash, the method name uses a middot). Left as is on purpose; change
-   only if TJ wants the longer wording.
+9. **Float wording (done, 2026-10-17):** the hero says "centrepin or spinning rod with float gear" for in-river salmon,
+   steelhead and lake-run browns, "spinning rod with float gear" when Spin Fishing is picked, and "spinning rod with a
+   float and bait" for other float or bait methods (TJ: "float rod" means different things to different anglers).
 
