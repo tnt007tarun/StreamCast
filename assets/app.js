@@ -117,7 +117,15 @@ function resolveAutoSection(riverName) {
 
 // Section names are keys (URLs, analytics, config) and keep their em dash. For display,
 // show a middot instead.
-function secLabel(s) { return String(s == null ? '' : s).replace(/ \u2014 /g, ' \u00b7 '); }
+// A few keys read wrong on screen, so they get a display name. The key itself never changes.
+var SECTION_DISPLAY = {
+  // "Sanctuary" read as closed, but this is the town reach, open outside Sep 1 to Oct 14.
+  'Ganaraska River \u2014 Port Hope Sanctuary': 'Ganaraska River \u2014 Port Hope Town Reach (Jocelyn St to CNR)'
+};
+function secDisplay(s) { s = String(s == null ? '' : s); return SECTION_DISPLAY[s] || s; }
+function secLabel(s) { return secDisplay(s).replace(/ \u2014 /g, ' \u00b7 '); }
+// The reach part only ("Port Hope Town Reach (Jocelyn St to CNR)"), for chips and short mentions.
+function secShort(s) { var d = secDisplay(s); return d.indexOf(' \u2014 ') !== -1 ? d.split(' \u2014 ')[1] : d; }
 
 // Keep the auto chip accurate about which reach it picked.
 function updateAutoChipSub() {
@@ -125,7 +133,7 @@ function updateAutoChipSub() {
   if (!el) return;
   if (!selectedRiverIsAuto || !selectedRiver) { el.textContent = 'We\u2019ll pick the reach'; return; }
   var label = selectedRiver.indexOf(' \u2014 ') !== -1
-    ? selectedRiver.split(' \u2014 ')[1]
+    ? secShort(selectedRiver)
     : selectedRiver.replace(/ River$| Creek$/, '');
   el.textContent = label;
 }
@@ -197,7 +205,7 @@ function initExpertMode() {
                      '<div class="rc-name">Best for species</div>' +
                      '<div class="rc-sub" id="rc-auto-sub">We\u2019ll pick the reach</div></div>';
       chips.innerHTML = autoChip + sections.map(function(s) {
-        var label = s.indexOf(' \u2014 ') !== -1 ? s.split(' \u2014 ')[1] : s;
+        var label = secShort(s);
         return '<div class="river-chip" data-rname="'+s+'">' +
                '<div class="rc-name">'+label+'</div></div>';
       }).join('');
@@ -518,6 +526,53 @@ function sectionSiblings(sectionName) {
   return out;
 }
 
+// Next reach upstream on each river. Geography only: whether a reach can be suggested is
+// decided by speciesFishableIn() (season band, access closures, species in the river), and
+// barriers are already encoded in each section's species list.
+var UPSTREAM_OF = {
+  'Ganaraska River \u2014 Lower (Lake to CNR Bridge)': 'Ganaraska River \u2014 Port Hope Sanctuary',
+  'Ganaraska River \u2014 Port Hope Sanctuary': 'Ganaraska River \u2014 Upper & Conservation Areas',
+  'Bowmanville Creek \u2014 River Mouth & Piers': 'Lower Bowmanville Creek',
+  'Lower Bowmanville Creek': 'Middle Bowmanville Creek (Fish Ladder)',
+  'Middle Bowmanville Creek (Fish Ladder)': 'Upper Bowmanville Creek',
+  'Wilmot Creek \u2014 Mouth & Marsh (Lake Ontario)': 'Wilmot Creek \u2014 Lower River (to CN Rail Tracks)',
+  'Wilmot Creek \u2014 Lower River (to CN Rail Tracks)': 'Wilmot Creek \u2014 Middle Section (Hwy 401 to Hwy 2)',
+  'Wilmot Creek \u2014 Middle Section (Hwy 401 to Hwy 2)': 'Wilmot Creek \u2014 Upper Watershed & Orono Crown Lands',
+  'Duffins Creek \u2014 Lower Section': 'Duffins Creek \u2014 Middle Section',
+  'Duffins Creek \u2014 Middle Section': 'Duffins Creek \u2014 Upper Reaches',
+  'Rouge River \u2014 Marsh & Mouth (Lake Ontario)': 'Rouge River \u2014 Mid-Section (Rouge National Urban Park)',
+  'Rouge River \u2014 Mid-Section (Rouge National Urban Park)': 'Rouge River \u2014 Upper & Milne Dam (Markham)',
+  'Lower Humber River': 'Lower-Mid Humber (Old Mill to Eglinton)',
+  'Lower-Mid Humber (Old Mill to Eglinton)': 'Upper Humber River (Headwaters)',
+  'Lower Credit River': 'Middle Credit River',
+  'Middle Credit River': 'Upper Credit River',
+  'Sixteen Mile Creek \u2014 Lower Reaches & Oakville Harbour': 'Sixteen Mile Creek \u2014 Middle Reaches & Main Valley',
+  'Sixteen Mile Creek \u2014 Middle Reaches & Main Valley': 'Sixteen Mile Creek \u2014 Upper West Branch (Trout)',
+  'Bronte Creek \u2014 Lower Estuary & Mouth': 'Bronte Creek \u2014 Mid-Section & Provincial Park',
+  'Bronte Creek \u2014 Mid-Section & Provincial Park': 'Bronte Creek \u2014 Upper Headwaters',
+  'Nottawasaga River \u2014 Lower Section (Boyne to Wasaga Beach)': 'Nottawasaga River \u2014 Middle Section (Alliston to Angus)',
+  'Nottawasaga River \u2014 Middle Section (Alliston to Angus)': 'Nottawasaga River \u2014 Headwaters (Niagara Escarpment)',
+  'Saugeen River \u2014 Lower Main Stem (Paisley to Southampton)': 'Saugeen River \u2014 Headwaters & Upper Tributaries',
+  'Lower Beaver River (Thornbury)': 'Middle Beaver River (Clarksburg to Heathcote)',
+  'Middle Beaver River (Clarksburg to Heathcote)': 'Upper Beaver River (Kimberley)'
+};
+// TJ's rule: after September 30, fish as far upstream as the regulations allow. Returns the
+// furthest reach above this one where one of the species is fishable on the date, as
+// {section, species}, or null. Closed reaches in between are skipped, not a stop: fish pass
+// through a sanctuary to the open water above it.
+function furthestUpstreamOpen(sectionName, speciesNames, dateStr) {
+  if (!dateStr || !speciesNames || !speciesNames.length) return null;
+  if (parseInt(dateStr.split('-')[1], 10) < 10) return null;   // October 1 to December 31
+  var cur = String(sectionName || '').split(',')[0].trim(), best = null, seen = {};
+  while (UPSTREAM_OF[cur] && !seen[cur]) {
+    seen[cur] = true;
+    cur = UPSTREAM_OF[cur];
+    var ok = speciesNames.filter(function(n){ return speciesFishableIn(cur, n, dateStr); });
+    if (ok.length) best = { section: cur, species: ok[0] };
+  }
+  return best;
+}
+
 // ── SEASONAL CLOSURES ─────────────────────────────────────────────────────────
 // Fish sanctuaries from the MNR 2026 summary. Recommending a spot inside a closed
 // sanctuary is the worst error this app can make, so closed spots are removed from
@@ -622,7 +677,7 @@ function reachSeasons(sectionName, dateStr) {
     else { status = 'open'; if (someShut) why = 'some access points are closed on this date'; }
     return {
       name: name,
-      label: name.indexOf(' \u2014 ') !== -1 ? name.split(' \u2014 ')[1] : name,
+      label: secShort(name),
       band: band, bandText: SEASON_BAND_TEXT[band] || SEASON_BAND_TEXT.standard,
       status: status, why: why, here: name === base
     };
@@ -6038,7 +6093,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
           // Salmon are staging/running at a mouth section on this same river system.
           // Redirect there instead of silently substituting a resident species —
           // the resident fallback may also be unsafe (heat stress) or scarce this time of year.
-          var _sysShort = _sysStagingSection.split(' \u2014 ')[1] || _sysStagingSection;
+          var _sysShort = secShort(_sysStagingSection);
           headlineHtml = '<em>' + targetName + '</em> are running, but at the <em>' + secLabel(_sysStagingSection) + '</em>, not this section. '
             + 'Head there instead, or fish <em>' + fallbackSpecies + '</em> here if you\u2019d rather stay local'
             + (recs[0].reasons[0] ? ' \u2014 ' + recs[0].reasons[0] : '') + '.';
@@ -6402,6 +6457,29 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     }
   })();
 
+  // Upstream pass (TJ's rule). Only when nothing above already sent the reader elsewhere and
+  // the fish aren't staging at the mouth: from October, point to the furthest reach upstream
+  // that is open on the trip date for a migratory species the reader is after.
+  (function() {
+    if (_goto || _stagingHeadline) return;
+    var _trip = getTripDateStr();
+    var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'];
+    if (isLakeRunBrownSection(_here)) _mig.push('Brown Trout');
+    var _want = targetName ? [targetName]
+      : (_targetNamesOnRiver.length ? _targetNamesOnRiver
+      : [window._shownSpeciesName || window._defaultTargetSpecies].filter(Boolean));
+    _want = _want.filter(function(n){ return _mig.indexOf(n) !== -1; });
+    var _up = furthestUpstreamOpen(_here, _want, _trip);
+    if (!_up) return;
+    // Same river, so name the reach only.
+    var _upLink = '<a href="#river" class="tp-goto-link" data-goto-section="' + _up.section + '" data-goto-species="'
+      + _up.species + '"><em>' + secShort(_up.section) + '</em></a>';
+    headlineHtml += ' After September 30 the fish keep pushing upstream, and the ' + _upLink
+      + ' is open on your date. Start there if you can.';
+    _goto = { section: _up.section, species: _up.species };
+  })();
+
   document.getElementById('tp-headline').innerHTML = headlineHtml;
   (function() {
     var _btn = document.getElementById('tp-goto');
@@ -6749,7 +6827,7 @@ function buildRegsPlainEnglish(regs, filteredSpecies, effectiveSpecies, reaches)
     if (_closed.length) {
       sentences.push('Elsewhere on this river, ' + _closed.map(function(rc){ return rc.label; }).join(' and ') +
         (_closed.length === 1 ? ' is' : ' are') + ' closed on this date' +
-        (_open.length ? ', while ' + _open.map(function(rc){ return rc.label + ' is ' + rc.bandText; }).join(' and ') : '') + '.');
+        (_open.length ? ', while ' + _open.map(function(rc){ return rc.label + ' is open' + (rc.why ? ' (' + rc.why + ')' : ''); }).join(' and ') : '') + '.');
     }
   } else if (/open year.round|open all year/i.test(sp.season || '')) {
     sentences.push('The season is open year-round for ' + sp.name + '.');

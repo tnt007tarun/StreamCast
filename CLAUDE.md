@@ -46,6 +46,9 @@ without them broke every signup from June to October 2026.
 - `GUIDES`: the homepage guide cards. Add new guide and river pages here, ordered by season. `peak`/`on` months pick the
   up-to-4 cards shown; the rest go in the collapsed list. A local `img` needs a 480 px copy in `images/thumbs/` (same file name).
 - `STAGING_ZONES`: river mouths used for the salmon staging model.
+- `UPSTREAM_OF[section]`: the next reach upstream (geography only). Add new migratory sections to it.
+- `SECTION_DISPLAY[section]`: display name for a key that reads wrong on screen. `secLabel()` and `secShort()` use it;
+  never split a section key yourself for display.
 - `#bait-source` in `index.html` is hidden but **not dead**: `renderBaitPillar()` reads its cards to build the Bait pillar.
 
 ## House rules
@@ -77,6 +80,8 @@ Technique panel and the summary tile each kept their own rule and disagreed.
   `selectedSpecies[0]` for a decision.** The user can select several species.
 - If two parts of the UI show the same idea, they must call the same function.
 - Recommended access spot: `bestAccessSpot(access, atMouth)`. The hero headline and the access cards both use it.
+- Moving people to another reach: the hero's `_goto` (legal-season pass, then the upstream pass via
+  `furthestUpstreamOpen()`). Both use the "See … →" button and `goToSection()`.
 - Species when none is picked: `defaultTargetSpecies(cfg, wt)`, stored in `window._defaultTargetSpecies` before
   `updateMethods()`. The hero names it and `methodSpeciesKey()` falls back to it for the gear.
 
@@ -157,11 +162,16 @@ Merged recently:
   runs don't count), and `/?notrack=1` sets `umami.disabled` on that browser so TJ's own visits drop out (`=0` undoes it).
 - **#77** New site icon (fish mark, TJ's pick 2026-10-16). The old icon was the full logo shrunk to 16 px and was
   invisible in tabs, and Google needs a square icon of 48 px or more for search results.
-- **(this PR)** Funnel from search pages into the app: a "Today's conditions" block (`.cond-now`, links tagged
+- **#78** Funnel from search pages into the app: a "Today's conditions" block (`.cond-now`, links tagged
   `placement: top`) right after the short answer on salmon-run-timing, steelhead-run-timing, winter-steelhead,
   where-steelhead-hold and the Bowmanville page. Fixed the salmon table's Bowmanville row (linked to `/`) and tracked the
   Credit row. Homepage guides: up to 4 in-season picks as cards, the rest in a collapsed "More guides" list; pictures
   are lazy `<img>` from `images/thumbs/` (480 px), so the section loads about 80 KB instead of 573 KB.
+- **(this PR)** Upstream reach suggestion (TJ's rule, 2026-10-16): from Oct 1 to Dec 31, the hero adds a link and
+  "See … →" button to the furthest reach upstream that is open on the trip date for a migratory target species
+  (`furthestUpstreamOpen()` over `UPSTREAM_OF`). Suggest, not switch (TJ's choice). The Ganaraska town reach displays as
+  "Port Hope Town Reach (Jocelyn St to CNR)" via `SECTION_DISPLAY` (key unchanged). The regs summary now says other
+  reaches are "open" on the date instead of quoting their season band, which hid the Sep 1 to Oct 14 closure.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -218,8 +228,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 6. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
 7. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
-   below it"). Today the in-river pick only knows "not the mouth" (the `mouth` flag). A real upstream pick needs a
-   per-section upstream order for `access[]`. TJ chose to skip that for now (2026-10-13).
+   below it"). Across reaches this is done (upstream pass, 2026-10-16). Within a reach the pick still only knows "not
+   the mouth" (the `mouth` flag); a per-spot upstream order for `access[]` is still skipped (TJ, 2026-10-13).
 8. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ). Steelhead at Hogs Falls above Kimberley: one
    fishing site only, no fisheries source, and Upper Beaver is a `standard` section (closed through the spring
