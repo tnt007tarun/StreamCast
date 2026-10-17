@@ -85,6 +85,10 @@ Technique panel and the summary tile each kept their own rule and disagreed.
 - Recommended access spot: `bestAccessSpot(access, atMouth)`. The hero headline and the access cards both use it.
 - Moving people to another reach: the hero's `_goto` (legal-season pass, then the upstream pass via
   `furthestUpstreamOpen()`). Both use the "See … →" button and `goToSection()`.
+- Reach for "Best for species": `resolveAutoSection()`. With no species it uses `autoSectionNoSpecies()` (best-season
+  species that is fishable on some reach, then the upstream rule); it never lands on a closed reach when one is open.
+- Spinning picked with migratory fish in the river: `salmonMethodMode()` returns `'spin-float'` (float and roe on a
+  spinning rod, TJ 2026-10-17). It stays on lures while staging, or while the calendar puts the fish at the mouth.
 - Species when none is picked: `defaultTargetSpecies(cfg, wt)`, stored in `window._defaultTargetSpecies` before
   `updateMethods()`. The hero names it and `methodSpeciesKey()` falls back to it for the gear.
 
@@ -135,6 +139,10 @@ the app's fallback data and say so. Local Claude Code can test against live data
 ## Current state (updated 2026-10-15)
 
 Merged recently:
+- **(auto-section PR, 2026-10-17)** "Best for species" with no species picked returned the first section in the list
+  (Upper Credit, closed after Sep 30). Now `autoSectionNoSpecies()`. Spinning plus salmon or steelhead in the river now
+  gets float fishing on a spinning rod (hero, Technique panel, gear kit) instead of spinners. `buildGearSetup()` takes the
+  species from `methodSpeciesKey()`, not `selectedSpecies[0]`.
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
 - **#61** `/guides/steelhead-run-timing/`, plus the Credit steelhead SSR page rewrite.
 - **#62** `/rivers/humber/` (Old Mill in fall, winter and spring; TJ's photos, video and redhorse clip).

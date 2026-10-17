@@ -121,9 +121,43 @@ function resolveAutoSection(riverName) {
       if (_up) best = _up.section;
     }
   }
-  // No species chosen, or species absent from every section — fall back to the first
-  // section rather than leaving the app with nothing selected.
+  if (!best && !sp) best = autoSectionNoSpecies(riverName);
+  // Species absent from every section: never land on a closed reach when an open one exists.
+  if (!best) {
+    var _t = getTripDateStr();
+    best = sections.filter(function(s){ return !sectionClosedOn(getRiverConfig(s), _t); })[0] || null;
+  }
   return best || sections[0] || null;
+}
+
+// "Best for species" with no species picked: take the species with the best season on the
+// trip date that is fishable on some reach of this river, and that species' best reach.
+// This used to return the first section in the list (the Upper Credit, closed after Sep 30)
+// without checking it was open.
+function autoSectionNoSpecies(riverName) {
+  var sections = RIVER_SECTIONS[riverName] || [];
+  var trip = getTripDateStr();
+  var keyOf = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Brook Trout':'brook',
+               'Steelhead':'steelhead','Chinook Salmon':'chinook','Coho Salmon':'coho'};
+  var names = [];
+  sections.forEach(function(s){
+    var c = RIVER_CONFIG[s];
+    ((c && c.species) || []).forEach(function(n){ if (keyOf[n] && names.indexOf(n) === -1) names.push(n); });
+  });
+  var pick = null, pickScore = -1;
+  names.forEach(function(n){
+    var sec = bestSectionForSpecies(riverName, keyOf[n]);
+    if (!sec || !speciesFishableIn(sec, n, trip)) return;
+    var q = (getCurrentSeason(n, trip, sec) || {}).quality;
+    var score = (q === 'peak' ? 2 : 1) * 10 + (_MIGRATORY_SPECIES.indexOf(n) !== -1 ? 1 : 0);
+    if (score > pickScore) { pickScore = score; pick = {sec: sec, name: n}; }
+  });
+  if (!pick) return null;
+  if (_MIGRATORY_SPECIES.indexOf(pick.name) !== -1) {
+    var up = furthestUpstreamOpen(pick.sec, [pick.name], trip);
+    if (up) return up.section;
+  }
+  return pick.sec;
 }
 
 // Section names are keys (URLs, analytics, config) and keep their em dash. For display,
@@ -4206,8 +4240,8 @@ function salmonMethodMode(opts) {
   var isSteelhead = speciesKey === 'steelhead' ||
     (speciesKey === 'brown' && typeof selectedRiver !== 'undefined' && isLakeRunBrownSection(selectedRiver));
   if (!isSalmon && !isSteelhead) return null;
-  // The angler forced a gear family — respect their kit over our preference.
-  if (fam === 'fly' || fam === 'spin') return null;
+  // The angler forced fly gear: respect their kit over our preference.
+  if (fam === 'fly') return null;
   // Species can't physically reach this section, so we're recommending a fallback
   // species and the salmon method must not be applied to it.
   if (blocked) return null;
@@ -4215,8 +4249,17 @@ function salmonMethodMode(opts) {
   if (cfg && cfg.artificialOnly) return null;
   // Steelhead and lake-run browns in a river are float-fishing fish. The staging-spoons
   // call is a salmon phase, so it only applies when the deciding species is a salmon.
-  if (isSteelhead) return 'float';
-  return staging ? 'spin' : 'float';
+  // Spinning picked: fish in the river still want a float and roe, which a spinning rod can
+  // fish (TJ). Staging salmon stay on spoons, which is spinning gear already. When the lake
+  // data is missing the staging model can't run, so spinning also stays on lures while the
+  // calendar says the fish are at the mouth.
+  if (fam === 'spin' && typeof mouthPreferenceFor === 'function') {
+    var _nm = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'}[speciesKey];
+    if (_nm && mouthPreferenceFor(_nm, getTripDateStr()) > 0) return null;
+  }
+  if (isSteelhead) return fam === 'spin' ? 'spin-float' : 'float';
+  if (staging) return 'spin';
+  return fam === 'spin' ? 'spin-float' : 'float';
 }
 
 // Bait/organic-bait methods that cannot stand on artificial-only water.
@@ -4455,7 +4498,7 @@ function updateMethods(fc,tc,sc,flow,wt){
     m2 = {n:'Trolling', d:'Troll spoons parallel to shore at harbour depth.', c:''};
     m3 = {n:'Jigging', d:'Vertical jig near structure at the harbour mouth.', c:''};
     fam = 'spin';
-  } else if (_salmonMode === 'float') {
+  } else if (_salmonMode === 'float' || _salmonMode === 'spin-float') {
     var _fDepth = high ? 'Run deeper and heavier. High water pushes fish to the edges.'
                 : low  ? 'Downsize and lengthen your leader. Low, clear water makes fish spooky.'
                 : 'Set the float so the bait drifts just above the bottom.';
@@ -4463,8 +4506,9 @@ function updateMethods(fc,tc,sc,flow,wt){
                 : low  ? 'Fish: Deepest pools and tailouts'
                 : 'Fish: Deep pools, tailouts, current seams';
     var _fishWord = _sp === 'steelhead' ? 'steelhead' : 'salmon';
-    m1 = {n:'Float Fishing · Roe & Beads',
-          d:'For ' + _fishWord + ' in the river, drift roe bags or beads under a float through holding water. This is the most productive ' + _fishWord + ' method on Ontario rivers.',
+    var _onSpin = _salmonMode === 'spin-float';
+    m1 = {n:_onSpin ? 'Float Fishing on a Spinning Rod · Roe & Beads' : 'Float Fishing · Roe & Beads',
+          d:(_onSpin ? 'Your spinning rod works for this. ' : '') + 'For ' + _fishWord + ' in the river, drift roe bags or beads under a float through holding water. This is the most productive ' + _fishWord + ' method on Ontario rivers.',
           tip:_fDepth + ' Cast upstream, keep the line tight and watch for the float to dip. That’s your bite.',
           c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>' + _fWhere + '</span>'};
     m2 = {n:'Bottom Bouncing',
@@ -4509,7 +4553,7 @@ function updateMethods(fc,tc,sc,flow,wt){
     desc: m1.tip || m1.d,
     chips: [],
     gearMethod: m1.n,
-    gearFam: fam,
+    gearFam: _salmonMode === 'spin-float' ? 'spin-float' : fam,
     conditions: {cold:cold, high:high, low:low},
     baitMethod: m1.n,
     shownSpecies: (typeof window._shownSpeciesName === 'string' && window._shownSpeciesName)
@@ -4893,7 +4937,7 @@ async function renderResults(){
     // Same decision as the hero and the Technique panel. This tile used to keep its own
     // rule (float only if window._salmonInRiver), so it could disagree with both.
     if (_mm === 'spin')  topMethod = 'Spinning · Spoons & Lures';   // fish still in the lake
-    if (_mm === 'float') topMethod = 'Float Fishing · Roe & Beads'; // fish in the river
+    if (_mm === 'float' || _mm === 'spin-float') topMethod = 'Float Fishing · Roe & Beads'; // fish in the river
   })();
   document.getElementById("sum-method").textContent=topMethod;
   document.getElementById("sum-method-note").textContent="Current pick";
@@ -6171,7 +6215,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       migratoryBlocked: window._migratoryBlockedSection
     });
     if (_mode === 'spin')  topMethod = 'Spinning · Spoons & Lures';
-    if (_mode === 'float') topMethod = 'Float Fishing · Roe & Beads';
+    if (_mode === 'float' || _mode === 'spin-float') topMethod = 'Float Fishing · Roe & Beads';
+    window._spinFloat = _mode === 'spin-float';
   })();
 
   // Final legality pass for the hero, mirroring updateMethods. Whatever branch produced
@@ -6377,6 +6422,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   else if (/^float fishing\s*\u2014/i.test(topMethod)) bringPhrase = 'float rod with roe bags or beads';
   else if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
   else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear and ' + methodPhrase;
+  else if (window._spinFloat && /float/i.test(topMethod)) bringPhrase = 'spinning rod set up with a float and bait';
   else if (/float|bait|drift/i.test(topMethod)) bringPhrase = 'float rod and bait';
   else bringPhrase = topMethod.toLowerCase() + ' gear';
 
@@ -7405,8 +7451,12 @@ function loadBaitImages() {
 function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var cold = conditions.cold, high = conditions.high, low = conditions.low;
   var sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
-  var primarySpecies = selectedSpecies.length > 0 ? sm[selectedSpecies[0]] : null;
-  var isSalmon = primarySpecies && primarySpecies.indexOf('Salmon') !== -1;
+  // Same species the method was picked for (never selectedSpecies[0]; see CLAUDE.md).
+  var _gk = methodSpeciesKey(selectedRiver ? selectedRiver.split(',')[0].trim() : '');
+  var primarySpecies = sm[_gk] || null;
+  var isSalmon = !!primarySpecies && primarySpecies.indexOf('Salmon') !== -1;
+  var spinFloat = fam === 'spin-float';
+  if (spinFloat) fam = 'float';
   var isBrook  = primarySpecies === 'Brook Trout';
 
   // Ordered list, not an object. Order is the packing order, and `secondary:true` demotes
@@ -7463,12 +7513,18 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
 
   // ── FLOAT ──────────────────────────────────────────────────────────────
   } else if (fam === 'float' || (!fam && /float|drift|bait|roe|bead|centrepin|bottom bounc/i.test(topMethod))) {
-    kitName = isSalmon ? 'Centrepin setup' : 'Float setup';
+    kitName = spinFloat ? 'Float setup on a spinning rod' : isSalmon ? 'Centrepin setup' : 'Float setup';
     kitNote = high ? 'Water is up, so use a heavier float and more shot than usual.'
             : low  ? 'Flow is low, so use a smaller float and a longer leader than usual.' : null;
+    if (spinFloat) {
+      g('Rod', isSalmon ? '9\u201311 ft medium-heavy spinning' : '9\u201311 ft medium spinning',
+        'Your spinning rod works. Longer gives better float control', {wide:true});
+      g('Reel', isSalmon ? '3000\u20134000 spinning, smooth drag' : '2500\u20133000 spinning');
+    } else {
     g('Rod', isSalmon ? '10\u201312 ft centrepin or spinning' : '9\u201311 ft medium-light spinning',
       'Long rod = better float control', {wide:true});
     g('Reel', isSalmon ? 'Centrepin or large arbor' : 'Light spinning, 2500');
+    }
     g('Main line', '8\u201312 lb mono', 'Mono floats');
     g('Leader', '6\u20138 lb fluoro, 18\u201324 in', null, {wide:true});
     g('Float', high ? 'Large balsa, 4\u20136 g' : 'Small balsa or pencil, 1\u20133 g');
