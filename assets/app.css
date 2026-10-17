@@ -2604,6 +2604,13 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   }
   /* Species rows without the river-wide season column (the reach table covers seasons). */
   .reg-row.reg-row-nos { grid-template-columns: 1fr auto; }
+  /* Regs in plain English: a few bullets, then the season-by-reach table behind a toggle. */
+  .regs-bullets { margin: 0; padding: .7rem 1rem .2rem 2.1rem; list-style: disc; }
+  .regs-bullets li { font-size: var(--fs-base, .9rem); line-height: 1.5; color: var(--text-body, var(--ink)); margin: 0 0 .4rem; padding-left: .15rem; }
+  .regs-bullets li::marker { color: var(--fern); }
+  .regs-bullets .rb-open { color: var(--fern); }
+  .regs-bullets .rb-closed { color: var(--red); }
+  .regs-foot { margin: 0; padding: 0 1rem .6rem 1rem; font-size: .76rem; line-height: 1.45; color: var(--text-muted, var(--sage)); }
 
   /* ── form card blowing out to 660px on mobile ────────────────────────────
      #landing is display:flex / flex-direction:column, and .form-card carries
