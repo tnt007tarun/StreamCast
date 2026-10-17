@@ -139,13 +139,9 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-15)
+## Current state (updated 2026-10-17)
 
 Merged recently:
-- **(auto-section PR, 2026-10-17)** "Best for species" with no species picked returned the first section in the list
-  (Upper Credit, closed after Sep 30). Now `autoSectionNoSpecies()`. Spinning plus salmon or steelhead in the river now
-  gets float fishing on a spinning rod (hero, Technique panel, gear kit) instead of spinners. `buildGearSetup()` takes the
-  species from `methodSpeciesKey()`, not `selectedSpecies[0]`.
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
 - **#61** `/guides/steelhead-run-timing/`, plus the Credit steelhead SSR page rewrite.
 - **#62** `/rivers/humber/` (Old Mill in fall, winter and spring; TJ's photos, video and redhorse clip).
@@ -200,7 +196,7 @@ Merged recently:
   "This reach" tag; open/closed on the date plus the season band). On multi-reach rivers the species rows drop the
   river-wide season text and season notes, which repeated the reach table vaguely or wrongly; species and limit stay.
   Fixed the Ganaraska steelhead note ("Extended season applies at lower Ganaraska" was wrong).
-- **(this PR)** Regs rows filled from the MNR 2026 zone-wide rules where a listed species had none: Chinook/Coho on the
+- **#82** Regs rows filled from the MNR 2026 zone-wide rules where a listed species had none: Chinook/Coho on the
   Credit and Black Creek, Rainbow (Steelhead) on the Humber, Rainbow on the Eramosa, Brook on Bronte, Sixteen Mile
   (Zone 16, S-5/C-2), Duffins and Wilmot (Zone 17, S-2/C-1). The regs panel is now plain-English bullets
   (`buildRegsBullets()`, TJ's ask 2026-10-17) instead of S-x/C-x codes, a grey summary and a legend: open or closed on
@@ -209,6 +205,10 @@ Merged recently:
   when the reach config says so, and the bait zone rule. A closed reach shows only the closed bullet. The
   season-by-reach list sits behind "Season by reach +". `filterAndSummariseRegs()` (given the section) still feeds the
   hero chip.
+- **#83** "Best for species" with no species picked returned the first section in the list
+  (Upper Credit, closed after Sep 30). Now `autoSectionNoSpecies()`. Spinning plus salmon or steelhead in the river now
+  gets float fishing on a spinning rod (hero, Technique panel, gear kit) instead of spinners. `buildGearSetup()` takes the
+  species from `methodSpeciesKey()`, not `selectedSpecies[0]`.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -243,7 +243,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ## Open threads
 
 0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
-   in the repo are done (this PR); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.
+   in the repo are done (#73); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.
    TJ tested unsubscribe end to end (2026-10-15). The footer address is a placeholder ("Shawnmarr Rd, Mississauga ON",
    no street number); TJ will swap in a virtual mailbox address. Still to do: an Umami review with the new events, and
    a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
