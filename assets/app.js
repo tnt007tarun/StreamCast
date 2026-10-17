@@ -110,6 +110,17 @@ function resolveAutoSection(riverName) {
   var sections = RIVER_SECTIONS[riverName] || [];
   var sp = (typeof selectedSpecies !== 'undefined' && selectedSpecies.length) ? selectedSpecies[0] : null;
   var best = sp ? bestSectionForSpecies(riverName, sp) : null;
+  // After September 30, migratory fish spread up the river, so the pick moves to the furthest
+  // reach upstream that is open on the trip date (TJ's rule). Same check as the hero's
+  // upstream pass, so the two never disagree.
+  if (best) {
+    var _keyName = {steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
+    var _mig = selectedSpecies.map(function(k){ return _keyName[k]; }).filter(Boolean);
+    if (_mig.length && _MIGRATORY_SPECIES.indexOf(_keyName[sp]) !== -1) {
+      var _up = furthestUpstreamOpen(best, _mig, getTripDateStr());
+      if (_up) best = _up.section;
+    }
+  }
   // No species chosen, or species absent from every section — fall back to the first
   // section rather than leaving the app with nothing selected.
   return best || sections[0] || null;
@@ -163,6 +174,12 @@ function bestSectionForSpecies(riverName, speciesKey) {
     return cfg && cfg.species && cfg.species.indexOf(want) !== -1;
   });
   if (!candidates.length) return null;   // species not present anywhere on this river
+  // Never pick a reach where the species can't be fished on the trip date when another reach
+  // can (the Upper Credit for browns in October). If none can, keep them all and let the
+  // hero explain the closure.
+  var _trip = getTripDateStr();
+  var _open = candidates.filter(function(s){ return speciesFishableIn(s, want, _trip); });
+  if (_open.length) candidates = _open;
 
   // Rank by position in the system. Lower numbers are further downstream.
   function reach(s) {
@@ -3433,7 +3450,7 @@ function goToResults(){
   var activeBtn=document.querySelector(".species-btn.active");
   selectedSpecies=activeBtn?(activeBtn.getAttribute("data-value")||""):"";
   // Multi-select capture
-  var _sm={"brown":"Brown Trout","rainbow":"Rainbow Trout","brook":"Brook Trout","chinook":"Chinook Salmon","coho":"Coho Salmon"};
+  var _sm={"brown":"Brown Trout","rainbow":"Rainbow Trout","brook":"Brook Trout","steelhead":"Steelhead","chinook":"Chinook Salmon","coho":"Coho Salmon"};
   selectedSpecies=Array.from(document.querySelectorAll(".species-btn.active"))
     .map(function(b){return b.getAttribute("data-value");}).filter(function(v){return v!=="";});
   selectedSpeciesLabel=selectedSpecies.length===0?"Any Species":selectedSpecies.length===1?(_sm[selectedSpecies[0]]||"Any"):selectedSpecies.map(function(k){return _sm[k];}).join(" + ");
@@ -4509,7 +4526,7 @@ async function renderResults(){
 
   // ── SPECIES SEASONAL CHECK ───────────────────────────────────────────────
   // Get current seasonal status for the selected species on this river
-  var _sm2={"brown":"Brown Trout","rainbow":"Rainbow Trout","brook":"Brook Trout","chinook":"Chinook Salmon","coho":"Coho Salmon"};
+  var _sm2={"brown":"Brown Trout","rainbow":"Rainbow Trout","brook":"Brook Trout","steelhead":"Steelhead","chinook":"Chinook Salmon","coho":"Coho Salmon"};
   var targetNames=selectedSpecies.map(function(k){return _sm2[k];}).filter(Boolean);
   var targetName=targetNames.length===1?targetNames[0]:null;
   var riverSpeciesList=cfg.species||[];

@@ -172,6 +172,10 @@ Merged recently:
   (`furthestUpstreamOpen()` over `UPSTREAM_OF`). Suggest, not switch (TJ's choice). The Ganaraska town reach displays as
   "Port Hope Town Reach (Jocelyn St to CNR)" via `SECTION_DISPLAY` (key unchanged). The regs summary now says other
   reaches are "open" on the date instead of quoting their season band, which hid the Sep 1 to Oct 14 closure.
+  "Best for species" (`resolveAutoSection()` / `bestSectionForSpecies()`) follows the same rule: it skips reaches where
+  the species isn't fishable on the trip date, and for steelhead and salmon from Oct 1 moves up via
+  `furthestUpstreamOpen()`. Steelhead was missing from two species-label maps (`_sm`, `_sm2`), so a steelhead search
+  showed "Any Species" and skipped the species seasonal check.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
