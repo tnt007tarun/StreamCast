@@ -722,64 +722,299 @@ async function unsubLinks(env, email) {
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
+// Interests (TJ, 2026-10-17). One list ("General" segment) with Resend topics for what each
+// person asked for. Run alerts are per river; the free Resend plan allows 3 segments, so the
+// rivers live in the KV record and the Worker sends run alerts itself (see /alerts below).
+var TOPIC_OUTLOOK = "8acca89a-661a-4607-819c-1290deac79b2";   // Monthly outlook
+var TOPIC_RUN = "81a6f6ee-5667-476e-92d0-bd06c32fd009";       // Run alerts
+var RUN_RIVERS = ["Beaver River", "Black Creek", "Bowmanville Creek", "Bronte Creek", "Credit River", "Duffins Creek",
+  "Ganaraska River", "Grand River", "Humber River", "Nottawasaga River", "Rouge River", "Saugeen River",
+  "Sixteen Mile Creek", "Wilmot Creek"];
+var OWNER_EMAIL = "tnt.tarun@gmail.com";
+var MAX_TRIPS = 5;
+function validEmail(e) {
+  return typeof e === "string" && e.length < 200 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+}
+function emailFooter(links, why) {
+  return `<p style="color:#999;font-size:11px;margin-top:32px">
+              ${escapeHtml(why)}
+              <a href="${links.page}" style="color:#999">Unsubscribe</a><br>
+              ${SENDER_FOOTER}
+            </p>`;
+}
+function listHeaders(links) {
+  return { "List-Unsubscribe": "<" + links.oneClick + ">", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
+}
+async function getRecord(env, email) {
+  const raw = await env.SUBSCRIBERS.get("sub:" + email);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
+// Create the Resend contact, or switch an existing one back on, and opt it in to the topics asked for.
+async function upsertContact(env, email, topics) {
+  const t = topics.map((id) => ({ id, subscription: "opt_in" }));
+  const created = await resend(env, "/contacts", "POST", { email, unsubscribed: false, segments: [{ id: env.RESEND_AUDIENCE_ID }], topics: t });
+  if (created.ok) return;
+  await resend(env, "/contacts/" + encodeURIComponent(email), "PATCH", { unsubscribed: false });
+  await resend(env, "/contacts/" + encodeURIComponent(email) + "/segments/" + env.RESEND_AUDIENCE_ID, "POST");
+  if (t.length) await resend(env, "/contacts/" + encodeURIComponent(email) + "/topics", "PATCH", t);
+}
+function isoDate(s) {
+  return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null;
+}
+function prettyDate(iso) {
+  return new Date(iso + "T12:00:00Z").toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
+}
+function secDisplay(s) {
+  return String(s || "").replace(/ — /g, " \xB7 ");
+}
 async function handleSubscribe(request, env) {
   if (request.method !== "POST")
     return jsonResponse({ error: "POST only" }, 405);
   try {
     const body = await request.json();
-    const { email, rivers, species, source } = body;
-    if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+    if (!validEmail(body.email))
       return jsonResponse({ error: "Valid email required" }, 400);
-    const clean = email.toLowerCase().trim();
-    const riverList = Array.isArray(rivers) ? rivers.map(String) : [];
-    const speciesList = Array.isArray(species) ? species.map(String) : [];
-    await env.SUBSCRIBERS.put("sub:" + clean, JSON.stringify({
-      email: clean,
-      rivers: riverList,
-      species: speciesList,
-      source: source || "notify-panel",
-      createdAt: (new Date()).toISOString(),
-      confirmed: false
-    }));
-    const contact = {
-      email: clean,
-      data: { rivers: riverList.join(", "), species: speciesList.join(", "), source: source || "notify-panel" },
-      unsubscribed: false
-    };
-    const created = await resend(env, "/audiences/" + env.RESEND_AUDIENCE_ID + "/contacts", "POST", contact);
-    if (!created.ok) {
-      // Already a contact (for example someone who unsubscribed and came back): switch them back on.
-      await resend(env, "/audiences/" + env.RESEND_AUDIENCE_ID + "/contacts/" + encodeURIComponent(clean), "PATCH", { unsubscribed: false });
+    const clean = body.email.toLowerCase().trim();
+    // kind: outlook | run | trip. Old cached pages send no kind; keep them working as before.
+    const kind = ["outlook", "run", "trip"].indexOf(body.kind) !== -1 ? body.kind : "legacy";
+    const record = await getRecord(env, clean) || { email: clean, createdAt: (new Date()).toISOString(), runRivers: [], trips: [] };
+    record.runRivers = record.runRivers || [];
+    record.trips = record.trips || [];
+    record.unsubscribed = false;
+    record.source = body.source || record.source || "notify-panel";
+    record.lastSignupAt = (new Date()).toISOString();
+    const topics = [];
+    let trip = null;
+    if (kind === "outlook" || body.outlook === true) {
+      record.outlook = true;
+      topics.push(TOPIC_OUTLOOK);
     }
+    if (kind === "run") {
+      const river = String(body.river || "");
+      if (RUN_RIVERS.indexOf(river) === -1) return jsonResponse({ error: "Unknown river" }, 400);
+      if (record.runRivers.indexOf(river) === -1) record.runRivers.push(river);
+      topics.push(TOPIC_RUN);
+    }
+    if (kind === "trip") {
+      const t = body.trip || {};
+      const date = isoDate(t.date);
+      const today = torontoDate(new Date());
+      const days = date ? (Date.parse(date) - Date.parse(today)) / 864e5 : -1;
+      const lat = Number(t.lat), lng = Number(t.lng);
+      if (!date || days < 1 || days > 16) return jsonResponse({ error: "Trip date must be 1 to 16 days out" }, 400);
+      if (typeof t.section !== "string" || !t.section || t.section.length > 120) return jsonResponse({ error: "Section required" }, 400);
+      if (!(lat > 41 && lat < 47 && lng > -84 && lng < -74)) return jsonResponse({ error: "Bad location" }, 400);
+      record.trips = record.trips.filter((k) => k.slice(5, 15) >= today);
+      const key = "trip:" + date + ":" + clean + ":" + t.section;
+      if (record.trips.indexOf(key) === -1) {
+        if (record.trips.length >= MAX_TRIPS) return jsonResponse({ error: "Too many trips saved" }, 429);
+        record.trips.push(key);
+      }
+      trip = { email: clean, date, section: t.section, species: String(t.species || "").slice(0, 60),
+        gauge: /^[0-9A-Z]{5,10}$/.test(t.gauge || "") ? t.gauge : null, lat, lng,
+        sweetMin: Number(t.sweetMin) || null, sweetMax: Number(t.sweetMax) || null, createdAt: (new Date()).toISOString() };
+      await env.SUBSCRIBERS.put(key, JSON.stringify(trip), { expirationTtl: (days + 3) * 86400 });
+    }
+    if (kind === "legacy") {
+      record.rivers = Array.isArray(body.rivers) ? body.rivers.map(String).slice(0, 5) : record.rivers || [];
+      record.species = Array.isArray(body.species) ? body.species.map(String).slice(0, 6) : record.species || [];
+    }
+    await env.SUBSCRIBERS.put("sub:" + clean, JSON.stringify(record));
+    await upsertContact(env, clean, topics);
     const links = await unsubLinks(env, clean);
-    const speciesText = escapeHtml(speciesList.join(", ") || "your target species");
-    const riversText = escapeHtml(riverList.join(", ").replace(/ — /g, " \xB7 ") || "rivers you follow");
+    let subject, lead;
+    if (kind === "trip") {
+      subject = "Your trip email is set for " + prettyDate(trip.date);
+      lead = `<p>On the morning of <strong>${escapeHtml(prettyDate(trip.date))}</strong> we'll email you the flow and weather for
+            <strong>${escapeHtml(secDisplay(trip.section))}</strong>, with a link to the full forecast.</p>`;
+    } else if (kind === "run") {
+      subject = "Run alerts for the " + body.river;
+      lead = `<p>We'll email you when salmon or steelhead are running on the <strong>${escapeHtml(body.river)}</strong>.
+            Each alert is checked by an angler before it goes out, so expect a few a season, not a stream.</p>` +
+        (record.outlook ? `<p>You'll also get the monthly outlook.</p>` : "");
+    } else if (kind === "outlook") {
+      subject = "You're on the monthly outlook";
+      lead = `<p>Once a month we'll send what the forecast means for Ontario's trout and salmon rivers, plus the season
+            openers and closures coming up.</p>`;
+    } else {
+      subject = "You're on the list \u{1F3A3}";
+      lead = `<p>Thanks for signing up. We'll be in touch with conditions news for the rivers you follow.</p>`;
+    }
     await resend(env, "/emails", "POST", {
       from: FROM,
       to: [clean],
-      subject: "You're on the list \u{1F3A3}",
-      headers: {
-        "List-Unsubscribe": "<" + links.oneClick + ">",
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
-      },
+      subject,
+      headers: listHeaders(links),
       html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a2e3a">
-            <h2 style="color:#1e7a6e">You're on the list.</h2>
-            <p>We'll send you an alert when conditions are excellent for
-            <strong>${speciesText}</strong>
-            on the <strong>${riversText}</strong>.</p>
-            <p>In the meantime, check conditions any time at
-            <a href="${SITE}" style="color:#1e7a6e">herefishyfishy.ca</a>.</p>
-            <p style="color:#999;font-size:11px;margin-top:32px">
-              You're getting this because you signed up at herefishyfishy.ca.
-              <a href="${links.page}" style="color:#999">Unsubscribe</a><br>
-              ${SENDER_FOOTER}
-            </p>
+            <h2 style="color:#1e7a6e">You're set.</h2>
+            ${lead}
+            <p>Check conditions any time at <a href="${SITE}" style="color:#1e7a6e">herefishyfishy.ca</a>.</p>
+            ${emailFooter(links, "You're getting this because you signed up at herefishyfishy.ca.")}
           </div>`
     });
     return jsonResponse({ ok: true });
   } catch (err) {
     return jsonResponse({ error: err.message }, 500);
   }
+}
+// Trip-day emails. The hourly cron sends them at 6 am Toronto time on the trip date.
+function flowWord(flow, lo, hi) {
+  if (flow == null) return "";
+  if (lo && flow < lo) return "below the sweet spot (" + lo + " to " + hi + ")";
+  if (hi && flow > hi) return "above the sweet spot (" + lo + " to " + hi + ")";
+  if (lo && hi) return "in the sweet spot (" + lo + " to " + hi + ")";
+  return "";
+}
+async function sendTripEmails(env, ctx) {
+  const today = torontoDate(new Date());
+  const listed = await env.SUBSCRIBERS.list({ prefix: "trip:" + today + ":" });
+  for (const k of listed.keys) {
+    const trip = await env.SUBSCRIBERS.get(k.name, "json");
+    if (!trip || trip.sentAt) continue;
+    const rec = await getRecord(env, trip.email);
+    if (rec && rec.unsubscribed) { await env.SUBSCRIBERS.delete(k.name); continue; }
+    let flow = null, trend = null;
+    if (trip.gauge) {
+      try {
+        const r = await handleFlow(new URL("https://x/flow?station=" + trip.gauge), ctx);
+        const j = await r.json();
+        flow = j.flow; trend = j.trend;
+      } catch (e) {}
+    }
+    let wx = null;
+    try {
+      const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + trip.lat + "&longitude=" + trip.lng +
+        "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,cloud_cover_mean,wind_speed_10m_max&forecast_days=1&timezone=America%2FToronto");
+      const j = await r.json();
+      if (j.daily) wx = { hi: j.daily.temperature_2m_max[0], lo: j.daily.temperature_2m_min[0], rain: j.daily.precipitation_sum[0],
+        cloud: j.daily.cloud_cover_mean ? j.daily.cloud_cover_mean[0] : null, wind: j.daily.wind_speed_10m_max[0] };
+    } catch (e) {}
+    const links = await unsubLinks(env, trip.email);
+    const link = SITE + "/?river=" + encodeURIComponent(trip.section) + (trip.species ? "&species=" + encodeURIComponent(trip.species) : "");
+    const rows = [];
+    if (flow != null) rows.push(`<li>Flow: <strong>${flow} m\xB3/s</strong>, ${trend === "up" ? "rising" : trend === "down" ? "dropping" : "steady"}${flowWord(flow, trip.sweetMin, trip.sweetMax) ? ", " + flowWord(flow, trip.sweetMin, trip.sweetMax) : ""}.</li>`);
+    if (wx) rows.push(`<li>Weather: ${Math.round(wx.lo)} to ${Math.round(wx.hi)} \xB0C, ${wx.cloud != null ? (wx.cloud >= 70 ? "overcast" : wx.cloud >= 30 ? "some cloud" : "mostly clear") + ", " : ""}${wx.rain >= 1 ? Math.round(wx.rain) + " mm of rain" : "little or no rain"}, wind up to ${Math.round(wx.wind)} km/h.</li>`);
+    if (!rows.length) rows.push(`<li>Live flow and weather weren't available this morning. The app has the latest.</li>`);
+    const sent = await resend(env, "/emails", "POST", {
+      from: FROM,
+      to: [trip.email],
+      subject: "Today on the " + secDisplay(trip.section).split(" \xB7 ")[0] + ": your trip conditions",
+      headers: listHeaders(links),
+      html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a2e3a">
+            <h2 style="color:#1e7a6e">${escapeHtml(secDisplay(trip.section))}</h2>
+            <p>Conditions for your trip today, ${escapeHtml(prettyDate(trip.date))}:</p>
+            <ul style="padding-left:18px;line-height:1.6">${rows.join("")}</ul>
+            <p><a href="${link}" style="display:inline-block;background:#1e7a6e;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px">See where to stand and what to fish</a></p>
+            <p style="font-size:13px;color:#555">Check posted signs and the regulations where you fish.</p>
+            ${emailFooter(links, "You asked for this email when you planned a trip at herefishyfishy.ca.")}
+          </div>`
+    });
+    if (sent.ok) { trip.sentAt = (new Date()).toISOString(); await env.SUBSCRIBERS.put(k.name, JSON.stringify(trip), { expirationTtl: 3 * 86400 }); }
+  }
+}
+// Run alerts. A drafting task (scheduled, run by Claude for TJ) writes KV CACHE "alert:draft:<id>" =
+// {river, subject, html}. The hourly cron emails TJ a preview with a signed link; nothing reaches
+// subscribers until he opens the link and presses Send. The link only works for that draft.
+async function alertToken(env, id) {
+  return unsubToken(env, "alert:" + id);
+}
+// Workers on the free plan get 50 outbound requests per run, so this makes one Resend call per
+// 100 contacts (to drop anyone who unsubscribed through a Resend link) rather than one per person.
+async function resendUnsubscribed(env) {
+  const out = new Set();
+  let after = null;
+  for (let i = 0; i < 20; i++) {
+    const r = await resend(env, "/contacts?limit=100" + (after ? "&after=" + after : ""), "GET");
+    if (!r.ok) break;
+    const j = await r.json();
+    const rows = j.data || [];
+    rows.forEach((c) => { if (c.unsubscribed) out.add(String(c.email).toLowerCase()); });
+    if (!j.has_more || !rows.length) break;
+    after = rows[rows.length - 1].id;
+  }
+  return out;
+}
+async function runAlertRecipients(env, river) {
+  const out = [];
+  let cursor;
+  do {
+    const listed = await env.SUBSCRIBERS.list({ prefix: "sub:", cursor });
+    for (const k of listed.keys) {
+      const rec = await env.SUBSCRIBERS.get(k.name, "json");
+      if (rec && !rec.unsubscribed && (rec.runRivers || []).indexOf(river) !== -1) out.push(rec.email);
+    }
+    cursor = listed.list_complete ? null : listed.cursor;
+  } while (cursor);
+  if (!out.length) return out;
+  const gone = await resendUnsubscribed(env);
+  return out.filter((e) => !gone.has(e));
+}
+async function notifyAlertDrafts(env) {
+  if (!env.CACHE) return;
+  const listed = await env.CACHE.list({ prefix: "alert:draft:" });
+  for (const k of listed.keys) {
+    const d = await env.CACHE.get(k.name, "json");
+    if (!d || d.notifiedAt || d.sentAt) continue;
+    const id = k.name.slice("alert:draft:".length);
+    const url = PROXY_PUBLIC + "/alerts/approve?id=" + encodeURIComponent(id) + "&t=" + await alertToken(env, id);
+    const n = (await runAlertRecipients(env, d.river)).length;
+    await resend(env, "/emails", "POST", {
+      from: FROM,
+      to: [OWNER_EMAIL],
+      subject: "Approve run alert: " + d.river + " (" + n + " subscriber" + (n === 1 ? "" : "s") + ")",
+      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#1a2e3a">
+            <p><strong>Draft run alert for the ${escapeHtml(d.river)}.</strong> Nothing has been sent. ${n} subscriber${n === 1 ? "" : "s"} would get it.</p>
+            <p><a href="${url}" style="display:inline-block;background:#1e7a6e;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px">Review and send</a></p>
+            ${d.why ? `<p style="font-size:13px;color:#555"><strong>Why it was drafted:</strong> ${escapeHtml(d.why)}</p>` : ""}
+            <hr><p style="color:#555">Subject: ${escapeHtml(d.subject)}</p>${d.html}
+          </div>`
+    });
+    d.notifiedAt = (new Date()).toISOString();
+    await env.CACHE.put(k.name, JSON.stringify(d), { expirationTtl: 21 * 86400 });
+  }
+}
+function htmlPage(title, inner) {
+  return new Response(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>${escapeHtml(title)}</title>
+<style>body{font:16px/1.5 -apple-system,Segoe UI,Arial,sans-serif;max-width:640px;margin:0 auto;padding:24px 16px;color:#1a2e3a;background:#fbf9f5}
+button{font:600 1rem/1 inherit;background:#1e7a6e;color:#fff;border:0;border-radius:8px;padding:.9rem 1.4rem}
+.box{border:1px solid #e2ded6;background:#fff;padding:16px;border-radius:8px;margin:16px 0}</style></head><body>${inner}</body></html>`,
+    { headers: { "Content-Type": "text/html;charset=UTF-8", "Cache-Control": "no-store" } });
+}
+async function handleAlertApprove(request, env, url) {
+  const id = url.searchParams.get("id") || "";
+  const t = url.searchParams.get("t") || "";
+  if (!id || !sameString(t, await alertToken(env, id))) return htmlPage("Link not valid", "<h1>This link isn't valid</h1>");
+  const key = "alert:draft:" + id;
+  const d = await env.CACHE.get(key, "json");
+  if (!d) return htmlPage("Not found", "<h1>That draft no longer exists</h1>");
+  if (d.sentAt) return htmlPage("Already sent", `<h1>Already sent</h1><p>Sent to ${d.sentTo} subscriber(s) on ${escapeHtml(d.sentAt)}.</p>`);
+  const recipients = await runAlertRecipients(env, d.river);
+  // GET only shows the preview: mail scanners open links, and that must never send anything.
+  if (request.method !== "POST") {
+    return htmlPage("Review run alert", `<h1>Run alert: ${escapeHtml(d.river)}</h1>
+      <p>${recipients.length} subscriber${recipients.length === 1 ? "" : "s"} will get this.</p>
+      <div class="box"><p><strong>${escapeHtml(d.subject)}</strong></p>${d.html}</div>
+      <form method="post"><button type="submit">Send to ${recipients.length} subscriber${recipients.length === 1 ? "" : "s"}</button></form>
+      <p style="font-size:14px;color:#6b7d86">To change the wording, reply in the Claude project and ask for a new draft. Drafts expire after 3 weeks.</p>`);
+  }
+  let sentTo = 0;
+  for (let i = 0; i < recipients.length; i += 100) {
+    const batch = [];
+    for (const e of recipients.slice(i, i + 100)) {
+      const links = await unsubLinks(env, e);
+      batch.push({ from: FROM, to: [e], subject: d.subject, headers: listHeaders(links), topic_id: TOPIC_RUN,
+        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a2e3a">${d.html}
+          ${emailFooter(links, "You're getting this because you asked for run alerts for the " + d.river + " at herefishyfishy.ca.")}</div>` });
+    }
+    const r = await resend(env, "/emails/batch", "POST", batch);
+    if (r.ok) sentTo += batch.length;
+  }
+  d.sentAt = (new Date()).toISOString();
+  d.sentTo = sentTo;
+  await env.CACHE.put(key, JSON.stringify(d), { expirationTtl: 90 * 86400 });
+  return htmlPage("Sent", `<h1>Sent</h1><p>The ${escapeHtml(d.river)} run alert went to ${sentTo} subscriber${sentTo === 1 ? "" : "s"}.</p>`);
 }
 async function handleUnsubscribe(request, env, url) {
   // GET: someone opened the one-click URL in a browser. Send them to the site page.
@@ -813,6 +1048,8 @@ async function handleUnsubscribe(request, env, url) {
     }
   }
   record.unsubscribed = true;
+  record.outlook = false;
+  record.runRivers = [];
   record.unsubscribedAt = (new Date()).toISOString();
   await env.SUBSCRIBERS.put(key, JSON.stringify(record));
   const r = await resend(env, "/audiences/" + env.RESEND_AUDIENCE_ID + "/contacts/" + encodeURIComponent(clean), "PATCH", { unsubscribed: true });
@@ -909,6 +1146,10 @@ async function logWaterTemps(env) {
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(logWaterTemps(env));
+    ctx.waitUntil(notifyAlertDrafts(env));
+    // Trip-day emails go out in the 6 am hour, Toronto time.
+    const hour = Number(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", hour: "numeric", hourCycle: "h23" }).format(new Date()));
+    if (hour === 6) ctx.waitUntil(sendTripEmails(env, ctx));
   },
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
@@ -922,6 +1163,8 @@ export default {
       return handleSubscribe(request, env);
     if (url.pathname === "/unsubscribe")
       return handleUnsubscribe(request, env, url);
+    if (url.pathname === "/alerts/approve")
+      return handleAlertApprove(request, env, url);
     const path = url.pathname;
     if (path === "/health")
       return jsonResponse({ status: "ok", version: "1.4.0", ts: (new Date()).toISOString() });
@@ -935,6 +1178,6 @@ export default {
       return handleLakeTemps(url, ctx);
     if (path === "/water-temps")
       return handleWaterTemps(env);
-    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /water-temps, /subscribe, /unsubscribe" }, 404);
+    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /water-temps, /subscribe, /unsubscribe, /alerts/approve" }, 404);
   }
 };

@@ -32,6 +32,7 @@ build, and the Cloudflare check on the PR links to it.
 | `images/`, `video/` | Photos (WebP for pages, JPG kept for og:image) and short clips |
 | `worker/` | The `streamcast-proxy` Worker (flow, lake temps, stocking, subscribe, unsubscribe) and its `wrangler.toml`. Not deployed by Pages. See `worker/README.md` |
 | `unsubscribe/` | Unsubscribe page (noindex). Talks to the Worker's `/unsubscribe` |
+| `assets/signup.js` | The one signup box on guide, river, about and home pages (`<div class="hff-signup" data-kind="run|outlook" data-river="...">`) |
 
 Deploy the Worker only from `worker/` (`npx wrangler deploy`) so `wrangler.toml` supplies the bindings. A deploy
 without them broke every signup from June to October 2026.
@@ -139,7 +140,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-17)
+## Current state (updated 2026-10-19)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -212,6 +213,10 @@ Merged recently:
 - **#85** Hero float wording: "centrepin or spinning rod with float gear" instead of "float rod and bait". Float
   gear box offers a centrepin for resident trout too, with lighter line (4 to 6 lb main, 3 to 4 lb leader) and #12 to 16
   hooks (TJ: centrepin works for trout, lighter terminal tackle); steelhead and lake-run browns get the heavier kit.
+- **(this PR)** Subscription routes (TJ, 2026-10-17). See "Email list" below. One ask per page: the app's notify bar
+  picks one offer (`notifyOffer()`), and every guide, river, about and home page has one `.hff-signup` box
+  (`assets/signup.js`): run alerts on salmon and steelhead pages, the monthly outlook elsewhere. Fixed a 9 px horizontal
+  scroll on `/rivers/` at 390 px (run table).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -230,6 +235,24 @@ Merged recently:
   script has `data-exclude-search` so emails in the link never reach Umami.
 
 ### Email list
+**Interests (2026-10-18).** One list, three things people can ask for, all through the Worker's `/subscribe` (`kind`):
+- `outlook`: monthly outlook. Resend topic "Monthly outlook" (`8acca89a-661a-4607-819c-1290deac79b2`, opt-out default).
+  Scheduled task "Monthly outlook draft" (26th, 8:54 Toronto) drafts a Resend broadcast (segment General + that topic)
+  and emails TJ; TJ edits the "[TJ: add your take]" placeholder and sends from Resend.
+- `run` + `river`: run alerts for one of `RUN_RIVERS` (worker) / `RUN_ALERT_RIVERS` (app), the 14 rivers with
+  salmon or steelhead. Resend topic "Run alerts" (`81a6f6ee-5667-476e-92d0-bd06c32fd009`). The free Resend plan
+  allows 3 segments, so rivers live in KV (`runRivers` on `sub:<email>`), and the Worker sends run alerts itself.
+  Scheduled task "Run alert drafts" (Mon and Thu 7:42, in season) writes KV CACHE `alert:draft:<id>`; the Worker's hourly
+  cron emails TJ a preview with a signed `/alerts/approve` link (GET shows the preview, only POST sends). Two empty
+  segments "Run alerts · Beaver River" and "· Black Creek" were created before the limit showed up; unused.
+- `trip` + `trip{date, section, gauge, lat, lng, sweetMin, sweetMax}`: trip-day email, 1 to 16 days out, offered only
+  when the section is open that day. KV `trip:<date>:<email>:<section>`; the cron sends flow and weather at 6 am Toronto.
+- Old pages with no `kind` still work (`legacy`). Unsubscribing from our page clears outlook and runRivers in KV.
+- Resend free plan: 100 emails a day, 3,000 a month. A run alert to a big river list can hit that.
+- Weekly scheduled task "Weekly subscriber report" (Mon 8:50) emails TJ counts by interest and form.
+- Umami `Email Signup`, `Email Signup Failed` and `Notify Bar Shown` now carry `offer` (trip, run, outlook); page boxes
+  send `page`.
+
 `streamcast-proxy` (`worker/worker.js`) handles `/subscribe`: writes `sub:<email>` to KV `SUBSCRIBERS`, adds the contact to Resend
 (`RESEND_AUDIENCE_ID`, segment "General" `7c4ef108-3d3d-41ba-95f4-3776f957330e`), sends the welcome email. Bindings it
 needs: KV `SUBSCRIBERS` (HEREFISHYFISHY_SUBSCRIBERS), KV `CACHE` (HEREFISHYFISHY_CACHE), secret `RESEND_API_KEY`,

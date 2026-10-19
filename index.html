@@ -11,6 +11,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   if (_nt) { if (_nt[1] === '1') localStorage.setItem('umami.disabled', '1'); else localStorage.removeItem('umami.disabled'); }
 } catch (e) {}
 </script>
+<script defer src="/assets/signup.js"></script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c" data-domains="herefishyfishy.ca,www.herefishyfishy.ca"></script>
 <!-- MS Clarity -->
   <script type="text/javascript">
@@ -270,6 +271,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
       <a class="guides-all" href="/guides/">All guides</a>
     </div>
     <div class="guides-grid" id="guides-grid"></div>
+    <div class="hff-signup" data-kind="outlook"></div>
   </section>
 
 </div>
@@ -308,8 +310,9 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
       <div class="notify-bar-text">
         <span class="notify-bar-icon">🔔</span>
         <div>
-          <div class="notify-bar-title">Get alerted when conditions are excellent</div>
-          <div class="notify-bar-sub">We'll email you for <span id="notify-bar-river">this river</span></div>
+          <div class="notify-bar-title" id="notify-bar-title">Get the monthly river outlook</div>
+          <div class="notify-bar-sub" id="notify-bar-sub">What the month ahead means for Ontario trout and salmon</div>
+          <label class="notify-bar-outlook" id="notify-bar-outlook" style="display:none"><input type="checkbox"> Also send the monthly outlook</label>
         </div>
       </div>
       <div class="notify-bar-form" id="notify-bar-form">
@@ -317,7 +320,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         <button class="notify-bar-submit" id="notify-bar-submit">Notify me</button>
       </div>
       <div class="notify-bar-success" id="notify-bar-success" style="display:none">
-        ✓ You're on the list!
+        ✓ Done. Check your inbox for a confirmation.
       </div>
       <button class="notify-bar-dismiss" id="notify-bar-dismiss">✕</button>
     </div>
