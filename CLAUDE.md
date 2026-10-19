@@ -243,8 +243,8 @@ Merged recently:
   salmon or steelhead. Resend topic "Run alerts" (`81a6f6ee-5667-476e-92d0-bd06c32fd009`). The free Resend plan
   allows 3 segments, so rivers live in KV (`runRivers` on `sub:<email>`), and the Worker sends run alerts itself.
   Scheduled task "Run alert drafts" (Mon and Thu 7:42, in season) writes KV CACHE `alert:draft:<id>`; the Worker's hourly
-  cron emails TJ a preview with a signed `/alerts/approve` link (GET shows the preview, only POST sends). Two empty
-  segments "Run alerts · Beaver River" and "· Black Creek" were created before the limit showed up; unused.
+  cron emails TJ a preview with a signed `/alerts/approve` link (GET shows the preview, only POST sends). "General" is the only
+  segment in use (two test segments were deleted 2026-10-19).
 - `trip` + `trip{date, section, gauge, lat, lng, sweetMin, sweetMax}`: trip-day email, 1 to 16 days out, offered only
   when the section is open that day. KV `trip:<date>:<email>:<section>`; the cron sends flow and weather at 6 am Toronto.
 - Old pages with no `kind` still work (`legacy`). Unsubscribing from our page clears outlook and runRivers in KV.
