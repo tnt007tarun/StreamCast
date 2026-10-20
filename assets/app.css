@@ -3029,4 +3029,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .tp-goto-btn:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
   #results .tp-goto-btn[hidden] { display:none; }
 
+  /* Notify bar: optional outlook checkbox under the run-alert offer */
+  .notify-bar-outlook { display:flex; align-items:center; gap:.4rem; margin-top:.35rem; font-size:.78rem; color:rgba(255,255,255,.75); cursor:pointer; }
+  .notify-bar-outlook input { width:15px; height:15px; accent-color: var(--fern); margin:0; }
+
 }

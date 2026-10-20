@@ -101,6 +101,11 @@ var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle
 // mixed river means going UP, away from the migratory-dominated lower reaches. Brown Trout
 // on the Credit should send you to the Forks, not to Port Credit.
 var _MIGRATORY_SPECIES = ['Chinook Salmon','Coho Salmon','Steelhead'];
+// Rivers that get run alerts (notify bar, see initNotifyBar). Defined up here because the deep-link
+// handler opens the notify bar while the file is still loading. Same list as RUN_RIVERS in worker.js.
+var RUN_ALERT_RIVERS = ['Beaver River','Black Creek','Bowmanville Creek','Bronte Creek','Credit River','Duffins Creek',
+  'Ganaraska River','Grand River','Humber River','Nottawasaga River','Rouge River','Saugeen River',
+  'Sixteen Mile Creek','Wilmot Creek'];
 // When true, selectedRiver was chosen by us and should be re-resolved whenever the
 // species changes — otherwise picking a species after a river would leave a stale section.
 var selectedRiverIsAuto = false;
@@ -8163,8 +8168,56 @@ if (!history.state) {
 });
 
 // ── NOTIFY BAR — river page ───────────────────────────────────────────────────
+// One ask per page (TJ, 2026-10-17). The bar offers whichever fits what the angler is doing:
+//   trip    a future trip date on water that is open that day: email the conditions that morning
+//   run     a river with salmon or steelhead: run alerts for that river
+//   outlook anything else: the monthly outlook
+// The Worker (worker/worker.js handleSubscribe) stores the interest and sends the welcome email.
+function riverParentOf(section) {
+  var base = String(section || '').split(',')[0].trim();
+  var hit = Object.keys(RIVER_SECTIONS).filter(function(p){ return RIVER_SECTIONS[p].indexOf(base) !== -1; })[0];
+  return hit || null;
+}
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function notifyOffer() {
+  var section = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+  var parent = riverParentOf(section);
+  var trip = getTripDateStr();
+  var today = (function(){ var n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })();
+  var days = Math.round((Date.parse(trip) - Date.parse(today)) / 864e5);
+  var db = (typeof RIVERS_DB !== 'undefined') ? RIVERS_DB.filter(function(r){ return r.name === section; })[0] : null;
+  var cfg = getRiverConfig(section);
+  if (section && db && days >= 1 && days <= 16 && !sectionClosedOn(cfg, trip) && !lsGet('hff_sub_trip:' + trip + ':' + section)) {
+    var nice = new Date(trip + 'T12:00:00').toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+    var spKey = methodSpeciesKey(section);
+    return { kind: 'trip', key: 'hff_sub_trip:' + trip + ':' + section,
+      title: 'Get these conditions the morning of ' + nice,
+      sub: 'Flow and weather for ' + secShort(section) + ', emailed at 6 am',
+      button: 'Email me',
+      payload: { trip: { date: trip, section: section, species: spKey || '', gauge: db.gauge || '',
+                 lat: db.lat, lng: db.lng, sweetMin: db.sweetMin, sweetMax: db.sweetMax } } };
+  }
+  if (parent && RUN_ALERT_RIVERS.indexOf(parent) !== -1 && !lsGet('hff_sub_run:' + parent)) {
+    return { kind: 'run', key: 'hff_sub_run:' + parent,
+      title: 'Get run alerts for the ' + parent,
+      sub: 'An email when salmon or steelhead are running. Checked by an angler before it goes out.',
+      button: 'Alert me', outlookBox: !lsGet('hff_sub_outlook'),
+      payload: { river: parent } };
+  }
+  if (!lsGet('hff_sub_outlook')) {
+    return { kind: 'outlook', key: 'hff_sub_outlook',
+      title: 'Get the monthly river outlook',
+      sub: 'What the month ahead means for Ontario trout and salmon, plus openers and closures',
+      button: 'Sign me up', payload: {} };
+  }
+  return null;
+}
+
 function initNotifyBar() {
-  if (localStorage.getItem('hff_subscribed') || localStorage.getItem('hff_bar_dismissed')) return;
+  // Dismissing hides the bar for two weeks, not forever.
+  var _dis = Number(lsGet('hff_bar_dismissed_at') || 0);
+  if (_dis && Date.now() - _dis < 14 * 864e5) return;
 
   var bar     = document.getElementById('notify-bar');
   var submit  = document.getElementById('notify-bar-submit');
@@ -8172,13 +8225,21 @@ function initNotifyBar() {
   var form    = document.getElementById('notify-bar-form');
   var success = document.getElementById('notify-bar-success');
   var dismiss = document.getElementById('notify-bar-dismiss');
-  var riverLbl= document.getElementById('notify-bar-river');
   if (!bar) return;
 
-  // Update river name label
-  if (riverLbl && selectedRiver) {
-    riverLbl.textContent = secLabel(selectedRiver.split(',')[0]);
-  }
+  var offer = notifyOffer();
+  bar._offer = offer;
+  if (!offer) { bar.classList.remove('visible'); bar.style.display = 'none'; return; }
+  var tEl = document.getElementById('notify-bar-title');
+  var sEl = document.getElementById('notify-bar-sub');
+  if (tEl) tEl.textContent = offer.title;
+  if (sEl) sEl.textContent = offer.sub;
+  if (submit) { submit.textContent = offer.button; submit.disabled = false; }
+  var box = document.getElementById('notify-bar-outlook');
+  if (box) { box.style.display = offer.outlookBox ? '' : 'none'; var cb = box.querySelector('input'); if (cb) cb.checked = false; }
+  if (form) form.style.display = '';
+  if (success) success.style.display = 'none';
+  var _oldErr = document.getElementById('notify-bar-error'); if (_oldErr) _oldErr.textContent = '';
 
   // Show bar after user scrolls 300px
   bar.style.display = 'block';
@@ -8187,7 +8248,7 @@ function initNotifyBar() {
     if (!shown && window.scrollY > 300) {
       shown = true;
       bar.classList.add('visible');
-      track('Notify Bar Shown', { river: (selectedRiver || '').split(',')[0] || 'unknown' });
+      track('Notify Bar Shown', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: offer.kind });
       window.removeEventListener('scroll', onScroll);
     }
   }
@@ -8219,8 +8280,8 @@ function initNotifyBar() {
   if (dismiss) {
     dismiss.addEventListener('click', function() {
       bar.classList.remove('visible');
-      track('Notify Bar Dismissed', { river: (selectedRiver || '').split(',')[0] || 'unknown' });
-      localStorage.setItem('hff_bar_dismissed', '1');
+      track('Notify Bar Dismissed', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: bar._offer ? bar._offer.kind : 'none' });
+      lsSet('hff_bar_dismissed_at', String(Date.now()));
       setTimeout(function(){ bar.style.display = 'none'; }, 400);
     });
   }
@@ -8228,6 +8289,8 @@ function initNotifyBar() {
   // Submit
   if (submit && input) {
     submit.addEventListener('click', function() {
+      var offer = bar._offer;
+      if (!offer) return;
       var email = input.value.trim();
       if (!email || !email.includes('@')) {
         input.style.borderColor = '#c0392b';
@@ -8237,15 +8300,14 @@ function initNotifyBar() {
       input.style.borderColor = '';
       submit.disabled = true;
       submit.textContent = 'Saving…';
-
-      var rivers  = selectedRiver ? [selectedRiver.split(',')[0]] : [];
-      var species = Array.from(document.querySelectorAll('.species-btn.active'))
-        .map(function(b){ return b.getAttribute('data-label'); }).filter(Boolean);
+      var cb = document.querySelector('#notify-bar-outlook input');
+      var body = Object.assign({ email: email, kind: offer.kind, source: 'river-bar',
+                                 outlook: !!(offer.outlookBox && cb && cb.checked) }, offer.payload);
 
       fetch(PROXY_URL + '/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, rivers: rivers, species: species, source: 'river-bar' }),
+        body: JSON.stringify(body),
       })
       // Only a confirmed save counts. The bar used to show "you're on the list" and record
       // a signup whatever the Worker returned, so months of failed saves looked like signups.
@@ -8255,10 +8317,11 @@ function initNotifyBar() {
           return d;
         });
       })
-      .then(function(data) {
-        localStorage.setItem('hff_subscribed', '1');
-        track('Email Signup', { river: (selectedRiver || '').split(',')[0] || 'unknown',
-                                species: species.join(',') || 'any' });
+      .then(function() {
+        lsSet(offer.key, '1');
+        if (body.outlook) lsSet('hff_sub_outlook', '1');
+        track('Email Signup', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: offer.kind,
+                                species: (selectedSpecies || []).join(',') || 'any' });
         if (form)    form.style.display    = 'none';
         if (success) success.style.display = 'block';
         setTimeout(function() {
@@ -8267,7 +8330,7 @@ function initNotifyBar() {
         }, 2500);
       })
       .catch(function(err) {
-        track('Email Signup Failed', { river: (selectedRiver || '').split(',')[0] || 'unknown',
+        track('Email Signup Failed', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: offer.kind,
                                        reason: String(err && err.message || 'network').slice(0, 60) });
         submit.disabled = false;
         submit.textContent = 'Try again';
@@ -8279,7 +8342,7 @@ function initNotifyBar() {
           _err.setAttribute('role', 'alert');
           form.parentNode.insertBefore(_err, form.nextSibling);
         }
-        if (_err) _err.textContent = 'Something went wrong and your email wasn\u2019t saved. Please try again.';
+        if (_err) _err.textContent = 'Something went wrong and your email wasn’t saved. Please try again.';
       });
     });
 
