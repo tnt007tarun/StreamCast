@@ -174,9 +174,9 @@ function renderPage(route, cond, speciesSlug) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
-<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico?v=3" sizes="48x48">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
 <title>Credit River ${route.species}: Conditions Today</title>
 <meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : 'not available, check the gauge'}, water ${cond.waterTemp != null ? (cond.waterMeasured ? '' : '~') + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
