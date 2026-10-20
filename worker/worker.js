@@ -1,3 +1,4 @@
+import { runWeekly, weeklyInterests } from "./weekly.js";
 var ARCGIS_BASE = "https://services1.arcgis.com/TJH5KDher0W13Kgo/arcgis/rest/services/FishStockingDataForRecreationalPurposes/FeatureServer/0/query";
 var EC_FLOW_BASE = "https://api.weather.gc.ca/collections/hydrometric-realtime/items";
 var CACHE_TTL_STOCKING = 86400;
@@ -695,10 +696,10 @@ var PROXY_PUBLIC = "https://proxy.herefishyfishy.ca";
 var FROM = "HereFishyFishy <hello@herefishyfishy.ca>";
 // CASL sender identification: name, mailing address, contact. Shown in every email footer.
 var SENDER_FOOTER = "HereFishyFishy \xB7 Shawnmarr Rd, Mississauga ON \xB7 hello@herefishyfishy.ca";
-function resend(env, path, method, body) {
+function resend(env, path, method, body, extraHeaders) {
   return fetch("https://api.resend.com" + path, {
     method,
-    headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+    headers: Object.assign({ "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" }, extraHeaders || {}),
     body: body ? JSON.stringify(body) : void 0
   });
 }
@@ -777,7 +778,7 @@ async function handleSubscribe(request, env) {
       return jsonResponse({ error: "Valid email required" }, 400);
     const clean = body.email.toLowerCase().trim();
     // kind: outlook | run | trip. Old cached pages send no kind; keep them working as before.
-    const kind = ["outlook", "run", "trip"].indexOf(body.kind) !== -1 ? body.kind : "legacy";
+    const kind = ["outlook", "run", "trip", "weekly"].indexOf(body.kind) !== -1 ? body.kind : "legacy";
     const record = await getRecord(env, clean) || { email: clean, createdAt: (new Date()).toISOString(), runRivers: [], trips: [] };
     record.runRivers = record.runRivers || [];
     record.trips = record.trips || [];
@@ -816,6 +817,19 @@ async function handleSubscribe(request, env) {
         sweetMin: Number(t.sweetMin) || null, sweetMax: Number(t.sweetMax) || null, createdAt: (new Date()).toISOString() };
       await env.SUBSCRIBERS.put(key, JSON.stringify(trip), { expirationTtl: (days + 3) * 86400 });
     }
+    // Weekly conditions email: its own offer on trout rivers, a checkbox under run alerts elsewhere.
+    let weeklyAdded = null;
+    if (kind === "weekly" || (body.weekly && typeof body.weekly === "object")) {
+      const w = weeklyInterests({ weekly: [body.weekly || {}] })[0];
+      if (!w) {
+        if (kind === "weekly") return jsonResponse({ error: "Unknown river or species" }, 400);
+      } else {
+        record.weekly = (record.weekly || []).filter((x) => !(x.section === w.section && x.species === w.species));
+        record.weekly.unshift(w);
+        record.weekly = record.weekly.slice(0, 5);
+        weeklyAdded = w;
+      }
+    }
     if (kind === "legacy") {
       record.rivers = Array.isArray(body.rivers) ? body.rivers.map(String).slice(0, 5) : record.rivers || [];
       record.species = Array.isArray(body.species) ? body.species.map(String).slice(0, 6) : record.species || [];
@@ -832,7 +846,14 @@ async function handleSubscribe(request, env) {
       subject = "Run alerts for the " + body.river;
       lead = `<p>We'll email you when salmon or steelhead are running on the <strong>${escapeHtml(body.river)}</strong>.
             Each alert is checked by an angler before it goes out, so expect a few a season, not a stream.</p>` +
+        (weeklyAdded ? `<p>You'll also get a Thursday email when the coming days look good for ${escapeHtml(weeklyAdded.species)} on
+            ${escapeHtml(secDisplay(weeklyAdded.section))}. No good days, no email.</p>` : "") +
         (record.outlook ? `<p>You'll also get the monthly outlook.</p>` : "");
+    } else if (kind === "weekly") {
+      subject = "Thursday heads-up for " + weeklyAdded.species;
+      lead = `<p>On Thursdays we check the next six days for <strong>${escapeHtml(weeklyAdded.species)}</strong> on
+            <strong>${escapeHtml(secDisplay(weeklyAdded.section))}</strong>. When at least one looks good, we email you which days,
+            where to stand and what to bring. No good days, no email.</p>`;
     } else if (kind === "outlook") {
       subject = "You're on the monthly outlook";
       lead = `<p>Once a month we'll send what the forecast means for Ontario's trout and salmon rivers, plus the season
@@ -935,20 +956,34 @@ async function resendUnsubscribed(env) {
   }
   return out;
 }
-async function runAlertRecipients(env, river) {
+// At most one run alert per person per week (TJ, 2026-10-20). Someone who also follows a reach
+// and species can get the weekly conditions email as well; that cap is in weekly.js.
+var RUN_ALERT_GAP_DAYS = 6;
+async function allRecords(env) {
   const out = [];
   let cursor;
   do {
     const listed = await env.SUBSCRIBERS.list({ prefix: "sub:", cursor });
     for (const k of listed.keys) {
       const rec = await env.SUBSCRIBERS.get(k.name, "json");
-      if (rec && !rec.unsubscribed && (rec.runRivers || []).indexOf(river) !== -1) out.push(rec.email);
+      if (rec && rec.email) out.push(rec);
     }
     cursor = listed.list_complete ? null : listed.cursor;
   } while (cursor);
-  if (!out.length) return out;
-  const gone = await resendUnsubscribed(env);
-  return out.filter((e) => !gone.has(e));
+  return out;
+}
+function runAlertCapped(rec) {
+  return !!(rec.lastRunAlertAt && Date.now() - Date.parse(rec.lastRunAlertAt) < RUN_ALERT_GAP_DAYS * 864e5);
+}
+async function runAlertRecipients(env, river, withCapped) {
+  let recs = (await allRecords(env)).filter((rec) => !rec.unsubscribed && (rec.runRivers || []).indexOf(river) !== -1);
+  if (recs.length) {
+    const gone = await resendUnsubscribed(env);
+    recs = recs.filter((r) => !gone.has(r.email));
+  }
+  const send = recs.filter((r) => !runAlertCapped(r)).map((r) => r.email);
+  if (!withCapped) return send;
+  return { send, capped: recs.filter(runAlertCapped).map((r) => r.email) };
 }
 async function notifyAlertDrafts(env) {
   if (!env.CACHE) return;
@@ -958,13 +993,14 @@ async function notifyAlertDrafts(env) {
     if (!d || d.notifiedAt || d.sentAt) continue;
     const id = k.name.slice("alert:draft:".length);
     const url = PROXY_PUBLIC + "/alerts/approve?id=" + encodeURIComponent(id) + "&t=" + await alertToken(env, id);
-    const n = (await runAlertRecipients(env, d.river)).length;
+    const rr = await runAlertRecipients(env, d.river, true);
+    const n = rr.send.length;
     await resend(env, "/emails", "POST", {
       from: FROM,
       to: [OWNER_EMAIL],
       subject: "Approve run alert: " + d.river + " (" + n + " subscriber" + (n === 1 ? "" : "s") + ")",
       html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#1a2e3a">
-            <p><strong>Draft run alert for the ${escapeHtml(d.river)}.</strong> Nothing has been sent. ${n} subscriber${n === 1 ? "" : "s"} would get it.</p>
+            <p><strong>Draft run alert for the ${escapeHtml(d.river)}.</strong> Nothing has been sent. ${n} subscriber${n === 1 ? "" : "s"} would get it.${rr.capped.length ? ` ${rr.capped.length} more had a run alert in the last 6 days and will be skipped.` : ""}</p>
             <p><a href="${url}" style="display:inline-block;background:#1e7a6e;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px">Review and send</a></p>
             ${d.why ? `<p style="font-size:13px;color:#555"><strong>Why it was drafted:</strong> ${escapeHtml(d.why)}</p>` : ""}
             <hr><p style="color:#555">Subject: ${escapeHtml(d.subject)}</p>${d.html}
@@ -1009,7 +1045,13 @@ async function handleAlertApprove(request, env, url) {
           ${emailFooter(links, "You're getting this because you asked for run alerts for the " + d.river + " at herefishyfishy.ca.")}</div>` });
     }
     const r = await resend(env, "/emails/batch", "POST", batch);
-    if (r.ok) sentTo += batch.length;
+    if (r.ok) {
+      sentTo += batch.length;
+      for (const e of recipients.slice(i, i + 100)) {
+        const rec = await getRecord(env, e);
+        if (rec) { rec.lastRunAlertAt = (new Date()).toISOString(); await env.SUBSCRIBERS.put("sub:" + e, JSON.stringify(rec)); }
+      }
+    }
   }
   d.sentAt = (new Date()).toISOString();
   d.sentTo = sentTo;
@@ -1050,6 +1092,7 @@ async function handleUnsubscribe(request, env, url) {
   record.unsubscribed = true;
   record.outlook = false;
   record.runRivers = [];
+  record.weekly = [];
   record.unsubscribedAt = (new Date()).toISOString();
   await env.SUBSCRIBERS.put(key, JSON.stringify(record));
   const r = await resend(env, "/audiences/" + env.RESEND_AUDIENCE_ID + "/contacts/" + encodeURIComponent(clean), "PATCH", { unsubscribed: true });
@@ -1143,8 +1186,36 @@ async function logWaterTemps(env) {
     await env.CACHE.put("wt:debug", html.slice(Math.max(0, i - 600), i + 3000), { expirationTtl: 30 * 86400 });
   }
 }
+// Weekly conditions email: Thursday, 5 pm hour, Toronto time. See weekly.js.
+function weeklyDeps(env, ctx) {
+  return {
+    FROM, SITE, torontoDate, listHeaders, emailFooter,
+    listRecords: () => allRecords(env),
+    resendUnsubscribed: () => resendUnsubscribed(env),
+    fetchJson: async (u) => { const r = await fetch(u); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); },
+    flow: async (gauge) => { const r = await handleFlow(new URL("https://x/flow?station=" + gauge), ctx); const j = await r.json(); return j.flow != null ? j.flow : null; },
+    lakeTemps: async () => { const r = await handleLakeTemps(new URL("https://x/lake-temps"), ctx); const j = await r.json(); return j.temps || null; },
+    liveWater: async () => env.CACHE ? env.CACHE.get("wt:latest", "json") : null,
+    unsubLinks: (email) => unsubLinks(env, email),
+    sendBatch: async (batch, key) => (await resend(env, "/emails/batch", "POST", batch, { "Idempotency-Key": key })).ok,
+    sendOwner: (subject, html) => resend(env, "/emails", "POST", { from: FROM, to: [OWNER_EMAIL], subject, html }),
+    putRecord: (rec) => env.SUBSCRIBERS.put("sub:" + rec.email, JSON.stringify(rec)),
+    putLog: (key, log) => env.CACHE ? env.CACHE.put(key, JSON.stringify(log), { expirationTtl: 120 * 86400 }) : null
+  };
+}
+async function maybeRunWeekly(env, ctx) {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", weekday: "short", hour: "numeric", hourCycle: "h23" }).formatToParts(now);
+  const wd = parts.find((p) => p.type === "weekday").value, hour = Number(parts.find((p) => p.type === "hour").value);
+  if (wd !== "Thu" || hour !== 17 || !env.CACHE) return;
+  const key = "alert:weekly:ran:" + torontoDate(now);
+  if (await env.CACHE.get(key)) return;
+  await env.CACHE.put(key, "1", { expirationTtl: 3 * 86400 });
+  await runWeekly(env, weeklyDeps(env, ctx));
+}
 export default {
   async scheduled(event, env, ctx) {
+    ctx.waitUntil(maybeRunWeekly(env, ctx));
     ctx.waitUntil(logWaterTemps(env));
     ctx.waitUntil(notifyAlertDrafts(env));
     // Trip-day emails go out in the 6 am hour, Toronto time.

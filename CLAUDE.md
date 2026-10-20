@@ -88,6 +88,8 @@ Technique panel and the summary tile each kept their own rule and disagreed.
   `sectionSeasonScore()` (species, season, mouth or river, closures), plus drive time in `rankRivers()` (app), plus
   water via `conditionsScore()`. `scoreDay()` is the one-day version for emails. `scoreToConfidence().word` is the
   Conditions pill word and `driveVerdict()` the drive verdict. Anything new there must stay free of DOM and window state.
+- Gear wording: `bringPhraseFor(method)`; staging read: `stagingSectionFor()` + `stagingRead()`; modelled water
+  temperature: `waterTempFromHistory()`. The hero, staging card and weekly email all call these.
 - Gear and method: `methodSpeciesKey(section)` plus `salmonMethodMode()`. **Never read
   `selectedSpecies[0]` for a decision.** The user can select several species.
 - If two parts of the UI show the same idea, they must call the same function.
@@ -233,6 +235,14 @@ Merged recently:
   `conditionsScore()`, `scoreDay()`, `driveVerdict()`; the two copies of the drive verdict now call it. No behaviour
   change: 8,784 `rankRivers` cases (54 sections, 8 species picks, every other day of 2026) and 4,032 verdict cases match
   the old code exactly. Step 1 of project doc `claude/weekly-alerts-plan-2026-10-20.md`.
+- **#90** (open, after #89) Weekly conditions email (`worker/weekly.js`, see `worker/README.md`):
+  Thursday 5 pm Toronto, Fri to Wed scored with `scoreDay()`, one email per person listing combos with a Good or
+  Excellent day on open water, `ALERTS_MODE=preview` (TJ gets the preview) until TJ sets `live`. Caps (TJ, 2026-10-20):
+  one weekly email and one run alert per person per 6 days; only someone with both gets two emails in a week; trip-day
+  and the monthly outlook don't count. Signup: notify bar checkbox under run alerts, own offer on trout-only rivers
+  (Eramosa, Speed); `/subscribe` takes `weekly: {section, species}`. Also moved to the core and shared with the app:
+  `salmonMethodMode()` (takes `section`/`dateStr`), `bringPhraseFor()`, `stagingRead()`, `stagingSectionFor()`,
+  `waterTempFromHistory()`. The app takes `?date=YYYY-MM-DD` in deep links.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -264,6 +274,9 @@ Merged recently:
 - `trip` + `trip{date, section, gauge, lat, lng, sweetMin, sweetMax}`: trip-day email, 1 to 16 days out, offered only
   when the section is open that day. KV `trip:<date>:<email>:<section>`; the cron sends flow and weather at 6 am Toronto.
 - Old pages with no `kind` still work (`legacy`). Unsubscribing from our page clears outlook and runRivers in KV.
+- `weekly` + `weekly{section, species}`: weekly conditions email (Thursday, Worker sends it, `worker/weekly.js`). Also
+  the old notify-bar `rivers` + `species`. One weekly email and one run alert per person per 6 days (`lastWeeklyAt`,
+  `lastRunAlertAt`).
 - Resend free plan: 100 emails a day, 3,000 a month. A run alert to a big river list can hit that.
 - Weekly scheduled task "Weekly subscriber report" (Mon 8:50) emails TJ counts by interest and form.
 - Umami `Email Signup`, `Email Signup Failed` and `Notify Bar Shown` now carry `offer` (trip, run, outlook); page boxes
@@ -327,7 +340,9 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
-   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89. Next: Worker forecast scoring
-   with `scoreDay()`, modular email blocks, `ALERTS_MODE` preview/live. Decide how it sits beside run alerts (TJ-approved
-   drafts) and who gets it: legacy notify-bar records carry `rivers` and `species` (first real one: Lower Bowmanville
-   Creek, Steelhead, 2026-10-19). Resend free plan is 100 emails a day.
+   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89; the email itself is #90.
+   After both merge: deploy the Worker from `worker/`, check the first Thursday preview, and after 2 to 3 weeks TJ sets
+   `ALERTS_MODE = "live"` in `wrangler.toml` and redeploys. The "Weekly subscriber report" task should count `weekly`
+   interests too. Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
+   comes from run strength at the mouth (lake temperature, wind, cloud) and ignores river flow; only the email's rain
+   cap catches blowouts. Worth deciding with TJ whether flow should count there.

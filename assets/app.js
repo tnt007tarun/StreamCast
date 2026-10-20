@@ -457,38 +457,18 @@ function renderStagingCard(sectionName, weather) {
   var wantsSteelhead = _isAny || /Steelhead/i.test(_spLbl);
   if (!wantsSalmon && !wantsSteelhead) return Promise.resolve();
 
-  var groupKey = STAGING_GROUP[zone.key] || 'central';
-  var mouthFaces = zone.lake === "Georgian Bay" ? 0 : 180;
-
   return fetchLakeTemps().then(function(temps){
-    var lakeTemp = (temps && temps[zone.key] != null) ? temps[zone.key] : null;
-    // Live satellite feed is unavailable — fall back to monthly climatology so the
-    // staging score keeps its temperature input instead of silently dropping it.
-    var _tempIsEstimate = false;
-    if (lakeTemp == null) {
-      lakeTemp = seasonalLakeTempEst(zone.lake, now.getMonth());
-      _tempIsEstimate = true;
-    }
     var cloudPct = weather && weather.cloudPct != null ? weather.cloudPct : null;
     var windDir  = weather && weather.windDir  != null ? weather.windDir  : null;
     var windSpd  = weather && weather.windSpeed!= null ? weather.windSpeed : null;
-
-    // Decide which fish story to tell. Prefer salmon in summer/fall, steelhead otherwise.
-    var salmonPhase = wantsSalmon ? getSalmonPhase(groupKey, month, day) : {active:false};
-    var steelPhase  = wantsSteelhead ? getSteelheadPhase(month, day, lakeTemp) : {active:false};
-
-    // Choose the dominant active phase (higher intensity wins when both active)
-    var which, phase, species;
-    if (salmonPhase.active && (!steelPhase.active || salmonPhase.intensity >= steelPhase.intensity)) {
-      which = 'salmon'; phase = salmonPhase; species = 'Salmon';
-    } else if (steelPhase.active) {
-      which = 'steelhead'; phase = steelPhase; species = 'Steelhead';
-    } else {
-      return; // nothing active — no card
-    }
-
-    var res = computeStagingScore(lakeTemp, windDir, windSpd, cloudPct, phase.intensity, mouthFaces, _tempIsEstimate);
-    var pct = Math.round(res.score * 100);
+    // Phase, lake temperature and strength: stagingRead() in conditions-core.js, shared with the weekly email.
+    var _dateStr = (_di && _di.value) ? _di.value : null;
+    var st = stagingRead(sectionName, _dateStr, wantsSalmon, wantsSteelhead,
+      (temps && temps[zone.key] != null) ? temps[zone.key] : null, cloudPct, windDir, windSpd);
+    if (!st) return; // nothing active, no card
+    var lakeTemp = st.lakeTemp, _tempIsEstimate = st.tempIsEstimate;
+    var which = st.which, phase = st.phase, species = st.species;
+    var res = st.res, pct = st.pct;
     window._stagingPct = pct; // expose for drive-time verdict — staging strength, not trout live-conditions score
     // Re-render the confidence pill, drive-time verdict, AND headline now that staging strength
     // is known — buildTopPick already ran synchronously before this promise resolved.
@@ -1666,6 +1646,10 @@ function goBack(){
     _results.style.display = '';
     _results.classList.add('active');
     window.scrollTo(0, 0);
+    // ?date=YYYY-MM-DD (the weekly email links straight to a day)
+    var _dParam = _params.get('date');
+    var _tdEl = document.getElementById('trip-date');
+    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) _tdEl.value = _dParam;
     initNotifyBar();
     window._viewSource = 'deep-link';
     history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
@@ -1737,12 +1721,6 @@ function waterTempEst(airTemp, dateStr){
 }
 
 
-// Live readings: Credit Valley Conservation, via the Worker's /water-temps.
-var LIVE_WATER_STATIONS = {
-  'Lower Credit River':  { station: 'Credit River at Mississaugua Golf and Country Club', place: 'Mississauga' },
-  'Middle Credit River': { station: 'Credit River at Old Derry Road', place: 'Meadowvale' },
-  'Upper Credit River':  { station: 'Credit River at Cataract Falls', place: 'Cataract' }
-};
 var _liveWaterPromise = null;
 function fetchLiveWaterTemps() {
   if (!_liveWaterPromise) {
@@ -1764,11 +1742,6 @@ function fetchAirHistory(lat, lng) {
   }
   return _airHistoryCache[key];
 }
-function _airSeriesTo(hist, dateStr) {
-  if (!hist) return null;
-  var i = hist.time.indexOf(dateStr);
-  return i === -1 ? null : hist.mean.slice(0, i + 1);
-}
 // Returns { value, kind: 'measured' | 'model' | 'rough', place }.
 async function waterTempFor(section, cfg, dateStr, isToday, airTemp) {
   var base = String(section || '').split(',')[0].trim();
@@ -1782,20 +1755,12 @@ async function waterTempFor(section, cfg, dateStr, isToday, airTemp) {
   }
   if (liveVal != null && isToday) return { value: liveVal, kind: 'measured', place: live.place };
 
-  var p = waterModelParams(base);
   var hist = cfg ? await fetchAirHistory(cfg.lat, cfg.lng) : null;
-  var model = modelWaterTemp(_airSeriesTo(hist, dateStr), p);
-  if (model != null) {
-    // A future date on a river with a live station: start from today's reading and let the
-    // difference from the model fade over a few days.
-    if (liveVal != null) {
-      var todayStr = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
-      var mToday = modelWaterTemp(_airSeriesTo(hist, todayStr), p);
-      var days = Math.round((new Date(dateStr + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / 86400000);
-      if (mToday != null && days > 0) model = Math.round((model + (liveVal - mToday) * Math.exp(-days / 4)) * 10) / 10;
-    }
-    return { value: model, kind: 'model', place: null };
-  }
+  // A future date on a river with a live station: start from today's reading and let the
+  // difference from the model fade over a few days (waterTempFromHistory in conditions-core.js).
+  var todayStr = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  var model = waterTempFromHistory(base, hist, dateStr, todayStr, liveVal);
+  if (model != null) return { value: model, kind: 'model', place: null };
   return { value: waterTempEst(airTemp, dateStr), kind: 'rough', place: null };
 }
 function waterTempSourceText(info, airTemp) {
@@ -2023,40 +1988,6 @@ function methodSpeciesKey(sectionName) {
   return sel[0] || '';
 }
 
-function salmonMethodMode(opts) {
-  opts = opts || {};
-  var speciesKey = opts.speciesKey || null;
-  var fam        = opts.fam || '';
-  var cfg        = opts.cfg || null;
-  var staging    = !!opts.stagingModeActive;
-  var blocked    = !!opts.migratoryBlocked;
-
-  var isSalmon = speciesKey === 'chinook' || speciesKey === 'coho';
-  // Lake-run browns are fished like steelhead: roe bags drifted under a float (TJ).
-  var isSteelhead = speciesKey === 'steelhead' ||
-    (speciesKey === 'brown' && typeof selectedRiver !== 'undefined' && isLakeRunBrownSection(selectedRiver));
-  if (!isSalmon && !isSteelhead) return null;
-  // The angler forced fly gear: respect their kit over our preference.
-  if (fam === 'fly') return null;
-  // Species can't physically reach this section, so we're recommending a fallback
-  // species and the salmon method must not be applied to it.
-  if (blocked) return null;
-  // Artificial lures only: roe, beads and worms are illegal, so no float recommendation.
-  if (cfg && cfg.artificialOnly) return null;
-  // Steelhead and lake-run browns in a river are float-fishing fish. The staging-spoons
-  // call is a salmon phase, so it only applies when the deciding species is a salmon.
-  // Spinning picked: fish in the river still want a float and roe, which a spinning rod can
-  // fish (TJ). Staging salmon stay on spoons, which is spinning gear already. When the lake
-  // data is missing the staging model can't run, so spinning also stays on lures while the
-  // calendar says the fish are at the mouth.
-  if (fam === 'spin' && typeof mouthPreferenceFor === 'function') {
-    var _nm = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'}[speciesKey];
-    if (_nm && mouthPreferenceFor(_nm, getTripDateStr()) > 0) return null;
-  }
-  if (isSteelhead) return fam === 'spin' ? 'spin-float' : 'float';
-  if (staging) return 'spin';
-  return fam === 'spin' ? 'spin-float' : 'float';
-}
 
 // Bait/organic-bait methods that cannot stand on artificial-only water.
 var BAIT_METHOD_RE = /roe|bead|bait|worm|centrepin|float fishing|drift bait|stationary/i;
@@ -2287,7 +2218,7 @@ function updateMethods(fc,tc,sc,flow,wt){
   // to correct it. Correct-by-ordering is what caused the earlier drift bugs; this is now
   // correct standalone, and the override is belt-and-braces rather than load-bearing.
   if (_salmonMode === 'spin') {
-    m1 = {n:'Throwing spoons at the river mouth',
+    m1 = {n:SALMON_MODE_METHOD.spin,
           d:'Fish aren’t in the river yet. They’re staging out front, so cast from the pier, beach or river mouth, fan casting and varying your retrieve depth.',
           tip:'Fish aren’t in the river yet. They’re staging out front, so cast from the pier, beach or river mouth, fan casting and varying your retrieve depth.',
           c:''};
@@ -2303,7 +2234,7 @@ function updateMethods(fc,tc,sc,flow,wt){
                 : 'Fish: Deep pools, tailouts, current seams';
     var _fishWord = _sp === 'steelhead' ? 'steelhead' : 'salmon';
     var _onSpin = _salmonMode === 'spin-float';
-    m1 = {n:_onSpin ? 'Float Fishing on a Spinning Rod · Roe & Beads' : 'Float Fishing · Roe & Beads',
+    m1 = {n:_onSpin ? 'Float Fishing on a Spinning Rod · Roe & Beads' : SALMON_MODE_METHOD.float,
           d:(_onSpin ? 'Your spinning rod works for this. ' : '') + 'For ' + _fishWord + ' in the river, drift roe bags or beads under a float through holding water. This is the most productive ' + _fishWord + ' method on Ontario rivers.',
           tip:_fDepth + ' Cast upstream, keep the line tight and watch for the float to dip. That’s your bite.',
           c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>' + _fWhere + '</span>'};
@@ -2428,22 +2359,9 @@ async function renderResults(){
       // Resolve the staging section system-wide: exact match first, else find the
       // mouth section on the same river system (Middle Credit → Lower Credit).
       var _srBase = selectedRiver.split(',')[0].trim();
-      var _stgSection = stagingZoneForSection(_srBase);
-      // Migratory fish can only be reported for sections they can actually reach. The
-      // Upper Credit sits above the Norval dam, so salmon never get there — but the
-      // system-wide fallback above happily matched it to the Credit staging zone and
-      // reported a run on water that has no salmon in it. Gate on the section's own
-      // species list, which already encodes every barrier correctly.
-      var _secCfg = RIVER_CONFIG[_srBase];
-      var _secSpecies = (_secCfg && _secCfg.species) || [];
-      var _MIGRATORY = ['Chinook Salmon','Coho Salmon','Steelhead'];
-      var _sectionHasMigratory = _secSpecies.some(function(s){ return _MIGRATORY.indexOf(s) !== -1; });
-      if (_stgSection && !_sectionHasMigratory && _secSpecies.length) {
-        _stgSection = null;
-        window._migratoryBlockedSection = _srBase;
-      } else {
-        window._migratoryBlockedSection = null;
-      }
+      // stagingSectionFor() in conditions-core.js (shared with the weekly email).
+      var _stgSection = stagingSectionFor(_srBase);
+      window._migratoryBlockedSection = (!_stgSection && stagingZoneForSection(_srBase)) ? _srBase : null;
       // Only render for salmon/steelhead intent — the card itself also checks season windows
       // Kick the staging read off now but keep the promise: it is awaited below, before
       // anything renders. Previously this was fire-and-forget and raced the main render,
@@ -4033,22 +3951,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var headlineSpecies = targetName || 'Trout';
 
   // Build method phrase (must come before headline)
-  var methodPhrase = topMethod.toLowerCase();
-  var bringPhrase;
-  // Compound method names carry their own gear noun, so the generic branches below would
-  // stutter ("spinning gear and spinning · spoons & lures"). Handle them explicitly. Spinning
-  // takes either separator (the copy pass swapped the em dash for a middot).
-  // "Float rod" means different things to different anglers. Float fishing for salmon,
-  // steelhead and lake-run browns is done on a centrepin or a long spinning rod (TJ), so say so.
-  // Spin Fishing picked: the spinning rod with float gear.
-  if (/^spinning\s*[\u2014\u00b7]/i.test(topMethod)) bringPhrase = 'spinning gear with spoons & lures';
-  else if (window._spinFloat && /float/i.test(topMethod)) bringPhrase = 'spinning rod with float gear';
-  else if (/^float fishing\s*[\u2014\u00b7]\s*roe/i.test(topMethod)) bringPhrase = 'centrepin or spinning rod with float gear';
-  else if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) bringPhrase = 'fly rod and ' + methodPhrase + ' setup';
-  else if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) bringPhrase = 'spinning gear and ' + methodPhrase;
-  else if (/float/i.test(topMethod)) bringPhrase = 'centrepin or spinning rod with a float and bait';
-  else if (/bait|drift/i.test(topMethod)) bringPhrase = 'spinning rod with bait';
-  else bringPhrase = topMethod.toLowerCase() + ' gear';
+  // What to bring: bringPhraseFor() in conditions-core.js, shared with the weekly email.
+  var bringPhrase = bringPhraseFor(topMethod, window._spinFloat);
 
   // Build headline — lead with species warning when target is out of season
   var _displaySpecies = fallbackSpecies || (targetName && (() => {
@@ -5715,12 +5619,27 @@ function notifyOffer() {
       payload: { trip: { date: trip, section: section, species: spKey || '', gauge: db.gauge || '',
                  lat: db.lat, lng: db.lng, sweetMin: db.sweetMin, sweetMax: db.sweetMax } } };
   }
+  // Weekly conditions email (TJ, 2026-10-20): needs a picked species that lives on this reach,
+  // and a reach that is open on the trip date. On run rivers it rides along as a checkbox.
+  var weekly = null;
+  var _wKey = (typeof selectedSpecies !== 'undefined' && selectedSpecies && selectedSpecies.length) ? methodSpeciesKey(section) : '';
+  var _wName = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',steelhead:'Steelhead',chinook:'Chinook Salmon',coho:'Coho Salmon'}[_wKey];
+  if (section && _wName && cfg && cfg.species && cfg.species.indexOf(_wName) !== -1 && !sectionClosedOn(cfg, trip) &&
+      !lsGet('hff_sub_weekly:' + section + ':' + _wName)) {
+    weekly = { section: section, species: _wName, key: 'hff_sub_weekly:' + section + ':' + _wName };
+  }
   if (parent && RUN_ALERT_RIVERS.indexOf(parent) !== -1 && !lsGet('hff_sub_run:' + parent)) {
     return { kind: 'run', key: 'hff_sub_run:' + parent,
       title: 'Get run alerts for the ' + parent,
       sub: 'An email when salmon or steelhead are running. Checked by an angler before it goes out.',
-      button: 'Alert me', outlookBox: !lsGet('hff_sub_outlook'),
+      button: 'Alert me', outlookBox: !weekly && !lsGet('hff_sub_outlook'), weeklyBox: weekly,
       payload: { river: parent } };
+  }
+  if (weekly && !(parent && RUN_ALERT_RIVERS.indexOf(parent) !== -1)) {
+    return { kind: 'weekly', key: weekly.key,
+      title: 'Get a heads-up when ' + weekly.species + ' conditions look good',
+      sub: 'One email on Thursdays, only when the coming days look good on ' + secShort(section),
+      button: 'Email me', payload: { weekly: { section: weekly.section, species: weekly.species } } };
   }
   if (!lsGet('hff_sub_outlook')) {
     return { kind: 'outlook', key: 'hff_sub_outlook',
@@ -5754,6 +5673,13 @@ function initNotifyBar() {
   if (submit) { submit.textContent = offer.button; submit.disabled = false; }
   var box = document.getElementById('notify-bar-outlook');
   if (box) { box.style.display = offer.outlookBox ? '' : 'none'; var cb = box.querySelector('input'); if (cb) cb.checked = false; }
+  var wbox = document.getElementById('notify-bar-weekly');
+  if (wbox) {
+    wbox.style.display = offer.weeklyBox ? '' : 'none';
+    var wcb = wbox.querySelector('input'); if (wcb) wcb.checked = false;
+    var wtx = wbox.querySelector('span');
+    if (wtx && offer.weeklyBox) wtx.textContent = 'Also a Thursday email when the coming days look good for ' + offer.weeklyBox.species + ' here';
+  }
   if (form) form.style.display = '';
   if (success) success.style.display = 'none';
   var _oldErr = document.getElementById('notify-bar-error'); if (_oldErr) _oldErr.textContent = '';
@@ -5818,8 +5744,10 @@ function initNotifyBar() {
       submit.disabled = true;
       submit.textContent = 'Saving…';
       var cb = document.querySelector('#notify-bar-outlook input');
+      var wcb = document.querySelector('#notify-bar-weekly input');
       var body = Object.assign({ email: email, kind: offer.kind, source: 'river-bar',
                                  outlook: !!(offer.outlookBox && cb && cb.checked) }, offer.payload);
+      if (offer.weeklyBox && wcb && wcb.checked) body.weekly = { section: offer.weeklyBox.section, species: offer.weeklyBox.species };
 
       fetch(PROXY_URL + '/subscribe', {
         method: 'POST',
@@ -5837,7 +5765,8 @@ function initNotifyBar() {
       .then(function() {
         lsSet(offer.key, '1');
         if (body.outlook) lsSet('hff_sub_outlook', '1');
-        track('Email Signup', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: offer.kind,
+        if (body.weekly) lsSet('hff_sub_weekly:' + body.weekly.section + ':' + body.weekly.species, '1');
+        track('Email Signup', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: offer.kind + (body.weekly && offer.kind !== 'weekly' ? '+weekly' : ''),
                                 species: (selectedSpecies || []).join(',') || 'any' });
         if (form)    form.style.display    = 'none';
         if (success) success.style.display = 'block';
