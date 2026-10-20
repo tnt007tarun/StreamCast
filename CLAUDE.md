@@ -215,7 +215,9 @@ Merged recently:
   hooks (TJ: centrepin works for trout, lighter terminal tackle); steelhead and lake-run browns get the heavier kit.
 - **(this PR)** Subscription routes (TJ, 2026-10-17). See "Email list" below. One ask per page: the app's notify bar
   picks one offer (`notifyOffer()`), and every guide, river, about and home page has one `.hff-signup` box
-  (`assets/signup.js`): run alerts on salmon and steelhead pages, the monthly outlook elsewhere. Fixed a 9 px horizontal
+  (`assets/signup.js`): run alerts on salmon and steelhead pages, the monthly outlook elsewhere. On salmon-run-timing and
+  steelhead-run-timing the box sits mid-article, right after the timing table (`data-placement="mid"`, TJ 2026-10-19);
+  everywhere else it is at the end. No leave-the-page popup until there's data (TJ). Fixed a 9 px horizontal
   scroll on `/rivers/` at 390 px (run table).
 
 ### Analytics events (Umami)
@@ -251,7 +253,8 @@ Merged recently:
 - Resend free plan: 100 emails a day, 3,000 a month. A run alert to a big river list can hit that.
 - Weekly scheduled task "Weekly subscriber report" (Mon 8:50) emails TJ counts by interest and form.
 - Umami `Email Signup`, `Email Signup Failed` and `Notify Bar Shown` now carry `offer` (trip, run, outlook); page boxes
-  send `page`.
+  send `page` and `placement` (mid or end), and fire `Signup Box Seen` once when half the box is on screen. Signups
+  divided by Seen is the box's conversion rate; compare mid vs end before trying other placements.
 
 `streamcast-proxy` (`worker/worker.js`) handles `/subscribe`: writes `sub:<email>` to KV `SUBSCRIBERS`, adds the contact to Resend
 (`RESEND_AUDIENCE_ID`, segment "General" `7c4ef108-3d3d-41ba-95f4-3776f957330e`), sends the welcome email. Bindings it
