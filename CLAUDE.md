@@ -213,7 +213,7 @@ Merged recently:
 - **#85** Hero float wording: "centrepin or spinning rod with float gear" instead of "float rod and bait". Float
   gear box offers a centrepin for resident trout too, with lighter line (4 to 6 lb main, 3 to 4 lb leader) and #12 to 16
   hooks (TJ: centrepin works for trout, lighter terminal tackle); steelhead and lake-run browns get the heavier kit.
-- **(this PR)** Subscription routes (TJ, 2026-10-17). See "Email list" below. One ask per page: the app's notify bar
+- **#86** Subscription routes (TJ, 2026-10-17). See "Email list" below. One ask per page: the app's notify bar
   picks one offer (`notifyOffer()`), and every guide, river, about and home page has one `.hff-signup` box
   (`assets/signup.js`): run alerts on salmon and steelhead pages, the monthly outlook elsewhere. On salmon-run-timing and
   steelhead-run-timing the box sits mid-article, right after the timing table (`data-placement="mid"`, TJ 2026-10-19);
