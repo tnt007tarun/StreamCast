@@ -23,7 +23,8 @@ build, and the Cloudflare check on the PR links to it.
 | Path | What it is |
 |---|---|
 | `index.html` | App markup only |
-| `assets/app.js` | All app logic (~7.7k lines, one file, no build step) |
+| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs` |
+| `assets/app.js` | App UI and logic (~6k lines, one file, no build step) |
 | `assets/app.css` | All app styling, in cascade layers. See `assets/README.md` |
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
 | `guides/*/index.html`, `rivers/*/index.html`, `about/` | Hand-written static pages, each self-contained with its own `<style>` |
@@ -37,7 +38,7 @@ build, and the Cloudflare check on the PR links to it.
 Deploy the Worker only from `worker/` (`npx wrangler deploy`) so `wrangler.toml` supplies the bindings. A deploy
 without them broke every signup from June to October 2026.
 
-### Key structures in `app.js`
+### Key structures (`conditions-core.js` unless noted)
 
 - `RIVER_SECTIONS`: parent river mapped to its section names.
 - `RIVER_CONFIG[section]`: gauge, flow sweet spot, species, `season` band, `regs`, `access[]`.
@@ -83,6 +84,10 @@ without them broke every signup from June to October 2026.
 ### One decision, one function
 The most common bug in this codebase is duplicated logic drifting apart: the hero, the
 Technique panel and the summary tile each kept their own rule and disagreed.
+- Rating and legality live in `conditions-core.js` so the app and the Worker's emails share them. Score:
+  `sectionSeasonScore()` (species, season, mouth or river, closures), plus drive time in `rankRivers()` (app), plus
+  water via `conditionsScore()`. `scoreDay()` is the one-day version for emails. `scoreToConfidence().word` is the
+  Conditions pill word and `driveVerdict()` the drive verdict. Anything new there must stay free of DOM and window state.
 - Gear and method: `methodSpeciesKey(section)` plus `salmonMethodMode()`. **Never read
   `selectedSpecies[0]` for a decision.** The user can select several species.
 - If two parts of the UI show the same idea, they must call the same function.
@@ -140,7 +145,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-19)
+## Current state (updated 2026-10-20)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -219,6 +224,11 @@ Merged recently:
   steelhead-run-timing the box sits mid-article, right after the timing table (`data-placement="mid"`, TJ 2026-10-19);
   everywhere else it is at the end. No leave-the-page popup until there's data (TJ). Fixed a 9 px horizontal
   scroll on `/rivers/` at 390 px (run table).
+- **#88** `assets/conditions-core.js`: config and the scoring and legality rules moved out of `app.js` verbatim (58
+  declarations), so the Worker can score weekly alert emails with the same code. New shared `sectionSeasonScore()`,
+  `conditionsScore()`, `scoreDay()`, `driveVerdict()`; the two copies of the drive verdict now call it. No behaviour
+  change: 8,784 `rankRivers` cases (54 sections, 8 species picks, every other day of 2026) and 4,032 verdict cases match
+  the old code exactly. Step 1 of project doc `claude/weekly-alerts-plan-2026-10-20.md`.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -311,3 +321,9 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    rod with a float and bait" for other float methods, and "spinning rod with bait" for bait without a float (TJ:
    "float rod" means different things to different anglers).
 
+11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
+   scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
+   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #88. Next: Worker forecast scoring
+   with `scoreDay()`, modular email blocks, `ALERTS_MODE` preview/live. Decide how it sits beside run alerts (TJ-approved
+   drafts) and who gets it: legacy notify-bar records carry `rivers` and `species` (first real one: Lower Bowmanville
+   Creek, Steelhead, 2026-10-19). Resend free plan is 100 emails a day.
