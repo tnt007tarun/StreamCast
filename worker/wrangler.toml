@@ -20,11 +20,14 @@ id = "e4a3b79bb0c647d797d83f79056cdbdc"
 
 [vars]
 RESEND_AUDIENCE_ID = "7c4ef108-3d3d-41ba-95f4-3776f957330e"   # Resend segment "General"
+# Weekly conditions email (weekly.js): "preview" emails TJ what each subscriber would get; "live" sends to subscribers.
+ALERTS_MODE = "preview"
 
 [observability]
 enabled = true
 
-# Hourly: log CVC water temperature readings (and recent air temperature) for calibration.
+# Hourly: log CVC water temperature readings (and recent air temperature) for calibration, run-alert
+# previews, trip-day emails (6 am Toronto) and the weekly conditions email (Thursday, 5 pm Toronto).
 [triggers]
 crons = ["5 * * * *"]
 

@@ -2431,6 +2431,148 @@ function scoreToConfidence(score) {
   return              { label: '\u2606\u2606\u2606', stars: 0, cls: 'conf-tough',     word: 'Tough' };
 }
 
+// Live readings: Credit Valley Conservation, via the Worker's /water-temps.
+var LIVE_WATER_STATIONS = {
+  'Lower Credit River':  { station: 'Credit River at Mississaugua Golf and Country Club', place: 'Mississauga' },
+  'Middle Credit River': { station: 'Credit River at Old Derry Road', place: 'Meadowvale' },
+  'Upper Credit River':  { station: 'Credit River at Cataract Falls', place: 'Cataract' }
+};
+
+function salmonMethodMode(opts) {
+  opts = opts || {};
+  var speciesKey = opts.speciesKey || null;
+  var fam        = opts.fam || '';
+  var cfg        = opts.cfg || null;
+  var staging    = !!opts.stagingModeActive;
+  var blocked    = !!opts.migratoryBlocked;
+  // section and dateStr: the app leaves them out (the viewed section and trip date); the Worker passes them.
+  var section    = opts.section !== undefined ? opts.section : (typeof selectedRiver !== 'undefined' ? selectedRiver : null);
+  var dateStr    = opts.dateStr || (typeof getTripDateStr === 'function' ? getTripDateStr() : null);
+
+  var isSalmon = speciesKey === 'chinook' || speciesKey === 'coho';
+  // Lake-run browns are fished like steelhead: roe bags drifted under a float (TJ).
+  var isSteelhead = speciesKey === 'steelhead' ||
+    (speciesKey === 'brown' && !!section && isLakeRunBrownSection(section));
+  if (!isSalmon && !isSteelhead) return null;
+  // The angler forced fly gear: respect their kit over our preference.
+  if (fam === 'fly') return null;
+  // Species can't physically reach this section, so we're recommending a fallback
+  // species and the salmon method must not be applied to it.
+  if (blocked) return null;
+  // Artificial lures only: roe, beads and worms are illegal, so no float recommendation.
+  if (cfg && cfg.artificialOnly) return null;
+  // Steelhead and lake-run browns in a river are float-fishing fish. The staging-spoons
+  // call is a salmon phase, so it only applies when the deciding species is a salmon.
+  // Spinning picked: fish in the river still want a float and roe, which a spinning rod can
+  // fish (TJ). Staging salmon stay on spoons, which is spinning gear already. When the lake
+  // data is missing the staging model can't run, so spinning also stays on lures while the
+  // calendar says the fish are at the mouth.
+  if (fam === 'spin' && typeof mouthPreferenceFor === 'function') {
+    var _nm = {chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead'}[speciesKey];
+    if (_nm && mouthPreferenceFor(_nm, dateStr) > 0) return null;
+  }
+  if (isSteelhead) return fam === 'spin' ? 'spin-float' : 'float';
+  if (staging) return 'spin';
+  return fam === 'spin' ? 'spin-float' : 'float';
+}
+
+
+// Method names for the two migratory modes, shared by the Technique panel and the weekly email.
+var SALMON_MODE_METHOD = {
+  spin: 'Throwing spoons at the river mouth',
+  float: 'Float Fishing · Roe & Beads'
+};
+
+// What to bring, from the method name. The hero says "Bring your <phrase>".
+// Compound method names carry their own gear noun, so the generic branches below would
+// stutter ("spinning gear and spinning · spoons & lures"). Handle them explicitly. Spinning
+// takes either separator (the copy pass swapped the em dash for a middot).
+// "Float rod" means different things to different anglers. Float fishing for salmon,
+// steelhead and lake-run browns is done on a centrepin or a long spinning rod (TJ), so say so.
+// spinFloat: Spin Fishing picked, so it's the spinning rod with float gear.
+function bringPhraseFor(topMethod, spinFloat) {
+  var methodPhrase = String(topMethod || '').toLowerCase();
+  if (/^spinning\s*[—·]/i.test(topMethod)) return 'spinning gear with spoons & lures';
+  if (spinFloat && /float/i.test(topMethod)) return 'spinning rod with float gear';
+  if (/^float fishing\s*[—·]\s*roe/i.test(topMethod)) return 'centrepin or spinning rod with float gear';
+  if (/nymphing|dry fly|streamer|midge/i.test(topMethod)) return 'fly rod and ' + methodPhrase + ' setup';
+  if (/spinner|spoon|crankbait|jig|lure|plug/i.test(topMethod)) return 'spinning gear and ' + methodPhrase;
+  if (/float/i.test(topMethod)) return 'centrepin or spinning rod with a float and bait';
+  if (/bait|drift/i.test(topMethod)) return 'spinning rod with bait';
+  return methodPhrase + ' gear';
+}
+
+// Staging read for a river mouth on a date: which fish are staging and how strongly (0 to 100).
+// null when the section isn't a staging zone or nothing is active. lakeTemp may be null, in
+// which case the monthly climatology stands in. Shared by the staging card and the weekly email.
+function stagingRead(sectionName, dateStr, wantsSalmon, wantsSteelhead, lakeTemp, cloudPct, windDir, windSpd) {
+  var zone = STAGING_ZONES[sectionName];
+  if (!zone || (!wantsSalmon && !wantsSteelhead)) return null;
+  var now = dateStr ? new Date(dateStr + "T12:00:00") : new Date();
+  var month = now.getMonth(), day = now.getDate();
+  var groupKey = STAGING_GROUP[zone.key] || 'central';
+  var mouthFaces = zone.lake === "Georgian Bay" ? 0 : 180;
+  // Live satellite feed is unavailable: fall back to monthly climatology so the
+  // staging score keeps its temperature input instead of silently dropping it.
+  var tempIsEstimate = false;
+  if (lakeTemp == null) {
+    lakeTemp = seasonalLakeTempEst(zone.lake, now.getMonth());
+    tempIsEstimate = true;
+  }
+  // Decide which fish story to tell. Prefer salmon in summer/fall, steelhead otherwise.
+  var salmonPhase = wantsSalmon ? getSalmonPhase(groupKey, month, day) : {active:false};
+  var steelPhase  = wantsSteelhead ? getSteelheadPhase(month, day, lakeTemp) : {active:false};
+  // Choose the dominant active phase (higher intensity wins when both active)
+  var which, phase, species;
+  if (salmonPhase.active && (!steelPhase.active || salmonPhase.intensity >= steelPhase.intensity)) {
+    which = 'salmon'; phase = salmonPhase; species = 'Salmon';
+  } else if (steelPhase.active) {
+    which = 'steelhead'; phase = steelPhase; species = 'Steelhead';
+  } else {
+    return null; // nothing active
+  }
+  var res = computeStagingScore(lakeTemp, windDir, windSpd, cloudPct, phase.intensity, mouthFaces, tempIsEstimate);
+  return { zone: zone, groupKey: groupKey, lakeTemp: lakeTemp, tempIsEstimate: tempIsEstimate,
+           salmonPhase: salmonPhase, steelPhase: steelPhase,
+           which: which, phase: phase, species: species, res: res, pct: Math.round(res.score * 100) };
+}
+
+// Modelled water temperature on dateStr from daily mean air (hist: {time, mean}, 30 days back
+// plus the forecast). With a live reading for today, the gap between it and the model fades over
+// a few days. null when there isn't enough history. Shared by the app and the weekly email.
+function waterTempFromHistory(section, hist, dateStr, todayStr, liveVal) {
+  if (!hist) return null;
+  var p = waterModelParams(String(section || '').split(',')[0].trim());
+  var seriesTo = function(d) { var i = hist.time.indexOf(d); return i === -1 ? null : hist.mean.slice(0, i + 1); };
+  var model = modelWaterTemp(seriesTo(dateStr), p);
+  if (model == null) return null;
+  if (liveVal != null && todayStr) {
+    var mToday = modelWaterTemp(seriesTo(todayStr), p);
+    var days = Math.round((new Date(dateStr + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / 86400000);
+    if (mToday != null && days > 0) model = Math.round((model + (liveVal - mToday) * Math.exp(-days / 4)) * 10) / 10;
+  }
+  return model;
+}
+
+
+// The staging zone whose read applies to a section: the mouth of its river system. Migratory fish
+// can only be reported for sections they can actually reach. The Upper Credit sits above the
+// Norval dam, so salmon never get there, but the system-wide match would find the Credit staging
+// zone and report a run on water that has no salmon in it. Gate on the section's own species
+// list, which already encodes every barrier correctly. A section with no species list keeps the
+// zone. Shared by the app (staging card) and the weekly email.
+function stagingSectionFor(sectionName) {
+  var base = String(sectionName || '').split(',')[0].trim();
+  var zone = stagingZoneForSection(base);
+  if (!zone) return null;
+  var secCfg = RIVER_CONFIG[base];
+  var secSpecies = (secCfg && secCfg.species) || [];
+  var MIG = ['Chinook Salmon','Coho Salmon','Steelhead'];
+  var hasMig = secSpecies.some(function(s){ return MIG.indexOf(s) !== -1; });
+  if (!hasMig && secSpecies.length) return null;
+  return zone;
+}
+
 // ── SHARED SCORE ────────────────────────────────────────────────────────────────
 // Score for a section and its target species on a date, before drive time and live water:
 // species present, season window, where the fish are (mouth or river) and legality.
@@ -2564,6 +2706,9 @@ if (typeof globalThis !== 'undefined') {
     getSalmonPhase: getSalmonPhase, getSteelheadPhase: getSteelheadPhase, mouthPreferenceFor: mouthPreferenceFor,
     clsFlow: clsFlow, clsTemp: clsTemp, clsSky: clsSky, waterModelParams: waterModelParams, modelWaterTemp: modelWaterTemp,
     liveConditionsScore: liveConditionsScore, scoreToConfidence: scoreToConfidence,
+    LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
+    stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
+    regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
     sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, scoreDay: scoreDay, driveVerdict: driveVerdict
   };
 }
