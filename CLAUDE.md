@@ -231,7 +231,7 @@ Merged recently:
   `conditionsScore()`, `scoreDay()`, `driveVerdict()`; the two copies of the drive verdict now call it. No behaviour
   change: 8,784 `rankRivers` cases (54 sections, 8 species picks, every other day of 2026) and 4,032 verdict cases match
   the old code exactly. Step 1 of project doc `claude/weekly-alerts-plan-2026-10-20.md`.
-- **PR 2 of the weekly alerts (open, after #89)** Weekly conditions email (`worker/weekly.js`, see `worker/README.md`):
+- **#90** (open, after #89) Weekly conditions email (`worker/weekly.js`, see `worker/README.md`):
   Thursday 5 pm Toronto, Fri to Wed scored with `scoreDay()`, one email per person listing combos with a Good or
   Excellent day on open water, `ALERTS_MODE=preview` (TJ gets the preview) until TJ sets `live`. Caps (TJ, 2026-10-20):
   one weekly email and one run alert per person per 6 days; only someone with both gets two emails in a week; trip-day
@@ -336,7 +336,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
-   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89; PR 2 is the email itself.
+   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89; the email itself is #90.
    After both merge: deploy the Worker from `worker/`, check the first Thursday preview, and after 2 to 3 weeks TJ sets
    `ALERTS_MODE = "live"` in `wrangler.toml` and redeploys. The "Weekly subscriber report" task should count `weekly`
    interests too. Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
