@@ -124,9 +124,11 @@ short-name splits accept either character.
 - YouTube thumbnails: `hqdefault.jpg` (`maxresdefault` doesn't exist for every video).
 - Photos: WebP, max 1200 px wide, quality 72. Keep the JPG for og:image and JSON-LD.
 - Videos: compress (720p, CRF 28, `+faststart`), `preload="none"`, with a poster frame.
-- Site icon: `favicon.svg` is the source (white fish on teal `#1e7a6e`). `favicon.ico` (16/32/48), `apple-touch-icon.png`,
-  `icon-192.png`, `icon-512.png` and `site.webmanifest` are rendered from it. Every page head carries the same four
-  icon tags (copy them from any page). The header logo `images/brand/logo.png` is separate and stays.
+- Site icon: `favicon.svg` is the source: the leaping trout traced from TJ's logo, white with its pink stripe, on a
+  logo-navy (`#0e2a4a`) circle (TJ's pick 2026-10-19; the earlier teal fish looked too much like Fishbrain's).
+  `favicon.ico` (16/32/48), `icon-192.png` and `icon-512.png` are rendered from it; `apple-touch-icon.png` and
+  `icon-maskable-512.png` use a full-bleed navy square with the trout inside the safe zone. Every page head carries the
+  same four icon tags with `?v=3` (bump it when the icon changes). The header logo `images/brand/logo.png` is separate.
 
 ## Workflow
 
@@ -226,6 +228,8 @@ Merged recently:
   steelhead-run-timing the box sits mid-article, right after the timing table (`data-placement="mid"`, TJ 2026-10-19);
   everywhere else it is at the end. No leave-the-page popup until there's data (TJ). Fixed a 9 px horizontal
   scroll on `/rivers/` at 390 px (run table).
+- **#88** Site icon: the trout from TJ's logo on navy (see Assets). Icon links bumped to `?v=3`; manifest
+  theme colour navy, plus a maskable icon.
 - **#89** `assets/conditions-core.js`: config and the scoring and legality rules moved out of `app.js` verbatim (58
   declarations), so the Worker can score weekly alert emails with the same code. New shared `sectionSeasonScore()`,
   `conditionsScore()`, `scoreDay()`, `driveVerdict()`; the two copies of the drive verdict now call it. No behaviour
