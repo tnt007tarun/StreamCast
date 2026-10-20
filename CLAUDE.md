@@ -224,7 +224,7 @@ Merged recently:
   steelhead-run-timing the box sits mid-article, right after the timing table (`data-placement="mid"`, TJ 2026-10-19);
   everywhere else it is at the end. No leave-the-page popup until there's data (TJ). Fixed a 9 px horizontal
   scroll on `/rivers/` at 390 px (run table).
-- **#88** `assets/conditions-core.js`: config and the scoring and legality rules moved out of `app.js` verbatim (58
+- **#89** `assets/conditions-core.js`: config and the scoring and legality rules moved out of `app.js` verbatim (58
   declarations), so the Worker can score weekly alert emails with the same code. New shared `sectionSeasonScore()`,
   `conditionsScore()`, `scoreDay()`, `driveVerdict()`; the two copies of the drive verdict now call it. No behaviour
   change: 8,784 `rankRivers` cases (54 sections, 8 species picks, every other day of 2026) and 4,032 verdict cases match
@@ -323,7 +323,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
-   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #88. Next: Worker forecast scoring
+   project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89. Next: Worker forecast scoring
    with `scoreDay()`, modular email blocks, `ALERTS_MODE` preview/live. Decide how it sits beside run alerts (TJ-approved
    drafts) and who gets it: legacy notify-bar records carry `rivers` and `species` (first real one: Lower Bowmanville
    Creek, Steelhead, 2026-10-19). Resend free plan is 100 emails a day.
