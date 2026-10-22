@@ -871,6 +871,9 @@ async function handleSubscribe(request, env) {
             <h2 style="color:#1e7a6e">You're set.</h2>
             ${lead}
             <p>Check conditions any time at <a href="${SITE}" style="color:#1e7a6e">herefishyfishy.ca</a>.</p>
+            <p>One question for you: which river do you fish most, and what are you after? Hit reply and tell me.
+            It goes straight to me and helps decide what I add next.</p>
+            <p>TJ</p>
             ${emailFooter(links, "You're getting this because you signed up at herefishyfishy.ca.")}
           </div>`
     });
