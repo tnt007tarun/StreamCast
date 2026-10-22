@@ -1,7 +1,7 @@
 # streamcast-proxy Worker
 
 The app's API at `streamcast-proxy.tnt-tarun.workers.dev` (also `proxy.herefishyfishy.ca`).
-Cloudflare Pages does not deploy this folder; it is deployed on its own.
+Cloudflare Pages does not deploy this folder. Workers Builds does (see Deploy).
 
 | Route | What it does |
 |---|---|
@@ -14,8 +14,15 @@ Cloudflare Pages does not deploy this folder; it is deployed on its own.
 | `/health`, `/fields` | Diagnostics |
 | `/credit-river/*` | Old SSR pages, superseded by `functions/credit-river/[species].js` on Pages |
 
-Deploy: `cd worker && npx wrangler deploy`. Always from this folder so `wrangler.toml`
-supplies the bindings. Check them afterwards in the dashboard (Worker, Settings, Bindings).
+Deploy: automatic. Cloudflare Workers Builds is connected to this repo (set up 2026-10-21):
+- A merge to `main` that touches `worker/*` or `assets/conditions-core.js` runs `npx -y wrangler@4 deploy`
+  in `worker/`, so `wrangler.toml` supplies the bindings, vars and cron.
+- A push to any other branch touching those paths runs `versions upload`: a version with its own preview URL
+  (in the build log), not live. Promote it from the dashboard (Worker, Deployments) if needed.
+- Build status and logs: dashboard, Worker, Deployments or Builds.
+
+By hand, if ever needed: `cd worker && npx wrangler deploy`, always from this folder. Check the bindings
+afterwards (Worker, Settings, Bindings). The old `Streamcast-worker` repo is no longer connected; don't deploy from it.
 
 Unsubscribe links are `https://herefishyfishy.ca/unsubscribe/?e=<email>&t=<token>`, where the
 token is an HMAC of the email with `UNSUBSCRIBE_SECRET`. Any email sent to the list must include
