@@ -2141,6 +2141,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #landing .land-header{position:static;background:var(--ed-paper);backdrop-filter:none;
   border-bottom:1px solid var(--ed-rule);padding:1rem 1.3rem;
   max-width:900px;margin:0 auto;width:100%}
+/* The header is capped at 900 px so its content lines up with the page, which also cut its bottom rule short on
+   wide screens. Draw the rule edge to edge: border-image-outset paints past the box without adding page width. */
+#landing .land-header{border-image:linear-gradient(var(--ed-rule),var(--ed-rule)) 0 0 1 0 / 0 0 1px 0 / 0 100vw}
 #landing .logo-wrap{background:none;border:0;box-shadow:none;padding:0}
 /* the wordmark and wave were drawn light for a dark photo backdrop */
 #landing .logo-wave span{background:var(--ed-muted);opacity:.5}
