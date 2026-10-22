@@ -351,10 +351,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    rod with a float and bait" for other float methods, and "spinning rod with bait" for bait without a float (TJ:
    "float rod" means different things to different anglers).
 
-12. **Don River follow-ups (2026-10-21):** TJ to confirm the flow sweet spot (2.5 to 8 m3/s at Todmorden, a guess from
-   the 4 m3/s base flow), whether steelhead belong on the list ("some" per TJ; TRCA mentions migratory rainbows), and
-   that Sunnybrook's access is north of Eglinton (if it's south, it's all-year, so today's tag is only over-cautious).
-   Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on the Reddit thread.
+12. **Don River follow-ups (2026-10-21):** confirmed by TJ: the flow sweet spot (2.5 to 8 m3/s at Todmorden) is fine,
+   Sunnybrook Park is north of Eglinton (so `extended` is right), and steelhead stay off the list (extremely rare and
+   unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
+   the Reddit thread.
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
