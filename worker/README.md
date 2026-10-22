@@ -11,6 +11,7 @@ Cloudflare Pages does not deploy this folder. Workers Builds does (see Deploy).
 | `/subscribe` | POST `{email, kind, source, ...}`: `kind` is `outlook`, `run` (`river`, optional `weekly`), `trip` (`trip`) or `weekly` (`weekly: {section, species}`). Saves to KV, adds to Resend, sends the welcome email. Returns `{ok:true}` only on success |
 | `/unsubscribe` | POST `{e, t}` (site page) or one-click POST with `?e=&t=` (Gmail, Apple Mail). Marks the KV record and the Resend contact unsubscribed. GET redirects to `/unsubscribe/` on the site |
 | `/water-temps` | Live water (and air) temperature from Credit Valley Conservation's real-time stations, parsed from cvc.ca/water-quality-table/. Cached in KV `CACHE` (`wt:latest`) for 45 min |
+| `/run-conditions` | What the run-alert task reads (see below): flow log, flow-bump summary and rain per subscribed river. Subscriber counts are left out |
 | `/health`, `/fields` | Diagnostics |
 | `/credit-river/*` | Old SSR pages, superseded by `functions/credit-river/[species].js` on Pages |
 
@@ -51,3 +52,16 @@ on open water. No good day, no email. At most one weekly email per person per 6 
 - Run alerts are capped the same way: at most one per person per 6 days (`lastRunAlertAt`). Someone with run alerts
   and a weekly reach can get one of each in a week. Trip-day emails and the monthly outlook don't count.
 - Checks: `node worker/weekly.test.mjs` (made-up weather and subscribers; writes `worker/.weekly-preview.html`).
+
+## Run-alert inputs (`runconditions.js`)
+The "Run alert drafts" scheduled task runs in a cloud session that can't always reach the gauge and weather APIs, so the
+hourly cron saves its inputs to KV `CACHE` `runcond:latest` (7-day TTL). For each river with an active run-alert
+subscriber (`runRivers`, not unsubscribed): its lowest migratory reach (`lowerMigratoryReach()`: lists steelhead or salmon,
+no migratory reach below it in `UPSTREAM_OF`), that reach's gauge and sweet spot, `flowLog` (one reading per hour, last
+96 hours, kept across runs in `flowLogs`), `bump` (peak over the last 72 hours, the lowest level before it, `rise`, and
+`steadyOrDropping`; `bump: true` means at least 50% up and now steady or dropping), and `rain` / `rainSums` (3 days back,
+today and 2 ahead, one Open-Meteo call for all rivers).
+- Requests: one per gauge plus one. Skipped in the 6 am hour (trip emails) and Thursday 5 pm (weekly email) to stay
+  under the free plan's 50 per run.
+- The log starts empty: until `bump.hoursLogged` reaches 72, a bump that started before the log can be missed.
+- Checks: `node worker/runconditions.test.mjs`.

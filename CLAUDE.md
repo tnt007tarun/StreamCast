@@ -288,6 +288,9 @@ Merged recently:
   the old notify-bar `rivers` + `species`. One weekly email and one run alert per person per 6 days (`lastWeeklyAt`,
   `lastRunAlertAt`).
 - Resend free plan: 100 emails a day, 3,000 a month. A run alert to a big river list can hit that.
+- Run-alert inputs: the hourly cron saves flow (96 h log), a flow-bump summary and rain for every river with a run-alert
+  subscriber to KV CACHE `runcond:latest` (`worker/runconditions.js`, also `GET /run-conditions`). The "Run alert drafts"
+  task reads it through the Cloudflare API, since its cloud session can't always reach the gauge and weather APIs.
 - Weekly scheduled task "Weekly subscriber report" (Mon 8:50) emails TJ counts by interest and form.
 - Umami `Email Signup`, `Email Signup Failed` and `Notify Bar Shown` now carry `offer` (trip, run, outlook); page boxes
   send `page` and `placement` (mid or end), and fire `Signup Box Seen` once when half the box is on screen. Signups
