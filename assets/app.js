@@ -102,7 +102,7 @@ document.addEventListener('click', function(e) {
 var _MIGRATORY_SPECIES = ['Chinook Salmon','Coho Salmon','Steelhead'];
 // Rivers that get run alerts (notify bar, see initNotifyBar). Defined up here because the deep-link
 // handler opens the notify bar while the file is still loading. Same list as RUN_RIVERS in worker.js.
-var RUN_ALERT_RIVERS = ['Beaver River','Black Creek','Bowmanville Creek','Bronte Creek','Credit River','Duffins Creek',
+var RUN_ALERT_RIVERS = ['Beaver River','Black Creek','Bowmanville Creek','Bronte Creek','Credit River','Don River','Duffins Creek',
   'Ganaraska River','Grand River','Humber River','Nottawasaga River','Rouge River','Saugeen River',
   'Sixteen Mile Creek','Wilmot Creek'];
 // When true, selectedRiver was chosen by us and should be re-resolved whenever the
@@ -229,7 +229,7 @@ function initExpertMode() {
   var sel = document.getElementById('expert-river-select');
   if (sel && !sel._wired) {
     // Populate options
-    if (sel.options.length <= 1) { sel.add(new Option('Beaver River','Beaver River'));sel.add(new Option('Black Creek','Black Creek'));sel.add(new Option('Bowmanville Creek','Bowmanville Creek'));sel.add(new Option('Bronte Creek','Bronte Creek'));sel.add(new Option('Credit River','Credit River'));sel.add(new Option('Duffins Creek','Duffins Creek'));sel.add(new Option('Eramosa River','Eramosa River'));sel.add(new Option('Ganaraska River','Ganaraska River'));sel.add(new Option('Grand River','Grand River'));sel.add(new Option('Humber River','Humber River'));sel.add(new Option('Nottawasaga River','Nottawasaga River'));sel.add(new Option('Rouge River','Rouge River'));sel.add(new Option('Saugeen River','Saugeen River'));sel.add(new Option('Sixteen Mile Creek','Sixteen Mile Creek'));sel.add(new Option('Speed River','Speed River'));sel.add(new Option('Wilmot Creek','Wilmot Creek')); }
+    if (sel.options.length <= 1) { sel.add(new Option('Beaver River','Beaver River'));sel.add(new Option('Black Creek','Black Creek'));sel.add(new Option('Bowmanville Creek','Bowmanville Creek'));sel.add(new Option('Bronte Creek','Bronte Creek'));sel.add(new Option('Credit River','Credit River'));sel.add(new Option('Don River','Don River'));sel.add(new Option('Duffins Creek','Duffins Creek'));sel.add(new Option('Eramosa River','Eramosa River'));sel.add(new Option('Ganaraska River','Ganaraska River'));sel.add(new Option('Grand River','Grand River'));sel.add(new Option('Humber River','Humber River'));sel.add(new Option('Nottawasaga River','Nottawasaga River'));sel.add(new Option('Rouge River','Rouge River'));sel.add(new Option('Saugeen River','Saugeen River'));sel.add(new Option('Sixteen Mile Creek','Sixteen Mile Creek'));sel.add(new Option('Speed River','Speed River'));sel.add(new Option('Wilmot Creek','Wilmot Creek')); }
     sel._wired = true;
     sel.addEventListener('change', function() {
       var river = this.value;
@@ -1107,6 +1107,8 @@ var RIVERS_DB = [
     { name:"Lower Humber River",       gauge:"02HC025", sweetMin:3,  sweetMax:12, lat:43.640, lng:-79.480 },
     { name:"Lower-Mid Humber (Old Mill to Eglinton)", gauge:"02HC025", sweetMin:3, sweetMax:12, lat:43.670, lng:-79.490 },
     { name:"Upper Humber River (Headwaters)", gauge:"02HC025", sweetMin:2, sweetMax:8, lat:43.870, lng:-79.730 },
+    { name:"Lower Don River (Lake to Eglinton)", gauge:"02HC024", sweetMin:2.5, sweetMax:8, lat:43.690, lng:-79.358 },
+    { name:"Upper Don River (Eglinton to Hwy 407)", gauge:"02HC024", sweetMin:2.5, sweetMax:8, lat:43.726, lng:-79.343 },
     { name:"Lower Beaver River (Thornbury)", gauge:"02FB009", sweetMin:2, sweetMax:10, lat:44.563, lng:-80.457 },
     { name:"Middle Beaver River (Clarksburg to Heathcote)", gauge:"02FB009", sweetMin:2, sweetMax:10, lat:44.520, lng:-80.430 },
     { name:"Upper Beaver River (Kimberley)", gauge:"02FB009", sweetMin:1, sweetMax:6, lat:44.490, lng:-80.400 },
@@ -4200,7 +4202,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _goto = { section: _best.section, species: _best.name };
     } else {
       headlineHtml = _lead + ' Nothing else on this river is both open and in season'
-        + (_closedHere ? '. ' + _closedHere.reason : '.');
+        + (_closedHere && !(targetName && _closedNote) ? '. ' + _closedHere.reason : '.');  // _lead already says why
       window._shownSpeciesName = null;
     }
   })();

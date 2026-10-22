@@ -6,7 +6,7 @@
 // Posts to the Worker's /subscribe, the same endpoint as the app's notify bar.
 (function () {
   var PROXY = 'https://streamcast-proxy.tnt-tarun.workers.dev';
-  var RIVERS = ['Beaver River', 'Black Creek', 'Bowmanville Creek', 'Bronte Creek', 'Credit River', 'Duffins Creek',
+  var RIVERS = ['Beaver River', 'Black Creek', 'Bowmanville Creek', 'Bronte Creek', 'Credit River', 'Don River', 'Duffins Creek',
     'Ganaraska River', 'Grand River', 'Humber River', 'Nottawasaga River', 'Rouge River', 'Saugeen River',
     'Sixteen Mile Creek', 'Wilmot Creek'];
   var CSS = '.hff-signup{margin:2.2rem 0 1rem;padding:1.1rem 1.15rem 1.15rem;background:#eef5f3;border-radius:10px;' +

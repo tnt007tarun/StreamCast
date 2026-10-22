@@ -246,6 +246,14 @@ Merged recently:
   `salmonMethodMode()` (takes `section`/`dateStr`), `bringPhraseFor()`, `stagingRead()`, `stagingSectionFor()`,
   `waterTempFromHistory()`. The app takes `?date=YYYY-MM-DD` in deep links.
 
+- **Don River** (TJ asked, 2026-10-21; asked for on r/torontourbanfishing): two sections split at the regs line, Chinook
+  only (TJ). `Lower Don River (Lake to Eglinton)` is `all-year` (Todmorden Mills/Pottery Rd, Crothers Woods, E.T. Seton);
+  `Upper Don River (Eglinton to Hwy 407)` is `extended` (Charles Sauriol on the East Don, Sunnybrook on the West Don). MNR
+  2026 Zone 16; no Don waterbody exceptions or sanctuaries. Gauge `02HC024` (Todmorden; base flow about 4 m3/s, flashy);
+  `02HC005` (West Don, York Mills) and `02HC056` (East Don, Thornhill) exist but aren't used yet. No mouth spot or staging
+  zone: the new Port Lands mouth is left out (TJ). Run timing a little after the Humber (TJ), only stated in spot text.
+  Added to the run-alert lists (app, signup box, Worker). Also fixed the closed-reach headline repeating its reason.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -342,6 +350,11 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    steelhead and lake-run browns, "spinning rod with float gear" when Spin Fishing is picked, "centrepin or spinning
    rod with a float and bait" for other float methods, and "spinning rod with bait" for bait without a float (TJ:
    "float rod" means different things to different anglers).
+
+12. **Don River follow-ups (2026-10-21):** confirmed by TJ: the flow sweet spot (2.5 to 8 m3/s at Todmorden) is fine,
+   Sunnybrook Park is north of Eglinton (so `extended` is right), and steelhead stay off the list (extremely rare and
+   unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
+   the Reddit thread.
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:

@@ -728,7 +728,7 @@ function escapeHtml(s) {
 // rivers live in the KV record and the Worker sends run alerts itself (see /alerts below).
 var TOPIC_OUTLOOK = "8acca89a-661a-4607-819c-1290deac79b2";   // Monthly outlook
 var TOPIC_RUN = "81a6f6ee-5667-476e-92d0-bd06c32fd009";       // Run alerts
-var RUN_RIVERS = ["Beaver River", "Black Creek", "Bowmanville Creek", "Bronte Creek", "Credit River", "Duffins Creek",
+var RUN_RIVERS = ["Beaver River", "Black Creek", "Bowmanville Creek", "Bronte Creek", "Credit River", "Don River", "Duffins Creek",
   "Ganaraska River", "Grand River", "Humber River", "Nottawasaga River", "Rouge River", "Saugeen River",
   "Sixteen Mile Creek", "Wilmot Creek"];
 var OWNER_EMAIL = "tnt.tarun@gmail.com";
