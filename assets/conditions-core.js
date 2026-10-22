@@ -5,7 +5,7 @@
 // app and the emails can never disagree. Nothing in this file may touch the DOM, window state
 // or the network. Config (RIVER_CONFIG, RIVER_REGS, ACCESS_COORDS, SPECIES_SEASONS) lives here too.
 
-var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle Beaver River (Clarksburg to Heathcote)", "Upper Beaver River (Kimberley)"], "Black Creek": ["Black Creek — Upper Reaches (Vaughan to North York)", "Black Creek — Lower Watershed & Humber Confluence"], "Bowmanville Creek": ["Bowmanville Creek — River Mouth & Piers", "Lower Bowmanville Creek", "Middle Bowmanville Creek (Fish Ladder)", "Upper Bowmanville Creek"], "Bronte Creek": ["Bronte Creek — Lower Estuary & Mouth", "Bronte Creek — Mid-Section & Provincial Park", "Bronte Creek — Upper Headwaters"], "Credit River": ["Upper Credit River", "Middle Credit River", "Lower Credit River"], "Duffins Creek": ["Duffins Creek — Lower Section", "Duffins Creek — Middle Section", "Duffins Creek — Upper Reaches"], "Eramosa River": ["Eramosa River — Upper Headwaters (Above Rockwood)", "Eramosa River — Mid-Section (Rockwood to Eden Mills)"], "Ganaraska River": ["Ganaraska River — Lower (Lake to CNR Bridge)", "Ganaraska River — Port Hope Sanctuary", "Ganaraska River — Upper & Conservation Areas"], "Grand River": ["Upper Grand River (Tailwater)", "Lower Grand River"], "Humber River": ["Lower Humber River", "Lower-Mid Humber (Old Mill to Eglinton)", "Upper Humber River (Headwaters)"], "Nottawasaga River": ["Nottawasaga River — Headwaters (Niagara Escarpment)", "Nottawasaga River — Middle Section (Alliston to Angus)", "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)"], "Rouge River": ["Rouge River — Marsh & Mouth (Lake Ontario)", "Rouge River — Mid-Section (Rouge National Urban Park)", "Rouge River — Upper & Milne Dam (Markham)"], "Saugeen River": ["Saugeen River — Headwaters & Upper Tributaries", "Saugeen River — Lower Main Stem (Paisley to Southampton)"], "Sixteen Mile Creek": ["Sixteen Mile Creek — Lower Reaches & Oakville Harbour", "Sixteen Mile Creek — Middle Reaches & Main Valley", "Sixteen Mile Creek — Upper West Branch (Trout)"], "Speed River": ["Speed River — Upper (Above Guelph Lake)"], "Wilmot Creek": ["Wilmot Creek — Mouth & Marsh (Lake Ontario)", "Wilmot Creek — Lower River (to CN Rail Tracks)", "Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)", "Wilmot Creek — Upper Watershed & Orono Crown Lands"]};
+var RIVER_SECTIONS = {"Beaver River": ["Lower Beaver River (Thornbury)", "Middle Beaver River (Clarksburg to Heathcote)", "Upper Beaver River (Kimberley)"], "Black Creek": ["Black Creek — Upper Reaches (Vaughan to North York)", "Black Creek — Lower Watershed & Humber Confluence"], "Bowmanville Creek": ["Bowmanville Creek — River Mouth & Piers", "Lower Bowmanville Creek", "Middle Bowmanville Creek (Fish Ladder)", "Upper Bowmanville Creek"], "Bronte Creek": ["Bronte Creek — Lower Estuary & Mouth", "Bronte Creek — Mid-Section & Provincial Park", "Bronte Creek — Upper Headwaters"], "Credit River": ["Upper Credit River", "Middle Credit River", "Lower Credit River"], "Don River": ["Lower Don River (Lake to Eglinton)", "Upper Don River (Eglinton to Hwy 407)"], "Duffins Creek": ["Duffins Creek — Lower Section", "Duffins Creek — Middle Section", "Duffins Creek — Upper Reaches"], "Eramosa River": ["Eramosa River — Upper Headwaters (Above Rockwood)", "Eramosa River — Mid-Section (Rockwood to Eden Mills)"], "Ganaraska River": ["Ganaraska River — Lower (Lake to CNR Bridge)", "Ganaraska River — Port Hope Sanctuary", "Ganaraska River — Upper & Conservation Areas"], "Grand River": ["Upper Grand River (Tailwater)", "Lower Grand River"], "Humber River": ["Lower Humber River", "Lower-Mid Humber (Old Mill to Eglinton)", "Upper Humber River (Headwaters)"], "Nottawasaga River": ["Nottawasaga River — Headwaters (Niagara Escarpment)", "Nottawasaga River — Middle Section (Alliston to Angus)", "Nottawasaga River — Lower Section (Boyne to Wasaga Beach)"], "Rouge River": ["Rouge River — Marsh & Mouth (Lake Ontario)", "Rouge River — Mid-Section (Rouge National Urban Park)", "Rouge River — Upper & Milne Dam (Markham)"], "Saugeen River": ["Saugeen River — Headwaters & Upper Tributaries", "Saugeen River — Lower Main Stem (Paisley to Southampton)"], "Sixteen Mile Creek": ["Sixteen Mile Creek — Lower Reaches & Oakville Harbour", "Sixteen Mile Creek — Middle Reaches & Main Valley", "Sixteen Mile Creek — Upper West Branch (Trout)"], "Speed River": ["Speed River — Upper (Above Guelph Lake)"], "Wilmot Creek": ["Wilmot Creek — Mouth & Marsh (Lake Ontario)", "Wilmot Creek — Lower River (to CN Rail Tracks)", "Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)", "Wilmot Creek — Upper Watershed & Orono Crown Lands"]};
 
 // Section names are keys (URLs, analytics, config) and keep their em dash. For display,
 // show a middot instead.
@@ -303,6 +303,7 @@ var UPSTREAM_OF = {
   'Rouge River \u2014 Marsh & Mouth (Lake Ontario)': 'Rouge River \u2014 Mid-Section (Rouge National Urban Park)',
   'Rouge River \u2014 Mid-Section (Rouge National Urban Park)': 'Rouge River \u2014 Upper & Milne Dam (Markham)',
   'Lower Humber River': 'Lower-Mid Humber (Old Mill to Eglinton)',
+  'Lower Don River (Lake to Eglinton)': 'Upper Don River (Eglinton to Hwy 407)',
   'Lower-Mid Humber (Old Mill to Eglinton)': 'Upper Humber River (Headwaters)',
   'Lower Credit River': 'Middle Credit River',
   'Middle Credit River': 'Upper Credit River',
@@ -1338,6 +1339,43 @@ var RIVER_CONFIG = {
     methods:[],
     access:[]
   },
+  // Don River (TJ, 2026-10-21). Chinook only (TJ); salmon run usually a little after the Humber's (TJ). TRCA has rebuilt
+  // the Pottery Road weir as a rock ramp and removed other barriers since 1996; Chinook reach about 20 km up the East Don.
+  // No mouth spot: the new Port Lands mouth is left out for now (TJ). MNR 2026 Zone 16: Lake to Eglinton (and tributaries)
+  // open all year; Eglinton to Hwy 407 extended. Gauge 02HC024: base flow about 4 m3/s, very flashy after rain.
+  "Lower Don River (Lake to Eglinton)": {
+    season:'all-year',
+    gauge:"02HC024", gaugeName:"Don River at Todmorden",
+    sweetMin:2.5, sweetMax:8, flowLow:1.5, flowHigh:20,
+    lat:43.690, lng:-79.358,
+    loc:"Lake Ontario to Eglinton Avenue: Todmorden Mills, Crothers Woods and E.T. Seton Park",
+    driveTime:{ toronto:15,mississauga:35,brampton:40,oakville:40,burlington:55,milton:50,hamilton:65,guelph:80,cambridge:90,kitchener:100,waterloo:100,orangeville:70,markham:25,"richmond hill":30,vaughan:30,ajax:35,pickering:30,"north york":15,scarborough:20,etobicoke:25,oshawa:50,whitby:45,bowmanville:65,clarington:70,newcastle:70,cobourg:105,"port hope":95,barrie:90,collingwood:125,"owen sound":175 },
+    species:["Chinook Salmon"],
+    active:true,
+    regs:[{rule:"FMZ 16. Don River and its tributaries from Lake Ontario to Eglinton Avenue: trout and salmon open all year. Urban river: it rises fast and turns brown after heavy rain.",icon:"📋"}],
+    methods:["float","spin"],
+    access:[
+      {name:"Todmorden Mills · Pottery Road",loc:"East York · 67 Pottery Rd",crowd:"high",desc:"Free parking at the heritage site. The weir north of Pottery Road was rebuilt as a rock ramp so salmon can pass, and Chinook are often seen moving up through it. The Don's run usually comes a little after the Humber's, from late September into October. Busy with salmon watchers in the fall."},
+      {name:"Crothers Woods · Lower Don Trail",loc:"East York · off Bayview Ave",crowd:"med",desc:"Parking lot past the Loblaws off Bayview Avenue. Trails drop to the Lower Don Trail and the river between Pottery Road and the Forks of the Don. Less pressure than Pottery Road, but the banks are steep in places."},
+      {name:"E.T. Seton Park · West Don",loc:"East York · Thorncliffe Park Dr or Leslie St",crowd:"med",desc:"Big park with parking off Thorncliffe Park Drive and off Leslie Street. The West Don runs through it from the Forks up to Eglinton, and salmon pass through on their way to the upper river."}
+    ]
+  },
+  "Upper Don River (Eglinton to Hwy 407)": {
+    season:'extended',
+    gauge:"02HC024", gaugeName:"Don River at Todmorden",
+    sweetMin:2.5, sweetMax:8, flowLow:1.5, flowHigh:20,
+    lat:43.726, lng:-79.343,
+    loc:"Eglinton Avenue to Highway 407: Sunnybrook Park on the West Don, Charles Sauriol on the East Don",
+    driveTime:{ toronto:20,mississauga:35,brampton:35,oakville:40,burlington:55,milton:50,hamilton:65,guelph:80,cambridge:90,kitchener:100,waterloo:100,orangeville:65,markham:20,"richmond hill":25,vaughan:25,ajax:35,pickering:30,"north york":10,scarborough:20,etobicoke:25,oshawa:50,whitby:45,bowmanville:65,clarington:70,newcastle:70,cobourg:105,"port hope":95,barrie:85,collingwood:120,"owen sound":170 },
+    species:["Chinook Salmon"],
+    active:true,
+    regs:[{rule:"FMZ 16. Don River and its tributaries from Eglinton Avenue to Highway 407: trout and salmon open from the fourth Saturday in April to December 31.",icon:"📋"}],
+    methods:["float","spin"],
+    access:[
+      {name:"Charles Sauriol · East Don",loc:"North York · 1191 Lawrence Ave E",crowd:"med",desc:"Small lot on Lawrence Avenue East that fills up on weekends. A flat trail follows the East Don, and salmon are seen here in October. TRCA has tracked Chinook about 20 km up the East Don, well above Lawrence. North of Eglinton, so the season closes December 31."},
+      {name:"Sunnybrook Park · West Don",loc:"North York · Leslie St north of Eglinton",crowd:"med",desc:"Parking off Leslie Street just north of Eglinton. The West Don is smaller here and sees fewer anglers than the lower river. North of Eglinton, so the season closes December 31."}
+    ]
+  },
   'Black Creek — Upper Reaches (Vaughan to North York)': {
     season:'standard',
     gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
@@ -1514,6 +1552,23 @@ var RIVER_REGS = {
       "Lower reach (Hwy 2 to Lake Ontario): open all year for Atlantic/Brown/Rainbow/Pacific Salmon",
       "Southern Bait Management Zone: no live baitfish transport",
       "Aggregate trout and salmon limit: S-5 / C-2 combined"
+    ]
+  },
+  "Don River": {
+    "zone": "FMZ 16",
+    "species": [
+      {
+        "name": "Chinook / Coho Salmon",
+        "season": "Open all year (Lake Ontario to Eglinton Ave.); 4th Sat. April \u2013 Dec. 31 (Eglinton to Hwy 407)",
+        "limit": "S-5 / C-2",
+        "notes": "Zone-wide limits apply. Counts toward the S-5 / C-2 trout and salmon aggregate."
+      }
+    ],
+    "special": [
+      "Don River and tributaries (Lake Ontario to Eglinton Ave., City of Toronto): open all year for Atlantic Salmon, Brown Trout, Pacific Salmon and Rainbow Trout",
+      "Don River and tributaries (Eglinton Ave. to Hwy 407): open 4th Sat. April \u2013 Dec. 31 (extended fall season)",
+      "Aggregate trout & salmon limit: S-5 / C-2 combined",
+      "Southern Bait Management Zone"
     ]
   },
   "Humber River": {
@@ -2163,6 +2218,15 @@ var ACCESS_COORDS = {
     {lat:43.6123,lng:-80.1523}, // Rockwood Conservation Area
     {lat:43.5756,lng:-80.1834}, // Eden Mills · Lower Mid-Section
   ],
+  "Lower Don River (Lake to Eglinton)": [
+    {lat:43.6865,lng:-79.3601}, // Todmorden Mills · Pottery Road
+    {lat:43.6970,lng:-79.3590}, // Crothers Woods · Lower Don Trail
+    {lat:43.7038,lng:-79.3369}, // E.T. Seton Park · West Don
+  ],
+  "Upper Don River (Eglinton to Hwy 407)": [
+    {lat:43.7288,lng:-79.3212}, // Charles Sauriol · East Don
+    {lat:43.7231,lng:-79.3626}, // Sunnybrook Park · West Don
+  ],
   "Black Creek — Upper Reaches (Vaughan to North York)": [
     {lat:43.763,lng:-79.5071}, // Black Creek Parkland · Upper
     {lat:43.7434,lng:-79.4756}, // Downsview Park Area
@@ -2259,6 +2323,8 @@ var WATER_CURVE_MID = 12.5;
 var WATER_MODEL_OVERRIDES = {
   'Lower Humber River': { gw: 0.05 },                                    // urban runoff, warm
   'Black Creek \u2014 Lower Watershed & Humber Confluence': { gw: 0.05 },
+  'Lower Don River (Lake to Eglinton)': { gw: 0.05 },                           // urban runoff, warm
+  'Upper Don River (Eglinton to Hwy 407)': { gw: 0.1 },
   'Black Creek \u2014 Upper Reaches (Vaughan to North York)': { gw: 0.15 },
   'Upper Grand River (Tailwater)': { gw: 0.35, tau: 5 },                  // cold bottom release from the dam, not springs
   'Lower Grand River': { gw: 0.05, tau: 6 },                              // big, runoff-fed river
