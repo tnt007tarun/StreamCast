@@ -305,6 +305,9 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    TJ tested unsubscribe end to end (2026-10-15). The footer address is a placeholder ("Shawnmarr Rd, Mississauga ON",
    no street number); TJ will swap in a virtual mailbox address. Still to do: an Umami review with the new events, and
    a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
+   Every welcome email now ends with a reply question (which river, what species), signed TJ (2026-10-21). Replies
+   reach TJ's Gmail through hello@. Use them to test the personas (fall run chaser, steelhead regular, trout
+   explorer, newer angler) before building for any of them.
 
 1. **Sep 9 to 25 search drop.** Cause unknown. Umami (live from Sep 11) shows no matching collapse in app events
    (Sep 12, 14, 21, 25 at 110 to 120 events vs 156 on Sep 26), but TJ's own testing is in those numbers. Next: Umami
