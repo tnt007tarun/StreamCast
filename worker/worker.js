@@ -1,4 +1,5 @@
 import { runWeekly, weeklyInterests } from "./weekly.js";
+import { updateRunConditions, RUNCOND_KEY } from "./runconditions.js";
 var ARCGIS_BASE = "https://services1.arcgis.com/TJH5KDher0W13Kgo/arcgis/rest/services/FishStockingDataForRecreationalPurposes/FeatureServer/0/query";
 var EC_FLOW_BASE = "https://api.weather.gc.ca/collections/hydrometric-realtime/items";
 var CACHE_TTL_STOCKING = 86400;
@@ -1206,6 +1207,25 @@ function weeklyDeps(env, ctx) {
     putLog: (key, log) => env.CACHE ? env.CACHE.put(key, JSON.stringify(log), { expirationTtl: 120 * 86400 }) : null
   };
 }
+// Run-alert inputs for the "Run alert drafts" task (runconditions.js). Hourly, except the hours the
+// weekly email and trip-day emails run: the free plan allows 50 outbound requests per cron run, and this
+// uses one per gauge plus one Open-Meteo call.
+async function maybeUpdateRunConditions(env, ctx) {
+  if (!env.CACHE) return;
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", weekday: "short", hour: "numeric", hourCycle: "h23" }).formatToParts(new Date());
+  const wd = parts.find((p) => p.type === "weekday").value, hour = Number(parts.find((p) => p.type === "hour").value);
+  if (hour === 6 || (wd === "Thu" && hour === 17)) return;
+  await updateRunConditions({
+    runRivers: RUN_RIVERS,
+    today: torontoDate(new Date()),
+    nowMs: Date.now(),
+    listRecords: () => allRecords(env),
+    flow: async (gauge) => { const r = await handleFlow(new URL("https://x/flow?station=" + gauge), ctx); return r.ok ? r.json() : null; },
+    fetchJson: async (u) => { const r = await fetch(u); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); },
+    getState: () => env.CACHE.get(RUNCOND_KEY, "json"),
+    putState: (st) => env.CACHE.put(RUNCOND_KEY, JSON.stringify(st), { expirationTtl: 7 * 86400 })
+  });
+}
 async function maybeRunWeekly(env, ctx) {
   const now = new Date();
   const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", weekday: "short", hour: "numeric", hourCycle: "h23" }).formatToParts(now);
@@ -1221,6 +1241,7 @@ export default {
     ctx.waitUntil(maybeRunWeekly(env, ctx));
     ctx.waitUntil(logWaterTemps(env));
     ctx.waitUntil(notifyAlertDrafts(env));
+    ctx.waitUntil(maybeUpdateRunConditions(env, ctx));
     // Trip-day emails go out in the 6 am hour, Toronto time.
     const hour = Number(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", hour: "numeric", hourCycle: "h23" }).format(new Date()));
     if (hour === 6) ctx.waitUntil(sendTripEmails(env, ctx));
@@ -1252,6 +1273,13 @@ export default {
       return handleLakeTemps(url, ctx);
     if (path === "/water-temps")
       return handleWaterTemps(env);
-    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /water-temps, /subscribe, /unsubscribe, /alerts/approve" }, 404);
+    if (path === "/run-conditions") {
+      // Public: flow and rain only. Subscriber counts stay in KV.
+      const st = (env.CACHE && await env.CACHE.get(RUNCOND_KEY, "json")) || { rivers: {} };
+      const rivers = {};
+      for (const [k, v] of Object.entries(st.rivers || {})) { const c = Object.assign({}, v); delete c.subscribers; rivers[k] = c; }
+      return jsonResponse({ updated: st.updated || null, rivers });
+    }
+    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /water-temps, /run-conditions, /subscribe, /unsubscribe, /alerts/approve" }, 404);
   }
 };
