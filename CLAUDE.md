@@ -35,8 +35,10 @@ build, and the Cloudflare check on the PR links to it.
 | `unsubscribe/` | Unsubscribe page (noindex). Talks to the Worker's `/unsubscribe` |
 | `assets/signup.js` | The one signup box on guide, river, about and home pages (`<div class="hff-signup" data-kind="run|outlook" data-river="...">`) |
 
-Deploy the Worker only from `worker/` (`npx wrangler deploy`) so `wrangler.toml` supplies the bindings. A deploy
-without them broke every signup from June to October 2026.
+The Worker deploys itself: Workers Builds runs `npx -y wrangler@4 deploy` in `worker/` when a merge to `main` touches
+`worker/*` or `assets/conditions-core.js` (since 2026-10-21; other branches upload a preview version only). By hand, deploy
+only from `worker/` so `wrangler.toml` supplies the bindings. A deploy without them broke every signup from June to
+October 2026. The old `Streamcast-worker` repo is disconnected; never deploy from it.
 
 ### Key structures (`conditions-core.js` unless noted)
 
@@ -149,7 +151,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-20)
+## Current state (updated 2026-10-21)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -235,7 +237,7 @@ Merged recently:
   `conditionsScore()`, `scoreDay()`, `driveVerdict()`; the two copies of the drive verdict now call it. No behaviour
   change: 8,784 `rankRivers` cases (54 sections, 8 species picks, every other day of 2026) and 4,032 verdict cases match
   the old code exactly. Step 1 of project doc `claude/weekly-alerts-plan-2026-10-20.md`.
-- **#90** (open, after #89) Weekly conditions email (`worker/weekly.js`, see `worker/README.md`):
+- **#90** Weekly conditions email (`worker/weekly.js`, see `worker/README.md`):
   Thursday 5 pm Toronto, Fri to Wed scored with `scoreDay()`, one email per person listing combos with a Good or
   Excellent day on open water, `ALERTS_MODE=preview` (TJ gets the preview) until TJ sets `live`. Caps (TJ, 2026-10-20):
   one weekly email and one run alert per person per 6 days; only someone with both gets two emails in a week; trip-day
@@ -341,8 +343,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
    project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89; the email itself is #90.
-   After both merge: deploy the Worker from `worker/`, check the first Thursday preview, and after 2 to 3 weeks TJ sets
-   `ALERTS_MODE = "live"` in `wrangler.toml` and redeploys. The "Weekly subscriber report" task should count `weekly`
+   Both merged and deployed 2026-10-21 (first preview Thursday Oct 22, 5 pm). After 2 to 3 weeks TJ sets
+   `ALERTS_MODE = "live"` in `wrangler.toml`; merging that deploys it. The "Weekly subscriber report" task should count `weekly`
    interests too. Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
    comes from run strength at the mouth (lake temperature, wind, cloud) and ignores river flow; only the email's rain
    cap catches blowouts. Worth deciding with TJ whether flow should count there.
