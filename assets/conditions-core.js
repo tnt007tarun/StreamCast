@@ -2726,10 +2726,21 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
   return { score: score, notes: notes, warnings: warnings, cfg: cfg };
 }
 
-// Adds the water to a base score. Staging salmon are rated on the staging strength (lake
-// temperature, wind), because the river flow doesn't apply to fish still in the lake.
-function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct) {
-  if (stagingPct != null) return stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
+// Adds the water to a base score. While a run is on, the day is rated on run strength (lake
+// temperature, wind at the mouth). River flow doesn't matter to fish still in the lake
+// (fishInLake: staging, and you're at the mouth), but it does once they're in the river (TJ,
+// 2026-10-23): flow outside the sweet spot caps the day at Marginal, and blown out or too low
+// caps it at Tough, the same flow bands that rate a trout day.
+var FLOW_CAP_MARGINAL = 5, FLOW_CAP_TOUGH = 1;
+function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake) {
+  if (stagingPct != null) {
+    var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
+    if (!fishInLake && cfg && flow != null) {
+      if (flow < cfg.flowLow || flow > cfg.flowHigh) s = Math.min(s, FLOW_CAP_TOUGH);
+      else if (flow < cfg.sweetMin || flow > cfg.sweetMax) s = Math.min(s, FLOW_CAP_MARGINAL);
+    }
+    return s;
+  }
   if (cfg && flow != null) {
     return baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct);
   }
@@ -2738,11 +2749,11 @@ function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct) 
 
 // One day on one section: what the weekly email scores. The app builds the same number from
 // rankRivers (which adds drive time) and conditionsScore.
-// o: {section, species: [names], date, flow, waterTemp, cloudPct, stagingPct}
+// o: {section, species: [names], date, flow, waterTemp, cloudPct, stagingPct, fishInLake}
 function scoreDay(o) {
   var base = sectionSeasonScore(o.section, o.species || [], o.date, o.section);
   var closed = sectionClosedOn(base.cfg, o.date);
-  var score = conditionsScore(base.score, base.cfg, o.flow, o.waterTemp, o.cloudPct, o.stagingPct);
+  var score = conditionsScore(base.score, base.cfg, o.flow, o.waterTemp, o.cloudPct, o.stagingPct, o.fishInLake);
   return { section: o.section, date: o.date, closed: closed, score: score,
            confidence: closed ? null : scoreToConfidence(score), notes: base.notes, warnings: base.warnings };
 }

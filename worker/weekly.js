@@ -82,7 +82,8 @@ export function parseWeather(j) {
 
 // Score every day in the window for one reach and species. Same chain as the app: staging read
 // for migratory fish (stagingSectionFor/stagingRead), else flow, water temperature and sky
-// (scoreDay). Flow is today's gauge reading for every day, as in the app; heavy rain caps a day.
+// (scoreDay). There is no flow forecast, so Thursday's gauge reading stands in for every day (the app
+// rates flow only for today); heavy rain caps a day, and so does flow outside the sweet spot.
 export function scoreWeek({ section, species, dates, today, wx, flow, liveWater, lakeTemps }) {
   const cfg = C.getRiverConfig(section);
   return dates.map((date) => {
@@ -99,7 +100,8 @@ export function scoreWeek({ section, species, dates, today, wx, flow, liveWater,
       }
     }
     const r = C.scoreDay({ section, species: [species], date, flow, waterTemp, cloudPct: d.cloud,
-      stagingPct: staging ? staging.pct : null });
+      stagingPct: staging ? staging.pct : null,
+      fishInLake: !!(staging && staging.phase.mode === 'stage' && C.STAGING_ZONES[section]) });
     const prev = wx.byDate[addDays(date, -1)];
     const rainy = (d.rain || 0) >= BLOWOUT_RAIN_MM || !!(prev && (prev.rain || 0) >= BLOWOUT_RAIN_MM);
     const score = rainy ? Math.min(r.score, MARGINAL_CAP) : r.score;
@@ -191,7 +193,8 @@ export function renderCombo(combo, today, site) {
   return blockHeader(combo) + blockDays(combo) + blockWhere(combo) + blockGear(combo) + blockRegs(combo, today) + blockButton(combo, site);
 }
 export function weeklySubject(combos) {
-  if (combos.length === 1) return 'Good days ahead for ' + combos[0].species + ' on ' + C.secShort(combos[0].section);
+  // The full name: secShort() drops the river ("Marsh & Mouth (Lake Ontario)" doesn't say which river).
+  if (combos.length === 1) return 'Good days ahead for ' + combos[0].species + ' on ' + C.secLabel(combos[0].section);
   return 'Good days ahead on ' + combos.length + ' of your rivers';
 }
 export function renderEmail(combos, today, site, footerHtml) {
@@ -288,7 +291,7 @@ export async function runWeekly(env, deps, opts = {}) {
 
 // TJ's preview: every combo's six days, then what each subscriber would get (or why not).
 export function renderPreview(out, combos, today, site) {
-  const rows = Object.values(combos).map((c) => `<tr><td style="padding:2px 6px">${esc(c.species)}, ${esc(C.secShort(c.section))}</td>` +
+  const rows = Object.values(combos).map((c) => `<tr><td style="padding:2px 6px">${esc(c.species)}, ${esc(C.secLabel(c.section))}</td>` +
     c.days.map((d) => `<td style="padding:2px 6px;${d.good ? 'font-weight:bold;color:#1e7a6e' : 'color:#777'}">${esc(d.date.slice(5))} ${esc(d.missing ? 'no data' : d.word)}${d.rainy ? ' (rain)' : ''}</td>`).join('') + '</tr>').join('');
   const people = out.map((o) => {
     const head = `<p style="margin:16px 0 4px"><strong>${esc(o.email)}</strong>: `;

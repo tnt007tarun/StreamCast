@@ -2,7 +2,7 @@
 // Run from the repo root: node worker/weekly.test.mjs   (writes worker/.weekly-preview.html, ignored by git)
 import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
-import { runWeekly, weeklyInterests, windowDates, scoreWeek, parseWeather, renderEmail, SPECIES_KEY } from './weekly.js';
+import { runWeekly, weeklyInterests, windowDates, scoreWeek, parseWeather, renderEmail, weeklySubject, SPECIES_KEY } from './weekly.js';
 
 const C = globalThis.HFF_CORE;
 const TODAY = '2026-10-22'; // a Thursday
@@ -84,6 +84,20 @@ const html = sent.batches[0][0].html;
 assert.ok(/date=2026-10-2/.test(html) && /species=steelhead/.test(html), 'button links to the day and species');
 assert.ok(!/Saturday, Oct 24: (Good|Excellent)/.test(html), 'washout day not offered');
 assert.ok(/Bring:<\/strong> your centrepin or spinning rod with float gear/.test(html), 'gear matches the hero');
-assert.equal(sent.batches[0][0].subject, 'Good days ahead for Steelhead on ' + C.secShort('Lower Bowmanville Creek'));
+assert.equal(sent.batches[0][0].subject, 'Good days ahead for Steelhead on Lower Bowmanville Creek');
+
+// Flow counts once the fish are in the river (TJ, 2026-10-23): low water caps a run day at Marginal, blown out at Tough
+const low = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.5 });
+assert.ok(low.every((d) => d.score <= 5 && !d.good), 'flow below the sweet spot (1 to 8) is never Good');
+const blown = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 20 });
+assert.ok(blown.every((d) => d.score <= 1), 'flow above flowHigh (15) is Tough');
+sent = { batches: [], owner: [], puts: [] };
+const lowDeps = deps([{ email: 'steelhead@example.com', rivers: ['Lower Bowmanville Creek'], species: ['Steelhead'] }], sent);
+lowDeps.flow = async () => 0.5;
+r = await runWeekly({ ALERTS_MODE: 'live' }, lowDeps);
+assert.equal(sent.batches.length, 0, 'no email on a low-water week');
+// The subject names the river for a mouth reach
+assert.equal(weeklySubject([{ section: 'Rouge River \u2014 Marsh & Mouth (Lake Ontario)', species: 'Chinook Salmon' }]),
+  'Good days ahead for Chinook Salmon on Rouge River \u00b7 Marsh & Mouth (Lake Ontario)');
 
 console.log('weekly: all checks passed');

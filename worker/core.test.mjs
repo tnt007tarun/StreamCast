@@ -29,6 +29,16 @@ const closed = C.scoreDay({ section: 'Upper Credit River', species: ['Brook Trou
 assert.equal(closed.closed, true);
 assert.equal(closed.confidence, null);
 
+// Run strength with flow (TJ, 2026-10-23). Lower Bowmanville: flowLow 0.3, sweet 1 to 8, flowHigh 15.
+{
+  const cfg = C.getRiverConfig('Lower Bowmanville Creek');
+  assert.equal(C.conditionsScore(0, cfg, 3, 10, 50, 80), 8, 'strong run, flow in the sweet spot: Good');
+  assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80), 5, 'low water caps at Marginal');
+  assert.equal(C.conditionsScore(0, cfg, 20, 10, 50, 80), 1, 'blown out caps at Tough');
+  assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80, true), 8, 'fish still in the lake: flow ignored');
+  assert.equal(C.conditionsScore(0, cfg, null, 10, 50, 80), 8, 'no gauge reading: no cap');
+}
+
 // Drive verdict
 assert.equal(C.driveVerdict(12, 45, false).cls, 'verdict-yes');
 assert.equal(C.driveVerdict(12, 45, true).cls, 'verdict-no');
