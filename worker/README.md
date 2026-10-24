@@ -6,6 +6,7 @@ Cloudflare Pages does not deploy this folder. Workers Builds does (see Deploy).
 | Route | What it does |
 |---|---|
 | `/flow?station=` | Latest Water Survey of Canada discharge and trend (5 min cache) |
+| `/flow-forecast?station=` | Estimated flow for the next 1 to 7 days at a gauge (`flowforecast.js`, see below). 1 h cache |
 | `/lake-temps` | Nearshore lake temperature by zone from NDBC buoys (1 h cache) |
 | `/stocking` | MNRF stocking records by river (24 h cache) |
 | `/subscribe` | POST `{email, kind, source, ...}`: `kind` is `outlook`, `run` (`river`, optional `weekly`), `trip` (`trip`) or `weekly` (`weekly: {section, species}`). Saves to KV, adds to Resend, sends the welcome email. Returns `{ok:true}` only on success |
@@ -67,3 +68,23 @@ today and 2 ahead, one Open-Meteo call for all rivers).
   under the free plan's 50 per run.
 - The log starts empty: until `bump.hoursLogged` reaches 72, a bump that started before the log can be missed.
 - Checks: `node worker/runconditions.test.mjs`.
+
+## Flow forecast (`flowforecast.js`)
+Estimated daily flow 1 to 7 days ahead for each gauge in `flowmodel.json` (TJ approved the approach 2026-10-24; research in
+project doc `claude/flow-forecast-research-2026-10-24.md`). One linear model per gauge and lead day, in log flow, from today's
+flow and its 1- and 3-day trend, rain plus snowmelt in the catchment (the gauge's `points`), a wetness index, snowpack, season
+and the rain forecast. Each request makes two calls: the gauge's last 4 days of readings (`api.weather.gc.ca`) and Open-Meteo
+(92 days back for snowpack and wetness, 7 ahead). Days 1 to 2 carry `showNumber: true`; later days are shown as a range only.
+- `lo`/`hi` are an 80% range, from errors in 2025 to 2026 with the rain forecast as issued (widened 10%).
+- A gauge's lead day is only in the model when it beat "flow stays as it is" on that test.
+- A dry forecast (under 3 mm of rain plus melt to the target day) gets its own range from dry days in the test.
+- Served from KV `CACHE` `flowfc:<gauge>` (12 h TTL). The hourly cron refreshes a third of the gauges each run, so every
+  gauge every 3 hours, with one Open-Meteo call per run (about 2,000 of Open-Meteo's 10,000 a day; that limit is per IP
+  and Cloudflare's IPs are shared, so page views never call it). Skipped at 6 am and Thursday 5 pm, like the run-alert inputs.
+- No estimate (the app says "check the gauge on the day") for gauges that didn't beat "flow stays as it is" in the
+  2026-10-24 fit: Grand below Shand Dam (dam releases), Beaver near Vandeleur, Wilmot near Newcastle and Leskard, and
+  Bowmanville. These spring-fed creeks barely move on most days, so the model's noise loses to persistence.
+- Refit once a year: `python3 tools/flowmodel_fit.py <flow dir> <weather dir> worker/flowmodel.json`. Inputs are listed at
+  the top of that script; the weather comes from `tools/flowmodel_fetch.py`, run in GitHub Actions (cloud sessions can't
+  reach the Open-Meteo archive).
+- Checks: `node worker/flowforecast.test.mjs`.

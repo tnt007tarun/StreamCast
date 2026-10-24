@@ -7,6 +7,8 @@
   X-Robots-Tag: noindex, nofollow
 /worker/*
   X-Robots-Tag: noindex, nofollow
+/tools/*
+  X-Robots-Tag: noindex, nofollow
 /unsubscribe/*
   X-Robots-Tag: noindex, nofollow
   Referrer-Policy: no-referrer
