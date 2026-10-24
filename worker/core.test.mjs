@@ -32,8 +32,13 @@ assert.equal(closed.confidence, null);
 // Run strength with flow (TJ, 2026-10-23). Lower Bowmanville: flowLow 0.3, sweet 1 to 8, flowHigh 15.
 {
   const cfg = C.getRiverConfig('Lower Bowmanville Creek');
-  assert.equal(C.conditionsScore(0, cfg, 3, 10, 50, 80), 8, 'strong run, flow in the sweet spot: Good');
-  assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80), 5, 'low water caps at Marginal');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 80)).word, 'Excellent', 'strong run, prime flow: Excellent (TJ, 2026-10-24)');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 0.5, 10, 50, 80)).word, 'Good', 'strong run, normal flow: Good');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 50)).word, 'Marginal', 'fair run, prime flow: no lift');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 80, true)).word, 'Good', 'fish still in the lake: no lift');
+  assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80), 8, 'normal flow (below prime) is not capped (TJ, 2026-10-24)');
+  assert.equal(C.conditionsScore(0, cfg, 0.2, 10, 50, 80), 1, 'too low (under flowLow) caps at Tough');
+  assert.equal(C.conditionsScore(0, cfg, 10, 10, 50, 80), 5, 'above prime caps at Marginal');
   assert.equal(C.conditionsScore(0, cfg, 20, 10, 50, 80), 1, 'blown out caps at Tough');
   assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80, true), 8, 'fish still in the lake: flow ignored');
   assert.equal(C.conditionsScore(0, cfg, null, 10, 50, 80), 8, 'no gauge reading: no cap');
@@ -64,7 +69,9 @@ assert.equal(C.driveVerdict(1, 20, false).cls, 'verdict-no');
   assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 35)).word, 'Tough', 'blown out');
   assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 2)).word, 'Tough', 'under flowLow');
   assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 20)).word, 'Marginal', 'above the sweet spot');
-  assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 4)).word, 'Marginal', 'below the sweet spot');
+  assert.equal(C.flowCapScore(12, cfg, 4), 12, 'normal flow (below prime): no cap (TJ, 2026-10-24)');
+  assert.equal(C.flowBand(4, cfg), 'normal'); assert.equal(C.flowBand(8, cfg), 'prime'); assert.equal(C.flowBand(20, cfg), 'high');
+  assert.equal(C.flowBand(2, cfg), 'low'); assert.equal(C.flowBand(35, cfg), 'blown');
   assert.equal(C.flowCapScore(12, cfg, null), 12, 'no reading: no cap');
   assert.equal(C.scoreToConfidence(C.conditionsScore(15, cfg, 200, 10, 80, null, false)).word, 'Tough', 'trout day, blown out');
   assert.equal(C.scoreToConfidence(C.conditionsScore(null, cfg, 35, null, null, 80, true)).word, 'Good', 'fish in the lake');
