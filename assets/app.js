@@ -7,7 +7,7 @@
 var RIVER_STOCKING = {"Credit River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 3975, "qtyStr": "4k", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Coho Salmon", "year": 2024, "stage": "Fingerlings", "quantity": 45000, "qtyStr": "45k", "primeYear": 2026, "status": "now", "label": "Fall 2026 run"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 193759, "qtyStr": "194k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 120018, "qtyStr": "120k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2017, "stage": "Yearlings", "quantity": 1100, "qtyStr": "1k", "primeYear": 2018, "status": "past", "label": "Class of 2017, established fish"}], "Grand River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 272, "qtyStr": "272", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 300, "qtyStr": "300", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 6, "qtyStr": "6", "primeYear": 2025, "status": "past", "label": "Class of 2025, established fish"}], "Humber River": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 30135, "qtyStr": "30k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brook Trout", "year": 2023, "stage": "Yearlings", "quantity": 5603, "qtyStr": "6k", "primeYear": 2024, "status": "past", "label": "Class of 2023, established fish"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 302, "qtyStr": "302", "primeYear": 2025, "status": "past", "label": "Class of 2025, established fish"}], "Bronte Creek": [{"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 54474, "qtyStr": "54k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 80047, "qtyStr": "80k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}], "Rouge River": [{"species": "Rainbow Trout", "year": 2024, "stage": "Fingerlings", "quantity": 16000, "qtyStr": "16k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}], "Beaver River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 1200, "qtyStr": "1k", "primeYear": 2026, "status": "now", "label": "Prime this season"}], "Saugeen River": [{"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 50, "qtyStr": "50", "primeYear": 2025, "status": "past", "label": "Class of 2025, established fish"}], "Bowmanville Creek": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 31261, "qtyStr": "31k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2023, "stage": "Fingerlings", "quantity": 40000, "qtyStr": "40k", "primeYear": 2025, "status": "past", "label": "Class of 2023, established fish"}]};
 
 var DEFAULT_RIVERS = [
-  { name:'Upper Credit River', gauge:'02HB001', sweetMin:5,  sweetMax:15, lat:43.870,lng:-80.010 },
+  { name:'Upper Credit River', gauge:'02HB001', sweetMin:1.4, sweetMax:2.8, lat:43.870,lng:-80.010 },
   { name:'Upper Grand River (Tailwater)', gauge:'02GA016', sweetMin:8, sweetMax:12, lat:43.703,lng:-80.274 },
   { name:'Lower Humber River', gauge:'02HC025', sweetMin:3,  sweetMax:12, lat:43.640,lng:-79.480 },
   { name:'Bronte Creek',       gauge:'02HB022', sweetMin:2,  sweetMax:8,  lat:43.51, lng:-79.82 },
@@ -772,6 +772,9 @@ function renderRiverUI(cfg) {
   var srAxis=document.getElementById("sweet-range-axis");
   if(srLbl) srLbl.textContent=cfg.sweetMin+"\u2013"+cfg.sweetMax;
   if(srAxis) srAxis.textContent="Sweet "+cfg.sweetMin+"\u2013"+cfg.sweetMax;
+  // The bar runs from 0 to the blown-out flow, so the axis end is that river's flowHigh (it used to say 20+ everywhere).
+  var fxMax=document.getElementById("flow-axis-max");
+  if(fxMax&&cfg.flowHigh) fxMax.textContent=cfg.flowHigh+"+";
 
   // Routine
   var steps = document.getElementById("routine-steps");
@@ -1098,9 +1101,9 @@ var RIVERS_DB = [
     { name:"Lower Bowmanville Creek",                 gauge:"02HD006", sweetMin:1,   sweetMax:8,  lat:43.900, lng:-78.685 },
     { name:"Middle Bowmanville Creek (Fish Ladder)",  gauge:"02HD006", sweetMin:1,   sweetMax:6,  lat:43.907, lng:-78.683 },
     { name:"Upper Bowmanville Creek",                 gauge:"02HD006", sweetMin:0.5, sweetMax:4,  lat:43.930, lng:-78.680 },
-    { name:"Upper Credit River",       gauge:"02HB001", sweetMin:5,  sweetMax:15, lat:43.870, lng:-80.010 },
-    { name:"Middle Credit River",      gauge:"02HB001", sweetMin:5,  sweetMax:20, lat:43.660, lng:-79.880 },
-    { name:"Lower Credit River",       gauge:"02HB029", sweetMin:5,  sweetMax:30, lat:43.560, lng:-79.720 },
+    { name:"Upper Credit River",       gauge:"02HB001", sweetMin:1.4, sweetMax:2.8, lat:43.870, lng:-80.010 },
+    { name:"Middle Credit River",      gauge:"02HB025", sweetMin:4.5, sweetMax:9, lat:43.660, lng:-79.880 },
+    { name:"Lower Credit River",       gauge:"02HB029", sweetMin:6,   sweetMax:13, lat:43.560, lng:-79.720 },
     { name:"Upper Grand River (Tailwater)", gauge:"02GA016", sweetMin:8, sweetMax:12, lat:43.700, lng:-80.280 },
     { name:"Middle Grand River",       gauge:"02GA016", sweetMin:8,  sweetMax:15, lat:43.420, lng:-80.320 },
     { name:"Lower Grand River",        gauge:"02GA016", sweetMin:10, sweetMax:30, lat:43.000, lng:-79.900 },
@@ -2699,7 +2702,7 @@ async function renderResults(){
       :flow+" m³/s, too high for safe wading.";
     document.getElementById("flbl").textContent=fd+(flowAt?" \u00b7 Obs: "+flowAt.slice(0,16).replace("T"," "):"");
     document.getElementById("fgv").textContent=flow+" m\u00b3/s";
-    var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh*1.1)+"%";fb.className="gf "+fc;
+    var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh)+"%";fb.className="gf "+fc;
     document.getElementById("fstat").innerHTML=clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
     var _fd=document.getElementById("flow-dot");
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}

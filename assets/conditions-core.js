@@ -570,8 +570,10 @@ var RIVER_CONFIG = {
     // MNR 2026: only artificial lures, one single-pointed barbless hook. Roe, worms and
     // all other organic bait are illegal here — no float/bait method may be recommended.
     artificialOnly:true,
+    // Flow ranges from 2015 to 2025 daily flow (TJ, 2026-10-24): sweet spot = flow 4 to 5 days after a rain bump
+    // (middle half of 50+ bumps); too low = driest 5% of fishing-season days; blown out = top 3%.
     gauge:"02HB001", gaugeName:"Credit River near Cataract",
-    sweetMin:5, sweetMax:15, flowLow:1, flowHigh:25,
+    sweetMin:1.4, sweetMax:2.8, flowLow:0.9, flowHigh:5,
     lat:43.870, lng:-80.010,
     loc:"Headwaters to Inglewood (Erin, Mono, Orangeville)",
     driveTime:{ toronto:35,mississauga:35,brampton:20,oakville:30,burlington:35,milton:20,hamilton:40,guelph:20,cambridge:35,kitchener:35,waterloo:35,orangeville:5,markham:30,"richmond hill":30,vaughan:25,ajax:45,pickering:40,"north york":30,scarborough:35,etobicoke:30,oshawa:50,whitby:50,bowmanville:60,clarington:60,newcastle:65,cobourg:80,"port hope":80,barrie:35,collingwood:40,"owen sound":60 },
@@ -588,8 +590,11 @@ var RIVER_CONFIG = {
   },
   "Middle Credit River": {
     season:'extended',
-    gauge:"02HB001", gaugeName:"Credit River near Cataract",
-    sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
+    // Flow ranges from 2015 to 2025 daily flow (TJ, 2026-10-24): sweet spot = flow 4 to 5 days after a rain bump
+    // (middle half of 50+ bumps); too low = driest 5% of fishing-season days; blown out = top 3%.
+    // Norval, not Cataract: both spots are at or below Norval, and Cataract (at the Forks) carries a third of the water.
+    gauge:"02HB025", gaugeName:"Credit River at Norval",
+    sweetMin:4.5, sweetMax:9, flowLow:2.5, flowHigh:19,
     lat:43.660, lng:-79.880,
     loc:"Norval Dam upstream to Inglewood",
     driveTime:{toronto:30,mississauga:5,brampton:15,oakville:20,burlington:30,milton:15,hamilton:40,guelph:35,cambridge:50,kitchener:60,waterloo:60,orangeville:35,'north york':35,scarborough:40,etobicoke:20,markham:45,'richmond hill':40,vaughan:35,ajax:65,pickering:60,oshawa:75,whitby:70,bowmanville:90,clarington:100,newcastle:100,cobourg:135,'port hope':125,barrie:90,collingwood:110,'owen sound':150},
@@ -609,8 +614,10 @@ var RIVER_CONFIG = {
   "Lower Credit River": {
     season:'all-year',
     // Cataract sits ~40 km upstream near the Forks and does not represent lower-river flow.
+    // Flow ranges from 2015 to 2025 daily flow (TJ, 2026-10-24): sweet spot = flow 4 to 5 days after a rain bump
+    // (middle half of 50+ bumps); too low = driest 5% of fishing-season days; blown out = top 3%.
     gauge:"02HB029", gaugeName:"Credit River at Streetsville",
-    sweetMin:5, sweetMax:30, flowLow:1, flowHigh:60,
+    sweetMin:6, sweetMax:13, flowLow:3, flowHigh:30,
     lat:43.560, lng:-79.720,
     // Reach now runs up to the Norval dam. Chinook and Coho still stop at the
     // Streetsville dam partway up it, so the access list stays below Streetsville —
