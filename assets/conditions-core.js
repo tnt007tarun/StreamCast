@@ -2738,18 +2738,22 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
 // (fishInLake: staging, and you're at the mouth), but it does once they're in the river (TJ,
 // 2026-10-23): flow outside the sweet spot caps the day at Marginal, and blown out or too low
 // caps it at Tough, the same flow bands that rate a trout day.
+// The same flow cap rates every day, run or not (TJ, 2026-10-24: "every river"). Before, a trout day only lost
+// points for bad flow, so a high season score kept the Lower Grand "Excellent" at 200 m3/s.
 var FLOW_CAP_MARGINAL = 5, FLOW_CAP_TOUGH = 1;
+function flowCapScore(score, cfg, flow) {
+  if (score == null || !cfg || flow == null || isNaN(flow)) return score;
+  if (flow < cfg.flowLow || flow > cfg.flowHigh) return Math.min(score, FLOW_CAP_TOUGH);
+  if (flow < cfg.sweetMin || flow > cfg.sweetMax) return Math.min(score, FLOW_CAP_MARGINAL);
+  return score;
+}
 function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake) {
   if (stagingPct != null) {
     var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
-    if (!fishInLake && cfg && flow != null) {
-      if (flow < cfg.flowLow || flow > cfg.flowHigh) s = Math.min(s, FLOW_CAP_TOUGH);
-      else if (flow < cfg.sweetMin || flow > cfg.sweetMax) s = Math.min(s, FLOW_CAP_MARGINAL);
-    }
-    return s;
+    return fishInLake ? s : flowCapScore(s, cfg, flow);
   }
   if (cfg && flow != null) {
-    return baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct);
+    return flowCapScore(baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct), cfg, flow);
   }
   return baseScore;
 }
@@ -2793,6 +2797,6 @@ if (typeof globalThis !== 'undefined') {
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
-    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, scoreDay: scoreDay, driveVerdict: driveVerdict
+    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, scoreDay: scoreDay, driveVerdict: driveVerdict
   };
 }

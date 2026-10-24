@@ -383,3 +383,5 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    cap catches blowouts. Decided (TJ, 2026-10-23): flow counts once fish are in the river. `conditionsScore()` caps a
    run day at Marginal outside the sweet spot and Tough outside `flowLow`/`flowHigh`, unless `fishInLake` (staging and
    at the mouth; the app's `window._stagingInLake`). Weekly email subjects use `secLabel()` (full name).
+   Extended 2026-10-24 (TJ: every river): `flowCapScore()` applies the same cap to trout days too (the Lower Grand
+   read Excellent at 200 m3/s), and to the landing cards; the staging card's re-rate passes `window._pillFlow`.

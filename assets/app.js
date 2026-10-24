@@ -474,7 +474,8 @@ function renderStagingCard(sectionName, weather) {
     // Re-render the confidence pill, drive-time verdict, AND headline now that staging strength
     // is known — buildTopPick already ran synchronously before this promise resolved.
     (function(){
-      var _newScore = conditionsScore(null, null, null, null, null, pct); // staging strength
+      // Staging strength, with the same flow cap as the pill once the fish are in the river
+      var _newScore = conditionsScore(null, getRiverConfig(selectedRiver), window._pillFlow, null, null, pct, window._stagingInLake);
 
       // Headline: if this was a slow-season salmon target and staging turned out Fair/Strong,
       // rewrite the headline to point at the staging opportunity instead of the stale "slow" copy.
@@ -4312,6 +4313,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
     }
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
+    window._pillFlow = flow; // the staging card's re-rate uses the same flow
     _topScore = conditionsScore(_topScore, getRiverConfig(selectedRiver), flow, wt, cloudPct, window._stagingPct, window._stagingInLake);
     var _conf = scoreToConfidence(_topScore);
     if (_sectionClosed) {
@@ -5542,7 +5544,8 @@ function renderDefaultPreview() {
 
         // Add live conditions
         var liveBonus = liveConditionsScore(flow, river.sweetMin, river.sweetMax, flowLow, flowHigh, tempC, cloudPct);
-        var totalScore = baseScore + liveBonus;
+        // Same flow cap as the results pill (flowCapScore in conditions-core.js)
+        var totalScore = flowCapScore(baseScore + liveBonus, getRiverConfig(river.name) || {sweetMin: river.sweetMin, sweetMax: river.sweetMax, flowLow: flowLow, flowHigh: flowHigh}, flow);
         var conf = scoreToConfidence(totalScore);
 
         // Update badge in place

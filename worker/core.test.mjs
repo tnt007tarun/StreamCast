@@ -57,4 +57,17 @@ assert.equal(C.driveVerdict(1, 20, false).cls, 'verdict-no');
   assert.ok(C.RIVER_REGS['Don River'].species.some(r => C.regsRowMatches(r.name, 'chinook')));
 }
 
+// Flow caps every day, not only run days (TJ, 2026-10-24)
+{
+  const cfg = { sweetMin: 6, sweetMax: 13, flowLow: 3, flowHigh: 30 };
+  assert.equal(C.flowCapScore(12, cfg, 8), 12, 'sweet spot: no cap');
+  assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 35)).word, 'Tough', 'blown out');
+  assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 2)).word, 'Tough', 'under flowLow');
+  assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 20)).word, 'Marginal', 'above the sweet spot');
+  assert.equal(C.scoreToConfidence(C.flowCapScore(12, cfg, 4)).word, 'Marginal', 'below the sweet spot');
+  assert.equal(C.flowCapScore(12, cfg, null), 12, 'no reading: no cap');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(15, cfg, 200, 10, 80, null, false)).word, 'Tough', 'trout day, blown out');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(null, cfg, 35, null, null, 80, true)).word, 'Good', 'fish in the lake');
+}
+
 console.log('conditions-core: all checks passed');
