@@ -1,0 +1,53 @@
+{
+ "with_props": {
+  "n": 1156,
+  "first": {
+   "DATETIME": "2026-10-20T09:50:00Z",
+   "DISCHARGE": 3.41
+  },
+  "last": {
+   "DATETIME": "2026-10-24T10:05:00Z",
+   "DISCHARGE": 3.3
+  },
+  "matched": 1156
+ },
+ "no_props": {
+  "n": 1156,
+  "first": {
+   "IDENTIFIER": "02HB029.2026-10-20T09:50:00Z",
+   "STATION_NUMBER": "02HB029",
+   "STATION_NAME": "CREDIT RIVER AT STREETSVILLE",
+   "PROV_TERR_STATE_LOC": "ON",
+   "DATETIME": "2026-10-20T09:50:00Z",
+   "DATETIME_LST": "2026-10-20T04:50:00-05:00",
+   "LEVEL": 4.417,
+   "DISCHARGE": 3.41,
+   "LEVEL_SYMBOL_EN": null,
+   "LEVEL_SYMBOL_FR": null,
+   "DISCHARGE_SYMBOL_EN": null,
+   "DISCHARGE_SYMBOL_FR": null
+  },
+  "last": {
+   "IDENTIFIER": "02HB029.2026-10-24T10:05:00Z",
+   "STATION_NUMBER": "02HB029",
+   "STATION_NAME": "CREDIT RIVER AT STREETSVILLE",
+   "PROV_TERR_STATE_LOC": "ON",
+   "DATETIME": "2026-10-24T10:05:00Z",
+   "DATETIME_LST": "2026-10-24T05:05:00-05:00",
+   "LEVEL": 4.412,
+   "DISCHARGE": 3.3,
+   "LEVEL_SYMBOL_EN": null,
+   "LEVEL_SYMBOL_FR": null,
+   "DISCHARGE_SYMBOL_EN": null,
+   "DISCHARGE_SYMBOL_FR": null
+  },
+  "matched": 1156
+ },
+ "openmeteo": {
+  "kind": "list",
+  "n": 2,
+  "days": 100,
+  "first": "2026-07-24",
+  "last": "2026-10-31"
+ }
+}
