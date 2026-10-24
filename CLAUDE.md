@@ -366,4 +366,6 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    `ALERTS_MODE = "live"` in `wrangler.toml`; merging that deploys it. The "Weekly subscriber report" task should count `weekly`
    interests too. Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
    comes from run strength at the mouth (lake temperature, wind, cloud) and ignores river flow; only the email's rain
-   cap catches blowouts. Worth deciding with TJ whether flow should count there.
+   cap catches blowouts. Decided (TJ, 2026-10-23): flow counts once fish are in the river. `conditionsScore()` caps a
+   run day at Marginal outside the sweet spot and Tough outside `flowLow`/`flowHigh`, unless `fishInLake` (staging and
+   at the mouth; the app's `window._stagingInLake`). Weekly email subjects use `secLabel()` (full name).

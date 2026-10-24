@@ -439,6 +439,7 @@ function renderStagingCard(sectionName, weather) {
   var container = document.getElementById("staging-card-slot");
   if (container) container.innerHTML = "";  // clear any prior card
   window._stagingPct = null; // reset — only set again below if a staging card actually renders
+  window._stagingInLake = false; // fish staging and the angler at the mouth: river flow doesn't rate the day
   _stagingModeActive = false; // recomputed below; must not leak from the previous river
   _stagingPhaseResolved = false;
   window._salmonInRiver = false;
@@ -531,6 +532,7 @@ function renderStagingCard(sectionName, weather) {
     // from an inland park. Staging methods only apply when you are AT the staging section.
     var _selBase = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
     var _atStagingSection = (sectionName === _selBase);
+    window._stagingInLake = (phase.mode === 'stage' && _atStagingSection);
     window._stagingElsewhere = null;
     if (phase.mode === 'stage' && which === 'salmon' && !_atStagingSection) {
       // Fish are staging, but not on the water being viewed. Say where they actually are
@@ -4307,7 +4309,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
     }
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
-    _topScore = conditionsScore(_topScore, getRiverConfig(selectedRiver), flow, wt, cloudPct, window._stagingPct);
+    _topScore = conditionsScore(_topScore, getRiverConfig(selectedRiver), flow, wt, cloudPct, window._stagingPct, window._stagingInLake);
     var _conf = scoreToConfidence(_topScore);
     if (_sectionClosed) {
       _confEl.textContent = 'Closed to fishing';
