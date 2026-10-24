@@ -272,6 +272,15 @@ Merged recently:
   (too low under 0.2, TJ). Middle Beaver is TJ's custom 9 to 20, blown over 21. Review page: artifact "River Flow
   Ranges" (`decisions` collection). Inactive sections (Middle Humber, Black Creek Concrete Channel, Middle Grand,
   Middle Saugeen) were not reviewed.
+- **Flow forecast** (TJ approved 2026-10-24): estimated flow 1 to 7 days out on future trip dates. Worker
+  `/flow-forecast?station=` (`worker/flowforecast.js`, model `worker/flowmodel.json`, fit by `tools/flowmodel_fit.py`,
+  weather from `tools/flowmodel_fetch.py` in GitHub Actions; see `worker/README.md`). Served from KV `flowfc:<gauge>`,
+  refreshed by the hourly cron (a third of the gauges each hour) so page views never call Open-Meteo. 22 of 27 gauges;
+  no estimate for Grand below Shand Dam, Beaver near Vandeleur, Wilmot (both gauges) and Bowmanville (they didn't beat
+  "flow stays as it is"). App: flow card and summary tile only (`fetchFlowForecastDay()`, `renderFlowEstimate()`); days 1
+  to 2 show a number and range, days 3 to 7 a range and band. On days 1 to 2 the estimate can pull the Conditions pill
+  (and so the drive verdict) down, never up, and the pill then reads "Potentially tough/marginal" (TJ, 2026-10-24):
+  `rateWithFlowEstimate()` and `confidenceWord()` in the core, used by the pill and the staging card's re-rate.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -352,7 +361,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    on a closed reach shows as closed.
    TJ: open `herefishyfishy.ca/?notrack=1` on each browser after #75 deploys.
 4. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
-5. **Unconfirmed gauge:** the Humber sections and Black Creek all use `02HC025`. Check it's the right station for each.
+5. **Gauges (2026-10-24):** Black Creek, Lower-Mid and Upper Humber now have their own gauges (#100). Only the Lower Humber
+   still reads Elder Mills (`02HC025`), by TJ's choice.
 6. Carried over: `BAIT_ADVICE` draft copy, photo permissions and licences, Nottawasaga Pine
    River confluence is open all year but sits in a `standard` section (over-cautious).
 7. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
@@ -378,9 +388,9 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
    the Reddit thread.
 
-13. **Flow ranges (done 2026-10-24, see Current state).** Next: the 7-day flow forecast (approved by TJ): per-gauge linear rain
-   model, Worker endpoint, number and range for days 1 to 2, range after that. Data pulls need GitHub Actions (cloud
-   sessions can't reach archive-api or flood-api). TJ to delete the throwaway branch `claude/flowlab-data`.
+13. **Flow ranges and forecast (done 2026-10-24, see Current state).** Open: should the weekly email use the estimate (it would need the
+   forecast from KV, not new calls)? A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
+   toward "flow stays as it is". Refit yearly. TJ to delete the throwaway branch `claude/flowlab-data`.
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:

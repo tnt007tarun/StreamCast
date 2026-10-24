@@ -475,7 +475,11 @@ function renderStagingCard(sectionName, weather) {
     // is known — buildTopPick already ran synchronously before this promise resolved.
     (function(){
       // Staging strength, with the same flow cap as the pill once the fish are in the river
-      var _newScore = conditionsScore(null, getRiverConfig(selectedRiver), window._pillFlow, null, null, pct, window._stagingInLake);
+      var _cfgRe = getRiverConfig(selectedRiver);
+      var _reRate = window._pillFlow != null
+        ? { score: conditionsScore(null, _cfgRe, window._pillFlow, null, null, pct, window._stagingInLake), potential: false }
+        : rateWithFlowEstimate(function(f){ return conditionsScore(null, _cfgRe, f, null, null, pct, window._stagingInLake); }, window._flowEst);
+      var _newScore = _reRate.score;
 
       // Headline: if this was a slow-season salmon target and staging turned out Fair/Strong,
       // rewrite the headline to point at the staging opportunity instead of the stale "slow" copy.
@@ -504,7 +508,7 @@ function renderStagingCard(sectionName, weather) {
       var _confEl2 = document.getElementById('tp-confidence');
       if (_confEl2) {
         var _conf2 = scoreToConfidence(_newScore);
-        _confEl2.textContent = 'Conditions: ' + _conf2.word;
+        _confEl2.textContent = 'Conditions: ' + confidenceWord(_conf2, _reRate.potential);
         _confEl2.className = 'tp-confidence ' + _conf2.cls;
       }
 
@@ -1674,6 +1678,31 @@ function clsLbl(c){
   return dot+lbl;
 }
 function clsIcon(c){return c==="good"?"\u2713":c==="warn"?"\u25b3":"\u2715";}
+// Flow card for a future date (see fetchFlowForecastDay). Days 1 to 2: a number and a likely range.
+// Days 3 to 7: the range only, since a storm the forecast hasn't seen can still change it (TJ, 2026-10-24).
+var FLOW_BAND_WORD = {low:"too low",normal:"normal",prime:"prime",high:"high",blown:"blown out"};
+function renderFlowEstimate(est, cfg, dateStr){
+  var band = flowBand(est.q, cfg);
+  var c = band==="prime"||band==="normal" ? "good" : band==="high" ? "warn" : "bad";
+  var day = new Date(dateStr+"T12:00:00").toLocaleDateString("en-CA",{weekday:"long",month:"short",day:"numeric"});
+  var range = est.lo+" to "+est.hi+" m\u00b3/s";
+  var rain = est.rainMm==null ? "" : est.rainMm>=1 ? " Rain forecast that day: "+Math.round(est.rainMm)+" mm." : " Little or no rain forecast that day.";
+  document.getElementById("fval").textContent = est.showNumber ? "~"+est.q : est.lo+"\u2013"+est.hi;
+  document.getElementById("ftrend").textContent = "";
+  document.getElementById("ftrend").className = "trd";
+  document.getElementById("flbl").textContent = est.showNumber
+    ? "Estimate for "+day+": about "+est.q+" m\u00b3/s, likely "+range+". That's "+FLOW_BAND_WORD[band]+" for this river (prime is "+cfg.sweetMin+"\u2013"+cfg.sweetMax+")."+rain
+    : "Estimate for "+day+": likely "+range+", most likely "+FLOW_BAND_WORD[band]+" (prime is "+cfg.sweetMin+"\u2013"+cfg.sweetMax+"). A storm the forecast hasn't picked up can still change it."+rain;
+  document.getElementById("fgv").textContent = (est.showNumber ? "~"+est.q : est.lo+"\u2013"+est.hi)+" m\u00b3/s";
+  var fb=document.getElementById("fbar"); fb.style.width=barW(est.q,0,cfg.flowHigh)+"%"; fb.className="gf "+c;
+  var fs=document.getElementById("fstat"); fs.innerHTML='<span class="status-dot dot-'+c+'"></span>EST. '+FLOW_BAND_WORD[band].toUpperCase(); fs.className="gs "+c;
+  var _fd=document.getElementById("flow-dot"); if(_fd){_fd.className="col-status-dot visible dot-"+c;}
+  document.getElementById("fcl").innerHTML=[
+    {t:"Estimate, not a gauge reading. Built from today's flow and the rain forecast.",c:"warn"},
+    {t:"Likely range: "+range+" ("+(est.lead===1?"tomorrow":est.lead+" days out")+")",c:c},
+    {t:"Check the gauge on the morning you go.",c:"warn"}
+  ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
+}
 function barW(v,mn,mx){return Math.min(100,Math.max(2,((v-mn)/(mx-mn))*100));}
 
 // ── WEATHER ───────────────────────────────────────────────────────────────────
@@ -1779,6 +1808,22 @@ function waterTempSourceText(info, airTemp) {
 }
 
 // ── FLOW ──────────────────────────────────────────────────────────────────────
+// Estimated flow for the next 7 days (Worker /flow-forecast, worker/flowforecast.js). One call per gauge
+// per page load. Returns the day matching dateStr, or null (no model, too far out, or the call failed).
+var _flowForecastCache = {};
+async function fetchFlowForecastDay(gaugeId, dateStr) {
+  if (!gaugeId || !PROXY_URL) return null;
+  try {
+    if (!_flowForecastCache[gaugeId]) {
+      _flowForecastCache[gaugeId] = fetch(PROXY_URL + '/flow-forecast?station=' + gaugeId, { headers: { 'Accept': 'application/json' } })
+        .then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+    }
+    var d = await _flowForecastCache[gaugeId];
+    if (!d || !d.days) return null;
+    return d.days.find(function(x){ return x.date === dateStr; }) || null;
+  } catch (e) { return null; }
+}
+
 async function fetchFlow(gaugeId) {
   if (!gaugeId) return null;
   try {
@@ -2379,17 +2424,16 @@ async function renderResults(){
     }
   } catch(e){ console.warn("staging card",e); }
 
-  var flow=null,trend="stable",flowAt=null;
-  // Debug: show gauge and isToday in panel
+  var flow=null,trend="stable",flowAt=null,flowEst=null;
   if(isToday){
     var lf=await fetchFlow(cfg.gauge);
     if(lf){flow=lf.flow;trend=lf.trend;flowAt=lf.at;}
   } else {
-    // Future date — flow data only available for today
-    var _fdbg=document.getElementById('flow-gauge-link');
-    var _flbl=document.getElementById('flbl');
-    if(_flbl) _flbl.textContent='Flow data isn’t available for future dates. Check the gauge link before you drive. You want to see '+(cfg.sweetMin+'–'+cfg.sweetMax)+' m³/s for this river.';
+    // Future date: an estimate from today's flow and the rain forecast, up to 7 days out. It is shown
+    // in the flow card only; the rating for a future date still leaves flow out.
+    flowEst=await fetchFlowForecastDay(cfg.gauge, dateStr);
   }
+  window._flowEst=flowEst;   // the summary tile reads it
 
   // Must sit OUTSIDE the isToday branch: a forecast date skipped both of these, which
   // left the access grid empty and the staging phase unresolved, so the hero fell back to
@@ -2715,10 +2759,12 @@ async function renderResults(){
       {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"},
       {t:"Fish lies: "+(fc==="good"?"Predictable":"Scattered and harder to find"),c:fc}
     ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
+  } else if(flowEst){
+    renderFlowEstimate(flowEst, cfg, dateStr);
   } else {
     document.getElementById("fval").textContent="\u2014";
     document.getElementById("ftrend").textContent="";
-    document.getElementById("flbl").textContent=(isToday?"Live data unavailable. Use the gauge link.":"Flow can't be forecast. Check the gauge on the day.")+" You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
+    document.getElementById("flbl").textContent=(isToday?"Live data unavailable. Use the gauge link.":"No flow estimate for this date. Check the gauge on the day.")+" You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
     document.getElementById("fgv").textContent="\u2014";
     document.getElementById("fstat").innerHTML='<span class="status-dot dot-warn"></span>CHECK GAUGE';document.getElementById("fstat").className="gs warn";
     document.getElementById("fcl").innerHTML="<li><span class=\"ci warn\">\u25b3</span><span>Check the gauge link above for current flow before heading out.</span></li>";
@@ -3572,7 +3618,7 @@ function hideStagingStrength() {
 
 // ── CONDITION TILES (hero) ───────────────────────────────────────────────────
 function renderConditionTiles(opts) {
-  // opts: { wt, cloudPct, flow, sweetMin, sweetMax, flowLow, flowHigh, topMethod, isToday, weatherOk }
+  // opts: { wt, cloudPct, flow, sweetMin, sweetMax, flowLow, flowHigh, topMethod, isToday, weatherOk, flowEst }
   var host = document.getElementById('tp-tiles');
   if (!host) return;
   // Clear staging-mode furniture. renderStagingCard resolves async and may overwrite this
@@ -3625,8 +3671,13 @@ function renderConditionTiles(opts) {
   } else if (opts.isToday && opts.flow == null) {
     // Today but gauge down
     flowTile = tile('Flow', 'N/A', 'Check gauge', 'na', true);
+  } else if (opts.flowEst) {
+    // Future date with an estimate (renderFlowEstimate() has the detail): number for days 1 to 2, range after
+    var e = opts.flowEst, eb = flowBand(e.q, opts);
+    var eState = eb === 'prime' ? 'good' : eb === 'normal' ? 'ok' : eb === 'high' ? 'ok' : 'poor';
+    flowTile = tile('Flow', e.showNumber ? '~' + e.q : e.lo + '\u2013' + e.hi, 'Est. ' + ({low:'low',normal:'normal',prime:'prime',high:'high',blown:'blown'}[eb]), eState);
   } else {
-    // Future date — show the target range, muted bar (can't forecast flow)
+    // Future date with no estimate: show the target range, muted
     flowTile = tile('Flow aim', opts.sweetMin + '\u2013' + opts.sweetMax, 'Check day-of', 'na');
   }
 
@@ -3781,7 +3832,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         sweetMin: cfg.sweetMin != null ? cfg.sweetMin : 5,
         sweetMax: cfg.sweetMax != null ? cfg.sweetMax : 15,
         flowLow: cfg.flowLow, flowHigh: cfg.flowHigh,
-        topMethod: topMethod, isToday: _isToday, weatherOk: weatherOk
+        topMethod: topMethod, isToday: _isToday, weatherOk: weatherOk,
+        flowEst: _isToday ? null : window._flowEst
       });
     } catch(_tileErr) { console.warn('condition tiles', _tileErr); }
   })();
@@ -4313,15 +4365,21 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
     }
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
-    window._pillFlow = flow; // the staging card's re-rate uses the same flow
-    _topScore = conditionsScore(_topScore, getRiverConfig(selectedRiver), flow, wt, cloudPct, window._stagingPct, window._stagingInLake);
+    // A future date has no reading; days 1 to 2 use the flow estimate, which can only pull the rating down.
+    var _cfgPill = getRiverConfig(selectedRiver), _baseScore = _topScore;
+    var _rate = flow != null
+      ? { score: conditionsScore(_baseScore, _cfgPill, flow, wt, cloudPct, window._stagingPct, window._stagingInLake), potential: false, flow: flow }
+      : rateWithFlowEstimate(function(f){ return conditionsScore(_baseScore, _cfgPill, f, wt, cloudPct, window._stagingPct, window._stagingInLake); }, window._flowEst);
+    window._pillFlow = flow; // the staging card's re-rate uses the same live flow (or the same estimate rule)
+    _topScore = _rate.score;
     var _conf = scoreToConfidence(_topScore);
     if (_sectionClosed) {
       _confEl.textContent = 'Closed to fishing';
       _confEl.className = 'tp-confidence conf-tough';
     } else {
-      _confEl.textContent = 'Conditions: ' + _conf.word;
+      _confEl.textContent = 'Conditions: ' + confidenceWord(_conf, _rate.potential);
       _confEl.className = 'tp-confidence ' + _conf.cls;
+      _confEl.title = _rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '';
     }
     _confEl.style.display = 'inline-block';
   }

@@ -2798,6 +2798,20 @@ function driveVerdict(score, driveMin, closed) {
   return { text: '~ Long drive for current conditions', cls: 'verdict-maybe' };
 }
 
+// A flow estimate for a future day (worker/flowforecast.js, about {q, lead}) can pull the rating down on days 1
+// to 2, never lift it, and the pill then reads "Potentially ..." (TJ, 2026-10-24). scoreFn(flow) rates the day with
+// that flow (null for no flow). Later days are too uncertain to move the rating.
+var EST_FLOW_MAX_LEAD = 2;
+function rateWithFlowEstimate(scoreFn, est) {
+  var base = scoreFn(null);
+  if (!est || est.q == null || !(est.lead >= 1 && est.lead <= EST_FLOW_MAX_LEAD)) return { score: base, potential: false, flow: null };
+  var s = scoreFn(est.q);
+  return s < base ? { score: s, potential: true, flow: est.q } : { score: base, potential: false, flow: null };
+}
+function confidenceWord(conf, potential) {
+  return potential ? 'Potentially ' + conf.word.toLowerCase() : conf.word;
+}
+
 // The Worker imports this file as a module, where the declarations above are not globals.
 if (typeof globalThis !== 'undefined') {
   globalThis.HFF_CORE = {
@@ -2815,6 +2829,7 @@ if (typeof globalThis !== 'undefined') {
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
-    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict
+    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict,
+    rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD
   };
 }

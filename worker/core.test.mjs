@@ -77,4 +77,19 @@ assert.equal(C.driveVerdict(1, 20, false).cls, 'verdict-no');
   assert.equal(C.scoreToConfidence(C.conditionsScore(null, cfg, 35, null, null, 80, true)).word, 'Good', 'fish in the lake');
 }
 
+// Flow estimate on a future day (TJ, 2026-10-24): days 1 to 2 can pull the rating down, never lift it.
+{
+  const cfg = { sweetMin: 6, sweetMax: 13, flowLow: 3, flowHigh: 30 };
+  const fn = (f) => C.flowCapScore(10, cfg, f);
+  assert.deepEqual(C.rateWithFlowEstimate(fn, { q: 40, lead: 1 }), { score: 1, potential: true, flow: 40 }, 'blown out tomorrow: potentially tough');
+  assert.equal(C.rateWithFlowEstimate(fn, { q: 20, lead: 2 }).score, 5, 'high in 2 days: capped at marginal');
+  assert.equal(C.rateWithFlowEstimate(fn, { q: 8, lead: 1 }).potential, false, 'prime: no change');
+  assert.equal(C.rateWithFlowEstimate(fn, { q: 40, lead: 3 }).score, 10, 'day 3 and later never move the rating');
+  assert.equal(C.rateWithFlowEstimate(fn, null).score, 10);
+  const lift = (f) => (f == null ? 6 : 9);   // a flow that would raise the score is ignored
+  assert.equal(C.rateWithFlowEstimate(lift, { q: 8, lead: 1 }).score, 6);
+  assert.equal(C.confidenceWord(C.scoreToConfidence(1), true), 'Potentially tough');
+  assert.equal(C.confidenceWord(C.scoreToConfidence(10), false), C.scoreToConfidence(10).word);
+}
+
 console.log('conditions-core: all checks passed');
