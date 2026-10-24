@@ -77,7 +77,14 @@ and the rain forecast. Each request makes two calls: the gauge's last 4 days of 
 (92 days back for snowpack and wetness, 7 ahead). Days 1 to 2 carry `showNumber: true`; later days are shown as a range only.
 - `lo`/`hi` are an 80% range, from errors in 2025 to 2026 with the rain forecast as issued (widened 10%).
 - A gauge's lead day is only in the model when it beat "flow stays as it is" on that test.
-- Refit once a year: `python3 tools/flowmodel_fit.py <flow dir> <weather dir> worker/flowmodel.json`. Inputs and how to get
-  them are at the top of that script. Cloud sessions can't reach the Open-Meteo archive, so the weather pull runs in
-  GitHub Actions (see `tools/flowlab_fetch.py` on the `claude/flowlab-data` branch history, PR #101).
+- A dry forecast (under 3 mm of rain plus melt to the target day) gets its own range from dry days in the test.
+- Served from KV `CACHE` `flowfc:<gauge>` (12 h TTL). The hourly cron refreshes a third of the gauges each run, so every
+  gauge every 3 hours, with one Open-Meteo call per run (about 2,000 of Open-Meteo's 10,000 a day; that limit is per IP
+  and Cloudflare's IPs are shared, so page views never call it). Skipped at 6 am and Thursday 5 pm, like the run-alert inputs.
+- No estimate (the app says "check the gauge on the day") for gauges that didn't beat "flow stays as it is" in the
+  2026-10-24 fit: Grand below Shand Dam (dam releases), Beaver near Vandeleur, Wilmot near Newcastle and Leskard, and
+  Bowmanville. These spring-fed creeks barely move on most days, so the model's noise loses to persistence.
+- Refit once a year: `python3 tools/flowmodel_fit.py <flow dir> <weather dir> worker/flowmodel.json`. Inputs are listed at
+  the top of that script; the weather comes from `tools/flowmodel_fetch.py`, run in GitHub Actions (cloud sessions can't
+  reach the Open-Meteo archive).
 - Checks: `node worker/flowforecast.test.mjs`.

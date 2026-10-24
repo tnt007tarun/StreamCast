@@ -10,6 +10,7 @@ export const FLOW_MODEL = MODEL;
 export const EPS = 0.05;              // added before taking logs, same as the fit
 export const PAST_DAYS = 92;          // Open-Meteo forecast API maximum; enough for a winter's snowpack
 export const MAX_LEAD = 7;
+export const DRY_MM = 3;             // under this much rain plus melt to the target day, the dry-forecast range applies
 export const NUMBER_LEADS = 2;        // days 1 to 2 show a number; later days only a range (TJ, 2026-10-24)
 const DDF = 3.0;                      // degree-day snowmelt, mm per degree C per day
 const API_DECAY = 0.9;                // wetness index: yesterday's counts 0.9, the day before 0.81, ...
@@ -77,7 +78,8 @@ export function forecastFromInputs(gauge, hist, weather, todayIso, model = MODEL
     m.cols.forEach((c, i) => { y += m.coef[i] * x[c]; });
     const lq = x.lq0 + y;
     const q = Math.max(0, Math.exp(lq) - EPS);
-    const lo = Math.max(0, Math.exp(lq + m.lo) - EPS), hi = Math.exp(lq + m.hi) - EPS;
+    const dry = x.fsum < DRY_MM && m.dryLo != null;
+    const lo = Math.max(0, Math.exp(lq + (dry ? m.dryLo : m.lo)) - EPS), hi = Math.exp(lq + (dry ? m.dryHi : m.hi)) - EPS;
     const rain = weather.precip[ti + h];
     out.push({ date: weather.dates[ti + h], lead: h, q: round(q), lo: round(lo), hi: round(hi),
       showNumber: h <= NUMBER_LEADS, rainMm: rain == null ? null : Math.round(rain * 10) / 10 });
@@ -123,24 +125,68 @@ export function torontoDate(ms) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto' }).format(new Date(ms));
 }
 
-// Network part: deps.fetchJson(url) returns parsed JSON (or throws). Used by the /flow-forecast route
-// and the weekly email.
-export async function fetchFlowForecast(gauge, deps) {
-  const g = MODEL.gauges[gauge];
-  if (!g) return { station: gauge, days: [], reason: 'no model for this gauge' };
-  const nowMs = deps.nowMs || Date.now();
+function flowUrl(gauge, nowMs) {
   const since = new Date(nowMs - 97 * 3600000).toISOString().replace(/\.\d+Z$/, 'Z');
-  const flowUrl = 'https://api.weather.gc.ca/collections/hydrometric-realtime/items?' + new URLSearchParams({
-    STATION_NUMBER: gauge, datetime: since + '/..', limit: '2000', f: 'json',
-    properties: 'DATETIME,DISCHARGE',
+  return 'https://api.weather.gc.ca/collections/hydrometric-realtime/items?' + new URLSearchParams({
+    STATION_NUMBER: gauge, datetime: since + '/..', limit: '2000', f: 'json', properties: 'DATETIME,DISCHARGE',
   });
-  const [flowJson, wxJson] = await Promise.all([deps.fetchJson(flowUrl), deps.fetchJson(weatherUrl(g.points))]);
+}
+
+function forecastFor(gauge, flowJson, weather, nowMs) {
   const readings = (flowJson.features || []).map((f) => ({
     t: Date.parse(f.properties.DATETIME), q: parseFloat(f.properties.DISCHARGE),
   })).filter((r) => !isNaN(r.t) && !isNaN(r.q));
   const hist = flowHistory(readings, nowMs);
   const today = torontoDate(nowMs);
-  const days = forecastFromInputs(gauge, hist, parseWeather(wxJson), today);
-  return { station: gauge, issued: today, now: hist.q0 == null ? null : round(hist.q0), days,
-    reason: days.length ? null : 'not enough recent gauge readings' };
+  const days = forecastFromInputs(gauge, hist, weather, today);
+  return { station: gauge, issued: today, issuedAt: new Date(nowMs).toISOString(),
+    now: hist.q0 == null ? null : round(hist.q0), days, reason: days.length ? null : 'not enough recent gauge readings' };
+}
+
+// One gauge, straight from the APIs (two calls). deps.fetchJson(url) returns parsed JSON or throws.
+export async function fetchFlowForecast(gauge, deps) {
+  const g = MODEL.gauges[gauge];
+  if (!g) return { station: gauge, days: [], reason: 'no model for this gauge' };
+  const nowMs = deps.nowMs || Date.now();
+  const [flowJson, wxJson] = await Promise.all([deps.fetchJson(flowUrl(gauge, nowMs)), deps.fetchJson(weatherUrl(g.points))]);
+  return forecastFor(gauge, flowJson, parseWeather(wxJson), nowMs);
+}
+
+// Open-Meteo's free limit (10,000 a day, where 100 days of data at one point counts as about 7) is per
+// IP address, and Cloudflare's are shared. So page loads never call it: the hourly cron refreshes a third
+// of the gauges each hour (every gauge every 3 hours) into KV, with one weather call for all their points.
+export const FORECAST_KEY = (gauge) => 'flowfc:' + gauge;
+export const REFRESH_GROUPS = 3;
+export function gaugesForHour(hour, model = MODEL) {
+  return Object.keys(model.gauges).sort().filter((_, i) => i % REFRESH_GROUPS === hour % REFRESH_GROUPS);
+}
+export async function refreshForecasts(deps) {
+  const nowMs = deps.nowMs || Date.now();
+  const gauges = gaugesForHour(deps.hour, deps.model || MODEL);
+  if (!gauges.length) return { refreshed: [] };
+  const pts = [], owner = [];
+  for (const g of gauges) for (const p of MODEL.gauges[g].points) { pts.push(p); owner.push(g); }
+  const wx = await deps.fetchJson(weatherUrl(pts));
+  const list = Array.isArray(wx) ? wx : [wx];
+  const refreshed = [], failed = [];
+  await Promise.all(gauges.map(async (g) => {
+    try {
+      const mine = list.filter((_, i) => owner[i] === g);
+      const out = forecastFor(g, await deps.fetchJson(flowUrl(g, nowMs)), parseWeather(mine), nowMs);
+      await deps.kvPut(FORECAST_KEY(g), JSON.stringify(out), { expirationTtl: 12 * 3600 });
+      refreshed.push(g);
+    } catch (e) { failed.push(g + ': ' + e.message); }
+  }));
+  return { refreshed, failed };
+}
+
+// What /flow-forecast serves: the saved forecast, minus days that are no longer in the future.
+export function servedForecast(saved, todayIso) {
+  if (!saved) return null;
+  const t0 = Date.parse(todayIso + 'T12:00:00Z');
+  const days = (saved.days || []).filter((d) => d.date > todayIso).map((d) => {
+    const lead = Math.round((Date.parse(d.date + 'T12:00:00Z') - t0) / 86400000);
+    return Object.assign({}, d, { lead, showNumber: lead <= NUMBER_LEADS });
+  });
+  return Object.assign({}, saved, { days });
 }

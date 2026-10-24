@@ -1,6 +1,7 @@
 // Checks for flowforecast.js. Run: node worker/flowforecast.test.mjs
 import assert from 'node:assert/strict';
-import { snowSplit, wetness, features, forecastFromInputs, flowHistory, parseWeather, weatherUrl, FLOW_MODEL, NUMBER_LEADS } from './flowforecast.js';
+import { snowSplit, wetness, features, forecastFromInputs, flowHistory, parseWeather, weatherUrl, FLOW_MODEL, NUMBER_LEADS,
+  gaugesForHour, refreshForecasts, servedForecast, FORECAST_KEY } from './flowforecast.js';
 
 // Snow: below freezing it piles up, above freezing it melts at 3 mm per degree a day.
 {
@@ -64,6 +65,35 @@ import { snowSplit, wetness, features, forecastFromInputs, flowHistory, parseWea
   }
   assert.deepEqual(forecastFromInputs('NOPE', { q0: 1, q1: 1, q3: 1 }, { dates, precip: base, temp }, today), []);
   assert.deepEqual(forecastFromInputs(Object.keys(FLOW_MODEL.gauges)[0], { q0: 1, q1: null, q3: 1 }, { dates, precip: base, temp }, today), []);
+}
+
+// Cron refresh: each gauge in exactly one of the three hourly groups; one weather call per run.
+{
+  const all = Object.keys(FLOW_MODEL.gauges);
+  const groups = [0, 1, 2].map((h) => gaugesForHour(h));
+  assert.equal(groups.flat().length, all.length);
+  assert.deepEqual(new Set(groups.flat()), new Set(all));
+  assert.deepEqual(gaugesForHour(4), groups[1]);
+
+  const nowMs = Date.UTC(2026, 9, 24, 16);
+  const dates = [];
+  for (let i = -92; i <= 7; i++) dates.push(new Date(Date.UTC(2026, 9, 24 + i)).toISOString().slice(0, 10));
+  const day = { time: dates, precipitation_sum: dates.map(() => 1), temperature_2m_mean: dates.map(() => 8) };
+  const feats = [];
+  for (let m = 0; m < 96 * 60; m += 5) feats.push({ properties: { DATETIME: new Date(nowMs - m * 60000).toISOString(), DISCHARGE: 2 } });
+  const calls = [], kv = {};
+  const r = await refreshForecasts({ hour: 0, nowMs,
+    fetchJson: async (u) => { calls.push(u); return u.includes('open-meteo') ? groups[0].flatMap((g) => FLOW_MODEL.gauges[g].points.map(() => ({ daily: day }))) : { features: feats }; },
+    kvPut: async (k, v) => { kv[k] = JSON.parse(v); } });
+  assert.deepEqual(r.failed, []);
+  assert.equal(calls.filter((u) => u.includes('open-meteo')).length, 1, 'one weather call per run');
+  assert.equal(calls.length, groups[0].length + 1);
+  const g0 = groups[0][0], saved = kv[FORECAST_KEY(g0)];
+  assert.equal(saved.issued, '2026-10-24'); assert.equal(saved.days[0].date, '2026-10-25');
+  // Served the next day: the past day drops off and leads count from the new day.
+  const next = servedForecast(saved, '2026-10-25');
+  assert.equal(next.days[0].date, '2026-10-26'); assert.equal(next.days[0].lead, 1); assert.equal(next.days[0].showNumber, true);
+  assert.equal(next.days.find((d) => d.date === '2026-10-28').showNumber, false);
 }
 
 console.log('flowforecast: all checks passed');

@@ -6,7 +6,7 @@
 #   WX_DIR/prev_<point>.json   Open-Meteo previous-runs API, hourly precipitation_previous_day1..7
 # Method (project doc claude/flow-forecast-research-2026-10-24.md): ridge regression in log flow, one
 # model per lead day, trained on actual (ERA5) rain to 2023-12-31. The 80% range comes from errors in
-# 2025 to 2026 with the rain forecast as it was issued, widened by 10%. A gauge's lead day is kept only
+# 2025 to 2026 with the rain forecast as it was issued, widened by 10%, with a separate range for dry forecasts. A gauge's lead day is kept only
 # when it beats "flow stays as it is" on that test.
 import json, sys, os
 import numpy as np, pandas as pd
@@ -14,6 +14,7 @@ from sklearn.linear_model import Ridge
 
 FLOW_DIR, WX_DIR, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 EPS, DDF, DECAY = 0.05, 3.0, 0.9
+DRY_MM = 3.0   # same constant as DRY_MM in worker/flowforecast.js
 TRAIN_END, TEST_START = '2023-12-31', '2025-01-10'
 COLS = ['lq0', 'dq1', 'dq3', 'w0', 'wm1', 'api', 'swe', 'ms', 'mc', 'fsum', 'fh', 'fh1', 'fh2', 'fmax', 'fsum_wet', 'fmax_wet']
 
@@ -122,15 +123,18 @@ def fit_gauge(st):
         res = yf.loc[te] - m.predict(Xf.loc[te])
         err_model = np.median(np.abs(res)); err_persist = np.median(np.abs(yf.loc[te]))
         lo, hi = np.quantile(res, 0.10) * 1.1, np.quantile(res, 0.90) * 1.1
+        # A dry forecast (under DRY_MM of rain plus melt to the target day) gets its own, tighter range
+        dry = (Xf.loc[te, 'fsum'] < DRY_MM).values
+        dlo, dhi = (np.quantile(res[dry], 0.10) * 1.1, np.quantile(res[dry], 0.90) * 1.1) if dry.sum() >= 60 else (lo, hi)
         # refit on everything up to the test period's end with actual rain for the shipped coefficients
         tr_all = X.index[ok]
         m2 = Ridge(1.0).fit(X.loc[tr_all], y.loc[tr_all])
         keep = err_model < err_persist
         report.append(dict(st=st, h=h, n_train=len(tr), n_test=len(te), med_err=round(np.exp(err_model) - 1, 3),
-                           med_err_persist=round(np.exp(err_persist) - 1, 3), lo=round(lo, 3), hi=round(hi, 3), keep=keep))
+                           med_err_persist=round(np.exp(err_persist) - 1, 3), lo=round(lo, 3), hi=round(hi, 3), dry_hi=round(dhi, 3), n_dry=int(dry.sum()), keep=keep))
         if keep:
             leads[str(h)] = dict(cols=COLS, coef=[round(float(c), 6) for c in m2.coef_], intercept=round(float(m2.intercept_), 6),
-                                 lo=round(float(lo), 4), hi=round(float(hi), 4), medErr=round(float(np.exp(err_model) - 1), 3))
+                                 lo=round(float(lo), 4), hi=round(float(hi), 4), dryLo=round(float(dlo), 4), dryHi=round(float(dhi), 4), medErr=round(float(np.exp(err_model) - 1), 3))
         else:
             break   # later leads only get worse; stop at the first lead that loses to persistence
     return leads, report

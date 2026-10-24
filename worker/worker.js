@@ -1,6 +1,6 @@
 import { runWeekly, weeklyInterests } from "./weekly.js";
 import { updateRunConditions, RUNCOND_KEY } from "./runconditions.js";
-import { fetchFlowForecast, FLOW_MODEL } from "./flowforecast.js";
+import { fetchFlowForecast, refreshForecasts, servedForecast, FORECAST_KEY, FLOW_MODEL } from "./flowforecast.js";
 var ARCGIS_BASE = "https://services1.arcgis.com/TJH5KDher0W13Kgo/arcgis/rest/services/FishStockingDataForRecreationalPurposes/FeatureServer/0/query";
 var EC_FLOW_BASE = "https://api.weather.gc.ca/collections/hydrometric-realtime/items";
 var CACHE_TTL_STOCKING = 86400;
@@ -196,33 +196,41 @@ async function handleFlow(url, ctx) {
   ctx.waitUntil(cache.put(cacheKey, response.clone()));
   return response;
 }
-// Estimated flow for the next 7 days at one gauge (flowforecast.js). Cached an hour: the gauge reports
-// every 5 minutes, but a new reading barely moves a daily estimate, and each miss costs two upstream calls.
-async function handleFlowForecast(url, ctx) {
+// Estimated flow for the next 7 days at one gauge (flowforecast.js). Served from KV, which the hourly cron
+// fills (refreshFlowForecasts below), so page views never call Open-Meteo. Only a gauge with nothing saved
+// yet (first deploy) is computed on the spot, and that result is saved for the cron to replace.
+async function handleFlowForecast(url, env) {
   const station = url.searchParams.get("station");
   if (!station || !/^[0-9A-Z]{5,10}$/.test(station))
     return errorResponse("Missing or invalid ?station= parameter", 400);
   if (!FLOW_MODEL.gauges[station])
     return jsonResponse({ station, days: [], reason: "no model for this gauge" }, 200, 3600);
-  const cacheKey = new Request(`https://cache.streamcast/flow-forecast?station=${station}`);
-  const cache = caches.default;
-  const cached = await cache.match(cacheKey);
-  if (cached)
-    return cached;
-  const fetchJson = async (u) => {
-    const r = await fetch(u, { headers: { "Accept": "application/json", "User-Agent": "StreamCast/1.0" } });
-    if (!r.ok) throw new Error(`${new URL(u).host} returned ${r.status}`);
-    return r.json();
-  };
-  let out;
-  try {
-    out = await fetchFlowForecast(station, { fetchJson });
-  } catch (e) {
-    return errorResponse("Flow forecast failed: " + e.message);
+  const today = torontoDate(new Date());
+  let saved = env.CACHE ? await env.CACHE.get(FORECAST_KEY(station), "json") : null;
+  if (!saved) {
+    try {
+      saved = await fetchFlowForecast(station, { fetchJson: fetchJsonUA });
+      if (env.CACHE && saved.days.length) await env.CACHE.put(FORECAST_KEY(station), JSON.stringify(saved), { expirationTtl: 12 * 3600 });
+    } catch (e) {
+      return errorResponse("Flow forecast failed: " + e.message);
+    }
   }
-  const response = jsonResponse(out, 200, out.days.length ? 3600 : 600);
-  ctx.waitUntil(cache.put(cacheKey, response.clone()));
-  return response;
+  return jsonResponse(servedForecast(saved, today), 200, 900);
+}
+async function fetchJsonUA(u) {
+  const r = await fetch(u, { headers: { "Accept": "application/json", "User-Agent": "StreamCast/1.0" } });
+  if (!r.ok) throw new Error(`${new URL(u).host} returned ${r.status}`);
+  return r.json();
+}
+// Cron: a third of the gauges each hour. Skipped in the hours that already make many outbound calls
+// (trip emails at 6 am, the weekly email Thursday at 5 pm); the free plan allows 50 per run.
+async function refreshFlowForecasts(env) {
+  if (!env.CACHE) return;
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", weekday: "short", hour: "numeric", hourCycle: "h23" }).formatToParts(new Date());
+  const wd = parts.find((p) => p.type === "weekday").value, hour = Number(parts.find((p) => p.type === "hour").value);
+  if (hour === 6 || (wd === "Thu" && hour === 17)) return;
+  const r = await refreshForecasts({ hour, fetchJson: fetchJsonUA, kvPut: (k, v, o) => env.CACHE.put(k, v, o) });
+  if (r.failed && r.failed.length) console.warn("flow forecast refresh failed:", r.failed.join("; "));
 }
 async function handleFields() {
   const res = await fetch(`${ARCGIS_BASE}?where=1%3D1&outFields=*&resultRecordCount=1&f=json`, {
@@ -1271,6 +1279,7 @@ export default {
     ctx.waitUntil(logWaterTemps(env));
     ctx.waitUntil(notifyAlertDrafts(env));
     ctx.waitUntil(maybeUpdateRunConditions(env, ctx));
+    ctx.waitUntil(refreshFlowForecasts(env));
     // Trip-day emails go out in the 6 am hour, Toronto time.
     const hour = Number(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", hour: "numeric", hourCycle: "h23" }).format(new Date()));
     if (hour === 6) ctx.waitUntil(sendTripEmails(env, ctx));
@@ -1297,7 +1306,7 @@ export default {
     if (path === "/flow")
       return handleFlow(url, ctx);
     if (path === "/flow-forecast")
-      return handleFlowForecast(url, ctx);
+      return handleFlowForecast(url, env);
     if (path === "/fields")
       return handleFields();
     if (path === "/lake-temps")
