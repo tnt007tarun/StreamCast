@@ -34,7 +34,7 @@ assert.deepEqual(windowDates(TODAY), ['2026-10-23', '2026-10-24', '2026-10-25', 
 const wx = parseWeather(fakeWeather());
 const closedWeek = scoreWeek({ section: 'Upper Credit River', species: 'Brown Trout', dates: windowDates(TODAY), today: TODAY, wx, flow: 2 });
 assert.ok(closedWeek.every((d) => d.closed && !d.good), 'Upper Credit is closed after Sep 30');
-const bow = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 3 });
+const bow = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 1.5 });
 const sat = bow.find((d) => d.date === '2026-10-24'), sun = bow.find((d) => d.date === '2026-10-25');
 assert.ok(sat.rainy && sat.score <= 5 && !sat.good, 'rain day capped');
 assert.ok(sun.rainy, 'the day after heavy rain is capped too');
@@ -45,7 +45,7 @@ function deps(records, sent) {
     FROM: 'HereFishyFishy <hello@herefishyfishy.ca>', SITE: 'https://herefishyfishy.ca', torontoDate: () => TODAY,
     listHeaders: () => ({ 'List-Unsubscribe': '<x>' }), emailFooter: () => '<p>footer</p>',
     listRecords: async () => records, resendUnsubscribed: async () => new Set(['gone@example.com']),
-    fetchJson: async () => fakeWeather(), flow: async () => 3, lakeTemps: async () => ({}), liveWater: async () => null,
+    fetchJson: async () => fakeWeather(), flow: async () => 1.5, lakeTemps: async () => ({}), liveWater: async () => null,
     unsubLinks: async (e) => ({ page: 'u', oneClick: 'o' }),
     sendBatch: async (batch) => { sent.batches.push(batch); return true; },
     sendOwner: async (subject, html) => { sent.owner.push({ subject, html }); },
@@ -88,12 +88,12 @@ assert.equal(sent.batches[0][0].subject, 'Good days ahead for Steelhead on Lower
 
 // Flow counts once the fish are in the river (TJ, 2026-10-23): too low or blown out is Tough, above prime Marginal.
 // Normal flow below prime is not capped (TJ, 2026-10-24).
-const normal = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.5 });
-assert.ok(normal.some((d) => d.good), 'normal flow (0.5, under prime 1 to 8) can still be a Good day');
+const normal = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.8 });
+assert.ok(normal.some((d) => d.good), 'normal flow (0.8, under prime 1.1 to 2) can still be a Good day');
 const low = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.2 });
-assert.ok(low.every((d) => d.score <= 1 && !d.good), 'too low (under flowLow 0.3) is Tough');
+assert.ok(low.every((d) => d.score <= 1 && !d.good), 'too low (under flowLow 0.6) is Tough');
 const blown = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 20 });
-assert.ok(blown.every((d) => d.score <= 1), 'flow above flowHigh (15) is Tough');
+assert.ok(blown.every((d) => d.score <= 1), 'flow above flowHigh (5) is Tough');
 sent = { batches: [], owner: [], puts: [] };
 const lowDeps = deps([{ email: 'steelhead@example.com', rivers: ['Lower Bowmanville Creek'], species: ['Steelhead'] }], sent);
 lowDeps.flow = async () => 0.2;
