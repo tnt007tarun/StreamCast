@@ -2311,7 +2311,7 @@ function getRiverConfig(riverName) {
 // ── CLASSIFY ──────────────────────────────────────────────────────────────────
 function clsFlow(f,cfg){
   var lo=cfg?cfg.flowLow:6, mn=cfg?cfg.sweetMin:8, mx=cfg?cfg.sweetMax:12, hi=cfg?cfg.flowHigh:20;
-  return f<lo?"bad":f<mn?"warn":f<=mx?"good":f<=hi?"warn":"bad";
+  return f<lo?"bad":f<=mx?"good":f<=hi?"warn":"bad";   // normal and prime are both fine water (flowBand() tells them apart)
 }
 
 function clsTemp(t){return t<TEMP_MIN-2?"bad":t<TEMP_MIN?"warn":t<=TEMP_MAX?"good":t<TEMP_STRESS?"warn":"bad";}
@@ -2736,16 +2736,30 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
 // Adds the water to a base score. While a run is on, the day is rated on run strength (lake
 // temperature, wind at the mouth). River flow doesn't matter to fish still in the lake
 // (fishInLake: staging, and you're at the mouth), but it does once they're in the river (TJ,
-// 2026-10-23): flow outside the sweet spot caps the day at Marginal, and blown out or too low
+// 2026-10-23): flow above prime caps the day at Marginal (normal flow isn't capped, 2026-10-24), and blown out or too low
 // caps it at Tough, the same flow bands that rate a trout day.
 // The same flow cap rates every day, run or not (TJ, 2026-10-24: "every river"). Before, a trout day only lost
 // points for bad flow, so a high season score kept the Lower Grand "Excellent" at 200 m3/s.
 var FLOW_CAP_MARGINAL = 5, FLOW_CAP_TOUGH = 1;
+// Normal flow (between too low and prime) is not capped (TJ, 2026-10-24): rivers are fishable most days, and
+// about half of open-season days sit there. Prime (sweetMin to sweetMax, the flow a few days after rain) is the
+// only band that adds a bonus, so it is what lifts a day to Excellent.
 function flowCapScore(score, cfg, flow) {
   if (score == null || !cfg || flow == null || isNaN(flow)) return score;
   if (flow < cfg.flowLow || flow > cfg.flowHigh) return Math.min(score, FLOW_CAP_TOUGH);
-  if (flow < cfg.sweetMin || flow > cfg.sweetMax) return Math.min(score, FLOW_CAP_MARGINAL);
+  if (flow > cfg.sweetMax) return Math.min(score, FLOW_CAP_MARGINAL);
   return score;
+}
+
+// Which flow band a reading is in: 'low' (too low), 'normal', 'prime' (the sweet spot), 'high', 'blown'.
+// The flow card, the summary line, the weekly email and the trip email all word flow from this.
+function flowBand(f, cfg) {
+  if (f == null || !cfg) return null;
+  if (f < cfg.flowLow) return 'low';
+  if (f < cfg.sweetMin) return 'normal';
+  if (f <= cfg.sweetMax) return 'prime';
+  if (f <= cfg.flowHigh) return 'high';
+  return 'blown';
 }
 function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake) {
   if (stagingPct != null) {
@@ -2797,6 +2811,6 @@ if (typeof globalThis !== 'undefined') {
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
-    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, scoreDay: scoreDay, driveVerdict: driveVerdict
+    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict
   };
 }

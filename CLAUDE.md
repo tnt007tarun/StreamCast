@@ -385,3 +385,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    at the mouth; the app's `window._stagingInLake`). Weekly email subjects use `secLabel()` (full name).
    Extended 2026-10-24 (TJ: every river): `flowCapScore()` applies the same cap to trout days too (the Lower Grand
    read Excellent at 200 m3/s), and to the landing cards; the staging card's re-rate passes `window._pillFlow`.
+   Normal flow (2026-10-24, TJ): flow between `flowLow` and `sweetMin` is not capped; about half of open-season days
+   sit there and rivers are fishable most days. `sweetMin`..`sweetMax` is now called **prime** on screen (flow a few days
+   after rain) and is the only band with a bonus. `flowBand()` names the band (low, normal, prime, high, blown) for the
+   flow card, summary, weekly and trip emails and the Credit SSR tiles. `clsFlow()` rates normal as good.

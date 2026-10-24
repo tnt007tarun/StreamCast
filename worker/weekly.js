@@ -83,7 +83,7 @@ export function parseWeather(j) {
 // Score every day in the window for one reach and species. Same chain as the app: staging read
 // for migratory fish (stagingSectionFor/stagingRead), else flow, water temperature and sky
 // (scoreDay). There is no flow forecast, so Thursday's gauge reading stands in for every day (the app
-// rates flow only for today); heavy rain caps a day, and so does flow outside the sweet spot.
+// rates flow only for today); heavy rain caps a day, and so does flow above prime, too low or blown out.
 export function scoreWeek({ section, species, dates, today, wx, flow, liveWater, lakeTemps }) {
   const cfg = C.getRiverConfig(section);
   return dates.map((date) => {
@@ -135,9 +135,8 @@ function dayReason(day, cfg) {
   }
   if (day.waterTemp != null) bits.push('water about ' + Math.round(day.waterTemp) + ' °C');
   if (day.cloud != null) bits.push(day.cloud >= 70 ? 'overcast' : day.cloud >= 40 ? 'some cloud' : 'bright sky');
-  if (day.flowClass === 'good') bits.push('flow in the sweet spot today');
-  else if (day.flow != null && cfg && day.flow < cfg.sweetMin) bits.push('flow on the low side today');
-  else if (day.flow != null && cfg && day.flow > cfg.sweetMax) bits.push('flow on the high side today');
+  const band = cfg ? C.flowBand(day.flow, cfg) : null;
+  if (band) bits.push({ low: 'flow too low today', normal: 'normal flow today', prime: 'prime flow today', high: 'flow on the high side today', blown: 'river blown out today' }[band]);
   const t = bits.join(', ');
   return t.charAt(0).toUpperCase() + t.slice(1);
 }

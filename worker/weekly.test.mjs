@@ -86,14 +86,17 @@ assert.ok(!/Saturday, Oct 24: (Good|Excellent)/.test(html), 'washout day not off
 assert.ok(/Bring:<\/strong> your centrepin or spinning rod with float gear/.test(html), 'gear matches the hero');
 assert.equal(sent.batches[0][0].subject, 'Good days ahead for Steelhead on Lower Bowmanville Creek');
 
-// Flow counts once the fish are in the river (TJ, 2026-10-23): low water caps a run day at Marginal, blown out at Tough
-const low = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.5 });
-assert.ok(low.every((d) => d.score <= 5 && !d.good), 'flow below the sweet spot (1 to 8) is never Good');
+// Flow counts once the fish are in the river (TJ, 2026-10-23): too low or blown out is Tough, above prime Marginal.
+// Normal flow below prime is not capped (TJ, 2026-10-24).
+const normal = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.5 });
+assert.ok(normal.some((d) => d.good), 'normal flow (0.5, under prime 1 to 8) can still be a Good day');
+const low = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 0.2 });
+assert.ok(low.every((d) => d.score <= 1 && !d.good), 'too low (under flowLow 0.3) is Tough');
 const blown = scoreWeek({ section: 'Lower Bowmanville Creek', species: 'Steelhead', dates: windowDates(TODAY), today: TODAY, wx, flow: 20 });
 assert.ok(blown.every((d) => d.score <= 1), 'flow above flowHigh (15) is Tough');
 sent = { batches: [], owner: [], puts: [] };
 const lowDeps = deps([{ email: 'steelhead@example.com', rivers: ['Lower Bowmanville Creek'], species: ['Steelhead'] }], sent);
-lowDeps.flow = async () => 0.5;
+lowDeps.flow = async () => 0.2;
 r = await runWeekly({ ALERTS_MODE: 'live' }, lowDeps);
 assert.equal(sent.batches.length, 0, 'no email on a low-water week');
 // The subject names the river for a mouth reach

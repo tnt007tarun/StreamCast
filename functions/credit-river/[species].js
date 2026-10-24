@@ -13,7 +13,7 @@ const SSR_ROUTES = {
     species: 'Brown Trout',
     section: 'Upper Credit River',
     gauge: '02HB001', gaugeName: 'Credit River near Cataract',
-    sweetMin: 1.4, sweetMax: 2.8,
+    sweetMin: 1.4, sweetMax: 2.8, flowLow: 0.9, flowHigh: 5,
     lat: 43.870, lng: -80.010,
     seasonMonths: [3, 8],   // April – September (season closes Sept 30)
     access: [
@@ -30,7 +30,7 @@ const SSR_ROUTES = {
     species: 'Rainbow Trout',
     section: 'Middle Credit River',
     gauge: '02HB025', gaugeName: 'Credit River at Norval',
-    sweetMin: 4.5, sweetMax: 9,
+    sweetMin: 4.5, sweetMax: 9, flowLow: 2.5, flowHigh: 19,
     lat: 43.660, lng: -79.880,
     seasonMonths: [2, 4],   // March – May
     access: [
@@ -46,7 +46,7 @@ const SSR_ROUTES = {
     species: 'Brook Trout',
     section: 'Upper Credit River',
     gauge: '02HB001', gaugeName: 'Credit River near Cataract',
-    sweetMin: 1.4, sweetMax: 2.8,
+    sweetMin: 1.4, sweetMax: 2.8, flowLow: 0.9, flowHigh: 5,
     lat: 43.870, lng: -80.010,
     seasonMonths: [3, 8],
     access: [
@@ -62,7 +62,7 @@ const SSR_ROUTES = {
     species: 'Steelhead',
     section: 'Lower Credit River',
     gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 6, sweetMax: 13,
+    sweetMin: 6, sweetMax: 13, flowLow: 3, flowHigh: 30,
     lat: 43.560, lng: -79.720,
     seasonMonths: [8, 4],   // September – May
     access: [
@@ -79,7 +79,7 @@ const SSR_ROUTES = {
     species: 'Chinook Salmon',
     section: 'Lower Credit River',
     gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 6, sweetMax: 13,
+    sweetMin: 6, sweetMax: 13, flowLow: 3, flowHigh: 30,
     lat: 43.560, lng: -79.720,
     seasonMonths: [7, 10],  // August – November
     access: [
@@ -95,7 +95,7 @@ const SSR_ROUTES = {
     species: 'Coho Salmon',
     section: 'Lower Credit River',
     gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 6, sweetMax: 13,
+    sweetMin: 6, sweetMax: 13, flowLow: 3, flowHigh: 30,
     lat: 43.560, lng: -79.720,
     seasonMonths: [8, 10],
     access: [
@@ -112,9 +112,12 @@ const SSR_ROUTES = {
 function scoreConditions(flow, airTemp, cloudPct, route, month, measuredWater) {
   let flowState = 'unknown', flowLabel = 'Check gauge';
   if (flow != null) {
-    if (flow >= route.sweetMin && flow <= route.sweetMax) { flowState = 'good'; flowLabel = 'In range'; }
-    else if (flow < route.sweetMin) { flowState = flow >= route.sweetMin * 0.4 ? 'ok' : 'poor'; flowLabel = 'Low'; }
-    else { flowState = flow <= route.sweetMax * 1.8 ? 'ok' : 'poor'; flowLabel = 'High'; }
+    // Same bands as the app (flowBand in conditions-core.js): normal flow is fine water, prime is a few days after rain.
+    if (flow < route.flowLow) { flowState = 'poor'; flowLabel = 'Too low'; }
+    else if (flow < route.sweetMin) { flowState = 'good'; flowLabel = 'Normal'; }
+    else if (flow <= route.sweetMax) { flowState = 'good'; flowLabel = 'Prime'; }
+    else if (flow <= route.flowHigh) { flowState = 'ok'; flowLabel = 'High'; }
+    else { flowState = 'poor'; flowLabel = 'Blown out'; }
   }
 
   // Live CVC reading for this reach when there is one; otherwise the rough air-based estimate.
@@ -276,7 +279,7 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
         <div class="tile-meaning" style="color:${stateColor(cond.skyState)}">${cond.skyLabel}</div></div>
     </div>
     <div class="verdict" style="color:${stateColor(cond.quality === 'excellent' || cond.quality === 'good' ? 'good' : cond.quality === 'marginal' ? 'ok' : 'poor')}">
-      Conditions: ${cond.qualityLabel}${route.sweetMin ? ` &middot; aim for ${route.sweetMin}&ndash;${route.sweetMax} m³/s` : ''}
+      Conditions: ${cond.qualityLabel}${route.sweetMin ? ` &middot; prime flow ${route.sweetMin}&ndash;${route.sweetMax} m³/s` : ''}
     </div>
     <div class="cta-line"><a href="${appLink}" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/credit-river/${speciesSlug}" data-umami-event-river="Credit River">See access points, technique and gear for today &rarr;</a></div>
   </div>

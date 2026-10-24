@@ -886,9 +886,9 @@ async function handleSubscribe(request, env) {
 // Trip-day emails. The hourly cron sends them at 6 am Toronto time on the trip date.
 function flowWord(flow, lo, hi) {
   if (flow == null) return "";
-  if (lo && flow < lo) return "below the sweet spot (" + lo + " to " + hi + ")";
-  if (hi && flow > hi) return "above the sweet spot (" + lo + " to " + hi + ")";
-  if (lo && hi) return "in the sweet spot (" + lo + " to " + hi + ")";
+  if (lo && flow < lo) return "normal, below prime (" + lo + " to " + hi + ")";
+  if (hi && flow > hi) return "above prime (" + lo + " to " + hi + ")";
+  if (lo && hi) return "prime (" + lo + " to " + hi + ")";
   return "";
 }
 async function sendTripEmails(env, ctx) {

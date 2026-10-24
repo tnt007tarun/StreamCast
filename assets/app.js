@@ -774,7 +774,7 @@ function renderRiverUI(cfg) {
   var srLbl=document.getElementById("sweet-range-lbl");
   var srAxis=document.getElementById("sweet-range-axis");
   if(srLbl) srLbl.textContent=cfg.sweetMin+"\u2013"+cfg.sweetMax;
-  if(srAxis) srAxis.textContent="Sweet "+cfg.sweetMin+"\u2013"+cfg.sweetMax;
+  if(srAxis) srAxis.textContent="Prime "+cfg.sweetMin+"\u2013"+cfg.sweetMax;
   // The bar runs from 0 to the blown-out flow, so the axis end is that river's flowHigh (it used to say 20+ everywhere).
   var fxMax=document.getElementById("flow-axis-max");
   if(fxMax&&cfg.flowHigh) fxMax.textContent=cfg.flowHigh+"+";
@@ -2589,7 +2589,7 @@ async function renderResults(){
           }).join(', ') + '.';
         }
       }
-      plainSummary = "\u2705 Great conditions right now on the "+(selectedRiver?selectedRiver.split(",")[0]:"river")+". Flow is in the sweet spot, temperature and sky are working in your favour." + _noSpecRec;
+      plainSummary = "\u2705 Great conditions right now on the "+(selectedRiver?selectedRiver.split(",")[0]:"river")+". "+(flowBand(flow,cfg)==="prime"?"Flow is prime":"Flow is normal")+", and temperature and sky are working in your favour." + _noSpecRec;
     } else if (vl === "bad") {
       var reason = fc==="bad"&&flow<cfg.flowLow
         ? "water is too low at "+flow+" m³/s, so fish are scattered and very wary"
@@ -2699,18 +2699,18 @@ async function renderResults(){
     document.getElementById("ftrend").textContent=trend==="up"?"\u2191":trend==="down"?"\u2193":"\u2192";
     document.getElementById("ftrend").className="trd "+ta;
     var fd=flow<cfg.flowLow?flow+" m³/s, below the ideal range. Fish scattered."
-      :flow<cfg.sweetMin?flow+" m³/s, below the sweet spot. Watch for a rise."
-      :flow<=cfg.sweetMax?flow+" m³/s, in the "+sweetRange+" sweet spot."
+      :flow<cfg.sweetMin?flow+" m³/s, normal flow. Fishable; prime is "+sweetRange+", a few days after rain."
+      :flow<=cfg.sweetMax?flow+" m³/s, prime flow ("+sweetRange+")."
       :flow<=cfg.flowHigh?flow+" m³/s, elevated. Target the slower edges."
       :flow+" m³/s, too high for safe wading.";
     document.getElementById("flbl").textContent=fd+(flowAt?" \u00b7 Obs: "+flowAt.slice(0,16).replace("T"," "):"");
     document.getElementById("fgv").textContent=flow+" m\u00b3/s";
     var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh)+"%";fb.className="gf "+fc;
-    document.getElementById("fstat").innerHTML=clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
+    var _fb=flowBand(flow,cfg);document.getElementById("fstat").innerHTML=(_fb==="normal"||_fb==="prime")?clsLbl(fc).replace("Ideal",_fb==="prime"?"Prime":"Normal"):clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
     var _fd=document.getElementById("flow-dot");
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
     document.getElementById("fcl").innerHTML=[
-      {t:"Flow "+flow+" m\u00b3/s (sweet spot: "+sweetRange+")",c:fc},
+      {t:"Flow "+flow+" m\u00b3/s ("+({low:"too low",normal:"normal",prime:"prime",high:"high",blown:"blown out"}[flowBand(flow,cfg)]||"")+"; prime: "+sweetRange+")",c:fc},
       {t:"Trend: "+(trend==="up"?"Rising ↑, a good sign":trend==="down"?"Falling ↓, keep an eye on it":"Stable \u2192 watch for changes"),c:trend==="up"?"good":"warn"},
       {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"},
       {t:"Fish lies: "+(fc==="good"?"Predictable":"Scattered and harder to find"),c:fc}
