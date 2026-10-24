@@ -1,5 +1,6 @@
 import { runWeekly, weeklyInterests } from "./weekly.js";
 import { updateRunConditions, RUNCOND_KEY } from "./runconditions.js";
+import { fetchFlowForecast, FLOW_MODEL } from "./flowforecast.js";
 var ARCGIS_BASE = "https://services1.arcgis.com/TJH5KDher0W13Kgo/arcgis/rest/services/FishStockingDataForRecreationalPurposes/FeatureServer/0/query";
 var EC_FLOW_BASE = "https://api.weather.gc.ca/collections/hydrometric-realtime/items";
 var CACHE_TTL_STOCKING = 86400;
@@ -192,6 +193,34 @@ async function handleFlow(url, ctx) {
   const prev = readings[1]?.flow ?? null;
   const trend = prev == null ? "stable" : flow > prev + 0.05 ? "up" : flow < prev - 0.05 ? "down" : "stable";
   const response = jsonResponse({ flow, trend, at: readings[0].at, station }, 200, CACHE_TTL_FLOW);
+  ctx.waitUntil(cache.put(cacheKey, response.clone()));
+  return response;
+}
+// Estimated flow for the next 7 days at one gauge (flowforecast.js). Cached an hour: the gauge reports
+// every 5 minutes, but a new reading barely moves a daily estimate, and each miss costs two upstream calls.
+async function handleFlowForecast(url, ctx) {
+  const station = url.searchParams.get("station");
+  if (!station || !/^[0-9A-Z]{5,10}$/.test(station))
+    return errorResponse("Missing or invalid ?station= parameter", 400);
+  if (!FLOW_MODEL.gauges[station])
+    return jsonResponse({ station, days: [], reason: "no model for this gauge" }, 200, 3600);
+  const cacheKey = new Request(`https://cache.streamcast/flow-forecast?station=${station}`);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+  if (cached)
+    return cached;
+  const fetchJson = async (u) => {
+    const r = await fetch(u, { headers: { "Accept": "application/json", "User-Agent": "StreamCast/1.0" } });
+    if (!r.ok) throw new Error(`${new URL(u).host} returned ${r.status}`);
+    return r.json();
+  };
+  let out;
+  try {
+    out = await fetchFlowForecast(station, { fetchJson });
+  } catch (e) {
+    return errorResponse("Flow forecast failed: " + e.message);
+  }
+  const response = jsonResponse(out, 200, out.days.length ? 3600 : 600);
   ctx.waitUntil(cache.put(cacheKey, response.clone()));
   return response;
 }
@@ -1267,6 +1296,8 @@ export default {
       return handleStocking(url, ctx);
     if (path === "/flow")
       return handleFlow(url, ctx);
+    if (path === "/flow-forecast")
+      return handleFlowForecast(url, ctx);
     if (path === "/fields")
       return handleFields();
     if (path === "/lake-temps")
@@ -1280,6 +1311,6 @@ export default {
       for (const [k, v] of Object.entries(st.rivers || {})) { const c = Object.assign({}, v); delete c.subscribers; rivers[k] = c; }
       return jsonResponse({ updated: st.updated || null, rivers });
     }
-    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /health, /fields, /lake-temps, /water-temps, /run-conditions, /subscribe, /unsubscribe, /alerts/approve" }, 404);
+    return jsonResponse({ error: "Valid endpoints: /stocking, /flow, /flow-forecast, /health, /fields, /lake-temps, /water-temps, /run-conditions, /subscribe, /unsubscribe, /alerts/approve" }, 404);
   }
 };
