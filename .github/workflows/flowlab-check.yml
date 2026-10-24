@@ -1,0 +1,17 @@
+# Throwaway: checks the flow forecast's API calls. Not for main.
+name: flowlab-check
+on:
+  push:
+    branches: [claude/flowlab-data]
+    paths: [tools/flowlab_check.py]
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p data/flowlab && python3 tools/flowlab_check.py
+      - run: |
+          git config user.name "flowlab-bot"; git config user.email "noreply@github.com"
+          git add data/flowlab/check.json && git commit -m "flowlab check" && git pull --rebase && git push
