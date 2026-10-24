@@ -32,7 +32,10 @@ assert.equal(closed.confidence, null);
 // Run strength with flow (TJ, 2026-10-23). Lower Bowmanville: flowLow 0.3, sweet 1 to 8, flowHigh 15.
 {
   const cfg = C.getRiverConfig('Lower Bowmanville Creek');
-  assert.equal(C.conditionsScore(0, cfg, 3, 10, 50, 80), 8, 'strong run, flow in the sweet spot: Good');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 80)).word, 'Excellent', 'strong run, prime flow: Excellent (TJ, 2026-10-24)');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 0.5, 10, 50, 80)).word, 'Good', 'strong run, normal flow: Good');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 50)).word, 'Marginal', 'fair run, prime flow: no lift');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 80, true)).word, 'Good', 'fish still in the lake: no lift');
   assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80), 8, 'normal flow (below prime) is not capped (TJ, 2026-10-24)');
   assert.equal(C.conditionsScore(0, cfg, 0.2, 10, 50, 80), 1, 'too low (under flowLow) caps at Tough');
   assert.equal(C.conditionsScore(0, cfg, 10, 10, 50, 80), 5, 'above prime caps at Marginal');

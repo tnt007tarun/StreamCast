@@ -2741,6 +2741,7 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
 // The same flow cap rates every day, run or not (TJ, 2026-10-24: "every river"). Before, a trout day only lost
 // points for bad flow, so a high season score kept the Lower Grand "Excellent" at 200 m3/s.
 var FLOW_CAP_MARGINAL = 5, FLOW_CAP_TOUGH = 1;
+var RUN_PRIME_SCORE = 10;   // scoreToConfidence: 10 and up is Excellent
 // Normal flow (between too low and prime) is not capped (TJ, 2026-10-24): rivers are fishable most days, and
 // about half of open-season days sit there. Prime (sweetMin to sweetMax, the flow a few days after rain) is the
 // only band that adds a bonus, so it is what lifts a day to Excellent.
@@ -2764,7 +2765,10 @@ function flowBand(f, cfg) {
 function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake) {
   if (stagingPct != null) {
     var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
-    return fishInLake ? s : flowCapScore(s, cfg, flow);
+    if (fishInLake) return s;
+    // A strong run with prime flow in the river is the best day there is: Excellent (TJ, 2026-10-24).
+    if (s >= 8 && flowBand(flow, cfg) === 'prime') s = RUN_PRIME_SCORE;
+    return flowCapScore(s, cfg, flow);
   }
   if (cfg && flow != null) {
     return flowCapScore(baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct), cfg, flow);
