@@ -151,7 +151,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-21)
+## Current state (updated 2026-10-24)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -262,6 +262,16 @@ Merged recently:
   Credit SSR routes. The flow bar's axis end now shows the river's `flowHigh` (it said "20+" for every river). Flow only,
   no water level line (TJ). Method and the 7-day flow forecast backtest: project doc
   `claude/flow-forecast-research-2026-10-24.md`.
+- **Flow ranges, every river** (TJ marked them up, 2026-10-24): same method on 2015 to 2025 daily flow, prime = 2 to 3
+  days after a rain bump on creeks, 4 to 5 on rivers. 38 active sections changed in `RIVER_CONFIG` and `RIVERS_DB`.
+  Kept as they were (TJ): Credit (already done), Upper Grand tailwater, Lower Grand, Lower Humber, Lower Nottawasaga,
+  Lower Saugeen, each on its old gauge. New gauges: Duffins on **Ajax 02HC049** (it read the Rouge gauge 02HC022;
+  Duffins above Pickering 02HC019 has history but no real-time data), Black Creek 02HC027, Lower-Mid Humber Weston
+  02HC003, Upper Humber Palgrave 02HC047, Nottawasaga headwaters Hockley 02ED026 and middle Baxter 02ED003, Ganaraska
+  upper Osaca 02HD003, Speed Armstrong Mills 02GA040, Upper Beaver Vandeleur 02FB013, Wilmot upper Leskard 02HD021
+  (too low under 0.2, TJ). Middle Beaver is TJ's custom 9 to 20, blown over 21. Review page: artifact "River Flow
+  Ranges" (`decisions` collection). Inactive sections (Middle Humber, Black Creek Concrete Channel, Middle Grand,
+  Middle Saugeen) were not reviewed.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -368,8 +378,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
    the Reddit thread.
 
-13. **Flow ranges for the other gauges (2026-10-24):** run the Credit method on every gauge in the app and send TJ one
-   table to mark up before changing anything. Then the 7-day flow forecast (approved by TJ): per-gauge linear rain
+13. **Flow ranges (done 2026-10-24, see Current state).** Next: the 7-day flow forecast (approved by TJ): per-gauge linear rain
    model, Worker endpoint, number and range for days 1 to 2, range after that. Data pulls need GitHub Actions (cloud
    sessions can't reach archive-api or flood-api). TJ to delete the throwaway branch `claude/flowlab-data`.
 

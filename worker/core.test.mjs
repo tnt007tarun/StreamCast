@@ -14,7 +14,7 @@ assert.equal(C.sectionClosedOn(C.getRiverConfig('Upper Credit River'), '2026-06-
 
 // One day: steelhead in season, flow in the sweet spot, prime water, overcast
 const good = C.scoreDay({ section: 'Lower Bowmanville Creek', species: ['Steelhead'], date: '2026-10-23',
-  flow: 3, waterTemp: 10, cloudPct: 80 });
+  flow: 1.5, waterTemp: 10, cloudPct: 80 });
 assert.equal(good.closed, false);
 assert.equal(good.confidence.word, 'Excellent');
 
@@ -29,18 +29,18 @@ const closed = C.scoreDay({ section: 'Upper Credit River', species: ['Brook Trou
 assert.equal(closed.closed, true);
 assert.equal(closed.confidence, null);
 
-// Run strength with flow (TJ, 2026-10-23). Lower Bowmanville: flowLow 0.3, sweet 1 to 8, flowHigh 15.
+// Run strength with flow (TJ, 2026-10-23). Lower Bowmanville: flowLow 0.6, prime 1.1 to 2, flowHigh 5 (2026-10-24 ranges).
 {
   const cfg = C.getRiverConfig('Lower Bowmanville Creek');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 80)).word, 'Excellent', 'strong run, prime flow: Excellent (TJ, 2026-10-24)');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 0.5, 10, 50, 80)).word, 'Good', 'strong run, normal flow: Good');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 50)).word, 'Marginal', 'fair run, prime flow: no lift');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 3, 10, 50, 80, true)).word, 'Good', 'fish still in the lake: no lift');
-  assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80), 8, 'normal flow (below prime) is not capped (TJ, 2026-10-24)');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 1.5, 10, 50, 80)).word, 'Excellent', 'strong run, prime flow: Excellent (TJ, 2026-10-24)');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 0.8, 10, 50, 80)).word, 'Good', 'strong run, normal flow: Good');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 1.5, 10, 50, 50)).word, 'Marginal', 'fair run, prime flow: no lift');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 1.5, 10, 50, 80, true)).word, 'Good', 'fish still in the lake: no lift');
+  assert.equal(C.conditionsScore(0, cfg, 0.8, 10, 50, 80), 8, 'normal flow (below prime) is not capped (TJ, 2026-10-24)');
   assert.equal(C.conditionsScore(0, cfg, 0.2, 10, 50, 80), 1, 'too low (under flowLow) caps at Tough');
-  assert.equal(C.conditionsScore(0, cfg, 10, 10, 50, 80), 5, 'above prime caps at Marginal');
+  assert.equal(C.conditionsScore(0, cfg, 3, 10, 50, 80), 5, 'above prime caps at Marginal');
   assert.equal(C.conditionsScore(0, cfg, 20, 10, 50, 80), 1, 'blown out caps at Tough');
-  assert.equal(C.conditionsScore(0, cfg, 0.5, 10, 50, 80, true), 8, 'fish still in the lake: flow ignored');
+  assert.equal(C.conditionsScore(0, cfg, 0.8, 10, 50, 80, true), 8, 'fish still in the lake: flow ignored');
   assert.equal(C.conditionsScore(0, cfg, null, 10, 50, 80), 8, 'no gauge reading: no cap');
 }
 

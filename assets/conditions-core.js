@@ -636,7 +636,7 @@ var RIVER_CONFIG = {
   'Bronte Creek — Lower Estuary & Mouth': {
     season:'all-year',
     gauge:'02HB011', gaugeName:'Bronte Creek at Zimmerman',
-    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    sweetMin:3.5, sweetMax:7.5, flowLow:0.5, flowHigh:9.5,
     lat:43.434, lng:-79.716,
     loc:'Lake Ontario to Lakeshore Road West (Bronte Harbour)',
     driveTime:{'toronto':35,'north york':35,'scarborough':40,'etobicoke':25,'markham':45,'richmond hill':45,'vaughan':40,'ajax':55,'pickering':50,'mississauga':30,'brampton':25,'oakville':5,'burlington':10,'milton':15,'hamilton':15,'guelph':35,'cambridge':35,'kitchener':45,'waterloo':50,'orangeville':45,'oshawa':65,'whitby':60,'bowmanville':75,'clarington':80,'newcastle':80,'cobourg':105,'port hope':95,'barrie':80,'collingwood':95,'owen sound':120},
@@ -653,7 +653,7 @@ var RIVER_CONFIG = {
   'Bronte Creek — Mid-Section & Provincial Park': {
     season:'extended',
     gauge:'02HB011', gaugeName:'Bronte Creek at Zimmerman',
-    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    sweetMin:3, sweetMax:6, flowLow:0.4, flowHigh:8,
     lat:43.465, lng:-79.735,
     loc:'Lakeshore Road West to Highway 407 (Bronte Creek Provincial Park)',
     driveTime:{'toronto':40,'north york':40,'scarborough':40,'etobicoke':25,'markham':45,'richmond hill':45,'vaughan':40,'ajax':60,'pickering':55,'mississauga':30,'brampton':25,'oakville':5,'burlington':15,'milton':10,'hamilton':20,'guelph':35,'cambridge':40,'kitchener':50,'waterloo':50,'orangeville':50,'oshawa':70,'whitby':70,'bowmanville':80,'clarington':90,'newcastle':90,'cobourg':115,'port hope':110,'barrie':85,'collingwood':100,'owen sound':130},
@@ -669,7 +669,7 @@ var RIVER_CONFIG = {
   'Bronte Creek — Upper Headwaters': {
     season:'standard',
     gauge:'02HB022', gaugeName:'Bronte Creek at Carlisle',
-    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    sweetMin:1.4, sweetMax:4, flowLow:0.1, flowHigh:4.5,
     lat:43.530, lng:-79.800,
     loc:'Upstream of Lowville to Progreston and Carlisle (Niagara Escarpment)',
     driveTime:{'toronto':45,'north york':45,'scarborough':50,'etobicoke':35,'markham':50,'richmond hill':50,'vaughan':45,'ajax':70,'pickering':65,'mississauga':35,'brampton':20,'oakville':15,'burlington':20,'milton':10,'hamilton':30,'guelph':35,'cambridge':45,'kitchener':55,'waterloo':55,'orangeville':50,'oshawa':85,'whitby':80,'bowmanville':95,'clarington':105,'newcastle':105,'cobourg':135,'port hope':125,'barrie':95,'collingwood':110,'owen sound':145},
@@ -701,8 +701,8 @@ var RIVER_CONFIG = {
   },
   "Lower-Mid Humber (Old Mill to Eglinton)": {
     season:'all-year',
-    gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
-    sweetMin:3, sweetMax:12, flowLow:1, flowHigh:25,
+    gauge:"02HC003", gaugeName:"Humber River at Weston",
+    sweetMin:4, sweetMax:8.5, flowLow:1.8, flowHigh:34,
     lat:43.670, lng:-79.490,
     loc:"Old Mill area north to Eglinton Avenue (Etienne Brulé Park)",
     driveTime:{ toronto:20,mississauga:40,brampton:30,oakville:30,burlington:50,milton:40,hamilton:60,guelph:70,cambridge:85,kitchener:95,waterloo:95,orangeville:60,markham:25,"richmond hill":30,vaughan:25,ajax:50,pickering:40,"north york":15,scarborough:25,etobicoke:15,oshawa:65,whitby:55,bowmanville:80,clarington:85,newcastle:85,cobourg:125,"port hope":115,barrie:90,collingwood:120,"owen sound":170 },
@@ -730,8 +730,8 @@ var RIVER_CONFIG = {
   },
   "Upper Humber River (Headwaters)": {
     season:'standard',
-    gauge:"02HC025", gaugeName:"Humber River at Elder Mills",
-    sweetMin:2, sweetMax:8, flowLow:0.5, flowHigh:15,
+    gauge:"02HC047", gaugeName:"Humber River near Palgrave",
+    sweetMin:1, sweetMax:2, flowLow:0.6, flowHigh:4.5,
     lat:43.870, lng:-79.730,
     loc:"Above Highway 407 to Oak Ridges Moraine / Niagara Escarpment",
     driveTime:{ toronto:50,mississauga:60,brampton:30,oakville:50,burlington:70,milton:45,hamilton:75,guelph:60,cambridge:85,kitchener:85,waterloo:85,orangeville:35,markham:35,"richmond hill":30,vaughan:25,ajax:65,pickering:55,"north york":35,scarborough:45,etobicoke:45,oshawa:80,whitby:70,bowmanville:95,clarington:100,newcastle:100,cobourg:140,"port hope":130,barrie:65,collingwood:90,"owen sound":140 },
@@ -746,8 +746,8 @@ var RIVER_CONFIG = {
   },
   'Nottawasaga River — Headwaters (Niagara Escarpment)': {
     season:'standard',
-    gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
-    sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
+    gauge:'02ED026', gaugeName:'Nottawasaga River at Hockley',
+    sweetMin:1.2, sweetMax:2, flowLow:0.6, flowHigh:6,
     lat:44.130, lng:-79.950,
     loc:'Niagara Escarpment and Hockley Valley, upstream of Alliston',
     driveTime:{'toronto':85,'north york':70,'scarborough':75,'etobicoke':85,'markham':65,'richmond hill':60,'vaughan':60,'ajax':90,'pickering':85,'mississauga':95,'brampton':65,'oakville':85,'burlington':100,'milton':75,'hamilton':110,'guelph':80,'cambridge':100,'kitchener':100,'waterloo':100,'orangeville':30,'oshawa':100,'whitby':95,'bowmanville':115,'clarington':125,'newcastle':125,'cobourg':160,'port hope':150,'barrie':40,'collingwood':50,'owen sound':105},
@@ -762,8 +762,8 @@ var RIVER_CONFIG = {
   },
   'Nottawasaga River — Middle Section (Alliston to Angus)': {
     season:'standard',
-    gauge:'02ED101', gaugeName:'Nottawasaga River near Angus',
-    sweetMin:5, sweetMax:20, flowLow:1, flowHigh:40,
+    gauge:'02ED003', gaugeName:'Nottawasaga River near Baxter',
+    sweetMin:6.5, sweetMax:15, flowLow:2, flowHigh:40,
     lat:44.150, lng:-79.900,
     loc:'Alliston through Angus: extended steelhead water, with the Pine and Boyne River confluences',
     driveTime:{'toronto':85,'north york':70,'scarborough':75,'etobicoke':85,'markham':60,'richmond hill':55,'vaughan':55,'ajax':85,'pickering':85,'mississauga':95,'brampton':65,'oakville':85,'burlington':105,'milton':80,'hamilton':110,'guelph':80,'cambridge':105,'kitchener':100,'waterloo':100,'orangeville':35,'oshawa':100,'whitby':90,'bowmanville':115,'clarington':120,'newcastle':120,'cobourg':160,'port hope':145,'barrie':35,'collingwood':50,'owen sound':105},
@@ -804,8 +804,8 @@ var RIVER_CONFIG = {
 
   'Duffins Creek — Lower Section': {
     season:'all-year',
-    gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
-    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    gauge:'02HC049', gaugeName:'Duffins Creek at Ajax',
+    sweetMin:2, sweetMax:5.5, flowLow:1, flowHigh:13,
     lat:43.843, lng:-79.065,
     loc:'Lake Ontario to Highway 2 (Ajax / Pickering)',
     driveTime:{'toronto':40,'north york':35,'scarborough':20,'etobicoke':55,'markham':25,'richmond hill':35,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':90,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':20,'whitby':15,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':90,'collingwood':130,'owen sound':190},
@@ -823,8 +823,8 @@ var RIVER_CONFIG = {
     // Greenwood and Whitevale are both north of Hwy 2. Durham's extended season only
     // covers Hwy 2 down to the CNR, so this reach closes Sept 30 like inland water.
     season:'standard',
-    gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
-    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    gauge:'02HC049', gaugeName:'Duffins Creek at Ajax',
+    sweetMin:1.6, sweetMax:4, flowLow:0.8, flowHigh:11,
     lat:43.870, lng:-79.058,
     loc:'Highway 2 to the dams (Greenwood Conservation Area / Whitevale)',
     driveTime:{'toronto':45,'north york':40,'scarborough':20,'etobicoke':60,'markham':25,'richmond hill':40,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':95,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':85,'collingwood':130,'owen sound':190},
@@ -839,8 +839,8 @@ var RIVER_CONFIG = {
   },
   'Duffins Creek — Upper Reaches': {
     season:'standard',
-    gauge:'02HC022', gaugeName:'Duffins Creek above Pickering',
-    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    gauge:'02HC049', gaugeName:'Duffins Creek at Ajax',
+    sweetMin:1.6, sweetMax:4, flowLow:0.8, flowHigh:11,
     lat:43.940, lng:-79.040,
     loc:'Above the dams to the Oak Ridges Moraine (Glen Major / West Duffins headwaters)',
     driveTime:{'toronto':50,'north york':45,'scarborough':30,'etobicoke':70,'markham':30,'richmond hill':40,'vaughan':50,'ajax':10,'pickering':15,'mississauga':95,'brampton':80,'oakville':85,'burlington':100,'milton':90,'hamilton':115,'guelph':120,'cambridge':135,'kitchener':145,'waterloo':145,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':30,'clarington':40,'newcastle':40,'cobourg':80,'port hope':65,'barrie':80,'collingwood':125,'owen sound':185},
@@ -857,7 +857,7 @@ var RIVER_CONFIG = {
   'Ganaraska River — Lower (Lake to CNR Bridge)': {
     season:'all-year',
     gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
-    sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
+    sweetMin:2.5, sweetMax:4, flowLow:1.6, flowHigh:10,
     lat:43.940, lng:-78.305,
     loc:'Lake Ontario to the CNR railway bridge (Port Hope harbour)',
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:25,bowmanville:10,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
@@ -873,7 +873,7 @@ var RIVER_CONFIG = {
   'Ganaraska River — Port Hope Sanctuary': {
     season:'extended',
     gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
-    sweetMin:2, sweetMax:12, flowLow:0.5, flowHigh:25,
+    sweetMin:2, sweetMax:3.5, flowLow:1.5, flowHigh:8,
     lat:43.945, lng:-78.300,
     loc:'Jocelyn Street Bridge to the CNR bridge, through Port Hope',
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:25,bowmanville:10,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
@@ -900,8 +900,8 @@ var RIVER_CONFIG = {
   },
   'Ganaraska River — Upper & Conservation Areas': {
     season:'standard',
-    gauge:'02HD012', gaugeName:'Ganaraska River above Dale',
-    sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
+    gauge:'02HD003', gaugeName:'Ganaraska River near Osaca',
+    sweetMin:0.7, sweetMax:1.1, flowLow:0.6, flowHigh:2,
     lat:43.980, lng:-78.290,
     loc:'North of Highway 401: Ganaraska Millennium CA, Sylvan Glen CA, Thurne Parks',
     driveTime:{toronto:95,'north york':90,scarborough:80,etobicoke:105,markham:75,'richmond hill':80,vaughan:85,ajax:60,pickering:55,mississauga:120,brampton:110,oakville:115,burlington:125,milton:110,hamilton:135,guelph:145,cambridge:160,kitchener:170,waterloo:170,orangeville:130,oshawa:40,whitby:30,bowmanville:15,clarington:20,newcastle:20,cobourg:40,'port hope':10,barrie:115,collingwood:155,'owen sound':215},
@@ -919,7 +919,7 @@ var RIVER_CONFIG = {
   "Lower Beaver River (Thornbury)": {
     season:'extended',
     gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
-    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    sweetMin:9, sweetMax:19, flowLow:2, flowHigh:27,
     lat:44.563, lng:-80.457,
     loc:"Thornbury Dam to Georgian Bay",
     driveTime:{ toronto:155,mississauga:165,brampton:130,oakville:155,burlington:165,milton:140,hamilton:170,guelph:130,cambridge:150,kitchener:140,waterloo:135,orangeville:85,markham:135,"richmond hill":130,vaughan:130,ajax:155,pickering:150,"north york":140,scarborough:145,etobicoke:155,oshawa:165,whitby:160,bowmanville:175,clarington:185,newcastle:185,cobourg:220,"port hope":205,barrie:70,collingwood:25,"owen sound":45 },
@@ -935,7 +935,7 @@ var RIVER_CONFIG = {
   "Middle Beaver River (Clarksburg to Heathcote)": {
     season:'standard',
     gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
-    sweetMin:2, sweetMax:10, flowLow:0.5, flowHigh:20,
+    sweetMin:9, sweetMax:20, flowLow:2, flowHigh:21,
     lat:44.520, lng:-80.430,
     loc:"Clarksburg to Heathcote",
     driveTime:{ toronto:150,mississauga:160,brampton:125,oakville:145,burlington:160,milton:135,hamilton:165,guelph:125,cambridge:145,kitchener:135,waterloo:130,orangeville:80,markham:130,"richmond hill":125,vaughan:125,ajax:150,pickering:145,"north york":135,scarborough:140,etobicoke:150,oshawa:160,whitby:155,bowmanville:170,clarington:180,newcastle:180,cobourg:215,"port hope":205,barrie:70,collingwood:20,"owen sound":45 },
@@ -961,8 +961,8 @@ var RIVER_CONFIG = {
   },
   "Upper Beaver River (Kimberley)": {
     season:'standard',
-    gauge:"02FB009", gaugeName:"Beaver River near Clarksburg",
-    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
+    gauge:"02FB013", gaugeName:"Beaver River near Vandeleur",
+    sweetMin:3.5, sweetMax:6, flowLow:1.6, flowHigh:13,
     lat:44.490, lng:-80.400,
     loc:"Kimberley village up to Hogs Falls / Headwaters",
     driveTime:{ toronto:145,mississauga:155,brampton:120,oakville:145,burlington:155,milton:130,hamilton:160,guelph:120,cambridge:140,kitchener:130,waterloo:130,orangeville:75,markham:125,"richmond hill":120,vaughan:120,ajax:145,pickering:145,"north york":130,scarborough:135,etobicoke:145,oshawa:155,whitby:150,bowmanville:170,clarington:175,newcastle:175,cobourg:210,"port hope":200,barrie:65,collingwood:15,"owen sound":50 },
@@ -977,7 +977,7 @@ var RIVER_CONFIG = {
   'Saugeen River — Headwaters & Upper Tributaries': {
     season:'standard',
     gauge:'02FC016', gaugeName:'Saugeen River above Durham',
-    sweetMin:8, sweetMax:25, flowLow:2, flowHigh:50,
+    sweetMin:2.5, sweetMax:8.5, flowLow:0.4, flowHigh:19,
     lat:44.100, lng:-80.750,
     loc:'Rocky Saugeen, North Saugeen, South Saugeen and Beatty Saugeen, above Hanover',
     driveTime:{'toronto':145,'north york':130,'scarborough':140,'etobicoke':135,'markham':130,'richmond hill':125,'vaughan':120,'ajax':160,'pickering':155,'mississauga':140,'brampton':110,'oakville':125,'burlington':130,'milton':105,'hamilton':130,'guelph':85,'cambridge':100,'kitchener':85,'waterloo':80,'orangeville':65,'oshawa':170,'whitby':165,'bowmanville':185,'clarington':195,'newcastle':195,'cobourg':230,'port hope':220,'barrie':100,'collingwood':70,'owen sound':60},
@@ -1025,7 +1025,7 @@ var RIVER_CONFIG = {
   'Sixteen Mile Creek — Lower Reaches & Oakville Harbour': {
     season:'all-year',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
-    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    sweetMin:0.9, sweetMax:2.5, flowLow:0.2, flowHigh:4.5,
     lat:43.440, lng:-79.672,
     loc:'Lake Ontario mouth to Lakeshore Road (Oakville Harbour)',
     driveTime:{'toronto':20,'north york':25,'scarborough':30,'etobicoke':20,'markham':30,'richmond hill':30,'vaughan':30,'ajax':40,'pickering':35,'mississauga':20,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':15,'guelph':30,'cambridge':30,'kitchener':40,'waterloo':40,'orangeville':35,'oshawa':45,'whitby':40,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':75,'port hope':70,'barrie':60,'collingwood':70,'owen sound':90},
@@ -1041,7 +1041,7 @@ var RIVER_CONFIG = {
   'Sixteen Mile Creek — Middle Reaches & Main Valley': {
     season:'extended',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
-    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    sweetMin:0.8, sweetMax:1.9, flowLow:0.2, flowHigh:4,
     lat:43.470, lng:-79.685,
     loc:'Rebecca Street to Dundas Street (Lions Valley Park, central Oakville)',
     driveTime:{'toronto':30,'north york':30,'scarborough':35,'etobicoke':20,'markham':35,'richmond hill':40,'vaughan':35,'ajax':45,'pickering':45,'mississauga':25,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':20,'guelph':30,'cambridge':40,'kitchener':45,'waterloo':45,'orangeville':40,'oshawa':55,'whitby':55,'bowmanville':65,'clarington':70,'newcastle':70,'cobourg':95,'port hope':90,'barrie':70,'collingwood':85,'owen sound':110},
@@ -1059,7 +1059,7 @@ var RIVER_CONFIG = {
     // headwaters are above it and carry their own Oct 1 closure.
     season:'extended',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
-    sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
+    sweetMin:0.8, sweetMax:1.9, flowLow:0.2, flowHigh:4,
     lat:43.530, lng:-79.750,
     loc:'North of Highway 407: West Branch, cold-water trout habitat',
     driveTime:{'toronto':45,'north york':45,'scarborough':55,'etobicoke':35,'markham':55,'richmond hill':55,'vaughan':50,'ajax':75,'pickering':70,'mississauga':35,'brampton':25,'oakville':10,'burlington':25,'milton':15,'hamilton':35,'guelph':45,'cambridge':55,'kitchener':70,'waterloo':70,'orangeville':55,'oshawa':90,'whitby':85,'bowmanville':105,'clarington':115,'newcastle':115,'cobourg':150,'port hope':140,'barrie':105,'collingwood':130,'owen sound':170},
@@ -1087,7 +1087,7 @@ var RIVER_CONFIG = {
   'Rouge River — Marsh & Mouth (Lake Ontario)': {
     season:'all-year',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
-    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    sweetMin:1, sweetMax:2, flowLow:0.5, flowHigh:9.5,
     lat:43.803, lng:-79.134,
     loc:'Lake Ontario mouth (Rouge Beach, Pickering / Scarborough)',
     driveTime:{'toronto':30,'north york':30,'scarborough':10,'etobicoke':50,'markham':20,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':75,'brampton':65,'oakville':65,'burlington':85,'milton':75,'hamilton':95,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':45,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':90,'collingwood':130,'owen sound':185},
@@ -1103,7 +1103,7 @@ var RIVER_CONFIG = {
   'Rouge River — Mid-Section (Rouge National Urban Park)': {
     season:'extended',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
-    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:15,
+    sweetMin:0.8, sweetMax:1.7, flowLow:0.4, flowHigh:8,
     lat:43.835, lng:-79.142,
     loc:'Highway 2 (Kingston Road) north through Rouge National Urban Park and Toronto Zoo',
     driveTime:{'toronto':35,'north york':30,'scarborough':15,'etobicoke':50,'markham':15,'richmond hill':30,'vaughan':40,'ajax':10,'pickering':5,'mississauga':80,'brampton':65,'oakville':65,'burlington':85,'milton':80,'hamilton':100,'guelph':105,'cambridge':120,'kitchener':130,'waterloo':130,'orangeville':85,'oshawa':25,'whitby':20,'bowmanville':40,'clarington':50,'newcastle':50,'cobourg':90,'port hope':75,'barrie':85,'collingwood':125,'owen sound':185},
@@ -1120,7 +1120,7 @@ var RIVER_CONFIG = {
   'Rouge River — Upper & Milne Dam (Markham)': {
     season:'standard',
     gauge:'02HC022', gaugeName:'Rouge River near Markham',
-    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    sweetMin:0.7, sweetMax:1.8, flowLow:0.4, flowHigh:9.5,
     lat:43.880, lng:-79.250,
     loc:'Northern tributaries and Milne Dam Conservation Park (Markham)',
     driveTime:{'toronto':35,'north york':25,'scarborough':15,'etobicoke':50,'markham':10,'richmond hill':20,'vaughan':30,'ajax':20,'pickering':15,'mississauga':75,'brampton':55,'oakville':65,'burlington':85,'milton':70,'hamilton':95,'guelph':100,'cambridge':115,'kitchener':125,'waterloo':125,'orangeville':75,'oshawa':35,'whitby':30,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':100,'port hope':85,'barrie':75,'collingwood':115,'owen sound':175},
@@ -1136,7 +1136,7 @@ var RIVER_CONFIG = {
   'Wilmot Creek — Mouth & Marsh (Lake Ontario)': {
     season:'all-year',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
-    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    sweetMin:0.9, sweetMax:1.7, flowLow:0.5, flowHigh:3.5,
     lat:43.890, lng:-78.594,
     loc:'Sir Samuel Wilmot Nature Area (Lake Ontario mouth, Cobbledick Road)',
     driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':110,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':180,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
@@ -1151,7 +1151,7 @@ var RIVER_CONFIG = {
   'Wilmot Creek — Lower River (to CN Rail Tracks)': {
     season:'all-year',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
-    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    sweetMin:0.9, sweetMax:1.7, flowLow:0.5, flowHigh:3.5,
     lat:43.900, lng:-78.592,
     loc:'Mouth to the CN railway tracks: gravel runs and holding pools',
     driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':115,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':185,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
@@ -1167,7 +1167,7 @@ var RIVER_CONFIG = {
   'Wilmot Creek — Middle Section (Hwy 401 to Hwy 2)': {
     season:'extended',
     gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
-    sweetMin:1, sweetMax:4, flowLow:0.2, flowHigh:8,
+    sweetMin:0.7, sweetMax:1.4, flowLow:0.4, flowHigh:2.5,
     lat:43.915, lng:-78.585,
     loc:'Newcastle: wooded corridor with riffles and holding pools',
     driveTime:{'toronto':80,'north york':80,'scarborough':65,'etobicoke':100,'markham':70,'richmond hill':80,'vaughan':90,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':115,'burlington':130,'milton':125,'hamilton':145,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':185,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':25,'barrie':115,'collingwood':165,'owen sound':225},
@@ -1181,8 +1181,8 @@ var RIVER_CONFIG = {
   },
   'Wilmot Creek — Upper Watershed & Orono Crown Lands': {
     season:'standard',
-    gauge:'02HD009', gaugeName:'Wilmot Creek near Newcastle',
-    sweetMin:0.5, sweetMax:3, flowLow:0.1, flowHigh:6,
+    gauge:'02HD021', gaugeName:'Wilmot Creek near Leskard',
+    sweetMin:0.3, sweetMax:0.5, flowLow:0.2, flowHigh:0.6,
     lat:43.960, lng:-78.575,
     loc:'North of Highway 2: Orono Crown Lands, cold-water headwaters',
     driveTime:{'toronto':85,'north york':85,'scarborough':65,'etobicoke':105,'markham':70,'richmond hill':80,'vaughan':90,'ajax':45,'pickering':50,'mississauga':130,'brampton':115,'oakville':115,'burlington':135,'milton':130,'hamilton':145,'guelph':160,'cambridge':175,'kitchener':185,'waterloo':185,'orangeville':135,'oshawa':30,'whitby':35,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':35,'port hope':25,'barrie':115,'collingwood':160,'owen sound':225},
@@ -1198,7 +1198,7 @@ var RIVER_CONFIG = {
   'Bowmanville Creek — River Mouth & Piers': {
     season:'all-year',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
-    sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
+    sweetMin:1.1, sweetMax:2, flowLow:0.6, flowHigh:5,
     lat:43.893, lng:-78.685,
     loc:'Lake Ontario mouth · Darlington / Bowmanville Marina',
     driveTime:{'toronto':70,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':35,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':115,'hamilton':135,'guelph':145,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
@@ -1214,7 +1214,7 @@ var RIVER_CONFIG = {
   'Lower Bowmanville Creek': {
     season:'all-year',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
-    sweetMin:1, sweetMax:8, flowLow:0.3, flowHigh:15,
+    sweetMin:1.1, sweetMax:2, flowLow:0.6, flowHigh:5,
     lat:43.900, lng:-78.685,
     loc:'Lake Ontario to Baseline Road',
     driveTime:{'toronto':70,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':35,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':120,'hamilton':135,'guelph':145,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
@@ -1230,7 +1230,7 @@ var RIVER_CONFIG = {
   'Middle Bowmanville Creek (Fish Ladder)': {
     season:'extended',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
-    sweetMin:1, sweetMax:6, flowLow:0.3, flowHigh:12,
+    sweetMin:0.9, sweetMax:1.7, flowLow:0.6, flowHigh:3.5,
     lat:43.907, lng:-78.683,
     loc:'Baseline Road to Goodyear / Vanstone Dam (Fish Ladder)',
     driveTime:{'toronto':75,'north york':70,'scarborough':55,'etobicoke':90,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':40,'mississauga':120,'brampton':105,'oakville':105,'burlington':125,'milton':120,'hamilton':135,'guelph':150,'cambridge':160,'kitchener':170,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':10,'newcastle':10,'cobourg':45,'port hope':35,'barrie':110,'collingwood':155,'owen sound':220},
@@ -1246,7 +1246,7 @@ var RIVER_CONFIG = {
   'Upper Bowmanville Creek': {
     season:'standard',
     gauge:'02HD006', gaugeName:'Bowmanville Creek at Bowmanville',
-    sweetMin:0.5, sweetMax:4, flowLow:0.1, flowHigh:8,
+    sweetMin:0.8, sweetMax:1.8, flowLow:0.6, flowHigh:3.5,
     lat:43.930, lng:-78.680,
     loc:'Above Goodyear Dam to Oak Ridges Moraine headwaters',
     driveTime:{'toronto':75,'north york':70,'scarborough':55,'etobicoke':95,'markham':60,'richmond hill':70,'vaughan':80,'ajax':30,'pickering':40,'mississauga':120,'brampton':110,'oakville':110,'burlington':125,'milton':120,'hamilton':135,'guelph':150,'cambridge':165,'kitchener':175,'waterloo':175,'orangeville':125,'oshawa':15,'whitby':25,'bowmanville':5,'clarington':5,'newcastle':10,'cobourg':45,'port hope':35,'barrie':105,'collingwood':155,'owen sound':215},
@@ -1262,8 +1262,8 @@ var RIVER_CONFIG = {
   },
   'Speed River — Upper (Above Guelph Lake)': {
     season:'standard',
-    gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
-    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    gauge:'02GA040', gaugeName:'Speed River near Armstrong Mills',
+    sweetMin:1.2, sweetMax:3, flowLow:0.1, flowHigh:7,
     lat:43.640, lng:-80.220,
     loc:'Wellington County rural reaches flowing into Guelph Lake reservoir',
     driveTime:{'toronto':85,'north york':80,'scarborough':90,'etobicoke':75,'markham':85,'richmond hill':80,'vaughan':75,'ajax':110,'pickering':105,'mississauga':75,'brampton':45,'oakville':55,'burlington':55,'milton':35,'hamilton':55,'guelph':15,'cambridge':35,'kitchener':35,'waterloo':35,'orangeville':35,'oshawa':125,'whitby':120,'bowmanville':140,'clarington':150,'newcastle':150,'cobourg':190,'port hope':175,'barrie':105,'collingwood':105,'owen sound':130},
@@ -1305,7 +1305,7 @@ var RIVER_CONFIG = {
   'Eramosa River — Upper Headwaters (Above Rockwood)': {
     season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
-    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:8,
+    sweetMin:1.6, sweetMax:4, flowLow:0.4, flowHigh:8,
     lat:43.615, lng:-80.148,
     loc:'Above Rockwood to the headwaters: cold water, road bridge access',
     driveTime:{'toronto':80,'north york':70,'scarborough':85,'etobicoke':65,'markham':80,'richmond hill':75,'vaughan':70,'ajax':105,'pickering':100,'mississauga':70,'brampton':40,'oakville':45,'burlington':50,'milton':25,'hamilton':50,'guelph':15,'cambridge':35,'kitchener':35,'waterloo':40,'orangeville':40,'oshawa':120,'whitby':115,'bowmanville':135,'clarington':145,'newcastle':145,'cobourg':185,'port hope':170,'barrie':105,'collingwood':110,'owen sound':140},
@@ -1321,7 +1321,7 @@ var RIVER_CONFIG = {
   'Eramosa River — Mid-Section (Rockwood to Eden Mills)': {
     season:'standard',
     gauge:'02GA029', gaugeName:'Eramosa River above Guelph',
-    sweetMin:1, sweetMax:5, flowLow:0.2, flowHigh:10,
+    sweetMin:1.6, sweetMax:4, flowLow:0.4, flowHigh:8,
     lat:43.595, lng:-80.195,
     loc:'Rockwood Conservation Area to Eden Mills: limestone bluffs and glacial potholes',
     driveTime:{'toronto':85,'north york':75,'scarborough':85,'etobicoke':70,'markham':85,'richmond hill':80,'vaughan':75,'ajax':110,'pickering':105,'mississauga':75,'brampton':45,'oakville':50,'burlington':50,'milton':30,'hamilton':50,'guelph':10,'cambridge':30,'kitchener':30,'waterloo':35,'orangeville':40,'oshawa':125,'whitby':120,'bowmanville':140,'clarington':150,'newcastle':150,'cobourg':190,'port hope':175,'barrie':110,'collingwood':115,'owen sound':140},
@@ -1353,7 +1353,7 @@ var RIVER_CONFIG = {
   "Lower Don River (Lake to Eglinton)": {
     season:'all-year',
     gauge:"02HC024", gaugeName:"Don River at Todmorden",
-    sweetMin:2.5, sweetMax:8, flowLow:1.5, flowHigh:20,
+    sweetMin:1.9, sweetMax:3.5, flowLow:1.4, flowHigh:16,
     lat:43.690, lng:-79.358,
     loc:"Lake Ontario to Eglinton Avenue: Todmorden Mills, Crothers Woods and E.T. Seton Park",
     driveTime:{ toronto:15,mississauga:35,brampton:40,oakville:40,burlington:55,milton:50,hamilton:65,guelph:80,cambridge:90,kitchener:100,waterloo:100,orangeville:70,markham:25,"richmond hill":30,vaughan:30,ajax:35,pickering:30,"north york":15,scarborough:20,etobicoke:25,oshawa:50,whitby:45,bowmanville:65,clarington:70,newcastle:70,cobourg:105,"port hope":95,barrie:90,collingwood:125,"owen sound":175 },
@@ -1370,7 +1370,7 @@ var RIVER_CONFIG = {
   "Upper Don River (Eglinton to Hwy 407)": {
     season:'extended',
     gauge:"02HC024", gaugeName:"Don River at Todmorden",
-    sweetMin:2.5, sweetMax:8, flowLow:1.5, flowHigh:20,
+    sweetMin:1.7, sweetMax:3, flowLow:1.4, flowHigh:15,
     lat:43.726, lng:-79.343,
     loc:"Eglinton Avenue to Highway 407: Sunnybrook Park on the West Don, Charles Sauriol on the East Don",
     driveTime:{ toronto:20,mississauga:35,brampton:35,oakville:40,burlington:55,milton:50,hamilton:65,guelph:80,cambridge:90,kitchener:100,waterloo:100,orangeville:65,markham:20,"richmond hill":25,vaughan:25,ajax:35,pickering:30,"north york":10,scarborough:20,etobicoke:25,oshawa:50,whitby:45,bowmanville:65,clarington:70,newcastle:70,cobourg:105,"port hope":95,barrie:85,collingwood:120,"owen sound":170 },
@@ -1385,8 +1385,8 @@ var RIVER_CONFIG = {
   },
   'Black Creek — Upper Reaches (Vaughan to North York)': {
     season:'standard',
-    gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
-    sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
+    gauge:'02HC027', gaugeName:'Black Creek near Weston',
+    sweetMin:0.3, sweetMax:0.8, flowLow:0.1, flowHigh:5.5,
     lat:43.760, lng:-79.490,
     loc:'North of Finch Avenue: Downsview, York University area, naturalized ravines',
     driveTime:{'toronto':25,'north york':10,'scarborough':20,'etobicoke':25,'markham':20,'richmond hill':20,'vaughan':15,'ajax':45,'pickering':40,'mississauga':50,'brampton':30,'oakville':40,'burlington':60,'milton':45,'hamilton':70,'guelph':75,'cambridge':90,'kitchener':100,'waterloo':100,'orangeville':55,'oshawa':60,'whitby':50,'bowmanville':75,'clarington':85,'newcastle':85,'cobourg':120,'port hope':110,'barrie':80,'collingwood':115,'owen sound':165},
@@ -1414,8 +1414,8 @@ var RIVER_CONFIG = {
   'Black Creek — Lower Watershed & Humber Confluence': {
     // The all-year rule covers the Humber main stem below Eglinton, not its tributaries.
     season:'standard',
-    gauge:'02HC025', gaugeName:'Humber River at Elder Mills',
-    sweetMin:1, sweetMax:6, flowLow:0.2, flowHigh:12,
+    gauge:'02HC027', gaugeName:'Black Creek near Weston',
+    sweetMin:0.3, sweetMax:0.8, flowLow:0.1, flowHigh:5.5,
     lat:43.670, lng:-79.500,
     loc:'South of Eglinton Avenue: Smythe Park to the Humber River junction, Etobicoke',
     driveTime:{'toronto':20,'north york':15,'scarborough':25,'etobicoke':15,'markham':30,'richmond hill':30,'vaughan':25,'ajax':50,'pickering':45,'mississauga':40,'brampton':30,'oakville':30,'burlington':50,'milton':40,'hamilton':60,'guelph':70,'cambridge':85,'kitchener':95,'waterloo':95,'orangeville':60,'oshawa':65,'whitby':55,'bowmanville':80,'clarington':85,'newcastle':90,'cobourg':125,'port hope':115,'barrie':90,'collingwood':120,'owen sound':170},
