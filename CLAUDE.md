@@ -278,7 +278,9 @@ Merged recently:
   refreshed by the hourly cron (a third of the gauges each hour) so page views never call Open-Meteo. 22 of 27 gauges;
   no estimate for Grand below Shand Dam, Beaver near Vandeleur, Wilmot (both gauges) and Bowmanville (they didn't beat
   "flow stays as it is"). App: flow card and summary tile only (`fetchFlowForecastDay()`, `renderFlowEstimate()`); days 1
-  to 2 show a number and range, days 3 to 7 a range and band. The Conditions rating for future dates still leaves flow out.
+  to 2 show a number and range, days 3 to 7 a range and band. On days 1 to 2 the estimate can pull the Conditions pill
+  (and so the drive verdict) down, never up, and the pill then reads "Potentially tough/marginal" (TJ, 2026-10-24):
+  `rateWithFlowEstimate()` and `confidenceWord()` in the core, used by the pill and the staging card's re-rate.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -386,8 +388,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
    the Reddit thread.
 
-13. **Flow ranges and forecast (done 2026-10-24, see Current state).** Open: should a high or blown-out estimate pull
-   down the Conditions rating on days 1 to 2 (asked TJ)? Should the weekly email use the estimate (it would need the
+13. **Flow ranges and forecast (done 2026-10-24, see Current state).** Open: should the weekly email use the estimate (it would need the
    forecast from KV, not new calls)? A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
    toward "flow stays as it is". Refit yearly. TJ to delete the throwaway branch `claude/flowlab-data`.
 

@@ -475,7 +475,11 @@ function renderStagingCard(sectionName, weather) {
     // is known — buildTopPick already ran synchronously before this promise resolved.
     (function(){
       // Staging strength, with the same flow cap as the pill once the fish are in the river
-      var _newScore = conditionsScore(null, getRiverConfig(selectedRiver), window._pillFlow, null, null, pct, window._stagingInLake);
+      var _cfgRe = getRiverConfig(selectedRiver);
+      var _reRate = window._pillFlow != null
+        ? { score: conditionsScore(null, _cfgRe, window._pillFlow, null, null, pct, window._stagingInLake), potential: false }
+        : rateWithFlowEstimate(function(f){ return conditionsScore(null, _cfgRe, f, null, null, pct, window._stagingInLake); }, window._flowEst);
+      var _newScore = _reRate.score;
 
       // Headline: if this was a slow-season salmon target and staging turned out Fair/Strong,
       // rewrite the headline to point at the staging opportunity instead of the stale "slow" copy.
@@ -504,7 +508,7 @@ function renderStagingCard(sectionName, weather) {
       var _confEl2 = document.getElementById('tp-confidence');
       if (_confEl2) {
         var _conf2 = scoreToConfidence(_newScore);
-        _confEl2.textContent = 'Conditions: ' + _conf2.word;
+        _confEl2.textContent = 'Conditions: ' + confidenceWord(_conf2, _reRate.potential);
         _confEl2.className = 'tp-confidence ' + _conf2.cls;
       }
 
@@ -4361,15 +4365,21 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
     }
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
-    window._pillFlow = flow; // the staging card's re-rate uses the same flow
-    _topScore = conditionsScore(_topScore, getRiverConfig(selectedRiver), flow, wt, cloudPct, window._stagingPct, window._stagingInLake);
+    // A future date has no reading; days 1 to 2 use the flow estimate, which can only pull the rating down.
+    var _cfgPill = getRiverConfig(selectedRiver), _baseScore = _topScore;
+    var _rate = flow != null
+      ? { score: conditionsScore(_baseScore, _cfgPill, flow, wt, cloudPct, window._stagingPct, window._stagingInLake), potential: false, flow: flow }
+      : rateWithFlowEstimate(function(f){ return conditionsScore(_baseScore, _cfgPill, f, wt, cloudPct, window._stagingPct, window._stagingInLake); }, window._flowEst);
+    window._pillFlow = flow; // the staging card's re-rate uses the same live flow (or the same estimate rule)
+    _topScore = _rate.score;
     var _conf = scoreToConfidence(_topScore);
     if (_sectionClosed) {
       _confEl.textContent = 'Closed to fishing';
       _confEl.className = 'tp-confidence conf-tough';
     } else {
-      _confEl.textContent = 'Conditions: ' + _conf.word;
+      _confEl.textContent = 'Conditions: ' + confidenceWord(_conf, _rate.potential);
       _confEl.className = 'tp-confidence ' + _conf.cls;
+      _confEl.title = _rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '';
     }
     _confEl.style.display = 'inline-block';
   }
