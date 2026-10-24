@@ -2,7 +2,8 @@
 // Cloudflare Pages Function — handles /credit-river/{species} routes
 
 // ── ROUTE TABLE ──────────────────────────────────────────────────────────────
-// gauge: the Lower Credit uses Streetsville (02HB029), NOT Cataract (02HB001).
+// gauge: the Lower Credit uses Streetsville (02HB029), the Middle Credit Norval (02HB025), the Upper Credit Cataract (02HB001).
+// Sweet spots match RIVER_CONFIG in assets/conditions-core.js (flow 4 to 5 days after a rain bump, 2015 to 2025).
 // Cataract sits ~40 km upstream near the Forks and does not represent lower-river flow.
 // access: must never list a reach that is closed during that species' season — see
 // `closures` below, which is surfaced on the page.
@@ -12,7 +13,7 @@ const SSR_ROUTES = {
     species: 'Brown Trout',
     section: 'Upper Credit River',
     gauge: '02HB001', gaugeName: 'Credit River near Cataract',
-    sweetMin: 5, sweetMax: 15,
+    sweetMin: 1.4, sweetMax: 2.8,
     lat: 43.870, lng: -80.010,
     seasonMonths: [3, 8],   // April – September (season closes Sept 30)
     access: [
@@ -28,8 +29,8 @@ const SSR_ROUTES = {
     river: 'Credit River',
     species: 'Rainbow Trout',
     section: 'Middle Credit River',
-    gauge: '02HB001', gaugeName: 'Credit River near Cataract',
-    sweetMin: 5, sweetMax: 20,
+    gauge: '02HB025', gaugeName: 'Credit River at Norval',
+    sweetMin: 4.5, sweetMax: 9,
     lat: 43.660, lng: -79.880,
     seasonMonths: [2, 4],   // March – May
     access: [
@@ -45,7 +46,7 @@ const SSR_ROUTES = {
     species: 'Brook Trout',
     section: 'Upper Credit River',
     gauge: '02HB001', gaugeName: 'Credit River near Cataract',
-    sweetMin: 3, sweetMax: 10,
+    sweetMin: 1.4, sweetMax: 2.8,
     lat: 43.870, lng: -80.010,
     seasonMonths: [3, 8],
     access: [
@@ -61,7 +62,7 @@ const SSR_ROUTES = {
     species: 'Steelhead',
     section: 'Lower Credit River',
     gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 8, sweetMax: 25,
+    sweetMin: 6, sweetMax: 13,
     lat: 43.560, lng: -79.720,
     seasonMonths: [8, 4],   // September – May
     access: [
@@ -78,7 +79,7 @@ const SSR_ROUTES = {
     species: 'Chinook Salmon',
     section: 'Lower Credit River',
     gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 5, sweetMax: 30,
+    sweetMin: 6, sweetMax: 13,
     lat: 43.560, lng: -79.720,
     seasonMonths: [7, 10],  // August – November
     access: [
@@ -94,7 +95,7 @@ const SSR_ROUTES = {
     species: 'Coho Salmon',
     section: 'Lower Credit River',
     gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 5, sweetMax: 30,
+    sweetMin: 6, sweetMax: 13,
     lat: 43.560, lng: -79.720,
     seasonMonths: [8, 10],
     access: [

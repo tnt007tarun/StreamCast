@@ -254,6 +254,15 @@ Merged recently:
   zone: the new Port Lands mouth is left out (TJ). Run timing a little after the Humber (TJ), only stated in spot text.
   Added to the run-alert lists (app, signup box, Worker). Also fixed the closed-reach headline repeating its reason.
 
+- **Credit flow ranges** (TJ, 2026-10-24): set from 2015 to 2025 daily flow. Sweet spot = flow 4 to 5 days after a rain
+  bump (middle half of 50+ bumps, TJ's rule of thumb), too low = driest 5% of fishing-season days, blown out = top 3%.
+  Upper (Cataract 02HB001) 1.4 to 2.8, low 0.9, high 5; Middle moved to **Norval 02HB025** (its spots are at or below
+  Norval; Cataract at the Forks carries a third of the water and sat under 5 on 95% of days) 4.5 to 9, low 2.5, high
+  19; Lower (Streetsville 02HB029) 6 to 13, low 3, high 30. Same numbers in `RIVERS_DB`, `DEFAULT_RIVERS` and the
+  Credit SSR routes. The flow bar's axis end now shows the river's `flowHigh` (it said "20+" for every river). Flow only,
+  no water level line (TJ). Method and the 7-day flow forecast backtest: project doc
+  `claude/flow-forecast-research-2026-10-24.md`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -358,6 +367,11 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    Sunnybrook Park is north of Eglinton (so `extended` is right), and steelhead stay off the list (extremely rare and
    unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
    the Reddit thread.
+
+13. **Flow ranges for the other gauges (2026-10-24):** run the Credit method on every gauge in the app and send TJ one
+   table to mark up before changing anything. Then the 7-day flow forecast (approved by TJ): per-gauge linear rain
+   model, Worker endpoint, number and range for days 1 to 2, range after that. Data pulls need GitHub Actions (cloud
+   sessions can't reach archive-api or flood-api). TJ to delete the throwaway branch `claude/flowlab-data`.
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
