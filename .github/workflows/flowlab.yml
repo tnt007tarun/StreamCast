@@ -1,0 +1,17 @@
+# Throwaway: pulls research data for the flow forecast, commits it to this branch. Not for main.
+name: flowlab-data
+on:
+  push:
+    branches: [claude/flowlab-data]
+    paths: [tools/flowlab_fetch.py, .github/workflows/flowlab.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/flowlab_fetch.py
+      - run: |
+          git config user.name "flowlab-bot"; git config user.email "noreply@github.com"
+          git add data/flowlab && git commit -m "flowlab data" && git push
