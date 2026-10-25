@@ -3025,6 +3025,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     text-underline-offset:.18em; text-decoration-color:var(--fern); }
   #results .tp-goto-link em { color:var(--fern); }
   #results .tp-goto-link:hover { text-decoration-color:var(--amber); }
+  #results .tp-upnote { margin:.55rem 0 0; font-size:.86rem; line-height:1.45; color:var(--sage); }
+  #results .tp-upnote a { color:var(--fern); text-decoration:underline; white-space:nowrap; }
   #results .tp-goto-btn { display:inline-flex; align-items:center; gap:var(--sp-2); margin:var(--sp-1) 0 var(--sp-3);
     background:var(--fern); color:var(--white); border:0; border-radius:var(--r-md);
     padding:var(--sp-3) var(--sp-4); font:600 var(--fs-base)/1.2 var(--font-body); cursor:pointer; }

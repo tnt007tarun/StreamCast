@@ -1497,6 +1497,15 @@ function goToSection(section, speciesName) {
   renderResults();
 }
 document.addEventListener('click', function(e) {
+  var st = e.target.closest && e.target.closest('[data-stay-section]');
+  if (st) {
+    e.preventDefault();
+    var from = st.getAttribute('data-stay-section');
+    (window._upstreamStay || (window._upstreamStay = {}))[from] = true;
+    track('Upstream Stay Clicked', { river: from });
+    goToSection(from, null);
+    return;
+  }
   var t = e.target.closest && e.target.closest('[data-goto-section]');
   if (!t) return;
   e.preventDefault();
@@ -1640,6 +1649,12 @@ function goBack(){
     selectedRiver      = _river; // URLSearchParams.get() already decodes
     // Links can carry more than one species: ?species=steelhead,chinook
     selectedSpecies    = _sp ? _sp.split(',').map(function(x){ return x.trim(); }).filter(Boolean) : [];
+    // The banner name comes from this label. Deep links (emails, guide buttons) left it at "Any Species"
+    // while the photo and headline showed the species from the link.
+    var _lblMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',steelhead:'Steelhead',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+    selectedSpecies = selectedSpecies.filter(function(k){ return _lblMap[k]; });
+    selectedSpeciesLabel = selectedSpecies.length === 0 ? 'Any Species'
+      : selectedSpecies.map(function(k){ return _lblMap[k]; }).join(' + ');
     selectedTechFamily = [];
     appMode            = 'expert';
 
@@ -2369,7 +2384,45 @@ function showTab(tab,btn){
 }
 
 // ── RENDER RESULTS ────────────────────────────────────────────────────────────
+// In upstreamWindowOn() dates, open the furthest reach upstream that is open on the trip date for a
+// migratory species the reader is after, instead of suggesting it in the headline (TJ, 2026-10-25; was
+// "suggest, not switch" from 2026-10-16). Runs before anything renders, so there's one render. Not when
+// the fish are still in the lake off this mouth (the staging headline), and not after "Stay on ...".
+// (Deep links render before this line runs, so the stay list lives on window.)
+function autoUpstreamSection() {
+  var stay = window._upstreamStay || (window._upstreamStay = {});
+  var here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+  var cfg = here ? getRiverConfig(here) : null;
+  if (!cfg || stay[here]) return null;
+  var trip = getTripDateStr();
+  var mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'];
+  if (isLakeRunBrownSection(here)) mig.push('Brown Trout');
+  var names = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',steelhead:'Steelhead',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var picked = (selectedSpecies || []).map(function(k){ return names[k]; }).filter(Boolean);
+  var want = picked.length ? picked
+    : (cfg.species || []).filter(function(n){ var q = getCurrentSeason(n, trip, here); return q && q.quality !== 'absent'; });
+  want = want.filter(function(n){ return mig.indexOf(n) !== -1; });
+  if (!want.length) return null;
+  // Same test as the hero's staging headline: a picked run species that is out of season, at a mouth.
+  if (picked.length === 1 && STAGING_ZONES[here] && /Chinook|Coho|Steelhead/.test(picked[0])) {
+    var sw = getCurrentSeason(picked[0], trip);
+    if (sw && sw.quality === 'absent') return null;
+  }
+  var up = furthestUpstreamOpen(here, want, trip);
+  return up ? { from: here, section: up.section, species: up.species } : null;
+}
+
 async function renderResults(){
+  window._upstreamFrom = null;
+  var _au = autoUpstreamSection();
+  if (_au) {
+    var _loc = null;
+    (nearbyRivers || []).forEach(function(r) { if (!_loc && r.name === _au.section && r.loc) _loc = r.loc; });
+    selectedRiver = _au.section + (_loc ? ', ' + _loc.replace(/–/g, '-') : '');
+    selectedRiverIsAuto = false;
+    window._upstreamFrom = _au;
+    track('Upstream Auto Switch', { from: _au.from, river: _au.section });
+  }
   var cfg = getRiverConfig(selectedRiver);
   trackRiverViewed();
   // Keep the header in sync on every path. Deep links set selectedRiver and call
@@ -4280,15 +4333,29 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     _want = _want.filter(function(n){ return _mig.indexOf(n) !== -1; });
     var _up = furthestUpstreamOpen(_here, _want, _trip);
     if (!_up) return;
-    // Same river, so name the reach only.
-    var _upLink = '<a href="#river" class="tp-goto-link" data-goto-section="' + _up.section + '" data-goto-species="'
-      + _up.species + '"><em>' + secShort(_up.section) + '</em></a>';
-    headlineHtml += ' The fish are pushing upstream now, and the ' + _upLink
-      + ' is open on your date. Start there if you can.';
-    _goto = { section: _up.section, species: _up.species };
+    // Usually autoUpstreamSection() has already moved the reader up. This is left for "Stay on ..."
+    // (or a species mix it didn't cover): the button only, so the headline stays short (TJ, 2026-10-25).
+    _goto = { section: _up.section, species: targetName ? _up.species : '' };
   })();
 
   document.getElementById('tp-headline').innerHTML = headlineHtml;
+  // After an automatic move upstream: one small line saying so, with a way back.
+  (function() {
+    var _hd = document.getElementById('tp-headline');
+    var _note = document.getElementById('tp-upnote');
+    if (!_note) {
+      _note = document.createElement('p');
+      _note.id = 'tp-upnote';
+      _note.className = 'tp-upnote';
+      _hd.parentNode.insertBefore(_note, _hd.nextSibling);
+    }
+    var _u = window._upstreamFrom;
+    _note.hidden = !_u;
+    if (_u) {
+      _note.innerHTML = 'Moved up from the ' + secShort(_u.from) + ' because the fish are pushing upstream. '
+        + '<a href="#river" class="tp-stay-link" data-stay-section="' + _u.from + '">Stay on the ' + secShort(_u.from) + '</a>';
+    }
+  })();
   (function() {
     var _btn = document.getElementById('tp-goto');
     if (!_btn) {

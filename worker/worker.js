@@ -1,5 +1,6 @@
 import { runWeekly, weeklyInterests } from "./weekly.js";
 import { updateRunConditions, RUNCOND_KEY } from "./runconditions.js";
+import { brandEmail } from "./emailshell.js";
 import { fetchFlowForecast, refreshForecasts, servedForecast, FORECAST_KEY, FLOW_MODEL } from "./flowforecast.js";
 var ARCGIS_BASE = "https://services1.arcgis.com/TJH5KDher0W13Kgo/arcgis/rest/services/FishStockingDataForRecreationalPurposes/FeatureServer/0/query";
 var EC_FLOW_BASE = "https://api.weather.gc.ca/collections/hydrometric-realtime/items";
@@ -905,15 +906,15 @@ async function handleSubscribe(request, env) {
       to: [clean],
       subject,
       headers: listHeaders(links),
-      html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a2e3a">
-            <h2 style="color:#1e7a6e">You're set.</h2>
+      html: brandEmail(`<div>
+            <h2 style="color:#1e7a6e;margin-top:0">You're set.</h2>
             ${lead}
             <p>Check conditions any time at <a href="${SITE}" style="color:#1e7a6e">herefishyfishy.ca</a>.</p>
             <p>One question for you: which river do you fish most, and what are you after? Hit reply and tell me.
             It goes straight to me and helps decide what I add next.</p>
             <p>TJ</p>
             ${emailFooter(links, "You're getting this because you signed up at herefishyfishy.ca.")}
-          </div>`
+          </div>`, { preheader: subject, site: SITE })
     });
     return jsonResponse({ ok: true });
   } catch (err) {
@@ -963,14 +964,14 @@ async function sendTripEmails(env, ctx) {
       to: [trip.email],
       subject: "Today on the " + secDisplay(trip.section).split(" \xB7 ")[0] + ": your trip conditions",
       headers: listHeaders(links),
-      html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a2e3a">
-            <h2 style="color:#1e7a6e">${escapeHtml(secDisplay(trip.section))}</h2>
+      html: brandEmail(`<div>
+            <h2 style="color:#1e7a6e;margin-top:0">${escapeHtml(secDisplay(trip.section))}</h2>
             <p>Conditions for your trip today, ${escapeHtml(prettyDate(trip.date))}:</p>
             <ul style="padding-left:18px;line-height:1.6">${rows.join("")}</ul>
             <p><a href="${link}" style="display:inline-block;background:#1e7a6e;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px">See where to stand and what to fish</a></p>
             <p style="font-size:13px;color:#555">Check posted signs and the regulations where you fish.</p>
             ${emailFooter(links, "You asked for this email when you planned a trip at herefishyfishy.ca.")}
-          </div>`
+          </div>`, { preheader: "Flow and weather for your trip today", site: SITE })
     });
     if (sent.ok) { trip.sentAt = (new Date()).toISOString(); await env.SUBSCRIBERS.put(k.name, JSON.stringify(trip), { expirationTtl: 3 * 86400 }); }
   }
@@ -1082,8 +1083,8 @@ async function handleAlertApprove(request, env, url) {
     for (const e of recipients.slice(i, i + 100)) {
       const links = await unsubLinks(env, e);
       batch.push({ from: FROM, to: [e], subject: d.subject, headers: listHeaders(links), topic_id: TOPIC_RUN,
-        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a2e3a">${d.html}
-          ${emailFooter(links, "You're getting this because you asked for run alerts for the " + d.river + " at herefishyfishy.ca.")}</div>` });
+        html: brandEmail(`<div>${d.html}
+          ${emailFooter(links, "You're getting this because you asked for run alerts for the " + d.river + " at herefishyfishy.ca.")}</div>`, { preheader: d.subject, site: SITE }) });
     }
     const r = await resend(env, "/emails/batch", "POST", batch);
     if (r.ok) {
