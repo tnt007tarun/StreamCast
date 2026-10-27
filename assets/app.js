@@ -1201,7 +1201,10 @@ function driveKeyFor(locKey) {
   return LOC_KEY_ALIASES[locKey] || locKey;
 }
 
-function getRivers(locKey, maxMinutes) {
+// The 6 nearest sections within maxMinutes (the chips), or `limit` of them. "Find my best spot"
+// ranks every section in range: capped at 6, a Toronto steelhead or coho search could find only
+// rivers without that fish nearby and fall back to one of them.
+function getRivers(locKey, maxMinutes, limit) {
   var max = maxMinutes || 180;
   var dk = driveKeyFor(locKey);
   return RIVERS_DB
@@ -1217,7 +1220,7 @@ function getRivers(locKey, maxMinutes) {
     var tB = (b.times && (b.times[locKey]||b.times[dk])) || (cfgB && cfgB.driveTime && (cfgB.driveTime[locKey]||cfgB.driveTime[dk])) || 999;
     return tA - tB;
   })
-    .slice(0, 6);
+    .slice(0, limit || 6);
 }
 
 function fmtDrive(m) {
@@ -1286,8 +1289,13 @@ function updateRivers(val) {
     });
   });
 
-  selectedRiver=rivers[0].name+(rivers[0].loc?", "+rivers[0].loc.replace(/\u2013/g,"-"):"");
-  setResHeader(selectedRiver);
+  // Don't change the pick once results are showing: a late city change (the 280 ms timer above)
+  // used to land after "Find my best spot" and swap its pick for the nearest river.
+  var _resEl = document.getElementById("results");
+  if (!(_resEl && _resEl.classList.contains("active"))) {
+    selectedRiver=rivers[0].name+(rivers[0].loc?", "+rivers[0].loc.replace(/\u2013/g,"-"):"");
+    setResHeader(selectedRiver);
+  }
   sec.style.display="block";
 }
 
@@ -1310,6 +1318,15 @@ function goToResults(){
   })();
   // Resolve location — needed in both beginner and expert mode
   var locInp = document.getElementById('loc-input-field');
+  // On iPhone the city picker's change event can fire as the button is tapped, so its 280 ms
+  // nearby-rivers timer used to run after this search and reset the pick to the nearest river
+  // (Lower Don for a Toronto steelhead search, TJ 2026-10-27). Run it now instead.
+  if (inputTimer) {
+    clearTimeout(inputTimer); inputTimer = null;
+    var _keepRiver = selectedRiver;   // expert mode keeps the river it picked
+    if (locInp) updateRivers(locInp.value);
+    if (appMode === 'expert') selectedRiver = _keepRiver;
+  }
   var locKey = resolveLocation(locInp ? locInp.value : '');
   if (locKey) window._beginnerLocKey = locKey;
   if (!locKey && appMode !== 'expert') {
@@ -1360,7 +1377,7 @@ function goToResults(){
   if(appMode === 'beginner') { // always re-rank in beginner mode to respect species selection
     selectedRiver = null; // reset so a stale value from a previous search can't bleed through
       var _maxMin = parseInt((document.getElementById('travel-range')||{value:'60'}).value)||60;
-    var rivers = getRivers(locKey, _maxMin);
+    var rivers = getRivers(locKey, _maxMin, Infinity);
     rivers.forEach(function(r){ var _cfg=RIVER_CONFIG[r.name]; var _dk3=driveKeyFor(locKey); r.driveTime=(r.times&&(r.times[locKey]||r.times[_dk3]))||(_cfg&&_cfg.driveTime&&(_cfg.driveTime[locKey]||_cfg.driveTime[_dk3]))||60; });
     var _tripDate = document.getElementById('trip-date').value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
     var ranked = rankRivers(rivers, selectedSpecies, _tripDate);

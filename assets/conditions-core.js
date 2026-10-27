@@ -623,7 +623,7 @@ var RIVER_CONFIG = {
     // Streetsville dam partway up it, so the access list stays below Streetsville —
     // Erindale and the river mouth — and never sends anyone to water salmon cannot reach.
     loc:"Norval Dam to Port Credit / Lake Ontario",
-    driveTime:{ toronto:20,mississauga:15,brampton:10,oakville:5,burlington:15,milton:10,hamilton:20,guelph:25,cambridge:30,kitchener:35,waterloo:40,orangeville:30,markham:25,"richmond hill":25,vaughan:20,ajax:35,pickering:30,"north york":20,scarborough:25,etobicoke:15,oshawa:40,whitby:40,bowmanville:50,clarington:55,newcastle:55,cobourg:75,"port hope":70,barrie:50,collingwood:60,"owen sound":80 },
+    driveTime:{ toronto:30,mississauga:15,brampton:10,oakville:5,burlington:15,milton:10,hamilton:20,guelph:25,cambridge:30,kitchener:35,waterloo:40,orangeville:30,markham:25,"richmond hill":25,vaughan:20,ajax:35,pickering:30,"north york":20,scarborough:25,etobicoke:15,oshawa:40,whitby:40,bowmanville:50,clarington:55,newcastle:55,cobourg:75,"port hope":70,barrie:50,collingwood:60,"owen sound":80 },
     species:["Steelhead","Chinook Salmon","Coho Salmon","Brown Trout"],
     active:true,
     regs:[{rule:"Check the regulations. This section has specific rules around the river mouth",icon:"📋"}],
@@ -1028,7 +1028,7 @@ var RIVER_CONFIG = {
     sweetMin:0.9, sweetMax:2.5, flowLow:0.2, flowHigh:4.5,
     lat:43.440, lng:-79.672,
     loc:'Lake Ontario mouth to Lakeshore Road (Oakville Harbour)',
-    driveTime:{'toronto':20,'north york':25,'scarborough':30,'etobicoke':20,'markham':30,'richmond hill':30,'vaughan':30,'ajax':40,'pickering':35,'mississauga':20,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':15,'guelph':30,'cambridge':30,'kitchener':40,'waterloo':40,'orangeville':35,'oshawa':45,'whitby':40,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':75,'port hope':70,'barrie':60,'collingwood':70,'owen sound':90},
+    driveTime:{'toronto':35,'north york':25,'scarborough':30,'etobicoke':20,'markham':30,'richmond hill':30,'vaughan':30,'ajax':40,'pickering':35,'mississauga':20,'brampton':20,'oakville':5,'burlington':10,'milton':10,'hamilton':15,'guelph':30,'cambridge':30,'kitchener':40,'waterloo':40,'orangeville':35,'oshawa':45,'whitby':40,'bowmanville':50,'clarington':60,'newcastle':60,'cobourg':75,'port hope':70,'barrie':60,'collingwood':70,'owen sound':90},
     species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 16. Lakeshore Rd (Hwy 2) to Lake Ontario: open all year.',icon:'📋'}],
