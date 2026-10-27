@@ -373,8 +373,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
    in the repo are done (#73); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.
    TJ tested unsubscribe end to end (2026-10-15). The footer address is a placeholder ("Shawnmarr Rd, Mississauga ON",
-   no street number); TJ will swap in a virtual mailbox address. Still to do: an Umami review with the new events, and
-   a better signup offer (the bar promises "alerts when conditions are excellent", which aren't sent yet).
+   no street number); TJ will swap in a virtual mailbox address. Still to do: an Umami review with the new events.
+   (The old "alerts when conditions are excellent" promise is gone since #86; the weekly email is that alert, live 2026-10-27.)
    Every welcome email now ends with a reply question (which river, what species), signed TJ (2026-10-21). Replies
    reach TJ's Gmail through hello@. Use them to test the personas (fall run chaser, steelhead regular, trout
    explorer, newer angler) before building for any of them.
@@ -426,8 +426,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
    scores Good or better on open water, at most once a week, preview-only to TJ for 2 to 3 weeks first. Plan:
    project doc `claude/weekly-alerts-plan-2026-10-20.md`. Step 1 (shared core) is #89; the email itself is #90.
-   Both merged and deployed 2026-10-21 (first preview Thursday Oct 22, 5 pm). After 2 to 3 weeks TJ sets
-   `ALERTS_MODE = "live"` in `wrangler.toml`; merging that deploys it. The "Weekly subscriber report" task should count `weekly`
+   Both merged and deployed 2026-10-21 (first preview Thursday Oct 22, 5 pm). **Live since 2026-10-27** (TJ, after one
+   preview): `ALERTS_MODE = "live"`; TJ gets a copy of each run in the preview layout. Recipients are people with a
+   `weekly` interest or the old notify-bar `rivers` + `species` (they signed up for conditions alerts). Signup page
+   `/weekly/` (noindex), linked from the monthly outlook with `?email={{{EMAIL}}}`. The "Weekly subscriber report" task should count `weekly`
    interests too. Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
    comes from run strength at the mouth (lake temperature, wind, cloud) and ignores river flow; only the email's rain
    cap catches blowouts. Decided (TJ, 2026-10-23): flow counts once fish are in the river. `conditionsScore()` caps a
