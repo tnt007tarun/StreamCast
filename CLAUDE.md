@@ -291,6 +291,15 @@ Merged recently:
   - Every subscriber email (welcome, trip day, run alert, weekly) goes through `brandEmail()` in `worker/emailshell.js`:
     navy header with the trout icon and the name as text, white card, preheader. Previews to TJ stay plain.
 
+- **Find my best spot fixes** (TJ, 2026-10-27; a Toronto steelhead search landed on the Lower Don, which has no
+  steelhead). (1) Race: the city picker refreshes the nearby list on a 280 ms timer and set `selectedRiver` to the
+  nearest river; on iPhone the change fires as the button is tapped, so the timer ran after the search and replaced
+  its pick. `goToResults()` now runs a pending timer first, and `updateRivers()` leaves the pick alone while results
+  show. (2) The search ranked only the 6 nearest sections (`getRivers()` cap), so a species missing from those 6 fell
+  back to a river without it; it now ranks every section in the travel range (`getRivers(loc, max, Infinity)`; chips
+  still show 6). (3) Toronto drive times: Lower Credit 20 to 30 min, Sixteen Mile lower 20 to 35 (Oakville harbour), so
+  Toronto steelhead lands on the Humber. Checked 448 city/species/date cases: no pick misses an open option in range.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
