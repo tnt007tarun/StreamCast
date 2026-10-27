@@ -5,6 +5,7 @@
 // anything else (the default) sends TJ one preview of what each subscriber would get.
 // Plan: claude.ai project doc claude/weekly-alerts-plan-2026-10-20.md.
 import '../assets/conditions-core.js';
+import { brandEmail } from './emailshell.js';
 
 const C = globalThis.HFF_CORE;
 
@@ -199,8 +200,8 @@ export function weeklySubject(combos) {
 export function renderEmail(combos, today, site, footerHtml) {
   const flowNote = combos.some((c) => c.days.some((d) => d.flow != null))
     ? ' Flow is today’s gauge reading. Rain can change it fast, so check the app before you go.' : '';
-  return `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a2e3a">
-    <p>Your Thursday look at the next six days.${flowNote}</p>
+  return `<div>
+    <p style="margin-top:0">Your Thursday look at the next six days.${flowNote}</p>
     ${combos.map((c) => renderCombo(c, today, site)).join('')}
     ${footerHtml}
   </div>`;
@@ -269,8 +270,9 @@ export async function runWeekly(env, deps, opts = {}) {
       for (const o of toSend.slice(i, i + 100)) {
         const links = await deps.unsubLinks(o.email);
         batch.push({ from: deps.FROM, to: [o.email], subject: weeklySubject(o.passing), headers: deps.listHeaders(links),
-          html: renderEmail(o.passing, today, deps.SITE, deps.emailFooter(links,
-            "You're getting this because you asked for a Thursday heads-up on these rivers at herefishyfishy.ca.")) });
+          html: brandEmail(renderEmail(o.passing, today, deps.SITE, deps.emailFooter(links,
+            "You're getting this because you asked for a Thursday heads-up on these rivers at herefishyfishy.ca.")),
+            { preheader: weeklySubject(o.passing), site: deps.SITE }) });
       }
       const ok = await deps.sendBatch(batch, 'weekly-' + today + '-' + i);
       if (ok) {

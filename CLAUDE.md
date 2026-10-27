@@ -281,13 +281,23 @@ Merged recently:
   to 2 show a number and range, days 3 to 7 a range and band. On days 1 to 2 the estimate can pull the Conditions pill
   (and so the drive verdict) down, never up, and the pill then reads "Potentially tough/marginal" (TJ, 2026-10-24):
   `rateWithFlowEstimate()` and `confidenceWord()` in the core, used by the pill and the staging card's re-rate.
+- **Upstream switch, species label, email look** (TJ, 2026-10-25):
+  - In `upstreamWindowOn()` dates the app now **opens** the furthest open reach upstream instead of suggesting it
+    (`autoUpstreamSection()`, run at the top of `renderResults()` so there's one render). Not when the staging
+    headline would apply (picked run species out of season at a mouth). A small line under the headline says it moved,
+    with "Stay on the …" (`_upstreamStay`, per page load). The hero's upstream pass no longer adds a sentence to the
+    headline (it had grown too long); after "Stay" it only shows the See button. Replaces "suggest, not switch" (2026-10-16).
+  - Deep links (emails, guide buttons) now set `selectedSpeciesLabel`, so the banner says "Steelhead", not "Any Species".
+  - Every subscriber email (welcome, trip day, run alert, weekly) goes through `brandEmail()` in `worker/emailshell.js`:
+    navy header with the trout icon and the name as text, white card, preheader. Previews to TJ stay plain.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
   `window._viewSource`), `Notify Bar Shown`, `Notify Bar Dismissed`, `Email Signup {river, species}`,
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
-  `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`. Click events come from one delegated listener
+  `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
+  `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
@@ -367,7 +377,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    River confluence is open all year but sits in a `standard` section (over-cautious).
 7. **TJ's upstream rule:** after Sep 30, fish as far upstream as the regs allow ("above the CNR if legal, else
    below it"); TJ extended it to the trout opener through May (2026-10-16). Across reaches this is done (upstream pass
-   and Best for species, 2026-10-16). Within a reach the pick still only knows "not
+   and Best for species, 2026-10-16; the app switches reaches itself since 2026-10-25). Within a reach the pick still only knows "not
    the mouth" (the `mouth` flag); a per-spot upstream order for `access[]` is still skipped (TJ, 2026-10-13).
 8. **Migratory data decisions (2026-10-13):** lake-run browns on the Rouge are minimal (TJ), so the Rouge mouth
    doesn't list them; the Rouge Mid-Section keeps Brown Trout (TJ). Steelhead at Hogs Falls above Kimberley: one
