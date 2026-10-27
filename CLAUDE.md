@@ -151,7 +151,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-24)
+## Current state (updated 2026-10-26)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -290,6 +290,11 @@ Merged recently:
   - Deep links (emails, guide buttons) now set `selectedSpeciesLabel`, so the banner says "Steelhead", not "Any Species".
   - Every subscriber email (welcome, trip day, run alert, weekly) goes through `brandEmail()` in `worker/emailshell.js`:
     navy header with the trout icon and the name as text, white card, preheader. Previews to TJ stay plain.
+- **First monthly outlook sent** (November 2026, 2026-10-26, Resend broadcast): best steelhead dates by region from
+  AccuWeather plus the flow rule, TJ's note and photo (`images/email/outlook-2026-11-steelhead.jpg`, #103). Layout is now
+  `tools/outlook-template.html` (#105): one column, no fixed widths, because the two-column version ran wider than the
+  screen in Gmail on Android (TJ checked the new one in Gmail). The "Monthly outlook draft" task copies it each month.
+  #104: contacts are opted out of the outlook topic unless they ticked it (the topic's opt-out default).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
