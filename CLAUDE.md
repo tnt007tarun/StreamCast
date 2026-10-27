@@ -308,6 +308,11 @@ Merged recently:
   Lower Don 20, Upper Don 40.
   Upper Grand (Fergus/Elora): Toronto 60, Guelph 20, Kitchener 20 (TJ); the rest of its row estimated (the old row
   was copied from a Mississauga-area river and put the Grand 25 min from Toronto).
+  Drive time audit (2026-10-27): every active section's times checked against straight-line distance (x1.3 road
+  factor, 75 km/h). Corrected the rows that were far off: Lower Credit from Hamilton, Markham, Vaughan, Ajax, Pickering,
+  Oshawa; Upper Credit from Milton, Guelph, Pickering, Clarington; Sixteen Mile lower from Pickering, Whitby,
+  Bowmanville; Ganaraska from Whitby and Bowmanville (Bowmanville was 10 min); Upper Ganaraska from Cobourg (was 40).
+  Estimates, for TJ to adjust. The Upper Don (Toronto 40, TJ's number) is the only remaining flag.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
