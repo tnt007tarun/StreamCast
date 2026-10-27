@@ -421,8 +421,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 12. **Don River follow-ups (2026-10-21):** confirmed by TJ: the flow sweet spot (2.5 to 8 m3/s at Todmorden; replaced 2026-10-24 by prime 1.9 to 3.5 lower, 1.7 to 3 upper) is fine,
    Sunnybrook Park is north of Eglinton (so `extended` is right), and steelhead stay off the list (extremely rare and
-   unreliable on the Don). Later: the Port Lands mouth once fishing there is clear, a `/rivers/don/` page, and a reply on
-   the Reddit thread.
+   unreliable on the Don). `/rivers/don/` added 2026-10-27 (factual, no photo yet; not in the homepage `GUIDES` cards until TJ has a
+   photo). Later: the Port Lands mouth once fishing there is clear, and TJ's reply on the Reddit thread (draft given in chat).
 
 13. **Flow ranges and forecast (done 2026-10-24, see Current state).** Open: should the weekly email use the estimate (it would need the
    forecast from KV, not new calls)? A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
