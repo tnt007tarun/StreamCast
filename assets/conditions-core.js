@@ -511,7 +511,9 @@ var RIVER_CONFIG = {
     sweetMin:8, sweetMax:12, flowLow:3, flowHigh:25,
     lat:43.700, lng:-80.280,
     loc:"Below Shand Dam through Elora Gorge to West Montrose",
-    driveTime:{toronto:25,mississauga:15,brampton:20,oakville:15,burlington:25,milton:15,hamilton:35,guelph:45,cambridge:55,kitchener:65,waterloo:70,orangeville:50,'north york':30,scarborough:35,etobicoke:15,markham:45,'richmond hill':45,vaughan:40,ajax:65,pickering:60,oshawa:80,whitby:75,bowmanville:95,clarington:105,newcastle:105,cobourg:145,'port hope':130,barrie:100,collingwood:120,'owen sound':160},
+    // Fergus/Elora. Toronto, Guelph and Kitchener from TJ (2026-10-27); the rest estimated from those. The old row
+    // was copied from a Mississauga-area river (Toronto 25 min, Kitchener 65).
+    driveTime:{toronto:60,mississauga:55,brampton:50,oakville:60,burlington:60,milton:45,hamilton:60,guelph:20,cambridge:30,kitchener:20,waterloo:20,orangeville:35,'north york':60,scarborough:75,etobicoke:55,markham:70,'richmond hill':65,vaughan:55,ajax:85,pickering:80,oshawa:95,whitby:90,bowmanville:105,clarington:110,newcastle:110,cobourg:140,'port hope':135,barrie:80,collingwood:85,'owen sound':90},
     species:["Brown Trout","Rainbow Trout"],
     active:true,
     regs:[],
