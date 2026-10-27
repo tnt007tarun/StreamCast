@@ -50,7 +50,9 @@ on open water. No good day, no email. At most one weekly email per person per 6 
   that day or the day before caps a day at Marginal. During a run, flow outside the sweet spot caps a day at Marginal
   and outside `flowLow`/`flowHigh` at Tough, unless the fish are still staging in the lake (TJ, 2026-10-23).
 - `ALERTS_MODE` in `wrangler.toml`: `preview` (default) emails TJ what each subscriber would get and why others get
-  nothing; `live` sends. Each run logs to `CACHE` `alert:weekly:log:<date>`.
+  nothing; `live` sends, then emails TJ a copy in the same layout. Live since 2026-10-27 (TJ). Each run logs to `CACHE`
+  `alert:weekly:log:<date>`. Signup page: `/weekly/` (prefills `?email=`, `?river=`, `?species=`; the monthly outlook links
+  to it with `{{{EMAIL}}}`).
 - Limits: up to 12 reaches a run (free plan: 50 outbound requests per run). Resend free plan: 100 emails a day.
 - Run alerts are capped the same way: at most one per person per 6 days (`lastRunAlertAt`). Someone with run alerts
   and a weekly reach can get one of each in a week. Trip-day emails and the monthly outlook don't count.

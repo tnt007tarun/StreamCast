@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.ico?v=3" sizes="48x48">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<link rel="manifest" href="/site.webmanifest">
+<title>Thursday conditions email | HereFishyFishy</title>
+<meta name="description" content="A Thursday email when the next six days look good on your river.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<!-- data-exclude-search keeps the email address in the link out of Umami -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c" data-domains="herefishyfishy.ca,www.herefishyfishy.ca" data-exclude-search="true"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;
+--paper:#fbf9f5;--fern:#1e7a6e;--alert:#a63d2f}
+body{background:var(--paper);color:var(--text);min-height:100vh;display:flex;flex-direction:column;
+font:400 18px/1.65 Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+-webkit-font-smoothing:antialiased}
+a{color:var(--fern)}
+.wrap{max-width:560px;margin:0 auto;padding:0 1.4rem;width:100%}
+.mast{border-bottom:1px solid var(--rule)}
+.mast .wrap{padding-top:1.1rem;padding-bottom:1.1rem}
+.mast a{font:italic 700 1.05rem/1 Charter,Georgia,serif;color:var(--ink);text-decoration:none}
+main{flex:1;padding:2.5rem 0 4rem}
+h1{font:700 2rem/1.2 Charter,'Iowan Old Style',Georgia,serif;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
+p{margin-bottom:1rem}
+label{display:block;font:600 .72rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.12em;
+text-transform:uppercase;color:var(--fern);margin:1.1rem 0 .45rem}
+input,select{width:100%;font:400 1rem/1.3 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);
+background:#fff;border:1px solid var(--rule);border-radius:8px;padding:.8rem .9rem;-webkit-appearance:none;appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:2.2rem}
+button{font:600 1rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--fern);color:#fff;
+border:0;border-radius:8px;padding:.95rem 1.4rem;cursor:pointer;margin-top:1.4rem;width:100%}
+button:disabled{opacity:.6;cursor:default}
+.err{color:var(--alert);font-size:.95rem;margin-top:1rem}
+.small{font-size:.9rem;color:var(--muted)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="mast"><div class="wrap"><a href="/">HereFishyFishy</a></div></header>
+
+<main><div class="wrap">
+
+  <section id="ask">
+    <h1>Thursday conditions email</h1>
+    <p>Every Thursday we check the next six days on your river. When at least one day looks good on open water, we email you which days and why. No good days, no email.</p>
+    <form id="form" novalidate>
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" placeholder="your@email.com" required>
+      <label for="river">River</label>
+      <select id="river" required></select>
+      <label for="species">Fish</label>
+      <select id="species" required></select>
+      <button type="submit" id="go">Send me the Thursday email</button>
+      <p class="err" id="err" role="alert" hidden></p>
+    </form>
+    <p class="small" style="margin-top:1.2rem">At most one a week. One click to unsubscribe from any email.</p>
+  </section>
+
+  <section id="done" hidden>
+    <h1>You&rsquo;re in</h1>
+    <p>Your first Thursday email comes when the coming days look good for <strong id="done-what"></strong>. We sent a confirmation to <strong id="done-email" style="overflow-wrap:anywhere"></strong>.</p>
+    <p><a id="done-link" href="/">Check today&rsquo;s conditions there</a></p>
+  </section>
+
+</div></main>
+
+<script src="/assets/conditions-core.js"></script>
+<script>
+(function () {
+  var PROXY = 'https://streamcast-proxy.tnt-tarun.workers.dev';
+  var KEY = { 'Brown Trout': 'brown', 'Rainbow Trout': 'rainbow', 'Brook Trout': 'brook',
+    'Steelhead': 'steelhead', 'Chinook Salmon': 'chinook', 'Coho Salmon': 'coho' };
+  var q = new URLSearchParams(location.search);
+  var $ = function (id) { return document.getElementById(id); };
+  function track(name, props) { try { if (window.umami) window.umami.track(name, props); } catch (e) {} }
+
+  // Reaches people can follow: active sections, grouped by river, shown with secLabel().
+  var river = $('river'), species = $('species');
+  var pick = document.createElement('option'); pick.value = ''; pick.textContent = 'Choose a river'; river.appendChild(pick);
+  Object.keys(RIVER_SECTIONS).sort().forEach(function (parent) {
+    var g = document.createElement('optgroup'); g.label = parent;
+    RIVER_SECTIONS[parent].forEach(function (s) {
+      var cfg = RIVER_CONFIG[s];
+      if (!cfg || cfg.active === false || !cfg.species || !cfg.species.length) return;
+      var o = document.createElement('option'); o.value = s; o.textContent = secShort(s); g.appendChild(o);
+    });
+    if (g.children.length) river.appendChild(g);
+  });
+  function fillSpecies(want) {
+    var cfg = RIVER_CONFIG[river.value] || {};
+    species.innerHTML = '';
+    (cfg.species || []).forEach(function (n) {
+      var o = document.createElement('option'); o.value = n; o.textContent = n; species.appendChild(o);
+    });
+    if (want) { for (var i = 0; i < species.options.length; i++) if (species.options[i].value === want) species.selectedIndex = i; }
+  }
+  // Prefill from the link: ?email= (the monthly outlook passes it), ?river=<section key>, ?species=<key or name>
+  $('email').value = (q.get('email') || '').trim();
+  var wantRiver = (q.get('river') || '').split(',')[0].trim();
+  if (wantRiver && RIVER_CONFIG[wantRiver]) river.value = wantRiver;
+  var sp = (q.get('species') || '').trim(), wantSp = null;
+  Object.keys(KEY).forEach(function (n) { if (KEY[n] === sp.toLowerCase() || n === sp) wantSp = n; });
+  fillSpecies(wantSp);
+  // Keep the fish from the link when the reader picks a river that has it
+  river.addEventListener('change', function () { fillSpecies(species.value || wantSp); });
+
+  var form = $('form'), btn = $('go'), err = $('err');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('email').value.trim();
+    err.hidden = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter your email address.'; err.hidden = false; return; }
+    if (!river.value || !species.value) { err.textContent = 'Please choose a river and a fish.'; err.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Signing you up…';
+    var w = { section: river.value, species: species.value };
+    fetch(PROXY + '/subscribe', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, kind: 'weekly', weekly: w })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!(r.ok && d && d.ok === true)) throw new Error('subscribe ' + r.status);
+        $('done-what').textContent = w.species + ' on ' + secLabel(w.section);
+        $('done-email').textContent = email;
+        $('done-link').href = '/?river=' + encodeURIComponent(w.section) + '&species=' + (KEY[w.species] || '');
+        $('ask').hidden = true; $('done').hidden = false;
+        track('Email Signup', { river: w.section, species: w.species, offer: 'weekly', page: 'weekly' });
+      });
+    }).catch(function (e2) {
+      btn.disabled = false; btn.textContent = 'Try again';
+      err.textContent = 'That didn’t go through. Please try again in a minute.'; err.hidden = false;
+      track('Email Signup Failed', { river: w.section, reason: String(e2 && e2.message || e2), offer: 'weekly', page: 'weekly' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -12,3 +12,6 @@
 /unsubscribe/*
   X-Robots-Tag: noindex, nofollow
   Referrer-Policy: no-referrer
+/weekly/*
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer

@@ -280,6 +280,11 @@ export async function runWeekly(env, deps, opts = {}) {
         for (const o of toSend.slice(i, i + 100)) { o.rec.lastWeeklyAt = new Date().toISOString(); await deps.putRecord(o.rec); }
       } else log.errors.push('send batch ' + i);
     }
+    // TJ gets a copy of what went out (TJ, 2026-10-27), the same layout as the preview.
+    if (out.length) {
+      try { await deps.sendOwner('Weekly email sent: ' + log.sent + ' of ' + out.length + ' got one', renderPreview(out, combos, today, deps.SITE, true)); }
+      catch (e) { log.errors.push('owner copy'); }
+    }
   } else {
     log.previewed = out.filter((o) => o.passing.length && !o.capped).length;
     if (out.length) await deps.sendOwner('Weekly email preview: ' + log.previewed + ' of ' + out.length + ' would get one', renderPreview(out, combos, today, deps.SITE));
@@ -291,17 +296,18 @@ export async function runWeekly(env, deps, opts = {}) {
 }
 
 // TJ's preview: every combo's six days, then what each subscriber would get (or why not).
-export function renderPreview(out, combos, today, site) {
+export function renderPreview(out, combos, today, site, live) {
   const rows = Object.values(combos).map((c) => `<tr><td style="padding:2px 6px">${esc(c.species)}, ${esc(C.secLabel(c.section))}</td>` +
     c.days.map((d) => `<td style="padding:2px 6px;${d.good ? 'font-weight:bold;color:#1e7a6e' : 'color:#777'}">${esc(d.date.slice(5))} ${esc(d.missing ? 'no data' : d.word)}${d.rainy ? ' (rain)' : ''}</td>`).join('') + '</tr>').join('');
   const people = out.map((o) => {
     const head = `<p style="margin:16px 0 4px"><strong>${esc(o.email)}</strong>: `;
     if (!o.passing.length) return head + 'nothing this week (no Good day on open water).</p>';
     if (o.capped) return head + 'skipped, already had a weekly email in the last 6 days.</p>';
-    return head + `would get "${esc(weeklySubject(o.passing))}"</p><div style="border:1px solid #e2ded6;padding:8px 12px">` +
+    return head + `${live ? 'got' : 'would get'} "${esc(weeklySubject(o.passing))}"</p><div style="border:1px solid #e2ded6;padding:8px 12px">` +
       renderEmail(o.passing, today, site, '<p style="color:#999;font-size:11px">[unsubscribe footer]</p>') + '</div>';
   }).join('');
   return `<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#1a2e3a">
-    <p><strong>Preview only. Nothing was sent to subscribers.</strong> Set ALERTS_MODE to live on the Worker to start sending.</p>
+    <p>${live ? '<strong>Sent.</strong> Your copy of what went out this week.'
+      : '<strong>Preview only. Nothing was sent to subscribers.</strong> Set ALERTS_MODE to live on the Worker to start sending.'}</p>
     <table style="font-size:12px;border-collapse:collapse">${rows}</table>${people}</div>`;
 }

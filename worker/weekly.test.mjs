@@ -85,6 +85,8 @@ assert.ok(/date=2026-10-2/.test(html) && /species=steelhead/.test(html), 'button
 assert.ok(!/Saturday, Oct 24: (Good|Excellent)/.test(html), 'washout day not offered');
 assert.ok(/Bring:<\/strong> your centrepin or spinning rod with float gear/.test(html), 'gear matches the hero');
 assert.equal(sent.batches[0][0].subject, 'Good days ahead for Steelhead on Lower Bowmanville Creek');
+assert.equal(sent.owner.length, 1, 'TJ gets a copy in live mode');
+assert.ok(/^Weekly email sent: 1 of 3/.test(sent.owner[0].subject) && /got "Good days ahead/.test(sent.owner[0].html), 'copy says who got what');
 
 // Flow counts once the fish are in the river (TJ, 2026-10-23): too low or blown out is Tough, above prime Marginal.
 // Normal flow below prime is not capped (TJ, 2026-10-24).
