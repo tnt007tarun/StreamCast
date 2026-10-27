@@ -790,9 +790,12 @@ async function getRecord(env, email) {
   if (!raw) return null;
   try { return JSON.parse(raw); } catch (e) { return null; }
 }
-// Create the Resend contact, or switch an existing one back on, and opt it in to the topics asked for.
-async function upsertContact(env, email, topics) {
-  const t = topics.map((id) => ({ id, subscription: "opt_in" }));
+// Create the Resend contact, or switch an existing one back on, opt it in to the topics asked for, and out of
+// the ones listed in optOut. "Monthly outlook" was created with an opt-out default, so a contact who never ticked
+// it still counts as subscribed and gets the broadcast unless it is opted out here (2026-10-26).
+async function upsertContact(env, email, topics, optOut = []) {
+  const t = topics.map((id) => ({ id, subscription: "opt_in" }))
+    .concat(optOut.filter((id) => topics.indexOf(id) === -1).map((id) => ({ id, subscription: "opt_out" })));
   const created = await resend(env, "/contacts", "POST", { email, unsubscribed: false, segments: [{ id: env.RESEND_AUDIENCE_ID }], topics: t });
   if (created.ok) return;
   await resend(env, "/contacts/" + encodeURIComponent(email), "PATCH", { unsubscribed: false });
@@ -874,7 +877,7 @@ async function handleSubscribe(request, env) {
       record.species = Array.isArray(body.species) ? body.species.map(String).slice(0, 6) : record.species || [];
     }
     await env.SUBSCRIBERS.put("sub:" + clean, JSON.stringify(record));
-    await upsertContact(env, clean, topics);
+    await upsertContact(env, clean, topics, record.outlook ? [] : [TOPIC_OUTLOOK]);
     const links = await unsubLinks(env, clean);
     let subject, lead;
     if (kind === "trip") {

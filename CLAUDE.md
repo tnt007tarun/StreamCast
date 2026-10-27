@@ -310,7 +310,10 @@ Merged recently:
 
 ### Email list
 **Interests (2026-10-18).** One list, three things people can ask for, all through the Worker's `/subscribe` (`kind`):
-- `outlook`: monthly outlook. Resend topic "Monthly outlook" (`8acca89a-661a-4607-819c-1290deac79b2`, opt-out default).
+- `outlook`: monthly outlook. Resend topic "Monthly outlook" (`8acca89a-661a-4607-819c-1290deac79b2`, opt-out default,
+  which Resend can't change: a contact who never ticked it still counts as subscribed). So `/subscribe` opts every
+  contact without `outlook: true` out of that topic (2026-10-26), and the broadcast must have Topic = Monthly outlook.
+  The four contacts from before then were opted out by hand; TJ's tnt.tarun@gmail.com is opted in to get a copy.
   Scheduled task "Monthly outlook draft" (26th, 8:54 Toronto) drafts a Resend broadcast (segment General + that topic)
   and emails TJ; TJ edits the "[TJ: add your take]" placeholder and sends from Resend.
 - `run` + `river`: run alerts for one of `RUN_RIVERS` (worker) / `RUN_ALERT_RIVERS` (app), the 14 rivers with
