@@ -304,6 +304,10 @@ Merged recently:
   back to a river without it; it now ranks every section in the travel range (`getRivers(loc, max, Infinity)`; chips
   still show 6). (3) Toronto drive times: Lower Credit 20 to 30 min, Sixteen Mile lower 20 to 35 (Oakville harbour), so
   Toronto steelhead lands on the Humber. Checked 448 city/species/date cases: no pick misses an open option in range.
+  Toronto drive times from TJ (2026-10-27): Lower Humber and Lower-Mid Humber (Old Mill) 10 min, Upper Humber 40,
+  Lower Don 20, Upper Don 40.
+  Upper Grand (Fergus/Elora): Toronto 60, Guelph 20, Kitchener 20 (TJ); the rest of its row estimated (the old row
+  was copied from a Mississauga-area river and put the Grand 25 min from Toronto).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
