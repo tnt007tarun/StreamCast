@@ -5,7 +5,7 @@
 // anything else (the default) sends TJ one preview of what each subscriber would get.
 // Plan: claude.ai project doc claude/weekly-alerts-plan-2026-10-20.md.
 import '../assets/conditions-core.js';
-import { brandEmail } from './emailshell.js';
+import { brandEmail, shareBox } from './emailshell.js';
 
 const C = globalThis.HFF_CORE;
 
@@ -203,6 +203,7 @@ export function renderEmail(combos, today, site, footerHtml) {
   return `<div>
     <p style="margin-top:0">Your Thursday look at the next six days.${flowNote}</p>
     ${combos.map((c) => renderCombo(c, today, site)).join('')}
+    ${shareBox(site)}
     ${footerHtml}
   </div>`;
 }
