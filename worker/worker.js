@@ -1,6 +1,6 @@
 import { runWeekly, weeklyInterests } from "./weekly.js";
 import { updateRunConditions, RUNCOND_KEY } from "./runconditions.js";
-import { brandEmail } from "./emailshell.js";
+import { brandEmail, shareBox } from "./emailshell.js";
 import { fetchFlowForecast, refreshForecasts, servedForecast, FORECAST_KEY, FLOW_MODEL } from "./flowforecast.js";
 var ARCGIS_BASE = "https://services1.arcgis.com/TJH5KDher0W13Kgo/arcgis/rest/services/FishStockingDataForRecreationalPurposes/FeatureServer/0/query";
 var EC_FLOW_BASE = "https://api.weather.gc.ca/collections/hydrometric-realtime/items";
@@ -916,6 +916,7 @@ async function handleSubscribe(request, env) {
             <p>One question for you: which river do you fish most, and what are you after? Hit reply and tell me.
             It goes straight to me and helps decide what I add next.</p>
             <p>TJ</p>
+            ${shareBox(SITE)}
             ${emailFooter(links, "You're getting this because you signed up at herefishyfishy.ca.")}
           </div>`, { preheader: subject, site: SITE })
     });

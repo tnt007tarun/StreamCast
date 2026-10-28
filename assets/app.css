@@ -2077,6 +2077,25 @@ background-size:cover;background-position:center;position:relative}
 @media (max-width: 600px) {
   .hero-sub { display: none; }
 }
+/* "Free / No account / Live river gauges" under the headline (TJ, 2026-10-28). Shown on phones too. */
+.hero-badges {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+}
+.hero-badges li {
+  font: 600 0.78rem/1 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: 0.04em;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(14,42,74,0.14);
+  color: #0e2a4a;
+}
 
 /* ── SITE FOOTER ──────────────────────────────────────────── */
 .site-footer {

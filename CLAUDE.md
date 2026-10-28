@@ -33,7 +33,7 @@ build, and the Cloudflare check on the PR links to it.
 | `images/`, `video/` | Photos (WebP for pages, JPG kept for og:image) and short clips |
 | `worker/` | The `streamcast-proxy` Worker (flow, lake temps, stocking, subscribe, unsubscribe) and its `wrangler.toml`. Not deployed by Pages. See `worker/README.md` |
 | `unsubscribe/` | Unsubscribe page (noindex). Talks to the Worker's `/unsubscribe` |
-| `assets/signup.js` | The one signup box on guide, river, about and home pages (`<div class="hff-signup" data-kind="run|outlook" data-river="...">`) |
+| `assets/signup.js` | The one signup box on guide, river, about and home pages (`<div class="hff-signup" data-kind="run|outlook|weekly" data-river="...">`). From October to April a `run` box offers the weekly steelhead email (`STEELHEAD_REACH`), run alerts as a tick box; the homepage box is `weekly` with river and fish pickers |
 
 The Worker deploys itself: Workers Builds runs `npx -y wrangler@4 deploy` in `worker/` when a merge to `main` touches
 `worker/*` or `assets/conditions-core.js` (since 2026-10-21; other branches upload a preview version only). By hand, deploy
@@ -313,6 +313,20 @@ Merged recently:
   Oshawa; Upper Credit from Milton, Guelph, Pickering, Clarington; Sixteen Mile lower from Pickering, Whitby,
   Bowmanville; Ganaraska from Whitby and Bowmanville (Bowmanville was 10 min); Upper Ganaraska from Cobourg (was 40).
   Estimates, for TJ to adjust. The Upper Don (Toronto 40, TJ's number) is the only remaining flag.
+
+- **Signup boxes, round 2** (TJ, 2026-10-28; mockups approved in chat). Umami, last 30 days: app bar 121 shown, 3 real
+  signups (about 2.5%, sticky-bar average); page boxes 64 seen, 0 signups (embedded-form benchmark about 4%). Most box
+  views: homepage, Humber, salmon-run-timing, Bowmanville. Changes: copy "Stop guessing / Each week, get the best
+  steelhead days on <river>, with where to stand and what to bring. / Picked from live river flow and the week's rain,
+  temperature and cloud forecast. / Send me the best days / Only sent when there's a good day. Free, no account,
+  unsubscribe anytime." From October to April every `run` box (river and guide pages) offers the weekly steelhead email
+  for the river's reach in `STEELHEAD_REACH` (all-year reach where there is one), with "Also send run alerts" (posts
+  `kind: run` plus `weekly`); August and September keep salmon run alerts; the Don keeps run alerts (no steelhead).
+  Homepage box: `data-kind="weekly"`, river and fish pickers (`pickSection()`: open today, then the longest season),
+  "Also send the monthly outlook". Homepage badges under the headline: Free, No account, Live river gauges
+  (`.hero-badges`, shown on phones too). "Fish with a buddy?" box (`shareBox()` in `worker/emailshell.js`) above the
+  footer of the weekly email, the welcome email and `tools/outlook-template.html`. Umami `offer` is now also `weekly`,
+  `weekly+run`, `weekly+outlook`. Judge it on signups per Signup Box Seen, 4 to 6 weeks before and after.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

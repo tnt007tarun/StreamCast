@@ -39,3 +39,13 @@ ${inner}
 </table>
 </td></tr></table></body></html>`;
 }
+
+// "Fish with a buddy?" box above the footer of subscriber emails (TJ, 2026-10-28): one line, a link to the
+// weekly signup page. Forwarded emails are the cheapest way the list grows.
+export function shareBox(site) {
+  const url = (site || 'https://herefishyfishy.ca') + '/weekly/';
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 4px"><tr>
+<td style="background:#eef5f3;border-radius:8px;padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#1a2e3a">
+<strong>Fish with a buddy?</strong> Forward this, or send them <a href="${escAttr(url)}" style="color:${BRAND_TEAL};font-weight:bold">herefishyfishy.ca/weekly</a>.
+</td></tr></table>`;
+}
