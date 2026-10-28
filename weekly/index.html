@@ -7,8 +7,8 @@
 <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
-<title>Thursday conditions email | HereFishyFishy</title>
-<meta name="description" content="A Thursday email when the next six days look good on your river.">
+<title>Best fishing days each week | HereFishyFishy</title>
+<meta name="description" content="Each week, get the best days to fish your river, with where to stand and what to bring.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <!-- data-exclude-search keeps the email address in the link out of Umami -->
@@ -49,8 +49,9 @@ button:disabled{opacity:.6;cursor:default}
 <main><div class="wrap">
 
   <section id="ask">
-    <h1>Thursday conditions email</h1>
-    <p>Every Thursday we check the next six days on your river. When at least one day looks good on open water, we email you which days and why. No good days, no email.</p>
+    <h1>Stop guessing</h1>
+    <p>Each week, get the best days to fish your river, with where to stand and what to bring.</p>
+    <p class="small">Picked from live river flow and the week&rsquo;s rain, temperature and cloud forecast.</p>
     <form id="form" novalidate>
       <label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" placeholder="your@email.com" required>
@@ -58,15 +59,15 @@ button:disabled{opacity:.6;cursor:default}
       <select id="river" required></select>
       <label for="species">Fish</label>
       <select id="species" required></select>
-      <button type="submit" id="go">Send me the Thursday email</button>
+      <button type="submit" id="go">Send me the best days</button>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
-    <p class="small" style="margin-top:1.2rem">At most one a week. One click to unsubscribe from any email.</p>
+    <p class="small" style="margin-top:1.2rem">Only sent when there&rsquo;s a good day. Free, no account, unsubscribe anytime.</p>
   </section>
 
   <section id="done" hidden>
     <h1>You&rsquo;re in</h1>
-    <p>Your first Thursday email comes when the coming days look good for <strong id="done-what"></strong>. We sent a confirmation to <strong id="done-email" style="overflow-wrap:anywhere"></strong>.</p>
+    <p>Your first email comes when the week looks good for <strong id="done-what"></strong>. We sent a confirmation to <strong id="done-email" style="overflow-wrap:anywhere"></strong>.</p>
     <p><a id="done-link" href="/">Check today&rsquo;s conditions there</a></p>
   </section>
 
