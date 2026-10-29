@@ -261,14 +261,31 @@ function seasonClosureFor(cfg, dateStr) {
   };
 }
 
+// Brook trout are not in the Additional Fishing Opportunities that keep lower reaches open
+// after September 30: in Zone 16 and Zone 17 those name Atlantic salmon, brown trout, Pacific
+// salmon and rainbow trout only (MNR 2026 summary, pp. 118 and 128). So brook trout close on
+// September 30 on every reach we cover, whatever the reach's band. (Zone 16's one all-year brook
+// trout water, Bells Lake, isn't a river we list.)
+var SPECIES_SEASON_BAND = { 'Brook Trout': 'standard' };
+function speciesSeasonClosureFor(cfg, speciesName, dateStr) {
+  if (!cfg || !dateStr) return null;
+  var band = SPECIES_SEASON_BAND[speciesName];
+  var own = seasonClosureFor(cfg, dateStr);
+  if (own || !band || (cfg.season || 'standard') === band) return own;
+  var c = seasonClosureFor({ season: band }, dateStr);
+  if (!c) return null;
+  return { band: band, species: speciesName, reopens: c.reopens,
+    reason: speciesName + ' season runs from the fourth Saturday in April to September 30, even where other trout stay open later.' };
+}
+
 // Fishable means all three: the species lives in this section, the section's trout and
-// salmon season is open on the date, and the species is in a good or peak window.
+// salmon season is open on the date for this species, and the species is in a good or peak window.
 // Biological season alone is not enough — resident trout are "in season" in October on
 // reaches where fishing for them closed on September 30.
 function speciesFishableIn(sectionName, speciesName, dateStr) {
   var c = getRiverConfig(sectionName);
   if (!c || !c.species || c.species.indexOf(speciesName) === -1) return false;
-  if (seasonClosureFor(c, dateStr)) return false;
+  if (speciesSeasonClosureFor(c, speciesName, dateStr)) return false;
   if (allAccessClosed(c, dateStr)) return false;
   var s = getCurrentSeason(speciesName, dateStr, sectionName);
   return !!s && (s.quality === 'peak' || s.quality === 'good');
@@ -2728,6 +2745,9 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
   if (seasonClosureFor(cfg, dateStr)) {
     score -= 30;
     warnings.unshift('Season closed on this reach');
+  } else if (targetSpeciesName && hasSpecies && speciesSeasonClosureFor(cfg, targetSpeciesName, dateStr)) {
+    score -= 30;
+    warnings.unshift(targetSpeciesName + ' season closed on this date');
   } else if (allAccessClosed(cfg, dateStr)) {
     score -= 30;
     warnings.unshift('Every access point on this reach is closed on this date');
@@ -2823,6 +2843,7 @@ if (typeof globalThis !== 'undefined') {
     getRiverConfig: getRiverConfig, getRiverRegs: getRiverRegs, getCurrentSeason: getCurrentSeason,
     seasonClosureFor: seasonClosureFor, accessClosureOn: accessClosureOn, isAccessOpen: isAccessOpen,
     allAccessClosed: allAccessClosed, sectionClosedOn: sectionClosedOn, speciesFishableIn: speciesFishableIn,
+    speciesSeasonClosureFor: speciesSeasonClosureFor, SPECIES_SEASON_BAND: SPECIES_SEASON_BAND,
     furthestUpstreamOpen: furthestUpstreamOpen, bestAccessSpot: bestAccessSpot, isLakeRunBrownSection: isLakeRunBrownSection,
     stagingZoneForSection: stagingZoneForSection, computeStagingScore: computeStagingScore, seasonalLakeTempEst: seasonalLakeTempEst,
     getSalmonPhase: getSalmonPhase, getSteelheadPhase: getSteelheadPhase, mouthPreferenceFor: mouthPreferenceFor,

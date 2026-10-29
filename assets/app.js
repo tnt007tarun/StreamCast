@@ -4304,6 +4304,22 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         _goto = { section: _sib, species: targetName };
         return;
       }
+      // The reach is open but this species isn't (brook trout after September 30 on extended and
+      // all-year water: speciesSeasonClosureFor). Say so, and offer the best open species here.
+      var _spClosed = !_closedHere ? speciesSeasonClosureFor(_cfgFull, targetName, _trip) : null;
+      if (_spClosed) {
+        var _alt = null;
+        recommendSpecies(cfg).forEach(function(r) {
+          if (r.name === targetName || !r.seasonal || (r.seasonal.quality !== 'peak' && r.seasonal.quality !== 'good')) return;
+          if (_thermalStress && _TROUT.indexOf(r.name) !== -1) return;
+          if (!_alt || r.score > _alt.score) _alt = r;
+        });
+        headlineHtml = '<em>' + targetName + '</em> season closed September 30 and reopens on the fourth Saturday in April.'
+          + (_alt ? ' <em>' + _alt.name + '</em> are open here. Head to <em>' + spotName + '</em>.'
+                  : ' Nothing else on this river is both open and in season.');
+        window._shownSpeciesName = _alt ? _alt.name : null;
+        return;
+      }
       if (!_closedHere) return; // no better section; the local fallback above is legal
     }
 
@@ -4436,6 +4452,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
   // Confidence badge
   var _sectionClosed = sectionClosedOn(getRiverConfig(selectedRiver), getTripDateStr());
+  // One species picked, and its own season is shut on this open reach (brook trout after Sept 30).
+  var _spClosedPill = (function() {
+    var k = Array.isArray(speciesKey) ? speciesKey : (speciesKey ? [speciesKey] : []);
+    var n = k.length === 1 ? ({brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'})[k[0]] : null;
+    return n && !_sectionClosed && speciesSeasonClosureFor(getRiverConfig(selectedRiver), n, getTripDateStr()) ? n : null;
+  })();
   var _confEl = document.getElementById('tp-confidence');
   if (_confEl) {
     var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
@@ -4459,6 +4481,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _conf = scoreToConfidence(_topScore);
     if (_sectionClosed) {
       _confEl.textContent = 'Closed to fishing';
+      _confEl.className = 'tp-confidence conf-tough';
+    } else if (_spClosedPill) {
+      _confEl.textContent = 'Closed for ' + _spClosedPill;
       _confEl.className = 'tp-confidence conf-tough';
     } else {
       _confEl.textContent = 'Conditions: ' + confidenceWord(_conf, _rate.potential);
@@ -4945,8 +4970,12 @@ function recommendSpecies(cfg) {
     var reasons = [];
     var caveats = [];
 
+    // Closed for this species on an open reach (brook trout after September 30 on extended and
+    // all-year water). A fully closed reach is handled by the closed headline, so leave those alone.
+    var _tripD = getTripDateStr();
+    if (_tripD && cfg && !seasonClosureFor(cfg, _tripD) && speciesSeasonClosureFor(cfg, name, _tripD)) return;
     // Season quality
-    var seasonal = getCurrentSeason(name, getTripDateStr(), cfg && cfg._section);
+    var seasonal = getCurrentSeason(name, _tripD, cfg && cfg._section);
     if (!seasonal || seasonal.quality === 'absent') return; // not in river
     if (seasonal.quality === 'peak')      { score += 10; reasons.push('peak season right now'); }
     else if (seasonal.quality === 'good') { score +=  6; reasons.push('in season'); }
