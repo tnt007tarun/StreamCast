@@ -438,8 +438,12 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    unreliable on the Don). `/rivers/don/` added 2026-10-27 (factual, no photo yet; not in the homepage `GUIDES` cards until TJ has a
    photo). Later: the Port Lands mouth once fishing there is clear, and TJ's reply on the Reddit thread (draft given in chat).
 
-13. **Flow ranges and forecast (done 2026-10-24, see Current state).** Open: should the weekly email use the estimate (it would need the
-   forecast from KV, not new calls)? A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
+13. **Flow ranges and forecast (done 2026-10-24, see Current state).** The weekly email uses the estimate since 2026-10-29
+   (TJ): `deps.flowForecast()` reads KV `flowfc:<gauge>` through `servedForecast()` (no new calls). Fri and Sat go through
+   the app's `rateWithFlowEstimate()` with Thursday's reading as the base, so the estimate can lower a day ("Potentially
+   ..."), never raise it; Sun to Wed keep their rating and the text words the likely band range (`flowWords()`). Gauges
+   with no model (Wilmot, Bowmanville, Grand below Shand, Upper Beaver) still use Thursday's reading. Open for TJ: should
+   an estimate be allowed to lift a day after a blowout (today blown, Saturday back to prime)? It can't yet. A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
    toward "flow stays as it is". Refit yearly. TJ to delete the throwaway branch `claude/flowlab-data`.
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
@@ -448,8 +452,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    Both merged and deployed 2026-10-21 (first preview Thursday Oct 22, 5 pm). **Live since 2026-10-27** (TJ, after one
    preview): `ALERTS_MODE = "live"`; TJ gets a copy of each run in the preview layout. Recipients are people with a
    `weekly` interest or the old notify-bar `rivers` + `species` (they signed up for conditions alerts). Signup page
-   `/weekly/` (noindex), linked from the monthly outlook with `?email={{{EMAIL}}}`. The "Weekly subscriber report" task should count `weekly`
-   interests too. Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
+   `/weekly/` (noindex), linked from the monthly outlook with `?email={{{EMAIL}}}`. The "Weekly subscriber report" task counts `weekly`
+   interests (since 2026-10-21). Known app quirk, now shared by the email: on a migratory reach with a run active, the Conditions word
    comes from run strength at the mouth (lake temperature, wind, cloud) and ignores river flow; only the email's rain
    cap catches blowouts. Decided (TJ, 2026-10-23): flow counts once fish are in the river. `conditionsScore()` caps a
    run day at Marginal outside the sweet spot and Tough outside `flowLow`/`flowHigh`, unless `fishInLake` (staging and

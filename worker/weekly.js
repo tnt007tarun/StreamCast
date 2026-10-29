@@ -83,9 +83,12 @@ export function parseWeather(j) {
 
 // Score every day in the window for one reach and species. Same chain as the app: staging read
 // for migratory fish (stagingSectionFor/stagingRead), else flow, water temperature and sky
-// (scoreDay). There is no flow forecast, so Thursday's gauge reading stands in for every day (the app
-// rates flow only for today); heavy rain caps a day, and so does flow above prime, too low or blown out.
-export function scoreWeek({ section, species, dates, today, wx, flow, liveWater, lakeTemps }) {
+// (scoreDay). Thursday's gauge reading stands in for every day; heavy rain caps a day, and so does flow
+// above prime, too low or blown out. Where the gauge has a flow forecast (`est`, by date, from KV
+// flowfc:<gauge>), days 1 to 2 go through the app's rateWithFlowEstimate(): the estimate can pull the
+// rating down, never up, and the word reads "Potentially ..." (TJ, 2026-10-24 for the app; 2026-10-29 for
+// this email). Later days keep their rating; the email only words their likely flow range.
+export function scoreWeek({ section, species, dates, today, wx, flow, est, liveWater, lakeTemps }) {
   const cfg = C.getRiverConfig(section);
   return dates.map((date) => {
     const d = wx && wx.byDate[date];
@@ -100,15 +103,20 @@ export function scoreWeek({ section, species, dates, today, wx, flow, liveWater,
         staging = C.stagingRead(z, date, /Chinook|Coho/.test(species), species === 'Steelhead', lt, d.cloud, d.windDir, d.windSpd);
       }
     }
-    const r = C.scoreDay({ section, species: [species], date, flow, waterTemp, cloudPct: d.cloud,
+    const dayArgs = { section, species: [species], date, waterTemp, cloudPct: d.cloud,
       stagingPct: staging ? staging.pct : null,
-      fishInLake: !!(staging && staging.phase.mode === 'stage' && C.STAGING_ZONES[section]) });
+      fishInLake: !!(staging && staging.phase.mode === 'stage' && C.STAGING_ZONES[section]) };
+    const r = C.scoreDay(Object.assign({ flow }, dayArgs));
+    // rateWithFlowEstimate's base (null flow) is Thursday's reading here, so the estimate only ever lowers it.
+    const e = est && est[date] ? est[date] : null;
+    const rated = C.rateWithFlowEstimate((f) => (f == null ? r.score : C.scoreDay(Object.assign({}, dayArgs, { flow: f })).score), e);
     const prev = wx.byDate[addDays(date, -1)];
     const rainy = (d.rain || 0) >= BLOWOUT_RAIN_MM || !!(prev && (prev.rain || 0) >= BLOWOUT_RAIN_MM);
-    const score = rainy ? Math.min(r.score, MARGINAL_CAP) : r.score;
+    const score = rainy ? Math.min(rated.score, MARGINAL_CAP) : rated.score;
     return {
-      date, score, word: r.closed ? 'Closed' : C.scoreToConfidence(score).word, closed: r.closed, fishable,
-      good: fishable && !r.closed && score >= WEEKLY_MIN_SCORE,
+      date, score, word: r.closed ? 'Closed' : C.confidenceWord(C.scoreToConfidence(score), rated.potential), closed: r.closed, fishable,
+      good: fishable && !r.closed && score >= WEEKLY_MIN_SCORE, potential: rated.potential,
+      estFlow: e ? { q: e.q, lo: e.lo, hi: e.hi, lead: e.lead, showNumber: !!e.showNumber } : null,
       waterTemp, cloud: d.cloud, rain: d.rain, rainy, flow, flowClass: flow != null && cfg ? C.clsFlow(flow, cfg) : null,
       staging: staging ? { which: staging.which, mode: staging.phase.mode, pct: staging.pct, atMouth: stagingAtMouth(section, staging) } : null
     };
@@ -136,10 +144,27 @@ function dayReason(day, cfg) {
   }
   if (day.waterTemp != null) bits.push('water about ' + Math.round(day.waterTemp) + ' °C');
   if (day.cloud != null) bits.push(day.cloud >= 70 ? 'overcast' : day.cloud >= 40 ? 'some cloud' : 'bright sky');
-  const band = cfg ? C.flowBand(day.flow, cfg) : null;
-  if (band) bits.push({ low: 'flow too low today', normal: 'normal flow today', prime: 'prime flow today', high: 'flow on the high side today', blown: 'river blown out today' }[band]);
+  const fl = flowWords(day, cfg);
+  if (fl) bits.push(fl);
   const t = bits.join(', ');
   return t.charAt(0).toUpperCase() + t.slice(1);
+}
+const BAND_WORD = { low: 'low', normal: 'normal', prime: 'prime', high: 'high', blown: 'blown out' };
+// Days 1 to 2 with an estimate: the number and its band. Later days: the likely band range (the app shows
+// days 3 to 7 as a range too). No estimate: Thursday's reading, said as today's.
+export function flowWords(day, cfg) {
+  if (!cfg) return null;
+  const e = day.estFlow;
+  if (e && e.showNumber && e.q != null) {
+    const b = C.flowBand(e.q, cfg);
+    return 'flow estimated about ' + e.q + ' m³/s' + (b ? ' (' + BAND_WORD[b] + ')' : '');
+  }
+  if (e && e.lo != null && e.hi != null) {
+    const a = C.flowBand(e.lo, cfg), b = C.flowBand(e.hi, cfg);
+    if (a && b) return 'flow likely ' + BAND_WORD[a] + (a === b ? '' : ' to ' + BAND_WORD[b]);
+  }
+  const band = C.flowBand(day.flow, cfg);
+  return band ? { low: 'flow too low today', normal: 'normal flow today', prime: 'prime flow today', high: 'flow on the high side today', blown: 'river blown out today' }[band] : null;
 }
 export function blockHeader(combo) {
   return `<h2 style="color:#1e7a6e;margin:24px 0 4px">${esc(combo.species)} on ${esc(C.secLabel(combo.section))}</h2>`;
@@ -198,14 +223,25 @@ export function weeklySubject(combos) {
   return 'Good days ahead on ' + combos.length + ' of your rivers';
 }
 export function renderEmail(combos, today, site, footerHtml) {
-  const flowNote = combos.some((c) => c.days.some((d) => d.flow != null))
-    ? ' Flow is today’s gauge reading. Rain can change it fast, so check the app before you go.' : '';
+  const anyEst = combos.some((c) => c.days.some((d) => d.estFlow));
+  const anyToday = combos.some((c) => c.days.some((d) => !d.estFlow && d.flow != null));
+  const flowNote = anyEst
+    ? ' Flow for each day is an estimate from the gauge and the rain forecast' + (anyToday ? ' where we have one, otherwise today’s reading' : '') + '. Rain can change it fast, so check the app before you go.'
+    : anyToday ? ' Flow is today’s gauge reading. Rain can change it fast, so check the app before you go.' : '';
   return `<div>
     <p style="margin-top:0">Your Thursday look at the next six days.${flowNote}</p>
     ${combos.map((c) => renderCombo(c, today, site)).join('')}
     ${shareBox(site)}
     ${footerHtml}
   </div>`;
+}
+
+// The served forecast ({days: [{date, lead, q, lo, hi, showNumber}]}) keyed by date; null if empty.
+export function estimateByDate(fc) {
+  if (!fc || !Array.isArray(fc.days) || !fc.days.length) return null;
+  const m = {};
+  fc.days.forEach((d) => { if (d && d.date && d.q != null) m[d.date] = d; });
+  return Object.keys(m).length ? m : null;
 }
 
 // ── The run. deps carries the Worker's helpers (fetch, Resend, KV, unsubscribe links) so this file
@@ -233,16 +269,26 @@ export async function runWeekly(env, deps, opts = {}) {
   const lakeTemps = needLake ? await deps.lakeTemps().catch(() => null) : null;
   const needLive = sections.some((s) => C.LIVE_WATER_STATIONS[s]);
   const live = needLive ? await deps.liveWater().catch(() => null) : null;
-  const inputs = {};
+  const inputs = {}, estByGauge = {};
+  log.estimates = 0;
   for (const s of sections) {
     const cfg = C.getRiverConfig(s);
-    let wx = null, flow = null;
+    let wx = null, flow = null, est = null;
     try { wx = parseWeather(await deps.fetchJson(weatherUrl(cfg))); } catch (e) { log.errors.push('weather ' + s); }
     if (cfg.gauge) { try { flow = await deps.flow(cfg.gauge); } catch (e) { log.errors.push('flow ' + s); } }
+    // Flow forecast from KV (the hourly cron fills it), so no extra outbound calls. Gauges with no model have none.
+    if (cfg.gauge && deps.flowForecast) {
+      if (!(cfg.gauge in estByGauge)) {
+        estByGauge[cfg.gauge] = null;
+        try { estByGauge[cfg.gauge] = estimateByDate(await deps.flowForecast(cfg.gauge)); } catch (e) { log.errors.push('estimate ' + s); }
+      }
+      est = estByGauge[cfg.gauge];
+      if (est) log.estimates++;
+    }
     const st = C.LIVE_WATER_STATIONS[s];
     const lw = live && st && live.water && live.water[st.station];
     const fresh = live && live.updated && Date.now() - Date.parse(live.updated) < 6 * 3600 * 1000;
-    inputs[s] = { wx, flow, liveWater: lw && fresh && lw.latest != null ? lw.latest : null };
+    inputs[s] = { wx, flow, est, liveWater: lw && fresh && lw.latest != null ? lw.latest : null };
   }
   const combos = {};
   const comboFor = (i) => {
@@ -299,7 +345,7 @@ export async function runWeekly(env, deps, opts = {}) {
 // TJ's preview: every combo's six days, then what each subscriber would get (or why not).
 export function renderPreview(out, combos, today, site, live) {
   const rows = Object.values(combos).map((c) => `<tr><td style="padding:2px 6px">${esc(c.species)}, ${esc(C.secLabel(c.section))}</td>` +
-    c.days.map((d) => `<td style="padding:2px 6px;${d.good ? 'font-weight:bold;color:#1e7a6e' : 'color:#777'}">${esc(d.date.slice(5))} ${esc(d.missing ? 'no data' : d.word)}${d.rainy ? ' (rain)' : ''}</td>`).join('') + '</tr>').join('');
+    c.days.map((d) => `<td style="padding:2px 6px;${d.good ? 'font-weight:bold;color:#1e7a6e' : 'color:#777'}">${esc(d.date.slice(5))} ${esc(d.missing ? 'no data' : d.word)}${d.rainy ? ' (rain)' : ''}${d.estFlow ? ' ~' + esc(d.estFlow.showNumber ? String(d.estFlow.q) : d.estFlow.lo + '-' + d.estFlow.hi) : ''}</td>`).join('') + '</tr>').join('');
   const people = out.map((o) => {
     const head = `<p style="margin:16px 0 4px"><strong>${esc(o.email)}</strong>: `;
     if (!o.passing.length) return head + 'nothing this week (no Good day on open water).</p>';
