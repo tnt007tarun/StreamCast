@@ -1242,6 +1242,7 @@ function weeklyDeps(env, ctx) {
     flow: async (gauge) => { const r = await handleFlow(new URL("https://x/flow?station=" + gauge), ctx); const j = await r.json(); return j.flow != null ? j.flow : null; },
     lakeTemps: async () => { const r = await handleLakeTemps(new URL("https://x/lake-temps"), ctx); const j = await r.json(); return j.temps || null; },
     liveWater: async () => env.CACHE ? env.CACHE.get("wt:latest", "json") : null,
+    flowForecast: async (gauge) => env.CACHE ? servedForecast(await env.CACHE.get(FORECAST_KEY(gauge), "json"), torontoDate(new Date())) : null,
     unsubLinks: (email) => unsubLinks(env, email),
     sendBatch: async (batch, key) => (await resend(env, "/emails/batch", "POST", batch, { "Idempotency-Key": key })).ok,
     sendOwner: (subject, html) => resend(env, "/emails", "POST", { from: FROM, to: [OWNER_EMAIL], subject, html }),
