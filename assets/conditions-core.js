@@ -261,14 +261,31 @@ function seasonClosureFor(cfg, dateStr) {
   };
 }
 
+// Brook trout are not in the Additional Fishing Opportunities that keep lower reaches open
+// after September 30: in Zone 16 and Zone 17 those name Atlantic salmon, brown trout, Pacific
+// salmon and rainbow trout only (MNR 2026 summary, pp. 118 and 128). So brook trout close on
+// September 30 on every reach we cover, whatever the reach's band. (Zone 16's one all-year brook
+// trout water, Bells Lake, isn't a river we list.)
+var SPECIES_SEASON_BAND = { 'Brook Trout': 'standard' };
+function speciesSeasonClosureFor(cfg, speciesName, dateStr) {
+  if (!cfg || !dateStr) return null;
+  var band = SPECIES_SEASON_BAND[speciesName];
+  var own = seasonClosureFor(cfg, dateStr);
+  if (own || !band || (cfg.season || 'standard') === band) return own;
+  var c = seasonClosureFor({ season: band }, dateStr);
+  if (!c) return null;
+  return { band: band, species: speciesName, reopens: c.reopens,
+    reason: speciesName + ' season runs from the fourth Saturday in April to September 30, even where other trout stay open later.' };
+}
+
 // Fishable means all three: the species lives in this section, the section's trout and
-// salmon season is open on the date, and the species is in a good or peak window.
+// salmon season is open on the date for this species, and the species is in a good or peak window.
 // Biological season alone is not enough — resident trout are "in season" in October on
 // reaches where fishing for them closed on September 30.
 function speciesFishableIn(sectionName, speciesName, dateStr) {
   var c = getRiverConfig(sectionName);
   if (!c || !c.species || c.species.indexOf(speciesName) === -1) return false;
-  if (seasonClosureFor(c, dateStr)) return false;
+  if (speciesSeasonClosureFor(c, speciesName, dateStr)) return false;
   if (allAccessClosed(c, dateStr)) return false;
   var s = getCurrentSeason(speciesName, dateStr, sectionName);
   return !!s && (s.quality === 'peak' || s.quality === 'good');
@@ -1057,9 +1074,9 @@ var RIVER_CONFIG = {
     ]
   },
   'Sixteen Mile Creek — Upper West Branch (Trout)': {
-    // Road crossings are below Hwy 407 (extended, tributaries included); the Milton
-    // headwaters are above it and carry their own Oct 1 closure.
-    season:'extended',
+    // Mostly above Hwy 407 (TJ, 2026-10-29), where Sixteen Mile's trout season ends Sept 30, so the
+    // whole reach is 'standard'. Was 'extended', which kept it open for browns and rainbows to Dec 31.
+    season:'standard',
     gauge:'02HB005', gaugeName:'Sixteen Mile Creek at Milton',
     sweetMin:0.8, sweetMax:1.9, flowLow:0.2, flowHigh:4,
     lat:43.530, lng:-79.750,
@@ -1067,11 +1084,11 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':45,'north york':45,'scarborough':55,'etobicoke':35,'markham':55,'richmond hill':55,'vaughan':50,'ajax':75,'pickering':70,'mississauga':35,'brampton':25,'oakville':10,'burlington':25,'milton':15,'hamilton':35,'guelph':45,'cambridge':55,'kitchener':70,'waterloo':70,'orangeville':55,'oshawa':90,'whitby':85,'bowmanville':105,'clarington':115,'newcastle':115,'cobourg':150,'port hope':140,'barrie':105,'collingwood':130,'owen sound':170},
     species:['Brook Trout','Brown Trout','Rainbow Trout'],
     active:true,
-    regs:[{rule:'FMZ 16. Below Hwy 407: open fourth Saturday in April to Dec 31. Above Hwy 407 (Milton) the season ends Sept 30.',icon:'📋'}],
+    regs:[{rule:'FMZ 16. This reach is mostly above Hwy 407, where trout season runs from the fourth Saturday in April to Sept 30.',icon:'📋'}],
     methods:['fly','spin'],
     access:[
       {name:'West Branch · Road Allowance Crossings',loc:'West Branch · North Oakville / Milton border',crowd:'low',desc:'Cold-water habitat supporting resident brook, brown, and rainbow trout. The West Branch maintains cooler temperatures than the main creek, making it the only section with viable year-round trout habitat. Access via road allowances at bridge crossings. Light tackle and stealth required.'},
-      {name:'Upper West Branch Tributaries',closed:[{from:'10-01',to:'12-31',why:'These headwaters are north of Hwy 407, where the trout and salmon season ends Sept 30'}],loc:'West Branch headwaters · Milton area',crowd:'low',desc:'Small stream fishing for resident trout in spring-fed water. The least pressured section of the entire Sixteen Mile Creek system. Brook trout in the coldest, most shaded sections.'}
+      {name:'Upper West Branch Tributaries',loc:'West Branch headwaters · Milton area',crowd:'low',desc:'Small stream fishing for resident trout in spring-fed water. The least pressured section of the entire Sixteen Mile Creek system. Brook trout in the coldest, most shaded sections.'}
     ]
   },
   'Sixteen Mile Creek — Upper Middle/East Branches': {
@@ -2728,6 +2745,9 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
   if (seasonClosureFor(cfg, dateStr)) {
     score -= 30;
     warnings.unshift('Season closed on this reach');
+  } else if (targetSpeciesName && hasSpecies && speciesSeasonClosureFor(cfg, targetSpeciesName, dateStr)) {
+    score -= 30;
+    warnings.unshift(targetSpeciesName + ' season closed on this date');
   } else if (allAccessClosed(cfg, dateStr)) {
     score -= 30;
     warnings.unshift('Every access point on this reach is closed on this date');
@@ -2823,6 +2843,7 @@ if (typeof globalThis !== 'undefined') {
     getRiverConfig: getRiverConfig, getRiverRegs: getRiverRegs, getCurrentSeason: getCurrentSeason,
     seasonClosureFor: seasonClosureFor, accessClosureOn: accessClosureOn, isAccessOpen: isAccessOpen,
     allAccessClosed: allAccessClosed, sectionClosedOn: sectionClosedOn, speciesFishableIn: speciesFishableIn,
+    speciesSeasonClosureFor: speciesSeasonClosureFor, SPECIES_SEASON_BAND: SPECIES_SEASON_BAND,
     furthestUpstreamOpen: furthestUpstreamOpen, bestAccessSpot: bestAccessSpot, isLakeRunBrownSection: isLakeRunBrownSection,
     stagingZoneForSection: stagingZoneForSection, computeStagingScore: computeStagingScore, seasonalLakeTempEst: seasonalLakeTempEst,
     getSalmonPhase: getSalmonPhase, getSteelheadPhase: getSteelheadPhase, mouthPreferenceFor: mouthPreferenceFor,

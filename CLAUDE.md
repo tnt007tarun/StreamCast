@@ -65,11 +65,15 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
   the claude.ai project. If it isn't available, ask TJ to attach the PDF. Never work from memory.
 - Season bands: `all-year`, `extended` (4th Sat in April to Dec 31), `standard` (4th Sat in
   April to Sept 30). Sanctuaries go in `access[].closed`.
+- Bands are for brown trout, rainbow trout (steelhead) and salmon only. **Brook trout close Sept 30 on every reach**:
+  the Zone 16 and 17 extended and all-year exceptions don't name them (MNR 2026 pp. 118, 128). `SPECIES_SEASON_BAND`
+  and `speciesSeasonClosureFor()` in the core; `speciesFishableIn()`, `sectionSeasonScore()`, `recommendSpecies()`, the
+  hero's legal-season pass and the pill ("Closed for Brook Trout") use it (2026-10-29).
 - Every species a river's sections list needs a matching `RIVER_REGS[river].species` row (`regsRowMatches()`), or the
   regs panel shows no summary and no limit for it. Rows come from the zone-wide table in the MNR summary unless an
   exception applies.
-- `speciesFishableIn()`, `seasonClosureFor()`, `accessClosureOn()`, `allAccessClosed()` and `sectionClosedOn()` decide
-  legality. Use them. Don't write a new check.
+- `speciesFishableIn()`, `seasonClosureFor()`, `speciesSeasonClosureFor()`, `accessClosureOn()`, `allAccessClosed()` and
+  `sectionClosedOn()` decide legality. Use them. Don't write a new check.
 - Before changing seasons or closures, run a date-by-date check of every access spot against
   the regulations (see PR #60 for the approach).
 
@@ -328,6 +332,14 @@ Merged recently:
   footer of the weekly email, the welcome email and `tools/outlook-template.html`. Umami `offer` is now also `weekly`,
   `weekly+run`, `weekly+outlook`. Judge it on signups per Signup Box Seen, 4 to 6 weeks before and after.
 
+- **Trout after Sept 30** (TJ, 2026-10-29): `/guides/trout-after-september-30/`, a river-by-river table of what stays
+  open for brown and rainbow trout after Sept 30 (every row from the MNR 2026 text, pp. 13, 117 to 129), brook trout
+  closed until the opener (April 24, 2027). In the guides index, sitemap and llms.txt; not in the homepage `GUIDES`
+  cards. Found while writing it: the app rated brook trout fishable Oct 1 to Dec 31 on Sixteen Mile Upper West Branch
+  (`extended`); fixed with `speciesSeasonClosureFor()` (see House rules). Then TJ confirmed the reach is mostly above
+  Hwy 407, so it is now `standard` (closes Sept 30 for all trout). Checked against main for every reach, species and
+  day of 2026: only that reach changed, Oct 1 to Dec 31.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -406,9 +418,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    as indexed in Search Console's Page indexing report at the next analytics review.
 3. **Umami review (2026-10-15, partial)** in project doc `claude/analytics-2026-10-15.md`. Still to get from TJ:
    species by river, and the Google-referrer daily visitors above. Then recommend the next pages. Ideas so far: a
-   "where to trout fish after Sep 30" page (Brook Trout searches appear in October; verify every claim against MNR
-   2026), and a clearer species prompt ("any" is one of the biggest species values). Also check a Brook Trout search
-   on a closed reach shows as closed.
+   clearer species prompt ("any" is one of the biggest species values). Done 2026-10-29: the "trout after Sept 30"
+   page, and brook trout now read closed after Sept 30 everywhere.
    TJ: open `herefishyfishy.ca/?notrack=1` on each browser after #75 deploys.
 4. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 5. **Gauges (2026-10-24):** Black Creek, Lower-Mid and Upper Humber now have their own gauges (#100). Only the Lower Humber
