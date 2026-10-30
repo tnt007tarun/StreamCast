@@ -85,9 +85,9 @@ export function parseWeather(j) {
 // for migratory fish (stagingSectionFor/stagingRead), else flow, water temperature and sky
 // (scoreDay). Thursday's gauge reading stands in for every day; heavy rain caps a day, and so does flow
 // above prime, too low or blown out. Where the gauge has a flow forecast (`est`, by date, from KV
-// flowfc:<gauge>), days 1 to 2 go through the app's rateWithFlowEstimate(): the estimate can pull the
-// rating down, never up, and the word reads "Potentially ..." (TJ, 2026-10-24 for the app; 2026-10-29 for
-// this email). Later days keep their rating; the email only words their likely flow range.
+// flowfc:<gauge>), days 1 to 2 are rated on the estimated flow, up or down (estimateRating()), and the
+// word reads "Potentially ..." when the estimate changed it (TJ, 2026-10-29). Later days keep their
+// rating; the email only words their likely flow range.
 export function scoreWeek({ section, species, dates, today, wx, flow, est, liveWater, lakeTemps }) {
   const cfg = C.getRiverConfig(section);
   return dates.map((date) => {
@@ -107,9 +107,11 @@ export function scoreWeek({ section, species, dates, today, wx, flow, est, liveW
       stagingPct: staging ? staging.pct : null,
       fishInLake: !!(staging && staging.phase.mode === 'stage' && C.STAGING_ZONES[section]) };
     const r = C.scoreDay(Object.assign({ flow }, dayArgs));
-    // rateWithFlowEstimate's base (null flow) is Thursday's reading here, so the estimate only ever lowers it.
+    // Days 1 to 2 with an estimate are rated on the estimated flow instead of Thursday's reading, up or
+    // down (TJ, 2026-10-29: a river blown out on Thursday and back to prime by Saturday should say so).
+    // The app's pill still only lets an estimate lower a day (rateWithFlowEstimate). Rain still caps below.
     const e = est && est[date] ? est[date] : null;
-    const rated = C.rateWithFlowEstimate((f) => (f == null ? r.score : C.scoreDay(Object.assign({}, dayArgs, { flow: f })).score), e);
+    const rated = estimateRating(r.score, e, (f) => C.scoreDay(Object.assign({}, dayArgs, { flow: f })).score);
     const prev = wx.byDate[addDays(date, -1)];
     const rainy = (d.rain || 0) >= BLOWOUT_RAIN_MM || !!(prev && (prev.rain || 0) >= BLOWOUT_RAIN_MM);
     const score = rainy ? Math.min(rated.score, MARGINAL_CAP) : rated.score;
@@ -121,6 +123,13 @@ export function scoreWeek({ section, species, dates, today, wx, flow, est, liveW
       staging: staging ? { which: staging.which, mode: staging.phase.mode, pct: staging.pct, atMouth: stagingAtMouth(section, staging) } : null
     };
   });
+}
+// Score a day on the estimated flow when it's 1 to 2 days out (C.EST_FLOW_MAX_LEAD); later days are too
+// uncertain and keep Thursday's rating. `potential` marks a day whose rating came from the estimate.
+export function estimateRating(baseScore, e, scoreFn) {
+  if (!e || e.q == null || !(e.lead >= 1 && e.lead <= C.EST_FLOW_MAX_LEAD)) return { score: baseScore, potential: false };
+  const s = scoreFn(e.q);
+  return { score: s, potential: s !== baseScore };
 }
 function stagingAtMouth(section, staging) {
   // Staging tactics (spoons from the pier) only apply on the mouth reach itself, as in the app.

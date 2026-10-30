@@ -316,7 +316,7 @@ Merged recently:
   factor, 75 km/h). Corrected the rows that were far off: Lower Credit from Hamilton, Markham, Vaughan, Ajax, Pickering,
   Oshawa; Upper Credit from Milton, Guelph, Pickering, Clarington; Sixteen Mile lower from Pickering, Whitby,
   Bowmanville; Ganaraska from Whitby and Bowmanville (Bowmanville was 10 min); Upper Ganaraska from Cobourg (was 40).
-  Estimates, for TJ to adjust. The Upper Don (Toronto 40, TJ's number) is the only remaining flag.
+  Estimates, for TJ to adjust. The Upper Don (Toronto 40) confirmed by TJ 2026-10-29.
 
 - **Signup boxes, round 2** (TJ, 2026-10-28; mockups approved in chat). Umami, last 30 days: app bar 121 shown, 3 real
   signups (about 2.5%, sticky-bar average); page boxes 64 seen, 0 signups (embedded-form benchmark about 4%). Most box
@@ -410,14 +410,11 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    reach TJ's Gmail through hello@. Use them to test the personas (fall run chaser, steelhead regular, trout
    explorer, newer angler) before building for any of them.
 
-1. **Sep 9 to 25 search drop.** Cause unknown. Umami (live from Sep 11) shows no matching collapse in app events
-   (Sep 12, 14, 21, 25 at 110 to 120 events vs 156 on Sep 26), but TJ's own testing is in those numbers. Next: Umami
-   Overview filtered to Referrer contains google, visitors by day, Sep 1 to 30. Flat means a Search Console reporting
-   artifact (close the thread); a dip means check Page indexing and Manual actions.
-2. **Indexing requested** for `/guides/steelhead-run-timing/` and `/rivers/humber/` (TJ, 2026-10-14). Check they show
-   as indexed in Search Console's Page indexing report at the next analytics review.
+1. **Sep 9 to 25 search drop:** closed (TJ, 2026-10-29: moved on).
+2. **Indexing:** `/guides/steelhead-run-timing/` and `/rivers/humber/` are indexed (TJ, 2026-10-29). Request indexing for
+   `/guides/trout-after-september-30/` after #114 (merged).
 3. **Umami review (2026-10-15, partial)** in project doc `claude/analytics-2026-10-15.md`. Still to get from TJ:
-   species by river, and the Google-referrer daily visitors above. Then recommend the next pages. Ideas so far: a
+   species by river. Then recommend the next pages. Ideas so far: a
    clearer species prompt ("any" is one of the biggest species values). Done 2026-10-29: the "trout after Sept 30"
    page, and brook trout now read closed after Sept 30 everywhere.
    TJ: open `herefishyfishy.ca/?notrack=1` on each browser after #75 deploys.
@@ -447,14 +444,15 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 12. **Don River follow-ups (2026-10-21):** confirmed by TJ: the flow sweet spot (2.5 to 8 m3/s at Todmorden; replaced 2026-10-24 by prime 1.9 to 3.5 lower, 1.7 to 3 upper) is fine,
    Sunnybrook Park is north of Eglinton (so `extended` is right), and steelhead stay off the list (extremely rare and
    unreliable on the Don). `/rivers/don/` added 2026-10-27 (factual, no photo yet; not in the homepage `GUIDES` cards until TJ has a
-   photo). Later: the Port Lands mouth once fishing there is clear, and TJ's reply on the Reddit thread (draft given in chat).
+   photo). Later: the Port Lands mouth once fishing there is clear. TJ replied on the Reddit thread (2026-10-29).
 
 13. **Flow ranges and forecast (done 2026-10-24, see Current state).** The weekly email uses the estimate since 2026-10-29
-   (TJ): `deps.flowForecast()` reads KV `flowfc:<gauge>` through `servedForecast()` (no new calls). Fri and Sat go through
-   the app's `rateWithFlowEstimate()` with Thursday's reading as the base, so the estimate can lower a day ("Potentially
-   ..."), never raise it; Sun to Wed keep their rating and the text words the likely band range (`flowWords()`). Gauges
-   with no model (Wilmot, Bowmanville, Grand below Shand, Upper Beaver) still use Thursday's reading. Open for TJ: should
-   an estimate be allowed to lift a day after a blowout (today blown, Saturday back to prime)? It can't yet. A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
+   (#113): `deps.flowForecast()` reads KV `flowfc:<gauge>` through `servedForecast()` (no new calls). Fri and Sat
+   (days 1 to 2) are rated on the estimated flow, **up or down** (`estimateRating()`; TJ 2026-10-29: blown out Thursday
+   and prime by Saturday should say so), "Potentially ..." when the estimate changed the word. The app's pill still
+   only lets an estimate lower a day. Sun to Wed keep Thursday's rating and the text words the likely band range
+   (`flowWords()`). Gauges with no model (Wilmot, Bowmanville, Grand below Shand, Upper Beaver) use Thursday's reading.
+   A better model for the spring-fed creeks (Wilmot, Bowmanville), e.g. shrinking
    toward "flow stays as it is". Refit yearly. TJ to delete the throwaway branch `claude/flowlab-data`.
 
 11. **Weekly conditions alerts (TJ, 2026-10-20):** Thursday evening email covering Fri to Wed, sent only when a day
