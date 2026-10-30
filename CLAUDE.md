@@ -336,8 +336,9 @@ Merged recently:
   open for brown and rainbow trout after Sept 30 (every row from the MNR 2026 text, pp. 13, 117 to 129), brook trout
   closed until the opener (April 24, 2027). In the guides index, sitemap and llms.txt; not in the homepage `GUIDES`
   cards. Found while writing it: the app rated brook trout fishable Oct 1 to Dec 31 on Sixteen Mile Upper West Branch
-  (`extended`); fixed with `speciesSeasonClosureFor()` (see House rules). Checked against main for every reach,
-  species and day of 2026: only those 92 brook trout days changed.
+  (`extended`); fixed with `speciesSeasonClosureFor()` (see House rules). Then TJ confirmed the reach is mostly above
+  Hwy 407, so it is now `standard` (closes Sept 30 for all trout). Checked against main for every reach, species and
+  day of 2026: only that reach changed, Oct 1 to Dec 31.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -419,9 +420,6 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    species by river, and the Google-referrer daily visitors above. Then recommend the next pages. Ideas so far: a
    clearer species prompt ("any" is one of the biggest species values). Done 2026-10-29: the "trout after Sept 30"
    page, and brook trout now read closed after Sept 30 everywhere.
-   **Open for TJ (2026-10-29):** is Sixteen Mile Creek, Upper West Branch really below Hwy 407? It's `extended`, but
-   its coordinates (43.53 N, -79.75) and access notes ("Milton area", "North Oakville / Milton border") look north of
-   the 407, where Sixteen Mile closes Sept 30 for all trout. If so it should be `standard`. Left as is until TJ confirms.
    TJ: open `herefishyfishy.ca/?notrack=1` on each browser after #75 deploys.
 4. **Next year:** switch "2026" to "2027" in titles and copy before staging season (July 2027).
 5. **Gauges (2026-10-24):** Black Creek, Lower-Mid and Upper Humber now have their own gauges (#100). Only the Lower Humber
