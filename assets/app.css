@@ -1759,20 +1759,17 @@ background-size:cover;background-position:center;position:relative}
   .mode-toggle { margin-bottom: 0; }
 }
 
-.sp-season-toggle {
-  display: block;
-  margin-top: .4rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .58rem;
-  letter-spacing: .04em;
-  color: var(--sage);
-  background: none;
-  border: none;
-  cursor: default;
-  padding: .15rem 0;
-  opacity: .72;
-  line-height: 1.5;
-}
+/* Species tiles: a season chip top right (word chip, TJ 2026-10-30), tiles ordered best first (updateSpeciesGrid). */
+.species-btn { position: relative; }
+.sp-badge { --c: #9aa6ad; --t: #fff; position: absolute; top: 4px; right: 4px;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: .48rem; letter-spacing: .04em; text-transform: uppercase;
+  line-height: 1; padding: .14rem .35rem; border-radius: 999px; color: var(--t); background: var(--c); }
+.sp-badge[data-s="prime"]  { --c: var(--fern); }
+.sp-badge[data-s="good"]   { --c: #8fd1b8; --t: #0d3b30; }
+.sp-badge[data-s="slow"]   { --c: var(--gold); --t: #4a3608; }
+.sp-badge[data-s="out"]    { --c: #c9d1d6; --t: #46545e; }
+.sp-badge[data-s="closed"] { --c: var(--red); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 #tech-family-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; }
 .method-row {
