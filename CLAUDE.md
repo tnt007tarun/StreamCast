@@ -342,14 +342,14 @@ Merged recently:
   Hwy 407, so it is now `standard` (closes Sept 30 for all trout). Checked against main for every reach, species and
   day of 2026: only that reach changed, Oct 1 to Dec 31.
 
-- **Species tags on the form** (TJ, 2026-10-30): tiles keep their order; a "Prime" tag, closed tiles greyed with
-  "Opens Apr 24" (still tappable), and a hint line above the grid ("Late November: Steelhead and coho are at their
-  best. ..."). `formSpeciesStatus()` in the core: TJ's half-month calendar `FORM_SEASON_CAL` (from the "Species Season
-  Calendar" artifact; his blanks = slow) on reaches in the travel range that are legally open that day
-  (`speciesSeasonClosureFor()`, `allAccessClosed()`; lake-run browns use their own row). `updateSpeciesGrid()` in
-  `app.js` reruns on date, city and range changes. **Form only for now (TJ):** ratings and ranking still use
-  `SPECIES_SEASONS`. Before switching them over, handle eastern tribs (Ganaraska, Bowmanville) getting Chinook a bit
-  earlier (TJ).
+- **Species chips on the form** (TJ, 2026-10-30; first try #117 closed, TJ didn't like greyed tiles and a hint line):
+  every tile gets a word chip top right (Prime, Good, Slow, In lake, Closed) and tiles are ordered best first, left
+  to right. Closed tiles stay tappable. `formSpeciesStatus()` in the core: TJ's half-month calendar `FORM_SEASON_CAL`
+  (from the "Species Season Calendar" artifact; his blanks = slow) on reaches in the travel range that are legally
+  open that day (`speciesSeasonClosureFor()`, `allAccessClosed()`; lake-run browns use their own row).
+  `updateSpeciesGrid()` in `app.js` reruns on date, city and range changes. **Form only for now (TJ):** ratings and
+  ranking still use `SPECIES_SEASONS`. Before switching them over, handle eastern tribs (Ganaraska, Bowmanville)
+  getting Chinook a bit earlier (TJ).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

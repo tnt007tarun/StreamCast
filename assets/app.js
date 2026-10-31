@@ -5546,13 +5546,11 @@ async function fetchLandingWeather(lat, lng) {
   } catch(e) { return null; }
 }
 
-// ── SPECIES GRID — Prime tags, closed tiles and a one-line hint (TJ, 2026-10-30) ────
-// Tile order never changes. A tile gets a "Prime" tag when TJ's half-month calendar
-// (FORM_SEASON_CAL) says prime on a reach in range that is open on the trip date; a tile with no open
-// reach in range is greyed out but stays tappable, so the results page can say why. The hint above the
-// grid says what's at its best and what's closed. formSpeciesStatus() in the core decides all of it.
+// ── SPECIES GRID — season chips, best first (TJ, 2026-10-30) ─────────────────
+// Every tile gets a word chip top right (Prime, Good, Slow, In lake, Closed) from TJ's half-month calendar
+// (FORM_SEASON_CAL) on reaches in range that are legally open on the trip date, and tiles are ordered best
+// first. Closed tiles stay tappable so the results page can say why. formSpeciesStatus() in the core decides.
 var SP_TILE_NAME = { brown:'Brown Trout', rainbow:'Rainbow Trout', steelhead:'Steelhead', brook:'Brook Trout', chinook:'Chinook Salmon', coho:'Coho Salmon' };
-var SP_HINT_NAME = { brown:'brown trout', rainbow:'resident rainbows', steelhead:'steelhead', brook:'brook trout', chinook:'Chinook', coho:'coho' };
 var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function formTripDate() {
@@ -5574,33 +5572,19 @@ function formSectionsInRange() {
   return Object.keys(RIVER_CONFIG).filter(function(k){ return k !== 'default' && RIVER_CONFIG[k].active !== false; });
 }
 
-function joinAnd(list) {
-  return list.length < 2 ? list.join('') : list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1];
-}
-function capFirst(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-function shortDate(iso) {
-  var p = iso.split('-');
-  return MONTH_NAMES[parseInt(p[1], 10) - 1].slice(0, 3) + ' ' + parseInt(p[2], 10);
-}
 function longDate(iso) {
   var p = iso.split('-');
   return MONTH_NAMES[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
 }
 
-function speciesHintText(states, dateStr) {
-  var i = formHalfIndex(dateStr);
-  var period = (i % 2 ? 'Late ' : 'Early ') + MONTH_NAMES[i >> 1];
-  var keys = Object.keys(SP_TILE_NAME);
-  var prime = keys.filter(function(k){ return states[k].status === 'prime'; });
-  var good = keys.filter(function(k){ return states[k].status === 'good'; });
-  var parts = [];
-  if (prime.length) parts.push(capFirst(joinAnd(prime.map(function(k){ return SP_HINT_NAME[k]; }))) + ' are at their best.');
-  else if (good.length) parts.push(capFirst(joinAnd(good.map(function(k){ return SP_HINT_NAME[k]; }))) + ' are worth a try.');
-  else parts.push('A slow stretch for every species.');
-  var byDate = {};
-  keys.forEach(function(k){ var r = states[k].reopens; if (r) (byDate[r] = byDate[r] || []).push(SP_HINT_NAME[k]); });
-  Object.keys(byDate).sort().forEach(function(d){ parts.push(capFirst(joinAnd(byDate[d])) + ' closed until ' + longDate(d) + '.'); });
-  return period + ': ' + parts.join(' ');
+// One chip per tile (TJ picked word chips, 2026-10-30), tiles ordered best first. 'out' = legal but the fish
+// are out in the lake (TJ's 'done');
+// 'closed' = no reach in range open for it that day, or none in range at all.
+var SP_STATE_RANK = { prime: 4, good: 3, slow: 2, out: 1, closed: 0 };
+var SP_STATE_WORD = { prime: 'Prime', good: 'Good', slow: 'Slow', out: 'In lake', closed: 'Closed' };
+function speciesTileState(st) {
+  if (!st.open) return 'closed';
+  return st.status === 'done' ? 'out' : st.status;
 }
 
 function updateSpeciesGrid() {
@@ -5608,32 +5592,26 @@ function updateSpeciesGrid() {
   if (!grid) return;
   var dateStr = formTripDate();
   var sections = formSectionsInRange();
-  var states = {};
-  Object.keys(SP_TILE_NAME).forEach(function(k){ states[k] = formSpeciesStatus(SP_TILE_NAME[k], sections, dateStr); });
-
-  grid.querySelectorAll('.species-btn').forEach(function(btn) {
+  var btns = Array.from(grid.querySelectorAll('.species-btn'));
+  btns.forEach(function(btn, idx) {
     var k = btn.getAttribute('data-value');
-    var st = states[k];
-    if (!st) return;
-    var tag = btn.querySelector('.sp-tag');
-    if (!tag) { tag = document.createElement('span'); tag.className = 'sp-tag'; btn.appendChild(tag); }
-    var note = '';
-    if (st.status === 'prime') { tag.textContent = 'Prime'; tag.hidden = false; } else { tag.textContent = ''; tag.hidden = true; }
-    if (!st.open) note = st.reopens ? 'Opens ' + shortDate(st.reopens) : (st.listed ? 'Closed' : 'None in range');
-    var sub = btn.querySelector('.sp-sub');
-    if (!sub) { sub = document.createElement('span'); sub.className = 'sp-sub'; btn.appendChild(sub); }
-    sub.textContent = note; sub.hidden = !note;
-    btn.classList.toggle('sp-closed', !st.open);
+    if (!SP_TILE_NAME[k]) return;
+    var st = formSpeciesStatus(SP_TILE_NAME[k], sections, dateStr);
+    var state = speciesTileState(st);
+    if (btn._spIdx == null) btn._spIdx = idx;
+    btn._spRank = SP_STATE_RANK[state];
+    var badge = btn.querySelector('.sp-badge');
+    if (!badge) { badge = document.createElement('span'); badge.className = 'sp-badge'; badge.setAttribute('aria-hidden', 'true'); btn.appendChild(badge); }
+    badge.setAttribute('data-s', state);
+    badge.textContent = SP_STATE_WORD[state];
+    var sr = btn.querySelector('.sp-sr');
+    if (!sr) { sr = document.createElement('span'); sr.className = 'sr-only sp-sr'; btn.appendChild(sr); }
+    sr.textContent = ', ' + SP_STATE_WORD[state] + (st.reopens ? ', opens ' + longDate(st.reopens) : '');
   });
-
-  var hint = document.getElementById('sp-hint');
-  if (!hint) {
-    hint = document.createElement('p');
-    hint.id = 'sp-hint'; hint.className = 'sp-hint';
-    hint.setAttribute('aria-live', 'polite');
-    grid.parentNode.insertBefore(hint, grid);
-  }
-  hint.textContent = speciesHintText(states, dateStr);
+  // Best first, left to right; ties keep the usual order.
+  btns.filter(function(b){ return b._spRank != null; })
+    .sort(function(a, b){ return (b._spRank - a._spRank) || (a._spIdx - b._spIdx); })
+    .forEach(function(b){ grid.appendChild(b); });
 }
 
 ['trip-date', 'loc-input-field', 'travel-range'].forEach(function(id) {
