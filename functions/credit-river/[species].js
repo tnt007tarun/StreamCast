@@ -182,6 +182,10 @@ function renderPage(route, cond, speciesSlug) {
 <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HereFishyFishy">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Credit River ${route.species}: Conditions Today</title>
 <meta name="description" content="Live ${route.species} conditions on the Credit River. Flow ${cond.flow != null ? cond.flow + ' m³/s' : 'not available, check the gauge'}, water ${cond.waterTemp != null ? (cond.waterMeasured ? '' : '~') + cond.waterTemp + '°C' : 'unknown'}, ${cond.qualityLabel.toLowerCase()}. Access points and regulations.">
 <link rel="canonical" href="https://herefishyfishy.ca/credit-river/${speciesSlug}">
