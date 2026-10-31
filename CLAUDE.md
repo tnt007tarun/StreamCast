@@ -352,13 +352,22 @@ Merged recently:
   ranking still use `SPECIES_SEASONS`. Before switching them over, handle eastern tribs (Ganaraska, Bowmanville)
   getting Chinook a bit earlier (TJ).
 
+- **Add to home screen** (TJ, 2026-10-31): `site.webmanifest` is `standalone` (full screen from the home-screen icon,
+  scope `/`), and every page has the Apple web-app meta tags after the manifest link (add them to new pages). The
+  homepage shows a one-time hint on phones from the second day someone visits (`maybeInstallHint()` in `app.js`):
+  Share > Add to Home Screen steps on iPhone/iPad, an Add button on Android Chrome (`beforeinstallprompt`), menu
+  wording on other Android browsers. Never on results, deep links, in-app browsers or desktop; x hides it for good;
+  stops after 3 showings. `?a2hs=1` forces it for testing. No service worker or offline cache on purpose (a stale
+  cache would serve an old `app.js` after a fix). Store apps (Capacitor) later, once the web app is stable (TJ).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
   `window._viewSource`), `Notify Bar Shown`, `Notify Bar Dismissed`, `Email Signup {river, species}`,
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
-  `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`. Click events come from one delegated listener
+  `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
