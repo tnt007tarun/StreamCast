@@ -2872,7 +2872,13 @@ function formSpeciesStatus(speciesName, sections, dateStr) {
   var best = null, listed = false, reopens = null;
   (sections || []).forEach(function(sec) {
     var cfg = RIVER_CONFIG[sectionBaseName(sec)];
-    if (!cfg || cfg.active === false || !cfg.species || cfg.species.indexOf(speciesName) === -1) return;
+    if (!cfg || cfg.active === false || !cfg.species) return;
+    // Below the barriers the config lists Steelhead, not Rainbow Trout, but the regs treat them as one species
+    // and there's always a chance at a rainbow or two there (TJ, 2026-10-30). Those reaches count for the
+    // Rainbow Trout tile, never above slow.
+    var steelheadWater = speciesName === 'Rainbow Trout' && cfg.species.indexOf('Rainbow Trout') === -1 &&
+      cfg.species.indexOf('Steelhead') !== -1;
+    if (cfg.species.indexOf(speciesName) === -1 && !steelheadWater) return;
     listed = true;
     var closure = speciesSeasonClosureFor(cfg, speciesName, dateStr);
     if (closure) {
@@ -2884,7 +2890,7 @@ function formSpeciesStatus(speciesName, sections, dateStr) {
     }
     if (allAccessClosed(cfg, dateStr)) return;
     var row = (key === 'brown' && isLakeRunBrownSection(sec)) ? 'lakebrown' : key;
-    var s = FORM_SEASON_CAL[row] && FORM_SEASON_CAL[row][i];
+    var s = steelheadWater ? 'slow' : (FORM_SEASON_CAL[row] && FORM_SEASON_CAL[row][i]);
     if (s && (!best || FORM_STATUS_RANK[s] > FORM_STATUS_RANK[best])) best = s;
   });
   return { status: best, listed: listed, open: !!best, reopens: best ? null : reopens };

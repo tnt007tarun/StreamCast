@@ -346,7 +346,8 @@ Merged recently:
   every tile gets a word chip top right (Prime, Good, Slow, In lake, Closed) and tiles are ordered best first, left
   to right. Closed tiles stay tappable. `formSpeciesStatus()` in the core: TJ's half-month calendar `FORM_SEASON_CAL`
   (from the "Species Season Calendar" artifact; his blanks = slow) on reaches in the travel range that are legally
-  open that day (`speciesSeasonClosureFor()`, `allAccessClosed()`; lake-run browns use their own row).
+  open that day (`speciesSeasonClosureFor()`, `allAccessClosed()`; lake-run browns use their own row). Steelhead
+  reaches also count for the Rainbow Trout tile, at Slow at most (TJ: always a chance at a rainbow or two down low).
   `updateSpeciesGrid()` in `app.js` reruns on date, city and range changes. **Form only for now (TJ):** ratings and
   ranking still use `SPECIES_SEASONS`. Before switching them over, handle eastern tribs (Ganaraska, Bowmanville)
   getting Chinook a bit earlier (TJ).
