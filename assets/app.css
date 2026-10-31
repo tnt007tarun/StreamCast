@@ -1759,19 +1759,21 @@ background-size:cover;background-position:center;position:relative}
   .mode-toggle { margin-bottom: 0; }
 }
 
-.sp-season-toggle {
-  display: block;
-  margin-top: .4rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: .58rem;
-  letter-spacing: .04em;
-  color: var(--sage);
-  background: none;
-  border: none;
-  cursor: default;
-  padding: .15rem 0;
-  opacity: .72;
-  line-height: 1.5;
+/* Species tiles: Prime tag, closed state and the hint line above the grid (updateSpeciesGrid). */
+.species-btn { position: relative; }
+.species-btn .sp-tag {
+  position: absolute; top: 3px; right: 3px;
+  font-family: 'JetBrains Mono', monospace; font-size: .5rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--fern); color: #fff; border-radius: 999px; padding: .1rem .35rem; line-height: 1.3;
+}
+.species-btn .sp-sub {
+  font-family: 'JetBrains Mono', monospace; font-size: .5rem; letter-spacing: .02em; line-height: 1.2;
+  color: var(--text-muted); text-align: center; white-space: nowrap;
+}
+.species-btn.sp-closed:not(.active) .species-btn-img { filter: grayscale(1); opacity: .55; }
+.species-btn.sp-closed:not(.active) .species-btn-name { opacity: .6; }
+.sp-hint {
+  margin: 0 0 .5rem; font-size: .8rem; line-height: 1.45; color: var(--text-body);
 }
 
 #tech-family-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; }

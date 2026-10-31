@@ -2834,6 +2834,62 @@ function confidenceWord(conf, potential) {
   return potential ? 'Potentially ' + conf.word.toLowerCase() : conf.word;
 }
 
+// ── FORM SPECIES TAGS (TJ's half-month calendar, 2026-10-30) ─────────────────
+// 24 entries per row: Jan 1-15, Jan 16-31, Feb 1-15, ... Dec 16-31. 'done' = not in the river.
+// TJ filled these in on the "Species Season Calendar" artifact. For now they only drive the form's
+// Prime tags and hint line (TJ: form tags only; ratings stay on SPECIES_SEASONS until he has checked
+// them, partly because eastern tribs like the Ganaraska and Bowmanville get Chinook a bit earlier).
+// TJ: half-months he left blank are "slow" (a few fish around, rare to catch one).
+var FORM_SEASON_CAL = {
+  steelhead: ['good','good','good','good','prime','prime','prime','prime','good','slow','done','done','done','done','done','done','done','done','good','good','prime','prime','prime','prime'],
+  chinook:   ['done','done','done','done','done','done','done','done','done','done','done','done','done','done','slow','slow','good','prime','prime','good','slow','slow','slow','slow'],
+  coho:      ['done','done','done','done','done','done','done','done','done','done','done','done','done','done','done','done','done','slow','good','good','prime','prime','slow','slow'],
+  lakebrown: ['slow','slow','slow','slow','good','good','slow','slow','done','done','done','done','done','done','done','done','slow','slow','slow','slow','good','good','good','slow'],
+  brown:     ['slow','slow','slow','slow','slow','slow','prime','prime','prime','prime','good','good','slow','slow','slow','slow','prime','prime','prime','prime','good','good','slow','slow'],
+  rainbow:   ['slow','slow','slow','slow','slow','slow','prime','prime','prime','prime','good','good','slow','slow','slow','slow','prime','prime','prime','prime','good','good','slow','slow'],
+  brook:     ['slow','slow','slow','slow','slow','slow','prime','prime','prime','prime','good','good','slow','slow','slow','slow','prime','prime','prime','prime','prime','good','slow','slow']
+};
+var FORM_STATUS_RANK = { done: 0, slow: 1, good: 2, prime: 3 };
+var FORM_SPECIES_KEY = { 'Steelhead': 'steelhead', 'Chinook Salmon': 'chinook', 'Coho Salmon': 'coho',
+  'Brown Trout': 'brown', 'Rainbow Trout': 'rainbow', 'Brook Trout': 'brook' };
+
+function formHalfIndex(dateStr) {
+  var p = String(dateStr).split('-');
+  return (parseInt(p[1], 10) - 1) * 2 + (parseInt(p[2], 10) > 15 ? 1 : 0);
+}
+
+// What the form says about one species on a date, given the sections in the angler's range.
+// status: the best calendar status on a reach that lists the species and is legally open that day
+// (lake-run browns use their own row on reaches below a barrier). Legality uses the same checks as
+// the results page (speciesSeasonClosureFor, allAccessClosed), so the form can't call a fish prime
+// on water the results call closed.
+// Returns {status, listed, open, reopens}: listed = some reach in range has the species;
+// open = one of those is open on the date; reopens = the trout opener date (YYYY-MM-DD) when every
+// listed reach is closed by its season.
+function formSpeciesStatus(speciesName, sections, dateStr) {
+  var key = FORM_SPECIES_KEY[speciesName];
+  var i = formHalfIndex(dateStr);
+  var best = null, listed = false, reopens = null;
+  (sections || []).forEach(function(sec) {
+    var cfg = RIVER_CONFIG[sectionBaseName(sec)];
+    if (!cfg || cfg.active === false || !cfg.species || cfg.species.indexOf(speciesName) === -1) return;
+    listed = true;
+    var closure = speciesSeasonClosureFor(cfg, speciesName, dateStr);
+    if (closure) {
+      var w = seasonWindowFor('standard', closure.reopens);
+      var o = w && w.open;
+      var iso = o ? o.getFullYear() + '-' + String(o.getMonth() + 1).padStart(2, '0') + '-' + String(o.getDate()).padStart(2, '0') : null;
+      if (iso && (!reopens || iso < reopens)) reopens = iso;
+      return;
+    }
+    if (allAccessClosed(cfg, dateStr)) return;
+    var row = (key === 'brown' && isLakeRunBrownSection(sec)) ? 'lakebrown' : key;
+    var s = FORM_SEASON_CAL[row] && FORM_SEASON_CAL[row][i];
+    if (s && (!best || FORM_STATUS_RANK[s] > FORM_STATUS_RANK[best])) best = s;
+  });
+  return { status: best, listed: listed, open: !!best, reopens: best ? null : reopens };
+}
+
 // The Worker imports this file as a module, where the declarations above are not globals.
 if (typeof globalThis !== 'undefined') {
   globalThis.HFF_CORE = {
@@ -2853,6 +2909,7 @@ if (typeof globalThis !== 'undefined') {
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
     sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict,
-    rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD
+    rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
+    FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus
   };
 }

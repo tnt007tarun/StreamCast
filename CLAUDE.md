@@ -128,6 +128,8 @@ short-name splits accept either character.
 
 ### Assets
 - YouTube thumbnails: `hqdefault.jpg` (`maxresdefault` doesn't exist for every video).
+- Every `.vid-play` button needs `data-yt="<id>"` (the click script builds the embed from it) **and** the Umami
+  `data-umami-event-video`. #72 swapped one for the other and every video showed "An error occurred" until #115.
 - Photos: WebP, max 1200 px wide, quality 72. Keep the JPG for og:image and JSON-LD.
 - Videos: compress (720p, CRF 28, `+faststart`), `preload="none"`, with a poster frame.
 - Site icon: `favicon.svg` is the source: the leaping trout traced from TJ's logo, white with its pink stripe, on a
@@ -339,6 +341,15 @@ Merged recently:
   (`extended`); fixed with `speciesSeasonClosureFor()` (see House rules). Then TJ confirmed the reach is mostly above
   Hwy 407, so it is now `standard` (closes Sept 30 for all trout). Checked against main for every reach, species and
   day of 2026: only that reach changed, Oct 1 to Dec 31.
+
+- **Species tags on the form** (TJ, 2026-10-30): tiles keep their order; a "Prime" tag, closed tiles greyed with
+  "Opens Apr 24" (still tappable), and a hint line above the grid ("Late November: Steelhead and coho are at their
+  best. ..."). `formSpeciesStatus()` in the core: TJ's half-month calendar `FORM_SEASON_CAL` (from the "Species Season
+  Calendar" artifact; his blanks = slow) on reaches in the travel range that are legally open that day
+  (`speciesSeasonClosureFor()`, `allAccessClosed()`; lake-run browns use their own row). `updateSpeciesGrid()` in
+  `app.js` reruns on date, city and range changes. **Form only for now (TJ):** ratings and ranking still use
+  `SPECIES_SEASONS`. Before switching them over, handle eastern tribs (Ganaraska, Bowmanville) getting Chinook a bit
+  earlier (TJ).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

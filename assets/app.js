@@ -5546,47 +5546,102 @@ async function fetchLandingWeather(lat, lng) {
   } catch(e) { return null; }
 }
 
-// ── SPECIES GRID — annotate pre-run migratory species ────────────────────────
+// ── SPECIES GRID — Prime tags, closed tiles and a one-line hint (TJ, 2026-10-30) ────
+// Tile order never changes. A tile gets a "Prime" tag when TJ's half-month calendar
+// (FORM_SEASON_CAL) says prime on a reach in range that is open on the trip date; a tile with no open
+// reach in range is greyed out but stays tappable, so the results page can say why. The hint above the
+// grid says what's at its best and what's closed. formSpeciesStatus() in the core decides all of it.
+var SP_TILE_NAME = { brown:'Brown Trout', rainbow:'Rainbow Trout', steelhead:'Steelhead', brook:'Brook Trout', chinook:'Chinook Salmon', coho:'Coho Salmon' };
+var SP_HINT_NAME = { brown:'brown trout', rainbow:'resident rainbows', steelhead:'steelhead', brook:'brook trout', chinook:'Chinook', coho:'coho' };
+var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function formTripDate() {
+  var v = (document.getElementById('trip-date') || {}).value;
+  if (v) return v;
+  var n = new Date();
+  return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+}
+
+// Sections the form is choosing from: everything within the travel range of the picked city, or
+// every active section before a city is picked.
+function formSectionsInRange() {
+  var val = (document.getElementById('loc-input-field') || {}).value;
+  var loc = val ? resolveLocation(val) : null;
+  if (loc) {
+    var max = parseInt((document.getElementById('travel-range') || { value: '60' }).value, 10) || 60;
+    return getRivers(loc, appMode === 'expert' ? 180 : max, Infinity).map(function(r){ return r.name; });
+  }
+  return Object.keys(RIVER_CONFIG).filter(function(k){ return k !== 'default' && RIVER_CONFIG[k].active !== false; });
+}
+
+function joinAnd(list) {
+  return list.length < 2 ? list.join('') : list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1];
+}
+function capFirst(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function shortDate(iso) {
+  var p = iso.split('-');
+  return MONTH_NAMES[parseInt(p[1], 10) - 1].slice(0, 3) + ' ' + parseInt(p[2], 10);
+}
+function longDate(iso) {
+  var p = iso.split('-');
+  return MONTH_NAMES[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
+}
+
+function speciesHintText(states, dateStr) {
+  var i = formHalfIndex(dateStr);
+  var period = (i % 2 ? 'Late ' : 'Early ') + MONTH_NAMES[i >> 1];
+  var keys = Object.keys(SP_TILE_NAME);
+  var prime = keys.filter(function(k){ return states[k].status === 'prime'; });
+  var good = keys.filter(function(k){ return states[k].status === 'good'; });
+  var parts = [];
+  if (prime.length) parts.push(capFirst(joinAnd(prime.map(function(k){ return SP_HINT_NAME[k]; }))) + ' are at their best.');
+  else if (good.length) parts.push(capFirst(joinAnd(good.map(function(k){ return SP_HINT_NAME[k]; }))) + ' are worth a try.');
+  else parts.push('A slow stretch for every species.');
+  var byDate = {};
+  keys.forEach(function(k){ var r = states[k].reopens; if (r) (byDate[r] = byDate[r] || []).push(SP_HINT_NAME[k]); });
+  Object.keys(byDate).sort().forEach(function(d){ parts.push(capFirst(joinAnd(byDate[d])) + ' closed until ' + longDate(d) + '.'); });
+  return period + ': ' + parts.join(' ');
+}
+
 function updateSpeciesGrid() {
   var grid = document.querySelector('.species-btn-grid');
   if (!grid) return;
+  var dateStr = formTripDate();
+  var sections = formSectionsInRange();
+  var states = {};
+  Object.keys(SP_TILE_NAME).forEach(function(k){ states[k] = formSpeciesStatus(SP_TILE_NAME[k], sections, dateStr); });
 
-  var speciesKeyMap = { chinook:'Chinook Salmon', coho:'Coho Salmon', steelhead:'Steelhead' };
-
-  // Check which migratory species are pre-run (absent from rivers but legally fishable)
-  var preRun = [];
-  Object.keys(speciesKeyMap).forEach(function(key) {
-    var w = getCurrentSeason(speciesKeyMap[key]);
-    if (w && w.quality === 'absent') preRun.push(key);
+  grid.querySelectorAll('.species-btn').forEach(function(btn) {
+    var k = btn.getAttribute('data-value');
+    var st = states[k];
+    if (!st) return;
+    var tag = btn.querySelector('.sp-tag');
+    if (!tag) { tag = document.createElement('span'); tag.className = 'sp-tag'; btn.appendChild(tag); }
+    var note = '';
+    if (st.status === 'prime') { tag.textContent = 'Prime'; tag.hidden = false; } else { tag.textContent = ''; tag.hidden = true; }
+    if (!st.open) note = st.reopens ? 'Opens ' + shortDate(st.reopens) : (st.listed ? 'Closed' : 'None in range');
+    var sub = btn.querySelector('.sp-sub');
+    if (!sub) { sub = document.createElement('span'); sub.className = 'sp-sub'; btn.appendChild(sub); }
+    sub.textContent = note; sub.hidden = !note;
+    btn.classList.toggle('sp-closed', !st.open);
   });
 
-  if (!preRun.length) return; // all running — show everything as-is
-
-  // Keep all species buttons visible — they're legally in season.
-  // Just add a contextual note beneath the grid explaining they're not in rivers yet.
-  if (!document.getElementById('sp-season-toggle')) {
-    var note = document.createElement('p');
-    note.id = 'sp-season-toggle';
-    note.className = 'sp-season-toggle';
-    var labels = preRun.map(function(k) {
-      return speciesKeyMap[k].replace(' Salmon','').replace(' Trout','');
-    }).join(', ');
-    // Distinguish staging-possible from truly absent
-    var stagingSpecies = preRun.filter(function(k) { return k === 'chinook' || k === 'coho'; });
-    var nonStaging = preRun.filter(function(k) { return k === 'steelhead'; });
-    var parts = [];
-    if (stagingSpecies.length) {
-      var stagingLabels = stagingSpecies.map(function(k){ return speciesKeyMap[k].replace(' Salmon',''); }).join(', ');
-      parts.push(stagingLabels + ': not in rivers yet · may be staging near harbour mouths');
-    }
-    if (nonStaging.length) {
-      parts.push('Steelhead · dropped back to the lake until fall');
-    }
-    note.textContent = parts.join(' · ') + ' ▸';
-    note.style.cursor = 'default';
-    grid.parentNode.insertBefore(note, grid.nextSibling);
+  var hint = document.getElementById('sp-hint');
+  if (!hint) {
+    hint = document.createElement('p');
+    hint.id = 'sp-hint'; hint.className = 'sp-hint';
+    hint.setAttribute('aria-live', 'polite');
+    grid.parentNode.insertBefore(hint, grid);
   }
+  hint.textContent = speciesHintText(states, dateStr);
 }
+
+['trip-date', 'loc-input-field', 'travel-range'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('change', function(){ try { updateSpeciesGrid(); } catch (e) { console.error('updateSpeciesGrid', e); } });
+  if (id === 'travel-range') el.addEventListener('input', function(){ try { updateSpeciesGrid(); } catch (e) {} });
+});
 
 
 function rrankBadge(score) {
