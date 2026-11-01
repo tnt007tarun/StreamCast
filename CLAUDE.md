@@ -357,6 +357,9 @@ Merged recently:
   (`&ref=outlook`), TJ's note and photo, closures, and how the dates were picked. Same content as the monthly outlook
   email. One URL, replaced each month (no archive yet). The "Monthly outlook draft" task opens a PR updating it on the
   26th; TJ merges on the 1st. In the sitemap, llms.txt and the guides index.
+  Homepage: a "See this month's best dates by region" link under the hero badges (`.hero-outlook`, `?ref=home`,
+  Umami `Outlook Link Clicked {placement: hero}`). Not a `GUIDES` card: its month strip and season status don't fit
+  a page that changes every month (2026-11-01).
 
 - **Add to home screen** (TJ, 2026-10-31): `site.webmanifest` is `standalone` (full screen from the home-screen icon,
   scope `/`), and every page has the Apple web-app meta tags after the manifest link (add them to new pages). The

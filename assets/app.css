@@ -2110,6 +2110,21 @@ background-size:cover;background-position:center;position:relative}
   border: 1px solid rgba(14,42,74,0.14);
   color: #0e2a4a;
 }
+/* Link to /outlook/ (the monthly outlook page) under the badges (TJ, 2026-11-01). */
+.hero-outlook {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  margin-top: 0.35rem;
+  padding: 0 0.25rem;
+  font: 600 0.92rem/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #1e7a6e;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(30,122,110,0.4);
+}
+.hero-outlook:hover, .hero-outlook:focus-visible { color: #145a51; text-decoration-color: #145a51; }
 
 /* ── SITE FOOTER ──────────────────────────────────────────── */
 .site-footer {
