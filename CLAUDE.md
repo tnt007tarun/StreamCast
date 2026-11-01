@@ -352,6 +352,12 @@ Merged recently:
   ranking still use `SPECIES_SEASONS`. Before switching them over, handle eastern tribs (Ganaraska, Bowmanville)
   getting Chinook a bit earlier (TJ).
 
+- **Monthly outlook page** (TJ, 2026-11-01, for his YouTube intros): `/outlook/` shows this month's outlook as a
+  calendar (best dates per region: West, Central, East, plus forecast rain and snow days), date chips into the app
+  (`&ref=outlook`), TJ's note and photo, closures, and how the dates were picked. Same content as the monthly outlook
+  email. One URL, replaced each month (no archive yet). The "Monthly outlook draft" task opens a PR updating it on the
+  26th; TJ merges on the 1st. In the sitemap, llms.txt and the guides index.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
