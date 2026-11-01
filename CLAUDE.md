@@ -329,8 +329,9 @@ Merged recently:
   for the river's reach in `STEELHEAD_REACH` (all-year reach where there is one), with "Also send run alerts" (posts
   `kind: run` plus `weekly`); August and September keep salmon run alerts; the Don keeps run alerts (no steelhead).
   Homepage box: `data-kind="weekly"`, river and fish pickers (`pickSection()`: open today, then the longest season),
-  "Also send the monthly outlook". Homepage badges under the headline: Free, No account, Live river gauges
-  (`.hero-badges`, shown on phones too). "Fish with a buddy?" box (`shareBox()` in `worker/emailshell.js`) above the
+  "Also send the monthly outlook". Homepage badges under the headline (Free, No account, Live river gauges) were
+  replaced on 2026-11-01 by TJ's one-liner in `.hero-sub` (now shown on phones too): "The best trout and salmon
+  conditions around the GTA, from live river data and up-to-date regulations. Plan before you drive." "Fish with a buddy?" box (`shareBox()` in `worker/emailshell.js`) above the
   footer of the weekly email, the welcome email and `tools/outlook-template.html`. Umami `offer` is now also `weekly`,
   `weekly+run`, `weekly+outlook`. Judge it on signups per Signup Box Seen, 4 to 6 weeks before and after.
 
