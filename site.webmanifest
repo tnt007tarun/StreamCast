@@ -1,8 +1,11 @@
 {
+  "id": "/",
   "name": "HereFishyFishy",
   "short_name": "HereFishyFishy",
+  "description": "Ontario river fishing conditions: live flow, weather and regulations for your river today.",
   "start_url": "/",
-  "display": "browser",
+  "scope": "/",
+  "display": "standalone",
   "background_color": "#fbf9f5",
   "theme_color": "#0e2a4a",
   "icons": [

@@ -1,3 +1,5 @@
+// The query string as the page was opened (the app clears it later; the home-screen hint reads this).
+var _initialSearch = location.search;
 
 
 // ── STREAMCAST PROXY WORKER ─────────────────────────────────────────────────
@@ -1310,6 +1312,7 @@ function toggleTech(el){el.classList.toggle("active");}
 function clearTech(){document.querySelectorAll(".tech-chip").forEach(function(c){c.classList.remove("active");});}
 
 function goToResults(){
+  try { hideInstallHint(); } catch (e) {}
   // Track search
   (function(){
     var _loc = (document.getElementById('loc-input-field')||{}).value || 'unknown';
@@ -6013,3 +6016,94 @@ function initNotifyBar() {
 }
 // ── END NOTIFY BAR ────────────────────────────────────────────────────────────
 
+
+// ── ADD TO HOME SCREEN (TJ, 2026-10-31) ──────────────────────────────────────
+// The manifest opens the site full screen from a home-screen icon. Most phone users don't know the
+// feature exists, so the homepage shows a one-time hint on phones from the second day someone visits:
+// iPhone/iPad get the Share > Add to Home Screen steps; Android Chrome gets an Add button that opens
+// its own install prompt. One tap on the x hides it for good. It never shows on results (the notify
+// bar lives there), inside an in-app browser (Instagram, Facebook can't add to home screen), or
+// once the site is already running from the home screen.
+var _installEvt = null;
+function isStandalone() {
+  try { return !!((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone); }
+  catch (e) { return false; }
+}
+function a2hsPlatform() {
+  var ua = navigator.userAgent || '';
+  if (/FBAN|FBAV|Instagram|Line\/|Twitter|LinkedInApp/i.test(ua)) return null;
+  // iPadOS 13+ Safari reports itself as a Mac; a Mac with a touch screen is an iPad.
+  var iOS = /iPhone|iPod|iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  if (iOS) return 'ios';
+  if (/Android/i.test(ua)) return 'android';
+  return null;
+}
+function a2hsDayCount() {
+  var today = new Date().toISOString().slice(0, 10);
+  var days = (lsGet('hff_visit_days') || '').split(',').filter(Boolean);
+  if (days.indexOf(today) === -1) { days.push(today); lsSet('hff_visit_days', days.slice(-5).join(',')); }
+  return days.length;
+}
+function hideInstallHint(reason) {
+  var el = document.getElementById('a2hs');
+  if (!el || el.hidden) return;
+  el.hidden = true;
+  if (reason === 'dismiss') { lsSet('hff_a2hs_done', '1'); track('Install Hint Dismissed', { platform: el.getAttribute('data-platform') }); }
+}
+function showInstallHint(platform) {
+  if (document.getElementById('a2hs')) return;
+  var res = document.getElementById('results');
+  if (res && res.style.display !== 'none') return;
+  var shareIcon = '<svg class="a2hs-share" viewBox="0 0 16 20" aria-hidden="true"><path d="M8 1v11M4.5 4.5 8 1l3.5 3.5M5 8H2.5v10.5h11V8H11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var how = platform === 'ios'
+    ? 'Tap ' + shareIcon + ' <b>Share</b>, then <b>Add to Home Screen</b>.'
+    : (_installEvt ? 'Open it like an app, full screen, in one tap.' : 'Open your browser menu, then <b>Add to Home screen</b>.');
+  var el = document.createElement('div');
+  el.id = 'a2hs'; el.className = 'a2hs'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Add to home screen');
+  el.setAttribute('data-platform', platform);
+  el.innerHTML = '<img src="/icon-192.png?v=3" alt="" width="40" height="40">' +
+    '<div class="a2hs-text"><strong>Add HereFishyFishy to your home screen</strong><span>' + how + '</span></div>' +
+    (platform === 'android' && _installEvt ? '<button type="button" class="a2hs-add" id="a2hs-add">Add</button>' : '') +
+    '<button type="button" class="a2hs-x" id="a2hs-x" aria-label="Close">×</button>';
+  document.body.appendChild(el);
+  lsSet('hff_a2hs_shown', String((parseInt(lsGet('hff_a2hs_shown') || '0', 10) || 0) + 1));
+  track('Install Hint Shown', { platform: platform });
+  document.getElementById('a2hs-x').addEventListener('click', function(){ hideInstallHint('dismiss'); });
+  var add = document.getElementById('a2hs-add');
+  if (add) add.addEventListener('click', function(){
+    var evt = _installEvt; _installEvt = null;
+    if (!evt) return;
+    evt.prompt();
+    evt.userChoice.then(function(c){
+      track('Install Prompt Answered', { outcome: c && c.outcome });
+      if (c && c.outcome === 'accepted') lsSet('hff_a2hs_done', '1');
+      hideInstallHint();
+    }).catch(function(){});
+  });
+}
+function maybeInstallHint() {
+  if (isStandalone()) return;
+  var platform = a2hsPlatform();
+  if (!platform) return;
+  // ?a2hs=1 shows it now, for testing on a phone (skips the second-day and dismissed checks).
+  if (/[?&]a2hs=1/.test(_initialSearch)) { setTimeout(function(){ showInstallHint(platform); }, platform === 'android' ? 2500 : 800); return; }
+  if (lsGet('hff_a2hs_done')) return;
+  if (/[?&](river|species)=/.test(_initialSearch)) return;   // deep links open straight into results
+  if (a2hsDayCount() < 2) return;
+  if ((parseInt(lsGet('hff_a2hs_shown') || '0', 10) || 0) >= 3) return;  // shown 3 times, no answer: stop asking
+  if (platform === 'android') {
+    // Chrome hands over its install prompt shortly after load; other Android browsers never do.
+    setTimeout(function(){ showInstallHint('android'); }, 2500);
+  } else {
+    setTimeout(function(){ showInstallHint('ios'); }, 1500);
+  }
+}
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); _installEvt = e; });
+window.addEventListener('appinstalled', function(){ lsSet('hff_a2hs_done', '1'); hideInstallHint(); track('App Installed', {}); });
+try {
+  if (isStandalone()) {
+    try { if (!sessionStorage.getItem('hff_hs_launch')) { sessionStorage.setItem('hff_hs_launch', '1'); track('Home Screen Launch', {}); } } catch (e) {}
+  } else {
+    maybeInstallHint();
+  }
+} catch (e) { console.error('install hint', e); }
