@@ -384,6 +384,11 @@ Merged recently:
   the 8 AM / 12 PM / 6 PM forecast. `skyDayNote()` now words the note from the same forecast (70%+ overcast, under 30%
   bright, like Best Window), and the headline value says "now" on today's date.
 
+- **Compact header on phones** (TJ, 2026-11-02, from the home-screen app): logo and name on one row with the nav, the
+  "South Ontario" line hidden under 600 px (header about 100 px to 52). Tighter under 380 px; "Conditions" (links to
+  `/`) hidden under 340 px so 320 px screens fit. `_headers` now sends `Cache-Control: no-cache` for `/assets/*`: TJ's
+  iPhone showed a new `index.html` with a stale `app.css`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

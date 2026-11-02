@@ -15,3 +15,8 @@
 /weekly/*
   X-Robots-Tag: noindex, nofollow
   Referrer-Policy: no-referrer
+
+# App code and styles change often and have no version in their URLs: make browsers check for a new copy on every
+# load (a 304 when unchanged). A home-screen launch on iOS showed a new index.html with an old app.css (2026-11-02).
+/assets/*
+  Cache-Control: no-cache

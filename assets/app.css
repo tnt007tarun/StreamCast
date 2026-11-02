@@ -2460,9 +2460,23 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media(max-width:600px){
   /* masthead: logo name (113px) + region (87px) + nav (161px) = 372px against
      350px of available width. Stacking the two logo lines drops it to 274px. */
-  #landing .land-header{gap:.75rem;align-items:flex-start}
-  #landing .logo-wrap{flex-direction:column;align-items:flex-start;gap:.12rem}
+  /* One row on phones (TJ, 2026-11-02: the stacked logo, name and "South Ontario" took ~100 px). The region line is
+     hidden so logo + name + nav fit: 32 + 7 + ~113 + 12 + ~150 = ~314 px, inside 320 at a 360 px screen. */
+  #landing .land-header{gap:.75rem;align-items:center;padding-top:.6rem;padding-bottom:.6rem}
+  #landing .logo-wrap{flex-direction:row;align-items:center;gap:.45rem;min-width:0}
+  #landing .logo-region{display:none}
   #landing .land-nav{flex-shrink:0}
+}
+@media(max-width:380px){
+  #landing .land-header{padding-left:1rem;padding-right:1rem;gap:.5rem}
+  #landing .logo-wrap img{height:28px!important}
+  #landing .logo-name{font-size:1rem}
+  #landing .land-nav{gap:.7rem}
+  #landing .land-nav a{font-size:.72rem}
+}
+@media(max-width:340px){
+  /* "Conditions" links to this page; drop it so the row still fits on 320 px screens. */
+  #landing .land-nav a[href="/"]{display:none}
 
   /* the two selects would otherwise size to their widest option
      ("— Select your city —" is ~208px intrinsic against a 159.6px track) */
