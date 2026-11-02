@@ -2092,6 +2092,13 @@ background-size:cover;background-position:center;position:relative}
 .hero-sub { max-width: 34rem; margin-left: auto; margin-right: auto; }
 /* Desktop only (TJ, 2026-11-02: redundant on phones). */
 @media (max-width: 600px) { .hero-sub-more { display: none; } }
+/* Phones: the Date/Location row, the Method section's top padding and the Method label's margin stacked into a
+   ~50 px gap (more on iOS), pushing "Find my best spot" below the fold (TJ, 2026-11-02). */
+@media (max-width: 600px) {
+  #landing .form-card .form-top { padding-bottom: 0.4rem; }
+  #landing .form-card .tech-section { padding-top: 0; }
+  #landing .tech-section .beginner-only > .field-lbl:first-child { margin-top: 0.5rem !important; }
+}
 /* Link to /outlook/ (the monthly outlook page) under the badges (TJ, 2026-11-01). */
 .hero-outlook {
   display: inline-flex;
