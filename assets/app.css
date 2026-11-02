@@ -2090,6 +2090,8 @@ background-size:cover;background-position:center;position:relative}
 }
 /* One line on what the app does, on phones too (TJ, 2026-11-01; replaced the Free / No account pills). */
 .hero-sub { max-width: 34rem; margin-left: auto; margin-right: auto; }
+/* Desktop only (TJ, 2026-11-02: redundant on phones). */
+@media (max-width: 600px) { .hero-sub-more { display: none; } }
 /* Link to /outlook/ (the monthly outlook page) under the badges (TJ, 2026-11-01). */
 .hero-outlook {
   display: inline-flex;
