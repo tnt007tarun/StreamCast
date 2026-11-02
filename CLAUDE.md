@@ -379,6 +379,11 @@ Merged recently:
   November row). It opens with the /outlook/ page; the caption links there. Its YouTube description links the outlook,
   Bronte page, salmon float tips and /weekly/ with `?ref=yt`.
 
+- **Sky note** (TJ, 2026-11-02): the Temperature & Light note under the sky strip used the cloud reading right now
+  ("Clear. Fishing is hard until 8:30 AM, then expect it to die." at 7 am) while the strip and Best Window card used
+  the 8 AM / 12 PM / 6 PM forecast. `skyDayNote()` now words the note from the same forecast (70%+ overcast, under 30%
+  bright, like Best Window), and the headline value says "now" on today's date.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

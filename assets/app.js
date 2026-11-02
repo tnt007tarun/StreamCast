@@ -2859,11 +2859,14 @@ async function renderResults(){
   if(_td){_td.className="col-status-dot visible dot-"+_avgCls;}
 
   // Sky column
-  document.getElementById("skyv").textContent=skyl+" ("+cloudPct+"%)";
+  // Today the headline number is the cloud right now; say so, since the strip below is the day's forecast.
+  document.getElementById("skyv").textContent=skyl+(isToday&&window._periodCloud?" now":"")+" ("+cloudPct+"%)";
   renderSkyPeriodStrip(window._periodCloud || null);
   // sky sub-indicators removed — combined into temp-dot
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
-  document.getElementById("skystat").textContent=sc==="good"?"Fish feed through the whole water column all day.":sc==="warn"?"Morning and evening windows open. Midday slows.":"Clear. Fishing is hard until 8:30 AM, then expect it to die.";
+  // The note follows the same 8 AM / 12 PM / 6 PM forecast as the strip and the Best Window card, so the three never
+  // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
+  document.getElementById("skystat").textContent=skyDayNote(window._periodCloud, sc);
   document.getElementById("skystat").className="gs "+sc;
   // Best Window card — reuse the period-aware window text computed for the summary card
   var _bwNote;
@@ -3554,6 +3557,24 @@ function rankRivers(rivers, speciesKey, dateStr) {
 
 // ── BUILD TOP PICK BAND ───────────────────────────────────────────────────────
 // ── SKY PERIOD STRIP ─────────────────────────────────────────────────────────
+// One line on the day's sky for the Temperature & Light card. With the period forecast it describes the day; without
+// it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
+function skyDayNote(pc, sc) {
+  if (!pc) return sc==="good" ? "Overcast. Fish feed through the whole water column."
+    : sc==="warn" ? "Some cloud. Best early and late; midday slows."
+    : "Clear sky. Fish early and late; the bite slows once the sun is high.";
+  var g = function(c){ return c>=70?'good':c>=30?'warn':'bad'; };
+  var m = g(pc.morning), d = g(pc.midday), e = g(pc.evening);
+  if (m==='good' && d==='good' && e==='good') return "Overcast all day. Fish feed through the whole water column.";
+  if (m==='bad' && d==='bad' && e==='bad') return "Clear all day. Fish first and last light; midday will be slow.";
+  if (m==='warn' && d==='warn' && e==='warn') return "Partly cloudy all day. Best early and late; midday slows.";
+  var r = {bad:0, warn:1, good:2}, M = r[m], D = r[d], E = r[e];
+  if (D < M && D < E) return "Bright at midday. Fish morning and evening.";
+  if (M <= D && D <= E && M < E) return "Brighter early, cloudier later. The bite should pick up as the cloud comes in.";
+  if (M >= D && D >= E && M > E) return "Cloudier early, brighter later. Fish the morning.";
+  return "Mixed sky. Fish the cloudier spells.";
+}
+
 function renderSkyPeriodStrip(periodCloud) {
   var strip = document.getElementById('sky-period-strip');
   if (!strip) return;
