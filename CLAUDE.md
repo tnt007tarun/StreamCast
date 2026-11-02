@@ -370,6 +370,10 @@ Merged recently:
   stops after 3 showings. `?a2hs=1` forces it for testing. No service worker or offline cache on purpose (a stale
   cache would serve an old `app.js` after a fix). Store apps (Capacitor) later, once the web app is stable (TJ).
 
+- **Bronte late-season video** (TJ, 2026-11-01): `wzk3Ex5294I` on `/rivers/bronte/`, right after the run table (the
+  November row). It opens with the /outlook/ page; the caption links there. Its YouTube description links the outlook,
+  Bronte page, salmon float tips and /weekly/ with `?ref=yt`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
