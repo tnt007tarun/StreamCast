@@ -332,7 +332,7 @@ Merged recently:
   "Also send the monthly outlook". Homepage badges under the headline (Free, No account, Live river gauges) were
   replaced on 2026-11-01 by a one-liner in `.hero-sub` (shown on phones too). Shortened 2026-11-02 (TJ: one line
   of title and at most two of subtitle on phones, so the form starts higher): h1 "Where to fish today." and "Live river
-  data and regulations for GTA trout and salmon. Plan before you drive." "Plan before you drive" is desktop only
+  data and regs for trout and salmon. Plan before you drive." "Plan before you drive" is desktop only
   (`.hero-sub-more`, hidden under 600 px; TJ: redundant on phones). Checked at 360, 375 and 390 px. "Fish with a buddy?" box (`shareBox()` in `worker/emailshell.js`) above the
   footer of the weekly email, the welcome email and `tools/outlook-template.html`. Umami `offer` is now also `weekly`,
   `weekly+run`, `weekly+outlook`. Judge it on signups per Signup Box Seen, 4 to 6 weeks before and after.
