@@ -86,6 +86,9 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
   Oct-Nov fall run, Dec-Feb holding over (good), Mar-Apr spring run, May-Aug in the lake. Gear is
   float with roe, like steelhead.
 - `getCurrentSeason(species, date, section)`: pass the section when it isn't the one being viewed.
+- **Coho** are rare on the Credit, Bronte and Humber (TJ, 2026-11-02: they run mostly in the eastern tributaries), so
+  those sections don't list them. `/credit-river/coho-salmon` 301s to `/credit-river/steelhead`. Run alert drafts for
+  the Credit talk about steelhead only.
 
 ### One decision, one function
 The most common bug in this codebase is duplicated logic drifting apart: the hero, the
@@ -383,6 +386,10 @@ Merged recently:
   ("Clear. Fishing is hard until 8:30 AM, then expect it to die." at 7 am) while the strip and Best Window card used
   the 8 AM / 12 PM / 6 PM forecast. `skyDayNote()` now words the note from the same forecast (70%+ overcast, under 30%
   bright, like Best Window), and the headline value says "now" on today's date.
+
+- **Coho off the west and central rivers** (TJ, 2026-11-02, after a Credit run-alert draft led with "peak coho"):
+  Coho removed from Lower Credit and Bronte lower and mid (the Humber never listed them); copy on the Credit, Bronte,
+  Humber and salmon-run-timing pages follows. The "Run alert drafts" task has a species rule (Credit: steelhead only).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

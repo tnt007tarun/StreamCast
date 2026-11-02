@@ -90,22 +90,6 @@ const SSR_ROUTES = {
     evergreen: `Chinook stage off Port Credit harbour from late July and enter the Credit from late August, with peak numbers moving through in late September and October. Fish hold near the harbour mouth waiting for flow, then push upriver after rain. Until they commit, the pier and beach fish better than the river does.`,
     tips: `Target the Credit during and just after rain, when fresh fish push on rising water. While fish are still staging, cast spoons and spinners from the pier at dawn and dusk. Once they are in the river, float-fished roe or beads through the deepest pools is the more productive approach.`,
   },
-  'coho-salmon': {
-    river: 'Credit River',
-    species: 'Coho Salmon',
-    section: 'Lower Credit River',
-    gauge: '02HB029', gaugeName: 'Credit River at Streetsville',
-    sweetMin: 6, sweetMax: 13, flowLow: 3, flowHigh: 30,
-    lat: 43.560, lng: -79.720,
-    seasonMonths: [8, 10],
-    access: [
-      'Credit River Mouth, Port Credit, ON',
-      'Erindale Park, Mississauga, ON',
-    ],
-    closures: 'The Hwy 403–Britannia reach is closed August 15 to December 31. Erindale Park is downstream of Hwy 403 and open.',
-    evergreen: `Coho arrive on the Credit in October, behind the main Chinook push. Smaller and more acrobatic than Chinook, they hold higher in the water column and are far more willing to chase a fly or a lure.`,
-    tips: `Coho respond well to swung flies and small spoons. A size 2 silver spoon retrieved steadily through a pool can be deadly. Focus on the lower river, particularly the pools below Erindale Park.`,
-  },
 };
 
 // ── SCORING LOGIC ────────────────────────────────────────────────────────────
@@ -330,6 +314,10 @@ ${route.readNext ? `<p>${route.readNext}</p>` : ''}
 export async function onRequest(context) {
   const { params, env } = context;
   const speciesSlug = params.species;
+  // Coho are rare on the Credit (TJ, 2026-11-02): the old coho page now points to steelhead.
+  if (speciesSlug === 'coho-salmon') {
+    return Response.redirect(new URL('/credit-river/steelhead', context.request.url).toString(), 301);
+  }
   const route = SSR_ROUTES[speciesSlug];
 
   if (!route) {

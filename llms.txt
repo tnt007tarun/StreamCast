@@ -45,5 +45,5 @@ Runs in any mobile browser at herefishyfishy.ca. Free, no account required to us
 - https://herefishyfishy.ca/rivers/bowmanville/salmon-run/ — Bowmanville Creek salmon run
 - https://herefishyfishy.ca/rivers/bronte/ — Bronte Creek, the latest salmon run of the season
 - https://herefishyfishy.ca/rivers/credit/ — Credit River overview by section
-- https://herefishyfishy.ca/credit-river/chinook-salmon — Live Credit River Chinook conditions (also: /brown-trout, /rainbow-trout, /brook-trout, /steelhead, /coho-salmon)
+- https://herefishyfishy.ca/credit-river/chinook-salmon — Live Credit River Chinook conditions (also: /brown-trout, /rainbow-trout, /brook-trout, /steelhead)
 - https://herefishyfishy.ca/about — Who built this and how it works
