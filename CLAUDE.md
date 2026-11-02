@@ -86,6 +86,9 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
   Oct-Nov fall run, Dec-Feb holding over (good), Mar-Apr spring run, May-Aug in the lake. Gear is
   float with roe, like steelhead.
 - `getCurrentSeason(species, date, section)`: pass the section when it isn't the one being viewed.
+- **Coho** are rare on the Credit, Bronte and Humber (TJ, 2026-11-02: they run mostly in the eastern tributaries), so
+  those sections don't list them. `/credit-river/coho-salmon` 301s to `/credit-river/steelhead`. Run alert drafts for
+  the Credit talk about steelhead only.
 
 ### One decision, one function
 The most common bug in this codebase is duplicated logic drifting apart: the hero, the
@@ -388,6 +391,9 @@ Merged recently:
   "South Ontario" line hidden under 600 px (header about 100 px to 52). Tighter under 380 px; "Conditions" (links to
   `/`) hidden under 340 px so 320 px screens fit. `_headers` now sends `Cache-Control: no-cache` for `/assets/*`: TJ's
   iPhone showed a new `index.html` with a stale `app.css`.
+- **Coho off the west and central rivers** (TJ, 2026-11-02, after a Credit run-alert draft led with "peak coho"):
+  Coho removed from Lower Credit and Bronte lower and mid (the Humber never listed them); copy on the Credit, Bronte,
+  Humber and salmon-run-timing pages follows. The "Run alert drafts" task has a species rule (Credit: steelhead only).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
