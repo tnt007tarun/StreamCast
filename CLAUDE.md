@@ -120,6 +120,7 @@ short-name splits accept either character.
   A lone `—` as a "no data" placeholder in a number tile is fine.
 - Avoid AI tells: "honest/honestly", "genuinely", "deliberately", "simply", "actually",
   "not X but Y", colon reveals, tidy closing lines.
+- **He is "TJ" on the site**, never "Tarun": bylines (`.meta` span), JSON-LD `author.name`, captions (TJ, 2026-11-02).
 - Only TJ's stated facts go in first person. Don't invent where, when or how he caught something.
   Ask him.
 - Guides and regulation copy stay plain and factual. Personal sections (the About page "Who I am",
