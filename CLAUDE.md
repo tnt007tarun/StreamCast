@@ -441,7 +441,7 @@ Merged recently:
   rated" under the pill lists the steps from `conditionsParts()` (the score is now the sum of `liveConditionsParts()`;
   `worker/parts.test.mjs` checks 806,400 cases against the old functions) plus the season, drive and method points
   from `rankRivers()` (`parts`). Results labels 12 px minimum (`#results { --fs-label: 12px }`), condition tiles two by
-  two on phones. The all-day window reads "Sunrise to sunset (…), with cloud cover all day".
+  two on phones. When and Bring are serif, 1.1rem, with a teal label above and a teal left rule (TJ picked option E, 2026-11-02). The all-day window reads "Sunrise to sunset (…), with cloud cover all day".
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
