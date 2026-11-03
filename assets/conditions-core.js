@@ -1457,7 +1457,7 @@ var RIVER_CONFIG = {
     species: ["Trout", "Salmon"],
     routine: [{ t: "Check the local Conservation Authority", d: "Each watershed has a Conservation Authority that tracks conditions and may issue flow or flood advisories." },
       { t: "Review recent rain in the upstream watershed", d: "Most Southern Ontario rivers respond to rain within 6\u201324 hours. A modest rain 24\u201348 hrs prior often produces ideal, slightly-stained conditions." },
-      { t: "Make your go/no-go call based on flow direction", d: "A rising flow is almost always better than a falling one at the same level. Direction matters more than the number." }
+      { t: "Check the flow against this river's prime range", d: "The prime range here is the flow a few days after rain. A river dropping into it usually fishes best; a sharp rise means coloured water for a day or two, though it can bring fresh fish in." }
     ],
     dam: {
       icon: "\U0001f4e1",
@@ -2358,9 +2358,30 @@ var TROUT_SPECIES = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
 // The trout heat rules apply when the fish is a trout, or when no species is known (the old default).
 function troutRule(species) { return !species || TROUT_SPECIES.indexOf(species) !== -1; }
 
+// Winter run fish (TJ, 2026-11-02): steelhead, and brown trout on a lake-run reach, while their season is open. Cold
+// water is their season, so 1 to 4 °C isn't "too cold" for them. Below COLD_RUN_MIN (about freezing, anchor-ice days)
+// the old step stays.
+var COLD_RUN_MIN = 1;
+function coldTolerantFish(species, dateStr, section) {
+  if (species !== 'Steelhead' && !(species === 'Brown Trout' && section && isLakeRunBrownSection(section))) return false;
+  var w = getCurrentSeason(species, dateStr, section);
+  return !!(w && (w.quality === 'peak' || w.quality === 'good'));
+}
+// What the score needs to know about the fish: coldTolerant (every fish named is a winter run fish in season) and
+// troutHeat (the 18 °C rule applies: a trout is named, or no fish is). null without species = the old steps.
+function tempContext(speciesNames, dateStr, section) {
+  var names = (speciesNames || []).filter(Boolean);
+  if (!names.length) return null;
+  return {
+    coldTolerant: names.every(function(n) { return coldTolerantFish(n, dateStr, section); }),
+    troutHeat: names.some(function(n) { return TROUT_SPECIES.indexOf(n) !== -1; })
+  };
+}
+
 // Water temperature. Grade from clsTemp() (TEMP_MIN 8, TEMP_MAX 14, TEMP_STRESS 18, unchanged). A modelled or rough
 // value is shown to the whole degree with "About", a live reading to one decimal. info = waterTempFor()'s
-// {kind: 'measured' | 'model' | 'rough', place}. o: {species, seasonal (getCurrentSeason), weatherOk}.
+// {kind: 'measured' | 'model' | 'rough', place}. o: {species, seasonal (getCurrentSeason), weatherOk,
+// coldTolerant (coldTolerantFish())}.
 // With no weather (and no live reading) there is no estimate: the app used to show one from a made-up 12 °C air.
 function waterTempRead(wt, info, o) {
   o = o || {};
@@ -2372,6 +2393,9 @@ function waterTempRead(wt, info, o) {
   var measured = kind === 'measured';
   var v = measured ? Math.round(wt * 10) / 10 : Math.round(wt);
   var g = clsTemp(wt);
+  // Same exceptions as the score (tempContext): winter run fish in season in 1 to 8 °C water, and salmon over 18 °C.
+  if (o.coldTolerant && wt >= COLD_RUN_MIN && wt < TEMP_MIN) g = 'warn';
+  if (!troutRule(o.species) && wt >= TEMP_STRESS) g = 'warn';
   var word = wt < TEMP_MIN - 2 ? 'Cold' : wt < TEMP_MIN ? 'Cool' : wt <= TEMP_MAX ? 'Prime' : wt < TEMP_STRESS ? 'Warm' : 'Too warm';
   var range = TEMP_MIN + ' to ' + TEMP_MAX + '°C';
   var seasonal = o.seasonal || null;
@@ -2396,9 +2420,13 @@ function waterTempRead(wt, info, o) {
       clause = edge;
       sentence = edge.charAt(0).toUpperCase() + edge.slice(1) + '.';
     }
+  } else if (troutRule(o.species)) {
+    clause = 'above ' + TEMP_STRESS + '°C';
+    sentence = 'Conservation advisory: stop fishing for trout above ' + TEMP_STRESS + '°C.';
   } else {
-    clause = troutRule(o.species) ? 'above ' + TEMP_STRESS + '°C' : 'well above the ' + range + ' feeding range';
-    sentence = 'Conservation advisory: stop fishing above ' + TEMP_STRESS + '°C.';
+    // The 18 °C advisory is a trout rule (TJ, 2026-11-02); salmon get the range only.
+    clause = 'well above the ' + range + ' feeding range';
+    sentence = 'Well above the ' + range + ' feeding range. The ' + TEMP_STRESS + '°C advisory is for trout.';
   }
   return {
     grade: g, word: word, kind: kind, value: v, measured: measured,
@@ -2453,12 +2481,24 @@ function flowRead(flow, cfg, o) {
   };
 }
 
-// Flow trend wording, unchanged from the flow card. TJ to review (2026-11-02 audit): "rising is a good sign" may not
-// fit rivers he fishes on the drop (the Lower Credit 4 to 5 days after rain). Not changed here on purpose.
-function flowTrendRead(trend) {
-  if (trend === 'up') return { grade: 'good', text: 'Rising ↑, a good sign' };
-  if (trend === 'down') return { grade: 'warn', text: 'Falling ↓, keep an eye on it' };
-  return { grade: 'warn', text: 'Stable → watch for changes' };
+// Flow trend wording (TJ, 2026-11-02): direction read against where the flow sits. The prime range is the flow a few
+// days after a rain bump, so a river dropping through it is the usual good day; a rise is coloured water, though it can
+// bring fresh fish in. Before, every rise was "a good sign" and every drop "keep an eye on it". band = flowBand(); the
+// icon follows the band (clsFlow), not the direction. Wording only: trend is not in any score.
+var FLOW_TREND_TEXT = {
+  low:    { up: 'Rising off low water. Worth watching after the rain.', down: 'Low and dropping. Fish will be spread out and wary.', stable: 'Low and steady. Fish will be spread out and wary.' },
+  normal: { up: 'Rising toward the prime range.', down: 'Dropping below the prime range. Lower, clearer water.', stable: 'Steady, below the prime range.' },
+  prime:  { up: 'Rising inside the prime range. Fresh fish can move on it; if it keeps climbing it may colour up.',
+            down: 'Dropping through the prime range, the few days after rain this river usually fishes well.', stable: 'Steady in the prime range.' },
+  high:   { up: 'Rising and already high. Expect coloured water.', down: 'Coming down after rain. Prime usually follows in a few days.', stable: 'High and steady. Target the slower edges.' },
+  blown:  { up: 'Rising and blown out. Give it a few days.', down: 'Blown out but dropping. Watch it come back into range.', stable: 'Blown out. Give it a few days.' }
+};
+function flowTrendRead(trend, band, grade) {
+  var dir = trend === 'up' ? 'up' : trend === 'down' ? 'down' : 'stable';
+  var arrow = dir === 'up' ? '\u2191' : dir === 'down' ? '\u2193' : '\u2192';
+  var row = FLOW_TREND_TEXT[band];
+  if (!row) return { grade: 'warn', text: arrow + ' ' + (dir === 'up' ? 'Rising.' : dir === 'down' ? 'Dropping.' : 'Steady.') };
+  return { grade: grade || 'warn', text: arrow + ' ' + row[dir] };
 }
 
 // The Conditions pill. The score (and so the ranking) is unchanged; what changes is what the pill claims. With no live
@@ -2809,7 +2849,10 @@ function getCurrentSeason(speciesName, dateStr, section) {
 }
 
 // ── LIVE CONDITIONS SCORING ───────────────────────────────────────────────────
-function liveConditionsScore(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct) {
+// ctx (optional, tempContext()): which fish the day is for. Without it the steps are as before for every fish.
+// With it (TJ, 2026-11-02): steelhead and lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C
+// (winter run water), and the -3 above 18 °C is for trout only (salmon at the mouth in late summer).
+function liveConditionsScore(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx) {
   var s = 0;
   // Flow
   if (flow != null) {
@@ -2822,6 +2865,8 @@ function liveConditionsScore(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC,
     if (tempC >= 8  && tempC <= 14)  s += 3;  // prime
     else if (tempC >= 4  && tempC < 8)  s += 1;
     else if (tempC > 14 && tempC <= 18) s += 1;
+    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < 4) s += 1;  // winter run water
+    else if (ctx && !ctx.troutHeat && tempC > 18) s += 1;                           // no trout heat rule
     else                                s -= 3;  // too cold or too warm
   }
   // Sky
@@ -3101,7 +3146,7 @@ function flowBand(f, cfg) {
   if (f <= cfg.flowHigh) return 'high';
   return 'blown';
 }
-function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake) {
+function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx) {
   if (stagingPct != null) {
     var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
     if (fishInLake) return s;
@@ -3110,7 +3155,7 @@ function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, 
     return flowCapScore(s, cfg, flow);
   }
   if (cfg && flow != null) {
-    return flowCapScore(baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct), cfg, flow);
+    return flowCapScore(baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx), cfg, flow);
   }
   return baseScore;
 }
@@ -3121,7 +3166,8 @@ function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, 
 function scoreDay(o) {
   var base = sectionSeasonScore(o.section, o.species || [], o.date, o.section);
   var closed = sectionClosedOn(base.cfg, o.date);
-  var score = conditionsScore(base.score, base.cfg, o.flow, o.waterTemp, o.cloudPct, o.stagingPct, o.fishInLake);
+  var score = conditionsScore(base.score, base.cfg, o.flow, o.waterTemp, o.cloudPct, o.stagingPct, o.fishInLake,
+    tempContext(o.species, o.date, o.section));
   return { section: o.section, date: o.date, closed: closed, score: score,
            confidence: closed ? null : scoreToConfidence(score), notes: base.notes, warnings: base.warnings };
 }
@@ -3234,6 +3280,7 @@ if (typeof globalThis !== 'undefined') {
     sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict,
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
+    tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
     skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
     fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
     TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS

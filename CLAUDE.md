@@ -418,6 +418,14 @@ Merged recently:
   names (`speciesReads()` in `app.js`, called again once `buildTopPick()` settles the species). Today's window shows
   only what is left ("Now to about 9:50 AM"); once it is over the hero says so and gives tomorrow's window from
   tomorrow's sunrise and cloud (today's Open-Meteo call now asks for 2 days); the picked date never changes.
+  Decided by TJ the same evening: (1) flow trend copy reads direction against the band (`flowTrendRead(trend, band)`,
+  `FLOW_TREND_TEXT`): a river dropping through prime is the usual good day, a rise is coloured water; same idea in the
+  default routine step, the staging run chip and headline, and the streamer card. (2) Winter run fish: steelhead and
+  lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C (+1), below 1 °C stays -3 (`tempContext()`,
+  `coldTolerantFish()`, `COLD_RUN_MIN`); the water reads "Cold" in amber. (3) The 18 °C advisory and its -3 are for
+  trout only (`troutHeat`); salmon get "well above the feeding range". Both go through `liveConditionsScore(..., ctx)`
+  and `conditionsScore(..., ctx)`: the app's pill (fish the headline names) and the weekly email (`scoreDay()`); with no
+  fish named the old steps apply, so rankings and the landing cards are unchanged.
   Checked: 20 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep link, a
   fallback species, after sunset) match `main` on river, species, technique, gear, bait, access spot and regs.
 
@@ -483,15 +491,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-14. **For TJ, from Phase 1 (2026-11-02); proposals posted on PR #128, nothing changed yet:** (a) the flow trend copy says rising is "a good sign" and falling "keep an eye
-   on it", and the default Pre-Trip Routine says "A rising flow is almost always better than a falling one". Neither
-   feeds a score (trend isn't in `liveConditionsScore()`), but the prime ranges are set from flow 2 to 5 days after a
-   rain bump, which is a dropping river. Left as is for TJ to decide (`flowTrendRead()`, `RIVER_CONFIG.default.routine`,
-   the staging run chip "Fish rising water after rain"). (b) Water temperature bands are one set for every species
-   (8 to 14 prime, under 6 cold, 18 advisory). Winter steelhead in water under 4 °C read "Cold" and score -3 while their
-   season says Winter Run. (c) The 18 °C conservation advisory shows on salmon days too (late-August Chinook at the
-   mouth). (d) Window lengths: first light only = 2 hours after sunrise, morning = 3 hours, evening = last 2 hours
-   (from the old 6 to 8 AM, 6 to 9 AM and 6 to 8 PM). (e) Cold water has no time rule (e.g. midday in winter).
+14. **Phase 1 follow-ups (2026-11-02):** trend wording, winter run temperatures and the trout-only 18 °C rule are
+   done (see Current state). Still open: (a) TJ thinks river water can't go below about 5 °C under ice; most rivers run
+   near 0 to 1 °C under ice, spring-fed reaches warmer. Check against the CVC `wt:log:*` readings this winter before
+   moving `COLD_RUN_MIN`. (b) Window lengths (2 h early, 3 h morning, last 2 h evening) and no cold-water time rule.
 
 0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
    in the repo are done (#73); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.

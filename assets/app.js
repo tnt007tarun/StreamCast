@@ -2283,7 +2283,7 @@ function updateMethods(fc,tc,sc,flow,wt){
           d:adapt("Swing or strip through deeper pools and undercut banks. Most effective in low light.",
                   "Surface lures draw reaction strikes from aggressive fish in low light.",
                   "Drift bait along the bottom through deeper holding water."),
-          c:adapt("<span>Best: Low light, overcast, rising flow</span><span>Fish: Deep pools, undercut banks</span>",
+          c:adapt("<span>Best: Low light, overcast, coloured water</span><span>Fish: Deep pools, undercut banks</span>",
                   "<span>Lures: Surface plugs, poppers</span><span>Dawn and dusk</span>",
                   "<span>Bait: Roe, worms + split shot</span><span>Fish: Deep runs</span>")};
     }
@@ -2456,7 +2456,9 @@ function speciesReads(sp) {
     next = fishingWindow({ sunrise: nx.sunrise, sunset: nx.sunset, periodCloud: nx.periodCloud, cloudPct: i.cloudPct,
       weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, species: sp });
   }
-  var water = waterTempRead(i.wt, i.wtInfo, { species: sp, seasonal: sp ? getCurrentSeason(sp, getTripDateStr()) : null, weatherOk: i.weatherOk });
+  var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+  var water = waterTempRead(i.wt, i.wtInfo, { species: sp, seasonal: sp ? getCurrentSeason(sp, getTripDateStr()) : null, weatherOk: i.weatherOk,
+    coldTolerant: sp ? coldTolerantFish(sp, getTripDateStr(), _here) : false });
   window._fishWindow = win; window._fishWindowNext = next; window._waterRead = water; window._readSpecies = sp;
 
   // Best Window card
@@ -2897,7 +2899,7 @@ async function renderResults(){
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
     document.getElementById("fcl").innerHTML=[
       {t:"Flow "+flow+" m\u00b3/s ("+({low:"too low",normal:"normal",prime:"prime",high:"high",blown:"blown out"}[flowBand(flow,cfg)]||"")+"; prime: "+sweetRange+")",c:fc},
-      {t:"Trend: "+flowTrendRead(trend).text,c:flowTrendRead(trend).grade},
+      {t:"Trend: "+flowTrendRead(trend, flowBand(flow,cfg), fc).text,c:flowTrendRead(trend, flowBand(flow,cfg), fc).grade},
       {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"},
       {t:"Fish lies: "+(fc==="good"?"Predictable":"Scattered and harder to find"),c:fc}
     ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
@@ -4207,7 +4209,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
             + 'See the staging report below for where and how to target them.';
         } else if (_sp2 && _sp2.active && _sp2.mode === 'run') {
           _stagingHeadline = '<em>' + _tgtName + '</em> are running into the river now. '
-            + 'See the staging report below, and fish the lower river on rising water.';
+            + 'See the staging report below, and fish the lower river after rain, as it starts to clear.';
         } else if (/Steelhead/i.test(_tgtName)) {
           // Steelhead have their own timing: out in the lake all summer, staging off the
           // mouths from September. The salmon copy below gave them a late-July timeline.
@@ -4541,9 +4543,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
     // A future date has no reading; days 1 to 2 use the flow estimate, which can only pull the rating down.
     var _cfgPill = getRiverConfig(selectedRiver), _baseScore = _topScore;
+    // The temperature steps for the fish the headline names (tempContext: winter run fish, trout-only heat rule).
+    var _tctx = tempContext(window._readSpecies ? [window._readSpecies] : [], getTripDateStr(), selectedRiver ? selectedRiver.split(',')[0].trim() : '');
     var _rate = flow != null
-      ? { score: conditionsScore(_baseScore, _cfgPill, flow, wt, cloudPct, window._stagingPct, window._stagingInLake), potential: false, flow: flow }
-      : rateWithFlowEstimate(function(f){ return conditionsScore(_baseScore, _cfgPill, f, wt, cloudPct, window._stagingPct, window._stagingInLake); }, window._flowEst);
+      ? { score: conditionsScore(_baseScore, _cfgPill, flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx), potential: false, flow: flow }
+      : rateWithFlowEstimate(function(f){ return conditionsScore(_baseScore, _cfgPill, f, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx); }, window._flowEst);
     window._pillFlow = flow; // the staging card's re-rate uses the same live flow (or the same estimate rule)
     _topScore = _rate.score;
     var _conf = scoreToConfidence(_topScore);
@@ -4668,7 +4672,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     } else if (_stMode === 'run') {
       chips = [
         { text: '📍 Lower river', cls: '' },
-        { text: '🌊 Fish rising water after rain', cls: '' }
+        { text: '🌊 Fresh fish come in on rain. Fish the lower river as it clears.', cls: '' }
       ];
     } else {
       // Pre-staging: opportunistic early Chinook at harbour mouth only.

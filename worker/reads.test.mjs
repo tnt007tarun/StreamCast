@@ -77,8 +77,8 @@ const mins = (s) => C.localMinutes(s);
   assert.match(old.source, /\(5 hours ago\)/);
   assert.ok(!/read/.test(C.flowRead(8.4, cfg, { at: '2026-11-02 19:15' }).source), 'no time zone: no time shown');
   assert.equal(C.flowRead(4, cfg, {}).word, 'Normal'); assert.equal(C.flowRead(4, cfg, {}).grade, C.clsFlow(4, cfg));
-  // Trend wording is unchanged (TJ to review the rising-is-good rule).
-  assert.equal(C.flowTrendRead('up').text, 'Rising ↑, a good sign');
+  // Trend wording reads direction against the band (TJ, 2026-11-02); see the temperature and trend section below.
+  assert.equal(C.flowTrendRead('down', 'normal', C.clsFlow(4, cfg)).grade, C.clsFlow(4, cfg), 'trend icon follows the band');
 }
 
 // ── Conditions pill: missing flow makes no call ─────────────────────────────
@@ -247,28 +247,64 @@ const mins = (s) => C.localMinutes(s);
     'Spring season for brown trout is under way, rated peak on the season calendar.');
 }
 
-// ── Rules kept as they are (TJ to decide on the proposals in PR #128) ────────
+// ── Temperature rules (TJ, 2026-11-02) ──────────────────────────────────────
 {
   const model = { kind: 'model' };
-  // Winter steelhead below 4 °C: read "Cold" and the score's temperature step is -3 (liveConditionsScore). Unchanged.
+  const t = (wt, ctx) => C.liveConditionsScore(null, 6, 13, 3, 30, wt, null, ctx);
+  // No fish named: the old steps exactly.
+  for (const wt of [0, 0.5, 2, 3.9, 4, 7, 10, 15, 18, 19, 25]) assert.equal(t(wt), t(wt, null), 'no context ' + wt);
+  assert.equal(t(2), -3); assert.equal(t(5), 1); assert.equal(t(10), 3); assert.equal(t(19), -3);
+  // Winter steelhead (and lake-run browns) in season: 1 to 4 °C scores like 4 to 8; below 1 °C stays -3.
+  const shJan = C.tempContext(['Steelhead'], '2027-01-15', 'Lower Humber River');
+  assert.deepEqual(shJan, { coldTolerant: true, troutHeat: false });
+  assert.equal(t(2, shJan), 1, 'winter steelhead at 2 °C'); assert.equal(t(1, shJan), 1); assert.equal(t(0.5, shJan), -3, 'about freezing');
+  assert.equal(t(10, shJan), 3, 'prime unchanged');
+  assert.equal(C.coldTolerantFish('Steelhead', '2026-07-01', 'Lower Humber River'), false, 'steelhead out of season');
+  assert.equal(C.coldTolerantFish('Brown Trout', '2027-01-15', 'Upper Grand River (Tailwater)'), false, 'resident browns: old steps');
+  const brownRun = C.isLakeRunBrownSection('Lower Credit River');
+  if (brownRun) assert.equal(C.coldTolerantFish('Brown Trout', '2027-01-15', 'Lower Credit River'), C.getCurrentSeason('Brown Trout', '2027-01-15', 'Lower Credit River').quality !== 'slow');
+  assert.equal(C.tempContext(['Steelhead', 'Rainbow Trout'], '2027-01-15', 'Lower Humber River').coldTolerant, false, 'a trout in the mix: old cold step');
+  // Winter steelhead day: the score no longer loses 4 points to 2 °C water.
+  const cfgH = C.getRiverConfig('Lower Humber River');
+  const before = C.conditionsScore(6, cfgH, (cfgH.sweetMin + cfgH.sweetMax) / 2, 2, 80, null, false);
+  const after = C.conditionsScore(6, cfgH, (cfgH.sweetMin + cfgH.sweetMax) / 2, 2, 80, null, false, shJan);
+  assert.equal(after - before, 4);
+  const d = C.scoreDay({ section: 'Lower Humber River', species: ['Steelhead'], date: '2027-01-15', flow: (cfgH.sweetMin + cfgH.sweetMax) / 2, waterTemp: 2, cloudPct: 80 });
+  assert.equal(d.score, C.conditionsScore(C.sectionSeasonScore('Lower Humber River', ['Steelhead'], '2027-01-15', 'Lower Humber River').score,
+    cfgH, (cfgH.sweetMin + cfgH.sweetMax) / 2, 2, 80, null, false, shJan), 'the weekly email uses the same steps');
+  // Wording: "Cold" in amber for winter run fish, not "bad"; trout keep "bad".
   const sh = C.getCurrentSeason('Steelhead', '2027-01-15');
-  const w2 = C.waterTempRead(2, model, { species: 'Steelhead', seasonal: sh, weatherOk: true });
-  assert.equal(w2.word, 'Cold'); assert.equal(w2.grade, 'bad');
-  assert.ok(!/inactive/i.test(w2.sentence));
-  const t = (wt) => C.liveConditionsScore(null, 6, 13, 3, 30, wt, null);
-  assert.equal(t(2), -3, 'below 4 °C: -3 (unchanged)'); assert.equal(t(5), 1, '4 to 8 °C: +1'); assert.equal(t(10), 3);
-  // Chinook at the mouth at 18 °C and over: the column keeps the advisory (unchanged); the why line doesn't repeat it.
-  const ck = C.waterTempRead(19, model, { species: 'Chinook Salmon', weatherOk: true });
-  assert.match(ck.sentence, /Conservation advisory: stop fishing above 18/);
-  assert.equal(ck.clause, 'well above the 8 to 14°C feeding range');
-  assert.equal(C.waterTempRead(18, model, { species: 'Chinook Salmon', weatherOk: true }).grade, 'bad', 'the 18 °C step is unchanged');
+  const w2 = C.waterTempRead(2, model, { species: 'Steelhead', seasonal: sh, weatherOk: true, coldTolerant: true });
+  assert.equal(w2.word, 'Cold'); assert.equal(w2.grade, 'warn'); assert.ok(w2.sentence.indexOf(sh.note) !== -1);
+  assert.equal(C.waterTempRead(0.4, model, { species: 'Steelhead', seasonal: sh, weatherOk: true, coldTolerant: true }).grade, 'bad');
+  assert.equal(C.waterTempRead(2, model, { species: 'Brown Trout', weatherOk: true }).grade, 'bad');
+  // 18 °C: trout only. Salmon: no advisory, no -3; trout: both unchanged.
+  const ck = C.tempContext(['Chinook Salmon'], '2026-08-25', 'Ganaraska River — Lower (Lake to CNR Bridge)');
+  assert.equal(ck.troutHeat, false);
+  assert.equal(t(19, ck), 1, 'salmon at 19 °C scores like 14 to 18');
+  assert.equal(t(19, C.tempContext(['Brown Trout'], '2026-07-15', 'Upper Grand River (Tailwater)')), -3, 'trout at 19 °C unchanged');
+  const ckw = C.waterTempRead(19, model, { species: 'Chinook Salmon', weatherOk: true });
+  assert.ok(!/Conservation advisory/.test(ckw.sentence)); assert.match(ckw.sentence, /advisory is for trout/); assert.equal(ckw.grade, 'warn');
+  assert.equal(C.waterTempRead(18, model, { species: 'Chinook Salmon', weatherOk: true }).clause, 'well above the 8 to 14°C feeding range');
+  const bt = C.waterTempRead(19, model, { species: 'Brown Trout', weatherOk: true });
+  assert.match(bt.sentence, /Conservation advisory: stop fishing for trout above 18/); assert.equal(bt.grade, 'bad');
+  assert.match(C.waterTempRead(19, model, { weatherOk: true }).sentence, /Conservation advisory/, 'no fish named: the trout rule');
   // While fish are in the lake (staging at the mouth) the rating ignores river temperature (unchanged).
   const cfgG = C.getRiverConfig('Lower Bowmanville Creek');
   assert.equal(C.conditionsScore(0, cfgG, 1.5, 19, 50, 80, true), C.conditionsScore(0, cfgG, 1.5, 10, 50, 80, true));
-  // Flow trend wording: unchanged until TJ picks the new wording.
-  assert.equal(C.flowTrendRead('up').text, 'Rising ↑, a good sign');
-  assert.equal(C.flowTrendRead('down').text, 'Falling ↓, keep an eye on it');
-  assert.equal(C.flowTrendRead('stable').text, 'Stable → watch for changes');
+  // Flow trend: direction against the prime range (TJ, 2026-11-02). Dropping through prime is a good day, not a worry.
+  assert.equal(C.flowTrendRead('down', 'prime', 'good').text, '↓ Dropping through the prime range, the few days after rain this river usually fishes well.');
+  assert.equal(C.flowTrendRead('down', 'prime', 'good').grade, 'good', 'the icon follows the band');
+  assert.equal(C.flowTrendRead('up', 'high', 'warn').text, '↑ Rising and already high. Expect coloured water.');
+  assert.equal(C.flowTrendRead('down', 'high', 'warn').text, '↓ Coming down after rain. Prime usually follows in a few days.');
+  for (const band of ['low', 'normal', 'prime', 'high', 'blown']) for (const tr of ['up', 'down', 'stable']) {
+    const r = C.flowTrendRead(tr, band, 'warn');
+    assert.ok(!/good sign|almost always|keep an eye/.test(r.text), band + ' ' + tr); noEmDash(r.text, 'trend');
+  }
+  assert.equal(C.flowTrendRead('up', null).text, '↑ Rising.', 'no band: direction only');
+  // Every river uses the default routine: its flow step no longer says rising is almost always better.
+  const step = C.RIVER_CONFIG['default'].routine[2];
+  assert.ok(!/almost always/.test(step.d)); assert.match(step.d, /dropping into it usually fishes best/);
 }
 
 // ── Species and window agree ─────────────────────────────────────────────────
