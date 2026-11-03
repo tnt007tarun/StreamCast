@@ -514,6 +514,8 @@ function renderStagingCard(sectionName, weather) {
         _confEl2.textContent = _cr2.text;
         _confEl2.className = 'tp-confidence ' + _cr2.cls;
         _confEl2.title = _cr2.title;
+        renderRatingBreakdown(_cr2.unknown ? null : { parts: conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
+          null, null, pct, window._stagingInLake), base: null, baseFrom: null, potential: _reRate.potential, total: _newScore, here: '' });
       }
 
       var _driveEl2 = document.getElementById('tp-drive-time');
@@ -2488,13 +2490,27 @@ function speciesReads(sp) {
   return { win: win, next: next, water: water, species: sp };
 }
 
-// The time part of the hero headline. lead: "Fish ..." to open a sentence; inline: "fish ..., " inside one.
-// After today's window: say it is over and give tomorrow's, without changing the date the reader picked.
-function fishTimeHtml(win, next, inline) {
-  if (!win.passed) return inline ? 'fish ' + win.phrase + ', and bring your ' : 'Fish <em>' + win.phrase + '</em>. ';
-  if (next && next.phrase) return inline ? 'tomorrow fish ' + next.phrase + ' (today\u2019s window is over), and bring your '
-    : 'Today\u2019s window is over; tomorrow, fish <em>' + next.phrase + '</em>. ';
-  return inline ? 'and bring your ' : 'Today\u2019s window is over. ';
+// The lines under a headline that sends the reader to a spot (Phase 2): when to fish, then what to bring and for which
+// fish. go = the fish the headline names (or true); null hides both. The fish is named only when it isn't the one the
+// species banner already shows. Window wording comes from fishingWindow() (Best Window card text).
+function renderHeroLines(go, win, next, bringPhrase) {
+  var hd = document.getElementById('tp-headline');
+  if (!hd) return;
+  var when = document.getElementById('tp-when'), gear = document.getElementById('tp-gear');
+  if (!gear) { gear = document.createElement('p'); gear.id = 'tp-gear'; gear.className = 'tp-line tp-gear'; hd.parentNode.insertBefore(gear, hd.nextSibling); }
+  if (!when) { when = document.createElement('p'); when.id = 'tp-when'; when.className = 'tp-line tp-when'; hd.parentNode.insertBefore(when, hd.nextSibling); }
+  when.hidden = gear.hidden = !go;
+  if (!go) return;
+  var t;
+  if (!win.passed) t = win.text + (win.approximate ? ' (approximate)' : '');
+  else if (next) t = 'Today\u2019s window is over. Tomorrow: ' + next.text.charAt(0).toLowerCase() + next.text.slice(1);
+  else t = 'Today\u2019s window is over.';
+  when.innerHTML = '<span class="tp-line-lbl">When</span> ' + t;
+  var banner = (document.getElementById('species-display') || {}).textContent || '';
+  var sp = typeof go === 'string' ? go : '';
+  var named = sp && sp.toLowerCase() !== banner.trim().toLowerCase()
+    ? ' for ' + sp.toLowerCase().replace(' + ', ' and ').replace(/\b(chinook|coho)\b/g, function(m){ return m.charAt(0).toUpperCase() + m.slice(1); }) : '';
+  gear.innerHTML = '<span class="tp-line-lbl">Bring</span> your ' + bringPhrase + named;
 }
 
 async function renderResults(){
@@ -3576,9 +3592,11 @@ function rankRivers(rivers, speciesKey, dateStr) {
 
     // Prefer rivers closer by
     var drive = r.driveTime || 60;
-    if (drive < 30) score += 4;
-    else if (drive < 60) score += 2;
-    else if (drive > 120) score -= 2;
+    var _seasonPts = score, _drivePts = 0, _techPts = 0;
+    if (drive < 30) _drivePts = 4;
+    else if (drive < 60) _drivePts = 2;
+    else if (drive > 120) _drivePts = -2;
+    score += _drivePts;
 
     // Regs — flag any catch-and-release / sanctuary
     var regs = RIVER_REGS[r.name];
@@ -3592,6 +3610,7 @@ function rankRivers(rivers, speciesKey, dateStr) {
     var techniques = (window._selectedTechs || []);
     if (techniques.length > 0 && cfg.routine) {
       score += 1; // minor bonus for having routine data
+      _techPts = 1;
     }
 
     return {
@@ -3601,7 +3620,9 @@ function rankRivers(rivers, speciesKey, dateStr) {
       score: score,
       notes: notes,
       warnings: warnings,
-      cfg: cfg
+      cfg: cfg,
+      // How the score was built, for the "How this was rated" note under the Conditions pill. Not used to rank.
+      parts: { season: _seasonPts, drive: _drivePts, tech: _techPts }
     };
   }).sort(function(a,b) { return b.score - a.score; });
 }
@@ -3853,6 +3874,42 @@ function driveVerdictShown(score, driveMin, closed) {
   if (closed) return driveVerdict(score, driveMin, closed);
   if (confidencePill(scoreToConfidence(score), false).unknown) return { text: '~ Not rated. Check the gauge before you drive', cls: 'verdict-maybe' };
   return driveVerdict(score, driveMin, closed);
+}
+
+// "How this was rated" under the Conditions pill (Phase 2, 2026-11-02). r: {parts (conditionsParts), base, baseFrom
+// (the ranked river the base came from, with its parts), potential, total, here}; null hides it. Every number here
+// comes from the scoring functions; this only lays them out.
+function renderRatingBreakdown(r) {
+  var pill = document.getElementById('tp-confidence');
+  if (!pill) return;
+  var el = document.getElementById('tp-rating');
+  if (!el) { el = document.createElement('details'); el.id = 'tp-rating'; el.className = 'tp-rating'; pill.parentNode.insertBefore(el, pill.nextSibling); }
+  if (!r) { el.hidden = true; return; }
+  el.hidden = false;
+  var pts = function(n) { return n > 0 ? '+' + n : n < 0 ? '\u2212' + Math.abs(n) : '0'; };
+  var rows = [];
+  var p = r.parts;
+  if (!p.replaced) {
+    var bf = r.baseFrom;
+    if (bf && bf.parts) {
+      var seasonLbl = (bf.notes && bf.notes.length ? bf.notes.join(', ') : 'Season') + (bf.name && bf.name !== r.here ? ' (scored on ' + secShort(bf.name) + ')' : '');
+      rows.push([seasonLbl.charAt(0).toUpperCase() + seasonLbl.slice(1), bf.parts.season]);
+      if (bf.parts.drive) rows.push(['Drive time (' + bf.driveTime + ' min)', bf.parts.drive]);
+      if (bf.parts.tech) rows.push(['Method picked', bf.parts.tech]);
+    } else {
+      rows.push(['Season (estimate from the species calendar)', r.base]);
+    }
+  }
+  p.parts.forEach(function(x) { rows.push([x.label, x.pts]); });
+  var notes = [];
+  if (!p.parts.length && !p.replaced) notes.push('No flow reading for this date, so water and sky aren\u2019t scored.');
+  if (p.cap) notes.push(p.cap.label + '.');
+  if (r.potential) notes.push('Flow is the estimate for this date.');
+  var word = scoreToConfidence(r.total).word;
+  el.innerHTML = '<summary>How this was rated</summary>'
+    + '<ul>' + rows.map(function(x) { return '<li><span>' + x[0] + '</span><span class="tp-rating-pts">' + pts(x[1]) + '</span></li>'; }).join('') + '</ul>'
+    + (notes.length ? '<p>' + notes.join(' ') + '</p>' : '')
+    + '<p>Total ' + r.total + ', rated ' + word + ' (10 or more is Excellent, 6 Good, 2 Marginal, under 2 Tough).</p>';
 }
 
 function localTodayStr() {
@@ -4128,7 +4185,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // Headline
   var riverShort = selectedRiver ? selectedRiver.split(',')[0] : 'this river';
   var spotName = bestSpot ? bestSpot.name.split(/\s[\u2014\u00b7]\s/)[0].trim() : riverShort;
-  // Prepend parent river name to spotName if the access point name doesn't already include it
+  // Prepend parent river name to spotName if the access point name doesn't already include it.
+  // _spotPhrase is the place as the headline names it, spot first: "<em>Erindale Park</em> on the Lower Credit River".
+  var _spotPhrase = '';
   (function() {
     var _riverFull = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
     var _parentRiver = _riverFull.indexOf(' — ') !== -1
@@ -4137,7 +4196,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Only prepend if spotName doesn't already mention the parent river
     if (_parentRiver && spotName &&
         spotName.toLowerCase().indexOf(_parentRiver.toLowerCase().split(' ')[0]) === -1) {
+      _spotPhrase = '<em>' + spotName + '</em> on the ' + _parentRiver;
       spotName = _parentRiver + ', ' + spotName;
+    } else {
+      _spotPhrase = '<em>' + spotName + '</em>';
     }
   })();
   var headlineSpecies = targetName || 'Trout';
@@ -4196,8 +4258,6 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     });
   })(); } catch(_e) { console.warn('regs label patch', _e); }
   var headlineHtml;
-  // The time part of the headline: fishTimeHtml() (e.g. "Fish from sunrise to about 9:50 AM", or tomorrow's window once
-  // today's is over). Splitting the window text used to give "Fish Morning".
   // Staging override: target is an absent staging species AND this is a lake-mouth staging zone
   var _stagingHeadline = null;
   try {
@@ -4249,6 +4309,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       }
     }
   } catch(e) {}
+  // _heroGo: set when the headline sends the reader to a spot (the fish it names, or true). The time to fish and the
+  // gear then go on their own lines under the headline (Phase 2), and the why lines show.
+  var _heroGo = null;
   if (_stagingHeadline) {
     headlineHtml = _stagingHeadline;
     // Override method accordion to show spinning/harbour setup instead of fly methods
@@ -4261,10 +4324,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _slowNote = seasonal.note ? seasonal.note.split('.')[0] + '.' : 'Fishing is slow this time of year.';
     headlineHtml = '<em>' + targetName + '</em> are here, but it’s tough going. '
       + _slowNote + ' '
-      + 'Try <em>' + fallbackSpecies + '</em> instead: '
-      + 'head to <em>' + spotName + '</em>, '
-      + fishTimeHtml(_win, _winNext, true)
-      + bringPhrase + '.';
+      + 'Try <em>' + fallbackSpecies + '</em> instead at ' + _spotPhrase + '.';
+    _heroGo = fallbackSpecies;
   } else if (fallbackSpecies && targetName) {
     // Distinguish geographic mismatch from seasonal absence
     var _geoMismatch = _riverSpecies.indexOf(targetName) === -1;
@@ -4288,20 +4349,16 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       var _sibShort = _redirectSection.replace(/^.+—\s*/, '');
       headlineHtml = '<em>' + targetName + '</em> aren’t found in this section. '
         + 'They live in the <em>' + _sibShort + '</em>. '
-        + 'Fish <em>' + fallbackSpecies + '</em> here today: '
-        + 'head to <em>' + spotName + '</em>, ' + fishTimeHtml(_win, _winNext, true) + bringPhrase + '.';
+        + 'Fish <em>' + fallbackSpecies + '</em> here today at ' + _spotPhrase + '.';
+      _heroGo = fallbackSpecies;
     } else if (_geoMismatch) {
       headlineHtml = '<em>' + targetName + '</em> aren’t found in this section. '
-        + 'Fish <em>' + fallbackSpecies + '</em> instead, and '
-        + 'head to <em>' + spotName + '</em>, '
-        + fishTimeHtml(_win, _winNext, true)
-        + bringPhrase + '.';
+        + 'Fish <em>' + fallbackSpecies + '</em> instead at ' + _spotPhrase + '.';
+      _heroGo = fallbackSpecies;
     } else {
       headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
-        + 'Fish <em>' + fallbackSpecies + '</em> instead, and '
-        + 'head to <em>' + spotName + '</em>, '
-        + fishTimeHtml(_win, _winNext, true)
-        + bringPhrase + '.';
+        + 'Fish <em>' + fallbackSpecies + '</em> instead at ' + _spotPhrase + '.';
+      _heroGo = fallbackSpecies;
     }
   } else if (targetName && _thermalStress && _TROUT.indexOf(targetName) !== -1 && !fallbackSpecies) {
     // Thermal stress, trout-only river — no safe recommendation possible
@@ -4319,21 +4376,17 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       : '<em>' + targetName + '</em> aren’t here yet. ' + (seasonal.note || '');
   } else if (!targetName && _multiTarget) {
     // Multi-species selection: both are on this river, name them both
-    headlineHtml = 'Head to <em>' + spotName + '</em>. '
-      + (_win.passed ? fishTimeHtml(_win, _winNext, false) + 'Target <em>' + _multiTargetLabel + '</em>. '
-         : 'Fish <em>' + _win.phrase + '</em> for <em>' + _multiTargetLabel + '</em>. ')
-      + 'Bring your <em>' + bringPhrase + '</em>.';
+    headlineHtml = 'Head to ' + _spotPhrase + '.';
+    _heroGo = _multiTargetLabel;
   } else if (!targetName && _displaySpecies) {
-    headlineHtml = 'Try <em>' + _displaySpecies + '</em> at <em>' + spotName + '</em>. '
-      + fishTimeHtml(_win, _winNext, false)
-      + 'Bring your <em>' + bringPhrase + '</em>.';
+    headlineHtml = 'Head to ' + _spotPhrase + '.';
+    _heroGo = _displaySpecies;
   } else {
-    headlineHtml = 'Head to <em>' + spotName + '</em>. '
-      + fishTimeHtml(_win, _winNext, false)
-      + 'Bring your <em>' + bringPhrase + '</em>.'
-      + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
+    headlineHtml = 'Head to ' + _spotPhrase + '.';
+    _heroGo = _displaySpecies || true;
   }
 
+  var _headlineBeforeLegal = headlineHtml;
   // Legal-season pass. Runs after every branch above so none of them can send someone to
   // water that is closed on the trip date, and so a target species that is fishable on
   // another section of this river wins over a local substitute.
@@ -4447,7 +4500,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     _goto = { section: _up.section, species: targetName ? _up.species : '' };
   })();
 
+  // The legal-season pass replaced the headline: it explains itself, no spot lines.
+  if (headlineHtml !== _headlineBeforeLegal) _heroGo = null;
   document.getElementById('tp-headline').innerHTML = headlineHtml;
+  renderHeroLines(_heroGo, _win, _winNext, bringPhrase);
   // After an automatic move upstream: one small line saying so, with a way back.
   (function() {
     var _hd = document.getElementById('tp-headline');
@@ -4538,6 +4594,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   window._pillMissing = { flowMissing: _heroIsToday && flow == null, weatherMissing: !weatherOk };
   if (_confEl) {
     var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
+    var _baseFrom = (_topScore != null && rankedRivers[0].parts) ? rankedRivers[0] : null;
     // In expert mode, estimate score from season quality
     if (_topScore == null) {
       var _cfg2 = getRiverConfig(selectedRiver);
@@ -4572,6 +4629,14 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _confEl.title = _cr.title || (_rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '');
     }
     _confEl.style.display = 'inline-block';
+    // How this was rated: the same steps the score took (conditionsParts in the core), nothing recomputed by hand.
+    var _closedPill = _sectionClosed || _spClosedPill;
+    var _crNow = !_closedPill ? confidencePill(_conf, _rate.potential) : null;
+    renderRatingBreakdown(_closedPill || (_crNow && _crNow.unknown) ? null : {
+      parts: conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx),
+      base: _baseScore, baseFrom: _baseFrom, potential: _rate.potential, total: _topScore,
+      here: selectedRiver ? selectedRiver.split(',')[0].trim() : ''
+    });
   }
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
@@ -4596,7 +4661,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
     _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
       + '<span class="drive-verdict ' + _verdictCls + '">' + _worthIt + '</span>'
-      + '<span style="font-size:.68rem;opacity:.55;margin-left:.4rem">est. from city centre</span>';
+      + '<span class="drive-note">est. from city centre</span>';
     _driveEl.style.display = 'block';
   }
 
@@ -4618,7 +4683,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     if (!_sp || _goto || _stagingHeadline || _sectionClosed || _spClosedPill) return;
     // Only under a headline that sends the reader out (every such headline names the gear); not under "water is above
     // the safe limit", "aren't here yet" and the like, which carry their own reason.
-    if (document.getElementById('tp-headline').textContent.indexOf(bringPhrase) === -1) return;
+    if (!_heroGo) return;
     if (_riverSpecies.indexOf(_sp) === -1) return;
     var _seas = getCurrentSeason(_sp, _trip);
     if (!_seas || _seas.quality === 'absent') return;
@@ -5961,6 +6026,7 @@ function notifyOffer() {
     return { kind: 'run', key: 'hff_sub_run:' + parent,
       title: 'Get run alerts for the ' + parent,
       sub: 'An email when salmon or steelhead are running. Checked by an angler before it goes out.',
+      subShort: 'When fish are running. Checked by an angler first.',
       button: 'Alert me', outlookBox: !weekly && !lsGet('hff_sub_outlook'), weeklyBox: weekly,
       payload: { river: parent } };
   }
@@ -5968,15 +6034,25 @@ function notifyOffer() {
     return { kind: 'weekly', key: weekly.key,
       title: 'Get a heads-up when ' + weekly.species + ' conditions look good',
       sub: 'One email on Thursdays, only when the coming days look good on ' + secShort(section),
+      subShort: 'Thursdays, only when the coming days look good.',
       button: 'Email me', payload: { weekly: { section: weekly.section, species: weekly.species } } };
   }
   if (!lsGet('hff_sub_outlook')) {
     return { kind: 'outlook', key: 'hff_sub_outlook',
       title: 'Get the monthly river outlook',
       sub: 'What the month ahead means for Ontario trout and salmon, plus openers and closures',
+      subShort: 'The month ahead for Ontario trout and salmon.',
       button: 'Sign me up', payload: {} };
   }
   return null;
+}
+
+// While the signup bar is up, pad the bottom of the results page by its height, so the last of the page (the regs,
+// the footer) can still scroll clear of it. null takes the padding off.
+function reserveBarSpace(bar) {
+  var res = document.getElementById('results');
+  if (!res) return;
+  res.style.paddingBottom = bar ? (bar.offsetHeight + 8) + 'px' : '';
 }
 
 function initNotifyBar() {
@@ -5998,7 +6074,9 @@ function initNotifyBar() {
   var tEl = document.getElementById('notify-bar-title');
   var sEl = document.getElementById('notify-bar-sub');
   if (tEl) tEl.textContent = offer.title;
-  if (sEl) sEl.textContent = offer.sub;
+  // Phones get the short line so the bar stays two rows tall plus the form (Phase 2).
+  var _narrow = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+  if (sEl) sEl.textContent = (_narrow && offer.subShort) ? offer.subShort : offer.sub;
   if (submit) { submit.textContent = offer.button; submit.disabled = false; }
   var box = document.getElementById('notify-bar-outlook');
   if (box) { box.style.display = offer.outlookBox ? '' : 'none'; var cb = box.querySelector('input'); if (cb) cb.checked = false; }
@@ -6007,7 +6085,8 @@ function initNotifyBar() {
     wbox.style.display = offer.weeklyBox ? '' : 'none';
     var wcb = wbox.querySelector('input'); if (wcb) wcb.checked = false;
     var wtx = wbox.querySelector('span');
-    if (wtx && offer.weeklyBox) wtx.textContent = 'Also a Thursday email when the coming days look good for ' + offer.weeklyBox.species + ' here';
+    if (wtx && offer.weeklyBox) wtx.textContent = _narrow ? 'Also a Thursday email on good days here'
+      : 'Also a Thursday email when the coming days look good for ' + offer.weeklyBox.species + ' here';
   }
   if (form) form.style.display = '';
   if (success) success.style.display = 'none';
@@ -6020,6 +6099,7 @@ function initNotifyBar() {
     if (!shown && window.scrollY > 300) {
       shown = true;
       bar.classList.add('visible');
+      reserveBarSpace(bar);
       track('Notify Bar Shown', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: offer.kind });
       window.removeEventListener('scroll', onScroll);
     }
@@ -6052,6 +6132,7 @@ function initNotifyBar() {
   if (dismiss) {
     dismiss.addEventListener('click', function() {
       bar.classList.remove('visible');
+      reserveBarSpace(null);
       track('Notify Bar Dismissed', { river: (selectedRiver || '').split(',')[0] || 'unknown', offer: bar._offer ? bar._offer.kind : 'none' });
       lsSet('hff_bar_dismissed_at', String(Date.now()));
       setTimeout(function(){ bar.style.display = 'none'; }, 400);

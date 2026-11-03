@@ -2641,7 +2641,9 @@ function fishingWindow(o) {
       text = 'Today’s window is over';
       phrase = null;
     } else if (mode === 'allday' && shown[0][0] === rise) {
-      text = 'All day, sunrise to sunset (' + clockText(rise, true) + ' to ' + clockText(set, true) + ')';
+      // The whole day stays fishable under steady cloud (the old rule); say why, so it doesn't read as every hour being
+      // equally good (TJ, 2026-11-02).
+      text = 'Sunrise to sunset (' + clockText(rise, true) + ' to ' + clockText(set, true) + '), with cloud cover all day';
       phrase = 'any time from sunrise to sunset';
     } else {
       text = shown.map(function(r) { return from(r[0], true) + ' to ' + to(r, true); }).join(', and ');
@@ -2872,29 +2874,37 @@ function getCurrentSeason(speciesName, dateStr, section) {
 // With it (TJ, 2026-11-02): steelhead and lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C
 // (winter run water), and the -3 above 18 °C is for trout only (salmon at the mouth in late summer).
 function liveConditionsScore(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx) {
-  var s = 0;
+  return liveConditionsParts(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx)
+    .reduce(function(a, p) { return a + p.pts; }, 0);
+}
+// The same steps as a list, so the app can show how a rating was built (Phase 2, 2026-11-02). liveConditionsScore()
+// is the sum of these; there is one copy of the steps.
+function liveConditionsParts(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx) {
+  var out = [];
   // Flow
   if (flow != null) {
-    if (flow >= sweetMin && flow <= sweetMax)         s += 5;  // in sweet spot
-    else if (flow >= flowLow && flow <= flowHigh)     s += 0;  // fishable but not ideal
-    else                                              s -= 4;  // blown or too low
+    if (flow >= sweetMin && flow <= sweetMax)     out.push({ key: 'flow', pts: 5, label: 'Flow in the prime range' });
+    else if (flow >= flowLow && flow <= flowHigh) out.push({ key: 'flow', pts: 0, label: flow < sweetMin ? 'Flow normal, below prime' : 'Flow above prime' });
+    else                                          out.push({ key: 'flow', pts: -4, label: flow < flowLow ? 'Flow too low' : 'Flow blown out' });
   }
   // Temperature
   if (tempC != null) {
-    if (tempC >= 8  && tempC <= 14)  s += 3;  // prime
-    else if (tempC >= 4  && tempC < 8)  s += 1;
-    else if (tempC > 14 && tempC <= 18) s += 1;
-    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < 4) s += 1;  // winter run water
-    else if (ctx && !ctx.troutHeat && tempC > 18) s += 1;                           // no trout heat rule
-    else                                s -= 3;  // too cold or too warm
+    var t;
+    if (tempC >= 8  && tempC <= 14)  t = { pts: 3, label: 'Water in the 8 to 14\u00b0C feeding range' };
+    else if (tempC >= 4  && tempC < 8)  t = { pts: 1, label: 'Water cool (4 to 8\u00b0C)' };
+    else if (tempC > 14 && tempC <= 18) t = { pts: 1, label: 'Water warm (14 to 18\u00b0C)' };
+    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < 4) t = { pts: 1, label: 'Cold winter run water' };
+    else if (ctx && !ctx.troutHeat && tempC > 18) t = { pts: 1, label: 'Water over 18\u00b0C (no trout rule for this fish)' };
+    else t = { pts: -3, label: tempC < 4 ? 'Water too cold' : 'Water too warm' };
+    t.key = 'temp'; out.push(t);
   }
   // Sky
   if (cloudPct != null) {
-    if (cloudPct >= 60)  s += 2;  // overcast — ideal
-    else if (cloudPct >= 30) s += 1;
-    // clear = 0 bonus
+    if (cloudPct >= 60) out.push({ key: 'sky', pts: 2, label: 'Overcast' });
+    else if (cloudPct >= 30) out.push({ key: 'sky', pts: 1, label: 'Some cloud' });
+    else out.push({ key: 'sky', pts: 0, label: 'Bright sky' });
   }
-  return s;
+  return out;
 }
 
 function scoreToConfidence(score) {
@@ -3166,17 +3176,36 @@ function flowBand(f, cfg) {
   return 'blown';
 }
 function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx) {
+  return conditionsParts(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx).total;
+}
+// conditionsScore() as its steps: {total, parts [{key, pts, label}], cap (null or {to, label}), replaced (the base score
+// isn't used: a run day is rated on run strength)}. One copy of the rule; conditionsScore() returns .total.
+function conditionsParts(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx) {
+  var parts = [], total, cap = null;
+  var capped = function(sum) {
+    var c = flowCapScore(sum, cfg, flow);
+    if (c !== sum) cap = { to: c, label: (flow < cfg.flowLow || flow > cfg.flowHigh) ? 'Flow too low or blown out caps the day at Tough'
+      : 'Flow above prime caps the day at Marginal' };
+    return c;
+  };
   if (stagingPct != null) {
     var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
-    if (fishInLake) return s;
+    parts.push({ key: 'run', pts: s, label: 'Run strength at the mouth (' + (stagingPct >= 65 ? 'strong' : stagingPct >= 40 ? 'fair' : 'weak') + ')' });
+    if (fishInLake) return { total: s, parts: parts, cap: null, replaced: true };
     // A strong run with prime flow in the river is the best day there is: Excellent (TJ, 2026-10-24).
-    if (s >= 8 && flowBand(flow, cfg) === 'prime') s = RUN_PRIME_SCORE;
-    return flowCapScore(s, cfg, flow);
+    var band = flowBand(flow, cfg);
+    if (s >= 8 && band === 'prime') { parts.push({ key: 'flow', pts: RUN_PRIME_SCORE - s, label: 'Strong run with prime flow' }); s = RUN_PRIME_SCORE; }
+    else if (band) parts.push({ key: 'flow', pts: 0, label: { low: 'Flow too low', normal: 'Flow normal, below prime', prime: 'Flow in the prime range',
+      high: 'Flow above prime', blown: 'Flow blown out' }[band] + (s >= 8 && band !== 'prime' ? ' (prime would make it Excellent)' : '') });
+    total = capped(s);
+    return { total: total, parts: parts, cap: cap, replaced: true };
   }
   if (cfg && flow != null) {
-    return flowCapScore(baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx), cfg, flow);
+    parts = liveConditionsParts(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx);
+    total = capped(baseScore + parts.reduce(function(a, p) { return a + p.pts; }, 0));
+    return { total: total, parts: parts, cap: cap, replaced: false };
   }
-  return baseScore;
+  return { total: baseScore, parts: [], cap: null, replaced: false };
 }
 
 // One day on one section: what the weekly email scores. The app builds the same number from
@@ -3292,7 +3321,7 @@ if (typeof globalThis !== 'undefined') {
     stagingZoneForSection: stagingZoneForSection, computeStagingScore: computeStagingScore, seasonalLakeTempEst: seasonalLakeTempEst,
     getSalmonPhase: getSalmonPhase, getSteelheadPhase: getSteelheadPhase, mouthPreferenceFor: mouthPreferenceFor,
     clsFlow: clsFlow, clsTemp: clsTemp, clsSky: clsSky, waterModelParams: waterModelParams, modelWaterTemp: modelWaterTemp,
-    liveConditionsScore: liveConditionsScore, scoreToConfidence: scoreToConfidence,
+    liveConditionsScore: liveConditionsScore, liveConditionsParts: liveConditionsParts, conditionsParts: conditionsParts, scoreToConfidence: scoreToConfidence,
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,

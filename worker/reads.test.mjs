@@ -162,7 +162,7 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.fishingWindow({ weatherOk: true, cloudPct: 5, date: '2027-01-15' }).text, 'Late morning through the afternoon');
   // Spring overcast: all day.
   const apr = C.fishingWindow({ sunrise: SUN.spring.sunrise, sunset: SUN.spring.sunset, cloudPct: 85, weatherOk: true });
-  assert.equal(apr.mode, 'allday'); assert.equal(apr.text, 'All day, sunrise to sunset (6:24 AM to 8:10 PM)');
+  assert.equal(apr.mode, 'allday'); assert.equal(apr.text, 'Sunrise to sunset (6:24 AM to 8:10 PM), with cloud cover all day');
   // Periods: overcast morning and evening, bright midday.
   const per = C.fishingWindow({ sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, periodCloud: { morning: 80, midday: 10, evening: 60 }, weatherOk: true });
   assert.equal(per.text, 'Sunrise (6:51 AM) to about 10 AM, and 3 PM to sunset (5:04 PM)');
