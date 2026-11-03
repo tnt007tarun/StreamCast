@@ -2335,7 +2335,310 @@ function clsFlow(f,cfg){
 
 function clsTemp(t){return t<TEMP_MIN-2?"bad":t<TEMP_MIN?"warn":t<=TEMP_MAX?"good":t<TEMP_STRESS?"warn":"bad";}
 
-function clsSky(c){return c>=70?"good":c>=40?"warn":"bad";}
+// Sky grade: TJ's rule (2026-11-02, skyDayNote and Best Window): 70% cloud or more is overcast, under 30% is bright.
+// Before 2026-11-02 the column used 40 for the second line, the hero tile 25 and the labels 20, so one reading
+// could be "Good cover", "Mostly Cloudy" and "compresses your window" at once. skyRead() below is the one place now.
+// Only the display uses it: the rating (liveConditionsScore) keeps its own 60/30 steps.
+var SKY_OVERCAST = 70, SKY_BRIGHT = 30;
+function clsSky(c){return c>=SKY_OVERCAST?"good":c>=SKY_BRIGHT?"warn":"bad";}
+
+// ── SHARED READS (Phase 1, 2026-11-02) ──────────────────────────────────────────
+// One function per reading, so the hero, the tiles, the conditions columns and the Best Window card word the same
+// number the same way ("one decision, one function"). Each returns a grade ('good', 'warn', 'bad' or 'na' for no
+// data), a short word and a sentence. Pure: no DOM, window or fetch, so the Worker can use them too.
+
+function skyRead(c) {
+  if (c == null || isNaN(c)) return { grade: 'na', word: 'No data', cover: 'No data', pct: null };
+  var g = clsSky(c);
+  var word = c >= SKY_OVERCAST ? 'Overcast' : c >= 50 ? 'Mostly Cloudy' : c >= SKY_BRIGHT ? 'Partly Cloudy' : c >= 10 ? 'Mostly Clear' : 'Clear';
+  return { grade: g, word: word, cover: g === 'good' ? 'Good cover' : g === 'warn' ? 'Some cover' : 'Bright', pct: Math.round(c) };
+}
+
+var TROUT_SPECIES = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
+// The trout heat rules apply when the fish is a trout, or when no species is known (the old default).
+function troutRule(species) { return !species || TROUT_SPECIES.indexOf(species) !== -1; }
+
+// Water temperature. Grade from clsTemp() (TEMP_MIN 8, TEMP_MAX 14, TEMP_STRESS 18, unchanged). A modelled or rough
+// value is shown to the whole degree with "About", a live reading to one decimal. info = waterTempFor()'s
+// {kind: 'measured' | 'model' | 'rough', place}. o: {species, seasonal (getCurrentSeason), weatherOk}.
+// With no weather (and no live reading) there is no estimate: the app used to show one from a made-up 12 °C air.
+function waterTempRead(wt, info, o) {
+  o = o || {};
+  var kind = info && info.kind ? info.kind : 'rough';
+  if (wt == null || isNaN(wt) || (o.weatherOk === false && kind !== 'measured')) {
+    return { grade: 'na', word: 'Unknown', kind: null, value: null, display: '—', tag: 'No data', source: null,
+      sentence: 'Weather data didn’t load, so there’s no water temperature estimate.', clause: null };
+  }
+  var measured = kind === 'measured';
+  var v = measured ? Math.round(wt * 10) / 10 : Math.round(wt);
+  var g = clsTemp(wt);
+  var word = wt < TEMP_MIN - 2 ? 'Cold' : wt < TEMP_MIN ? 'Cool' : wt <= TEMP_MAX ? 'Prime' : wt < TEMP_STRESS ? 'Warm' : 'Too warm';
+  var range = TEMP_MIN + ' to ' + TEMP_MAX + '°C';
+  var seasonal = o.seasonal || null;
+  var inSeason = !!(o.species && seasonal && (seasonal.quality === 'peak' || seasonal.quality === 'good'));
+  var sentence, clause;
+  if (g === 'good') { sentence = 'Inside the ' + range + ' feeding range.'; clause = 'inside the ' + range + ' feeding range'; }
+  else if (wt < TEMP_MIN) {
+    clause = (wt < TEMP_MIN - 2 ? 'cold' : 'below the ' + range + ' feeding range') + ', so expect slower fishing';
+    sentence = clause.charAt(0).toUpperCase() + clause.slice(1) + '.';
+    // The species' own season note says how it is fished in cold water (winter steelhead: "Slow float with roe or beads").
+    if (inSeason && seasonal.note) sentence += ' ' + seasonal.note;
+  } else if (wt < TEMP_STRESS) {
+    // The warm-water rule ("Warming. Early morning only.") is a trout rule: the trout season notes and the thermal
+    // filter are the only places the code ties heat to time of day. Salmon and steelhead get the range only.
+    if (troutRule(o.species)) {
+      clause = 'above the ' + range + ' feeding range, so fish the cool first hours of light';
+      sentence = 'Above the ' + range + ' feeding range. Fish the cool first hours of light.';
+    } else {
+      clause = 'above the ' + range + ' feeding range';
+      sentence = 'Above the ' + range + ' feeding range.';
+    }
+  } else {
+    clause = troutRule(o.species) ? 'above ' + TEMP_STRESS + '°C' : 'well above the ' + range + ' feeding range';
+    sentence = 'Conservation advisory: stop fishing above ' + TEMP_STRESS + '°C.';
+  }
+  return {
+    grade: g, word: word, kind: kind, value: v, measured: measured,
+    display: (measured ? '' : 'About ') + v + '°C',
+    tag: measured ? 'Live' : kind === 'model' ? 'Modelled' : 'Rough estimate',
+    source: measured ? 'measured' + (info.place ? ' at ' + info.place : '') + ' (Credit Valley Conservation, live)'
+      : kind === 'model' ? 'modelled from recent weather' : 'a rough estimate from the air temperature',
+    sentence: sentence, clause: clause
+  };
+}
+
+// "2:15 PM" in Toronto time, from a timestamp in ms.
+function torontoClock(ms) {
+  try { return new Date(ms).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Toronto' }); }
+  catch (e) { return null; }
+}
+
+// Flow. Band and grade from flowBand() and clsFlow() (unchanged). o: {at (gauge timestamp), trend, isToday, now (ms)}.
+// The source line names the gauge, and the time of the reading only when the timestamp says its time zone
+// (Water Survey of Canada sends UTC): no time is shown rather than a guessed one.
+function flowRead(flow, cfg, o) {
+  o = o || {};
+  cfg = cfg || {};
+  var range = cfg.sweetMin + ' to ' + cfg.sweetMax + ' m³/s';
+  var gauge = cfg.gaugeName || 'river';
+  if (flow == null || isNaN(flow)) {
+    if (o.isToday === false) return { grade: 'na', band: null, word: 'No reading', missing: false, source: null, range: range,
+      sentence: 'No gauge reading for a future date. You want ' + range + ' on the day.' };
+    return { grade: 'na', band: null, word: 'Gauge unavailable', missing: true, source: null, range: range,
+      sentence: 'The ' + gauge + ' gauge isn’t reporting right now. You want ' + range + ' for this stretch. Check it before you drive.' };
+  }
+  var band = flowBand(flow, cfg);
+  var src = 'Live, Water Survey of Canada gauge ' + gauge;
+  var t = (typeof o.at === 'string' && /(Z|[+-]\d\d:?\d\d)$/.test(o.at)) ? Date.parse(o.at) : NaN;
+  var ageMin = null;
+  if (!isNaN(t)) {
+    ageMin = Math.round(((o.now != null ? o.now : Date.now()) - t) / 60000);
+    var clock = torontoClock(t);
+    if (clock) src += ', read ' + clock + (ageMin >= 180 ? ' (' + Math.round(ageMin / 60) + ' hours ago)' : '');
+  }
+  return {
+    grade: clsFlow(flow, cfg), band: band, missing: false, range: range, source: src, ageMin: ageMin,
+    word: { low: 'Too low', normal: 'Normal', prime: 'Prime', high: 'High', blown: 'Blown out' }[band],
+    // Same wording as the flow card before 2026-11-02.
+    sentence: {
+      low: 'Below the fishable range for this stretch. Fish scattered.',
+      normal: 'Normal flow. Fishable; prime is ' + range + ', a few days after rain.',
+      prime: 'Prime flow (' + range + ').',
+      high: 'Elevated. Target the slower edges.',
+      blown: 'Too high for safe wading.'
+    }[band]
+  };
+}
+
+// Flow trend wording, unchanged from the flow card. TJ to review (2026-11-02 audit): "rising is a good sign" may not
+// fit rivers he fishes on the drop (the Lower Credit 4 to 5 days after rain). Not changed here on purpose.
+function flowTrendRead(trend) {
+  if (trend === 'up') return { grade: 'good', text: 'Rising ↑, a good sign' };
+  if (trend === 'down') return { grade: 'warn', text: 'Falling ↓, keep an eye on it' };
+  return { grade: 'warn', text: 'Stable → watch for changes' };
+}
+
+// The Conditions pill. The score (and so the ranking and the drive verdict) is unchanged; what changes is how sure
+// the pill sounds. With no live flow on today's date, or no weather, a Good or Excellent reads as such but says what
+// it was rated without, and takes the marginal colour. o: {potential, flowMissing, flowIrrelevant (fish still in
+// the lake), weatherMissing}.
+function confidenceRead(conf, o) {
+  o = o || {};
+  var word = confidenceWord(conf, o.potential);
+  var missing = [];
+  if (o.flowMissing && !o.flowIrrelevant) missing.push('no flow reading');
+  if (o.weatherMissing) missing.push('no weather data');
+  if (!missing.length) return { text: 'Conditions: ' + word, cls: conf.cls, qualified: false, title: '' };
+  return {
+    text: 'Conditions: ' + word + ' · ' + missing.join(', '),
+    cls: conf.stars >= 2 ? 'conf-marginal' : conf.cls,
+    qualified: true,
+    title: 'Rated without ' + missing.map(function(m) { return m === 'no flow reading' ? 'a live flow reading' : 'weather data'; }).join(' or ')
+      + '. Check the gauge before you drive.'
+  };
+}
+
+// ── FISHING WINDOW ──────────────────────────────────────────────────────────────
+// Which part of the day to fish, in clock times from the trip date's sunrise and sunset (Open-Meteo daily
+// sunrise/sunset). The choice of periods is the rule the app already had: grade the 8 AM / 12 PM / 6 PM cloud
+// forecast (70% overcast, under 30% bright); every period fishable means all day, none means the first hours of
+// light only, and with only a daily mean, part cloud means morning and evening. Before 2026-11-02 those periods were
+// fixed clock times (6 to 9 AM and 6 to 8 PM), which on a November trip put the evening after dark.
+// Times never fall before sunrise or after sunset. Warm water (above TEMP_MAX) keeps the early hours only for trout,
+// the rule behind "Warming. Early morning only." No other species gets its own times: the code has no rule for that.
+var WINDOW_EARLY_MIN = 120;    // "early morning only": the first two hours of light (was 6 to 8 AM in summer)
+var WINDOW_MORNING_MIN = 180;  // morning on a part-cloud day: was 6 to 9 AM
+var WINDOW_EVENING_MIN = 120;  // evening on a part-cloud day: was 6 to 8 PM, the last two hours before a summer sunset
+var WINDOW_MIDDAY = [600, 900]; // 10 AM to 3 PM, the period the cloud forecast averages (hours 10 to 14)
+
+// 'YYYY-MM-DDTHH:MM' (Open-Meteo local time) to minutes after midnight.
+function localMinutes(s) {
+  var m = typeof s === 'string' ? s.match(/T(\d\d):(\d\d)/) : null;
+  return m ? (+m[1]) * 60 + (+m[2]) : null;
+}
+// Minutes after midnight to "7:50 AM" or "10 AM". Times worked out from sunrise or sunset round to 5 minutes;
+// sunrise and sunset themselves are shown to the minute (exact = true).
+function clockText(min, exact) {
+  if (!exact) min = Math.round(min / 5) * 5;
+  var h = Math.floor(min / 60) % 24, mm = min % 60, ap = h < 12 ? 'AM' : 'PM', h12 = h % 12 === 0 ? 12 : h % 12;
+  return h12 + (mm ? ':' + (mm < 10 ? '0' : '') + mm : '') + ' ' + ap;
+}
+
+// o: {sunrise, sunset ('YYYY-MM-DDTHH:MM'), periodCloud {morning, midday, evening} or null, cloudPct, weatherOk,
+//     waterTemp, waterOk (the temperature is a real reading or estimate, not the no-weather stand-in),
+//     nowMin (minutes after midnight, today's trips only), species (the warm-water rule is for trout only)}
+// Returns {mode, grade, text (the Best Window card), phrase (after "Fish" in the headline), note, ranges
+// [[startMin, endMin], ...], approximate}.
+function fishingWindow(o) {
+  o = o || {};
+  var rise = localMinutes(o.sunrise), set = localMinutes(o.sunset);
+  var sun = rise != null && set != null && set - rise > 240;
+  var mode, active = null, note;
+
+  if (o.waterOk && o.waterTemp != null && o.waterTemp > TEMP_MAX && troutRule(o.species)) {
+    mode = 'early';
+    note = 'Warm water. Fish the cool first hours of light.';
+  } else if (o.weatherOk === false) {
+    mode = 'earlylate';
+    note = 'Weather didn’t load, so this is a general guide, not today’s sky.';
+  } else if (o.periodCloud) {
+    var pc = o.periodCloud;
+    var g = { morning: clsSky(pc.morning), midday: clsSky(pc.midday), evening: clsSky(pc.evening) };
+    active = ['morning', 'midday', 'evening'].filter(function(p) { return g[p] !== 'bad'; });
+    if (active.length === 3) { mode = 'allday'; note = 'Cloud cover holds, so fish any time.'; }
+    else if (active.length === 0) { mode = 'early'; note = 'Clear sky all day. Fish the first hours of light.'; }
+    else {
+      mode = 'periods';
+      var skip = [];
+      if (g.morning === 'bad') skip.push('clear morning');
+      if (g.midday === 'bad') skip.push('bright midday');
+      if (g.evening === 'bad') skip.push('clear evening');
+      note = 'Skip the ' + skip.join(' and the ') + '.';
+    }
+  } else {
+    var dg = clsSky(o.cloudPct);
+    mode = dg === 'good' ? 'allday' : dg === 'warn' ? 'earlylate' : 'early';
+    note = dg === 'good' ? 'Overcast opens the full day.' : dg === 'warn' ? 'Part cloud. Best early and late; midday slows.'
+      : 'Clear sky. The bite slows once the sun is up.';
+  }
+
+  var grade = mode === 'allday' ? 'good' : mode === 'early' ? 'bad' : 'warn';
+  var ranges = null, text, phrase;
+  if (sun) {
+    if (mode === 'allday') ranges = [[rise, set]];
+    else if (mode === 'early') ranges = [[rise, Math.min(set, rise + WINDOW_EARLY_MIN)]];
+    else if (mode === 'earlylate') ranges = [[rise, rise + WINDOW_MORNING_MIN], [Math.max(rise + WINDOW_MORNING_MIN, set - WINDOW_EVENING_MIN), set]];
+    else {
+      // Periods clipped to daylight: morning sunrise to 10 AM, midday 10 AM to 3 PM, evening 3 PM to sunset.
+      var span = { morning: [rise, Math.max(WINDOW_MIDDAY[0], rise + 60)], midday: [WINDOW_MIDDAY[0], Math.min(WINDOW_MIDDAY[1], set)],
+        evening: [Math.min(WINDOW_MIDDAY[1], set - 60), set] };
+      ranges = [];
+      active.forEach(function(p) {
+        var r = span[p], last = ranges[ranges.length - 1];
+        if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]); else ranges.push([r[0], r[1]]);
+      });
+    }
+    var part = function(r) {
+      var a = r[0] === rise ? 'sunrise' : clockText(r[0]);
+      var b = r[1] === set ? 'sunset' : clockText(r[1]);
+      return a + ' to ' + (r[1] === set ? b : (r[0] === rise ? 'about ' : '') + b);
+    };
+    if (mode === 'allday') {
+      text = 'All day, sunrise to sunset (' + clockText(rise, true) + ' to ' + clockText(set, true) + ')';
+      phrase = 'any time from sunrise to sunset';
+    } else {
+      var withTimes = ranges.map(function(r) {
+        return (r[0] === rise ? 'sunrise (' + clockText(rise, true) + ')' : clockText(r[0])) + ' to '
+          + (r[1] === set ? 'sunset (' + clockText(set, true) + ')' : (r[0] === rise ? 'about ' : '') + clockText(r[1]));
+      });
+      text = withTimes.join(', and ');
+      text = text.charAt(0).toUpperCase() + text.slice(1);
+      // The headline keeps it short: the second range only says when to come back ("and again from 3 PM"), since the
+      // Best Window card gives both ends.
+      phrase = 'from ' + part(ranges[0]) + (ranges[1] ? ' and again from ' + clockText(ranges[1][0])
+        + (ranges[1][1] === set ? '' : ' to ' + clockText(ranges[1][1])) : '');
+    }
+  } else {
+    // No sunrise and sunset: say which part of the day, no clock times.
+    var words = { allday: 'All day', early: 'The first two hours of light', earlylate: 'Early morning and the last two hours before dark' };
+    if (mode === 'periods') {
+      var pw = { morning: 'morning', midday: 'midday', evening: 'late afternoon to dark' };
+      text = active.map(function(p) { return pw[p]; }).join(' and ');
+      text = text.charAt(0).toUpperCase() + text.slice(1);
+    } else text = words[mode];
+    phrase = mode === 'allday' ? 'any time in daylight' : text.charAt(0).toLowerCase() + text.slice(1);
+    note = note + ' Times are approximate because sunrise and sunset didn’t load.';
+  }
+  // Today, after the last window has closed: say so rather than send someone out after dark.
+  var passed = !!(ranges && o.nowMin != null && o.nowMin > ranges[ranges.length - 1][1]);
+  if (passed) note = 'Today’s window has passed. ' + note;
+  return { mode: mode, grade: grade, text: text, phrase: phrase, note: note, ranges: ranges, passed: passed,
+           approximate: !sun || o.weatherOk === false };
+}
+
+// ── HERO REASONS ────────────────────────────────────────────────────────────────
+// Two or three short lines under the headline saying why this pick, built only from values already on the page:
+// the species' season window, the section's season notes (mouth vs upstream), the flow and the water temperature.
+// The headline already gives the species, spot, time and gear, so these don't repeat them.
+// o: {species, seasonal, migratory, sectionNotes [], flow (flowRead), flowValue, isToday, flowEst {q, lo, hi,
+//     showNumber}, fishInLake, water (waterTempRead)}
+function heroReasons(o) {
+  o = o || {};
+  var out = [];
+  var s = o.seasonal, sp = o.species;
+  if (sp && s && s.quality !== 'absent') {
+    var lbl = (s.label || '').toLowerCase();
+    if (s.quality === 'peak') out.push(/peak/.test(lbl) ? sp + ' are at the peak of their run.' : sp + ' are at peak season (' + lbl + ').');
+    else if (s.quality === 'good') out.push(o.migratory ? sp + ' are in the river (' + lbl + ').' : sp + ' are in season (' + lbl + ').');
+    else out.push('It’s a slow time of year for ' + sp + ' (' + lbl + ').');
+  }
+  var notes = o.sectionNotes || [];
+  if (notes.indexOf('Fish still concentrated at the mouth') !== -1) out.push('Early in the run, most fish are still near the mouth, so this stretch beats the water upstream.');
+  else if (notes.indexOf('Staging at the mouth') !== -1) out.push('Fish are staging off the mouth, so this is the stretch to fish.');
+
+  var f = o.flow;
+  if (!o.fishInLake && f) {
+    var v = o.flowValue;
+    if (f.missing) out.push('The ' + (o.gaugeName || 'river') + ' gauge isn’t reporting, so the flow is unknown. Check it before you drive.');
+    else if (f.band === 'prime') out.push('Flow is ' + v + ' m³/s, inside this stretch’s prime range of ' + f.range + '.');
+    else if (f.band === 'normal') out.push('Flow is normal at ' + v + ' m³/s, fishable but under the ' + f.range + ' prime range.');
+    else if (f.band === 'high') out.push('Flow is up at ' + v + ' m³/s, above the ' + f.range + ' prime range, so fish the slower edges.');
+    else if (f.band === 'low') out.push('Flow is low at ' + v + ' m³/s, so fish will be scattered.');
+    else if (f.band === 'blown') out.push('Flow is ' + v + ' m³/s, too high to wade safely.');
+    else if (o.isToday === false && o.flowEst && o.flowEst.q != null) {
+      var eb = o.flowEstBand;
+      out.push('Flow is forecast ' + (o.flowEst.showNumber ? 'at about ' + o.flowEst.q : 'between ' + o.flowEst.lo + ' and ' + o.flowEst.hi)
+        + ' m³/s' + (eb === 'prime' ? ', in the prime range' : eb ? ' (' + ({ low: 'too low', normal: 'normal', high: 'high', blown: 'blown out' }[eb]) + ')' : '')
+        + '. That’s an estimate, so check the gauge on the day.');
+    }
+  }
+
+  var w = o.water;
+  if (w && w.grade !== 'na') {
+    out.push('Water is ' + (w.measured ? w.value + '°C, ' : 'about ' + w.value + '°C (') + w.source + (w.measured ? ', ' : '), ') + w.clause + '.');
+  }
+  return out.slice(0, 3);
+}
 
 var GROUNDWATER_C = 8.5;   // shallow groundwater in southern Ontario, about the mean annual air temperature plus a little
 
@@ -2916,6 +3219,9 @@ if (typeof globalThis !== 'undefined') {
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
     sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict,
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
-    FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus
+    FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
+    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
+    fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
+    TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS
   };
 }
