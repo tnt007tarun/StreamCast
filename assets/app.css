@@ -3134,7 +3134,6 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 
   /* Phase 2: the last small text on the results page, up to 12 px */
   #results .tp-confidence { font-size:12px; }
-  #results .drive-note { font-size:12px; color:var(--text-muted); margin-left:.4rem; }
   /* The verdict chip broke across lines ("WORTH THE / DRIVE"); keep it whole. */
   #results .afnote, #results .bnum-l, #results .gs, #results .gr span, #results .gr { font-size:12px; }
   @media (max-width: 600px) {
@@ -3148,5 +3147,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .tp-tile-effect.fx-up   { color:var(--good-on-panel); opacity:1; }
   #results .tp-tile-effect.fx-down { color:var(--warn-on-panel); opacity:1; }
   #results .drive-time { white-space:nowrap; }
-  #results .drive-note { display:block; margin-left:0; }
+  /* Notes: the why lines, under the tiles. */
+  #results .tp-notes { margin:1rem 0 .25rem; }
+  #results .tp-notes[hidden] { display:none; }
+  #results .tp-notes-h { font:600 var(--fs-label)/1 var(--font-body); letter-spacing:.08em; text-transform:uppercase; color:var(--fern); margin-bottom:.4rem; }
+  #results .tp-notes #tp-why { margin:0; }
 }

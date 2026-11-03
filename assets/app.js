@@ -4594,8 +4594,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _lk = window._beginnerLocKey || '';
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
 
-    _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
-      + '<span class="drive-note">est. from city centre</span>';
+    _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>';
     _driveEl.style.display = 'block';
   }
 
@@ -4611,6 +4610,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _whyEl = document.getElementById('tp-why');
     if (!_whyEl) return;
     _whyEl.innerHTML = '';
+    var _notesEl = document.getElementById('tp-notes');
+    if (_notesEl) _notesEl.hidden = true; // shown below, only when there are lines
     var _trip = getTripDateStr();
     var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
     var _sp = window._shownSpeciesName || (_multiTarget ? _multiTarget[0] : null);
@@ -4634,6 +4635,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       water: window._readSpecies === _sp ? window._waterRead : waterTempRead(wt, window._waterTempInfo, { species: _sp, seasonal: _seas, weatherOk: weatherOk })
     });
     _whyEl.innerHTML = _lines.map(function(t) { return '<div class="why-row">' + t + '</div>'; }).join('');
+    if (_notesEl && _lines.length) _notesEl.hidden = false;
   })();
 
   // Species recommendation chips (no species selected)

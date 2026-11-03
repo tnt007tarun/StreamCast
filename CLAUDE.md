@@ -446,10 +446,12 @@ Merged recently:
   with the same inputs as the weekly email, `sectionSeasonScore(section, the fish the headline names, date, section)`
   then `conditionsScore()`. It used the top-ranked river's `rankRivers()` score, which includes drive time and the method
   bonus and can belong to a different reach; that double-counted drive time with the verdict chip. The "Worth the drive"
-  chip and `driveVerdict()` are gone (drive time stays as plain text with its "est. from city centre" note); "How this was
+  chip and `driveVerdict()` are gone (drive time stays as plain text; the "est. from city centre" line was dropped, TJ 2026-11-03); "How this was
   rated" is gone too. Each tile (Water, Sky, Flow) now says how its reading moved the rating: "Helps the rating", "No
   effect", "Holds it back", or the flow cap ("Caps the day at Marginal/Tough"), from `ratingEffects(conditionsParts(...))`
   in the core. No line when the reading wasn't scored (future date with no flow, run days where the run strength decides).
+  The why lines (`#tp-why`, from `heroReasons()`) moved from under the pill to below the tiles, under a "Notes" heading
+  (`#tp-notes`, hidden when there are no lines; TJ 2026-11-03).
   `rankRivers()` is unchanged apart from dropping its `parts` field; rankings and the landing cards are the same. Checked
   48 rendered cases against #129: same pill word, headline, gear, access spot and regs.
 
