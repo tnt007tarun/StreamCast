@@ -409,10 +409,17 @@ Merged recently:
   only: `liveConditionsScore()` keeps its own steps, rankings unchanged). With no weather the page used to model the
   water and sky from a stand-in 12 °C and 50%; it now says there is no data. Modelled water shows "About 10°C ·
   Modelled"; a live CVC reading keeps one decimal. The flow card shows the gauge and the reading time in Toronto time
-  (it printed WSC's UTC timestamp as local). No live flow today, or no weather: the pill reads "Good · no flow reading"
-  in the marginal colour (score, ranking and drive verdict unchanged). The warm-water early-hours rule applies to
-  trout only. Checked: 16 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep
-  link) match `main` on river, species, technique, gear, bait, access spot, regs and the pill word.
+  (it printed WSC's UTC timestamp as local). The warm-water early-hours rule applies to trout only.
+  Follow-up the same day (TJ): no live flow today, or no weather, the pill makes no call: "Conditions: Unknown · no flow
+  reading" (`conf-unknown`, neutral) and the drive verdict "~ Not rated. Check the gauge before you drive"
+  (`driveVerdictShown()`); the score and rankings are unchanged. Why lines word the season as an expectation from the
+  calendar ("Fall return season for steelhead is under way"), never as fish seen in the river (the app has no counts).
+  The hero, the fishing window, the water wording, the water tile and the why lines all use the fish the headline
+  names (`speciesReads()` in `app.js`, called again once `buildTopPick()` settles the species). Today's window shows
+  only what is left ("Now to about 9:50 AM"); once it is over the hero says so and gives tomorrow's window from
+  tomorrow's sunrise and cloud (today's Open-Meteo call now asks for 2 days); the picked date never changes.
+  Checked: 20 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep link, a
+  fallback species, after sunset) match `main` on river, species, technique, gear, bait, access spot and regs.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -476,7 +483,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-14. **For TJ, from Phase 1 (2026-11-02):** (a) the flow trend copy says rising is "a good sign" and falling "keep an eye
+14. **For TJ, from Phase 1 (2026-11-02); proposals posted on PR #128, nothing changed yet:** (a) the flow trend copy says rising is "a good sign" and falling "keep an eye
    on it", and the default Pre-Trip Routine says "A rising flow is almost always better than a falling one". Neither
    feeds a score (trend isn't in `liveConditionsScore()`), but the prime ranges are set from flow 2 to 5 days after a
    rain bump, which is a dropping river. Left as is for TJ to decide (`flowTrendRead()`, `RIVER_CONFIG.default.routine`,

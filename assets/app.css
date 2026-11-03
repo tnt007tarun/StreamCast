@@ -3089,4 +3089,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   .notify-bar-outlook { display:flex; align-items:center; gap:.4rem; margin-top:.35rem; font-size:.78rem; color:rgba(255,255,255,.75); cursor:pointer; }
   .notify-bar-outlook input { width:15px; height:15px; accent-color: var(--fern); margin:0; }
 
+
+  /* Conditions pill with no flow reading or no weather: no call either way (confidenceRead, 2026-11-02) */
+  .conf-unknown { background: var(--surface-sunk, #f3f0ea); color: var(--text-muted, #6b7d86); }
 }

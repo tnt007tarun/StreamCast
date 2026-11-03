@@ -45,6 +45,10 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.waterTempRead(10.2, live, { weatherOk: false }).grade, 'good', 'a live reading stands without weather');
   // Thresholds are clsTemp's (8 / 14 / 18), unchanged.
   for (const t of [3, 5.9, 6, 7.9, 8, 14, 14.1, 17.9, 18, 22]) assert.equal(C.waterTempRead(t, model, {}).grade, C.clsTemp(t), 't=' + t);
+  assert.equal(C.waterTempRead(14.4, model, { species: 'Rainbow Trout', weatherOk: true }).clause,
+    'at the warm edge of the 8 to 14°C feeding range, so fish the cool first hours of light', 'about 14 is not "above 14"');
+  assert.equal(C.waterTempRead(7.6, model, { weatherOk: true }).clause, 'at the cool edge of the 8 to 14°C feeding range, so expect slower fishing');
+  assert.equal(C.waterTempRead(15, model, { species: 'Chinook Salmon', weatherOk: true }).clause, 'above the 8 to 14°C feeding range');
   // Species: winter steelhead in season get their own season note in cold water; resident trout in their slow window don't.
   const sh = C.getCurrentSeason('Steelhead', '2027-01-15');
   const cold = C.waterTempRead(2, model, { species: 'Steelhead', seasonal: sh, weatherOk: true });
@@ -77,18 +81,25 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.flowTrendRead('up').text, 'Rising ↑, a good sign');
 }
 
-// ── Conditions pill ──────────────────────────────────────────────────────────
+// ── Conditions pill: missing flow makes no call ─────────────────────────────
 {
-  const good = C.scoreToConfidence(7), tough = C.scoreToConfidence(0);
-  const q = C.confidenceRead(good, { flowMissing: true });
-  assert.equal(q.text, 'Conditions: Good · no flow reading'); assert.equal(q.cls, 'conf-marginal'); assert.equal(q.qualified, true);
-  assert.match(q.title, /without a live flow reading/);
-  assert.equal(C.confidenceRead(good, { flowMissing: true, flowIrrelevant: true }).text, 'Conditions: Good', 'fish in the lake: flow does not matter');
+  for (const score of [0, 3, 7, 12]) {
+    const conf = C.scoreToConfidence(score);
+    const q = C.confidenceRead(conf, { flowMissing: true });
+    assert.equal(q.text, 'Conditions: Unknown · no flow reading', 'score ' + score + ': no rating word without flow');
+    assert.ok(!/Good|Excellent|Marginal|Tough/.test(q.text), 'no positive or negative call');
+    assert.equal(q.cls, 'conf-unknown'); assert.equal(q.unknown, true);
+    assert.match(q.title, /no flow reading/); assert.match(q.title, /Check the gauge/);
+  }
+  const good = C.scoreToConfidence(7);
+  assert.equal(C.confidenceRead(good, { flowMissing: true, flowIrrelevant: true }).text, 'Conditions: Good', 'fish in the lake: flow does not count');
   assert.equal(C.confidenceRead(good, {}).text, 'Conditions: Good');
   assert.equal(C.confidenceRead(good, {}).cls, good.cls);
-  assert.equal(C.confidenceRead(tough, { flowMissing: true }).cls, 'conf-tough', 'a low rating keeps its colour');
-  assert.equal(C.confidenceRead(C.scoreToConfidence(12), { weatherMissing: true }).text, 'Conditions: Excellent · no weather data');
-  assert.equal(C.confidenceRead(good, { potential: true }).text, 'Conditions: Potentially good');
+  assert.equal(C.confidenceRead(C.scoreToConfidence(12), { weatherMissing: true }).text, 'Conditions: Unknown · no weather data');
+  assert.equal(C.confidenceRead(good, { flowMissing: true, weatherMissing: true }).text, 'Conditions: Unknown · no flow reading, no weather data');
+  assert.equal(C.confidenceRead(good, { potential: true }).text, 'Conditions: Potentially good', 'a flow estimate still rates the day');
+  // The score itself is unchanged by a missing reading (rankings use it).
+  assert.equal(C.scoreToConfidence(7).word, 'Good');
 }
 
 // ── Fishing window ───────────────────────────────────────────────────────────
@@ -149,9 +160,27 @@ const mins = (s) => C.localMinutes(s);
   const now = C.fishingWindow({ sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, weatherOk: false, cloudPct: 50 });
   assert.equal(now.mode, 'earlylate'); assert.equal(now.approximate, true); assert.match(now.note, /Weather didn’t load/);
   // Today after sunset.
-  const late = C.fishingWindow({ sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, cloudPct: 85, weatherOk: true, nowMin: 19 * 60 });
-  assert.equal(late.passed, true); assert.match(late.note, /^Today’s window has passed/);
-  assert.equal(C.fishingWindow({ sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, cloudPct: 85, weatherOk: true, nowMin: 9 * 60 }).passed, false);
+  // Today: only what is still ahead.
+  const fallPart = { sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, cloudPct: 50, weatherOk: true };
+  const late = C.fishingWindow(Object.assign({ nowMin: 19 * 60 }, fallPart));
+  assert.equal(late.passed, true); assert.equal(late.phrase, null, 'no time to fish once the window is over');
+  assert.equal(late.text, 'Today’s window is over'); assert.deepEqual(late.remaining, []);
+  assert.equal(late.ranges.length, 2, 'the whole day is still on record');
+  const mid = C.fishingWindow(Object.assign({ nowMin: 11 * 60 }, fallPart));
+  assert.equal(mid.passed, false); assert.equal(mid.text, '3:05 PM to sunset (5:04 PM)', 'the morning has gone, the evening is ahead');
+  assert.equal(mid.phrase, 'from 3:05 PM to sunset');
+  const during = C.fishingWindow(Object.assign({ nowMin: 8 * 60 + 2 }, fallPart));
+  assert.equal(during.text, 'Now to about 9:50 AM, and 3:05 PM to sunset (5:04 PM)');
+  assert.equal(during.phrase, 'from now to about 9:50 AM and again from 3:05 PM');
+  const before = C.fishingWindow(Object.assign({ nowMin: 5 * 60 }, fallPart));
+  assert.equal(before.text, nov.text, 'before sunrise the whole day is ahead');
+  const allNow = C.fishingWindow({ sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, cloudPct: 85, weatherOk: true, nowMin: 13 * 60 });
+  assert.equal(allNow.text, 'Now to sunset (5:04 PM)');
+  for (let m = 0; m < 24 * 60; m += 7) {
+    const w = C.fishingWindow(Object.assign({ nowMin: m }, fallPart));
+    (w.remaining || []).forEach((r) => assert.ok(r[0] >= m && r[1] > m, 'nothing in the past at ' + m));
+    assert.equal(w.passed, m >= mins(SUN.fall.sunset), 'passed exactly after sunset (' + m + ')');
+  }
   // Clock text
   assert.equal(C.clockText(600), '10 AM'); assert.equal(C.clockText(742), '12:20 PM'); assert.equal(C.clockText(411, true), '6:51 AM');
 }
@@ -166,7 +195,7 @@ const mins = (s) => C.localMinutes(s);
     gaugeName: cfg.gaugeName, isToday: true, water };
   const gaugeDown = C.heroReasons(Object.assign({}, base, { flow: C.flowRead(null, cfg, { isToday: true }), flowValue: null }));
   assert.deepEqual(gaugeDown, [
-    'Steelhead are in the river (' + seas.label.toLowerCase() + ').',
+    'Fall return season for steelhead is under way.',
     'The Credit River at Streetsville gauge isn’t reporting, so the flow is unknown. Check it before you drive.',
     'Water is about 10°C (modelled from recent weather), inside the 8 to 14°C feeding range.'
   ]);
@@ -195,10 +224,61 @@ const mins = (s) => C.localMinutes(s);
   const mouth = C.heroReasons({ species: 'Chinook Salmon', seasonal: C.getCurrentSeason('Chinook Salmon', sep), migratory: true, sectionNotes: mouthNotes,
     flow: C.flowRead(8, cfg, {}), flowValue: 8, isToday: true, water });
   assert.ok(mouth.length <= 3);
-  if (mouthNotes.indexOf('Fish still concentrated at the mouth') !== -1) assert.match(mouth[1], /near the mouth/);
+  if (mouthNotes.indexOf('Fish still concentrated at the mouth') !== -1) assert.match(mouth[1], /usually hold near the mouth/);
   // Out of season: no season line
   assert.ok(!C.heroReasons({ species: 'Chinook Salmon', seasonal: C.getCurrentSeason('Chinook Salmon', '2026-03-01'), water }).some((t) => /Chinook/.test(t)));
   for (const t of [].concat(gaugeDown, prime, live, fut, fut2, mouth)) noEmDash(t, 'reason');
+
+  // Season lines are expectations from the calendar: never a claim that fish are here.
+  const presence = /are in the river|are here|are present|stacked|fish are staging|are holding/i;
+  for (const sp of ['Steelhead', 'Chinook Salmon', 'Coho Salmon', 'Brown Trout', 'Rainbow Trout', 'Brook Trout']) {
+    for (let m = 1; m <= 12; m++) {
+      const d = '2026-' + String(m).padStart(2, '0') + '-15';
+      const se = C.getCurrentSeason(sp, d);
+      const lines = C.heroReasons({ species: sp, seasonal: se, migratory: ['Steelhead', 'Chinook Salmon', 'Coho Salmon'].includes(sp),
+        sectionNotes: ['Staging at the mouth'], flow: C.flowRead(8, cfg, {}), flowValue: 8, isToday: true, water });
+      lines.forEach((t) => { assert.ok(!presence.test(t), sp + ' ' + d + ': ' + t); noEmDash(t, 'reason'); });
+      if (se && se.quality !== 'absent' && se.quality !== 'slow') assert.match(lines[0], /season for .+ is under way/);
+    }
+  }
+  assert.equal(C.heroReasons({ species: 'Chinook Salmon', seasonal: C.getCurrentSeason('Chinook Salmon', '2026-10-01'), sectionNotes: [] })[0],
+    'Peak run season for chinook salmon is under way.');
+  assert.equal(C.heroReasons({ species: 'Brown Trout', seasonal: C.getCurrentSeason('Brown Trout', '2026-04-15'), sectionNotes: [] })[0],
+    'Spring season for brown trout is under way, rated peak on the season calendar.');
+}
+
+// ── Rules kept as they are (TJ to decide on the proposals in PR #128) ────────
+{
+  const model = { kind: 'model' };
+  // Winter steelhead below 4 °C: read "Cold" and the score's temperature step is -3 (liveConditionsScore). Unchanged.
+  const sh = C.getCurrentSeason('Steelhead', '2027-01-15');
+  const w2 = C.waterTempRead(2, model, { species: 'Steelhead', seasonal: sh, weatherOk: true });
+  assert.equal(w2.word, 'Cold'); assert.equal(w2.grade, 'bad');
+  assert.ok(!/inactive/i.test(w2.sentence));
+  const t = (wt) => C.liveConditionsScore(null, 6, 13, 3, 30, wt, null);
+  assert.equal(t(2), -3, 'below 4 °C: -3 (unchanged)'); assert.equal(t(5), 1, '4 to 8 °C: +1'); assert.equal(t(10), 3);
+  // Chinook at the mouth at 18 °C and over: the column keeps the advisory (unchanged); the why line doesn't repeat it.
+  const ck = C.waterTempRead(19, model, { species: 'Chinook Salmon', weatherOk: true });
+  assert.match(ck.sentence, /Conservation advisory: stop fishing above 18/);
+  assert.equal(ck.clause, 'well above the 8 to 14°C feeding range');
+  assert.equal(C.waterTempRead(18, model, { species: 'Chinook Salmon', weatherOk: true }).grade, 'bad', 'the 18 °C step is unchanged');
+  // While fish are in the lake (staging at the mouth) the rating ignores river temperature (unchanged).
+  const cfgG = C.getRiverConfig('Lower Bowmanville Creek');
+  assert.equal(C.conditionsScore(0, cfgG, 1.5, 19, 50, 80, true), C.conditionsScore(0, cfgG, 1.5, 10, 50, 80, true));
+  // Flow trend wording: unchanged until TJ picks the new wording.
+  assert.equal(C.flowTrendRead('up').text, 'Rising ↑, a good sign');
+  assert.equal(C.flowTrendRead('down').text, 'Falling ↓, keep an eye on it');
+  assert.equal(C.flowTrendRead('stable').text, 'Stable → watch for changes');
+}
+
+// ── Species and window agree ─────────────────────────────────────────────────
+{
+  // The same warm water gives a trout the early hours and a salmon the cloud-based window: the window has to be worked
+  // out for the fish the hero names (the app calls speciesReads() again with that fish).
+  const base = { sunrise: SUN.summer.sunrise, sunset: SUN.summer.sunset, cloudPct: 85, weatherOk: true, waterTemp: 16, waterOk: true };
+  assert.equal(C.fishingWindow(Object.assign({ species: 'Rainbow Trout' }, base)).mode, 'early');
+  assert.equal(C.fishingWindow(Object.assign({ species: 'Chinook Salmon' }, base)).mode, 'allday');
+  assert.equal(C.fishingWindow(Object.assign({ species: null }, base)).mode, 'early', 'unknown fish: the trout rule, as before');
 }
 
 console.log('shared reads: all checks passed');

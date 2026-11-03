@@ -2379,19 +2379,22 @@ function waterTempRead(wt, info, o) {
   var sentence, clause;
   if (g === 'good') { sentence = 'Inside the ' + range + ' feeding range.'; clause = 'inside the ' + range + ' feeding range'; }
   else if (wt < TEMP_MIN) {
-    clause = (wt < TEMP_MIN - 2 ? 'cold' : 'below the ' + range + ' feeding range') + ', so expect slower fishing';
+    clause = (wt < TEMP_MIN - 2 ? 'cold' : !measured && v >= TEMP_MIN ? 'at the cool edge of the ' + range + ' feeding range'
+      : 'below the ' + range + ' feeding range') + ', so expect slower fishing';
     sentence = clause.charAt(0).toUpperCase() + clause.slice(1) + '.';
     // The species' own season note says how it is fished in cold water (winter steelhead: "Slow float with roe or beads").
     if (inSeason && seasonal.note) sentence += ' ' + seasonal.note;
   } else if (wt < TEMP_STRESS) {
+    // A modelled 14.4 °C shows as "about 14", so say where it sits rather than "above the 8 to 14 range".
+    var edge = !measured && v <= TEMP_MAX ? 'at the warm edge of the ' + range + ' feeding range' : 'above the ' + range + ' feeding range';
     // The warm-water rule ("Warming. Early morning only.") is a trout rule: the trout season notes and the thermal
     // filter are the only places the code ties heat to time of day. Salmon and steelhead get the range only.
     if (troutRule(o.species)) {
-      clause = 'above the ' + range + ' feeding range, so fish the cool first hours of light';
-      sentence = 'Above the ' + range + ' feeding range. Fish the cool first hours of light.';
+      clause = edge + ', so fish the cool first hours of light';
+      sentence = edge.charAt(0).toUpperCase() + edge.slice(1) + '. Fish the cool first hours of light.';
     } else {
-      clause = 'above the ' + range + ' feeding range';
-      sentence = 'Above the ' + range + ' feeding range.';
+      clause = edge;
+      sentence = edge.charAt(0).toUpperCase() + edge.slice(1) + '.';
     }
   } else {
     clause = troutRule(o.species) ? 'above ' + TEMP_STRESS + '°C' : 'well above the ' + range + ' feeding range';
@@ -2458,23 +2461,21 @@ function flowTrendRead(trend) {
   return { grade: 'warn', text: 'Stable → watch for changes' };
 }
 
-// The Conditions pill. The score (and so the ranking and the drive verdict) is unchanged; what changes is how sure
-// the pill sounds. With no live flow on today's date, or no weather, a Good or Excellent reads as such but says what
-// it was rated without, and takes the marginal colour. o: {potential, flowMissing, flowIrrelevant (fish still in
-// the lake), weatherMissing}.
+// The Conditions pill. The score (and so the ranking) is unchanged; what changes is what the pill claims. With no live
+// flow on today's date, or no weather (the score then runs on a stand-in 12 °C and 50% cloud), the pill makes no call:
+// "Unknown", with what is missing, in a neutral colour. A flow estimate still reads "Potentially ...".
+// o: {potential, flowMissing, flowIrrelevant (fish still in the lake, where flow doesn't count), weatherMissing}.
 function confidenceRead(conf, o) {
   o = o || {};
-  var word = confidenceWord(conf, o.potential);
   var missing = [];
   if (o.flowMissing && !o.flowIrrelevant) missing.push('no flow reading');
   if (o.weatherMissing) missing.push('no weather data');
-  if (!missing.length) return { text: 'Conditions: ' + word, cls: conf.cls, qualified: false, title: '' };
+  if (!missing.length) return { text: 'Conditions: ' + confidenceWord(conf, o.potential), cls: conf.cls, unknown: false, title: '' };
   return {
-    text: 'Conditions: ' + word + ' · ' + missing.join(', '),
-    cls: conf.stars >= 2 ? 'conf-marginal' : conf.cls,
-    qualified: true,
-    title: 'Rated without ' + missing.map(function(m) { return m === 'no flow reading' ? 'a live flow reading' : 'weather data'; }).join(' or ')
-      + '. Check the gauge before you drive.'
+    text: 'Conditions: Unknown \u00b7 ' + missing.join(', '),
+    cls: 'conf-unknown',
+    unknown: true,
+    title: 'Not rated: ' + missing.join(' and ') + '. Check the gauge before you drive.'
   };
 }
 
@@ -2507,8 +2508,9 @@ function clockText(min, exact) {
 // o: {sunrise, sunset ('YYYY-MM-DDTHH:MM'), periodCloud {morning, midday, evening} or null, cloudPct, weatherOk,
 //     waterTemp, waterOk (the temperature is a real reading or estimate, not the no-weather stand-in),
 //     nowMin (minutes after midnight, today's trips only), species (the warm-water rule is for trout only)}
-// Returns {mode, grade, text (the Best Window card), phrase (after "Fish" in the headline), note, ranges
-// [[startMin, endMin], ...], approximate}.
+// Returns {mode, grade, text (the Best Window card), phrase (after "Fish" in the headline, null once today's window
+// is over), note, ranges (the whole day, [[startMin, endMin], ...]), remaining (what is left today), passed,
+// approximate}.
 function fishingWindow(o) {
   o = o || {};
   var rise = localMinutes(o.sunrise), set = localMinutes(o.sunset);
@@ -2543,7 +2545,7 @@ function fishingWindow(o) {
   }
 
   var grade = mode === 'allday' ? 'good' : mode === 'early' ? 'bad' : 'warn';
-  var ranges = null, text, phrase;
+  var ranges = null, shown = null, passed = false, text, phrase;
   if (sun) {
     if (mode === 'allday') ranges = [[rise, set]];
     else if (mode === 'early') ranges = [[rise, Math.min(set, rise + WINDOW_EARLY_MIN)]];
@@ -2558,25 +2560,38 @@ function fishingWindow(o) {
         if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]); else ranges.push([r[0], r[1]]);
       });
     }
-    var part = function(r) {
-      var a = r[0] === rise ? 'sunrise' : clockText(r[0]);
-      var b = r[1] === set ? 'sunset' : clockText(r[1]);
-      return a + ' to ' + (r[1] === set ? b : (r[0] === rise ? 'about ' : '') + b);
+    // Today: only what is still ahead. A range already under way starts "now"; one that is over is dropped. When
+    // nothing is left, passed is true and the app shows the next day instead (it keeps the date the reader picked).
+    shown = ranges;
+    var nowStart = null;
+    if (o.nowMin != null) {
+      shown = ranges.filter(function(r) { return r[1] > o.nowMin; }).map(function(r) {
+        if (r[0] < o.nowMin) { nowStart = o.nowMin; return [o.nowMin, r[1]]; }
+        return [r[0], r[1]];
+      });
+      passed = shown.length === 0;
+    }
+    var from = function(m, clock) {
+      if (m === nowStart) return 'now';
+      return m === rise ? (clock ? 'sunrise (' + clockText(rise, true) + ')' : 'sunrise') : clockText(m);
     };
-    if (mode === 'allday') {
+    var to = function(r, clock) {
+      if (r[1] === set) return clock ? 'sunset (' + clockText(set, true) + ')' : 'sunset';
+      return (r[0] === rise || r[0] === nowStart ? 'about ' : '') + clockText(r[1]);
+    };
+    if (passed) {
+      text = 'Today’s window is over';
+      phrase = null;
+    } else if (mode === 'allday' && shown[0][0] === rise) {
       text = 'All day, sunrise to sunset (' + clockText(rise, true) + ' to ' + clockText(set, true) + ')';
       phrase = 'any time from sunrise to sunset';
     } else {
-      var withTimes = ranges.map(function(r) {
-        return (r[0] === rise ? 'sunrise (' + clockText(rise, true) + ')' : clockText(r[0])) + ' to '
-          + (r[1] === set ? 'sunset (' + clockText(set, true) + ')' : (r[0] === rise ? 'about ' : '') + clockText(r[1]));
-      });
-      text = withTimes.join(', and ');
+      text = shown.map(function(r) { return from(r[0], true) + ' to ' + to(r, true); }).join(', and ');
       text = text.charAt(0).toUpperCase() + text.slice(1);
       // The headline keeps it short: the second range only says when to come back ("and again from 3 PM"), since the
       // Best Window card gives both ends.
-      phrase = 'from ' + part(ranges[0]) + (ranges[1] ? ' and again from ' + clockText(ranges[1][0])
-        + (ranges[1][1] === set ? '' : ' to ' + clockText(ranges[1][1])) : '');
+      phrase = 'from ' + from(shown[0][0]) + ' to ' + to(shown[0]) + (shown[1] ? ' and again from ' + clockText(shown[1][0])
+        + (shown[1][1] === set ? '' : ' to ' + clockText(shown[1][1])) : '');
     }
   } else {
     // No sunrise and sunset: say which part of the day, no clock times.
@@ -2589,10 +2604,7 @@ function fishingWindow(o) {
     phrase = mode === 'allday' ? 'any time in daylight' : text.charAt(0).toLowerCase() + text.slice(1);
     note = note + ' Times are approximate because sunrise and sunset didn’t load.';
   }
-  // Today, after the last window has closed: say so rather than send someone out after dark.
-  var passed = !!(ranges && o.nowMin != null && o.nowMin > ranges[ranges.length - 1][1]);
-  if (passed) note = 'Today’s window has passed. ' + note;
-  return { mode: mode, grade: grade, text: text, phrase: phrase, note: note, ranges: ranges, passed: passed,
+  return { mode: mode, grade: grade, text: text, phrase: phrase, note: note, ranges: ranges, remaining: shown, passed: passed,
            approximate: !sun || o.weatherOk === false };
 }
 
@@ -2607,14 +2619,16 @@ function heroReasons(o) {
   var out = [];
   var s = o.seasonal, sp = o.species;
   if (sp && s && s.quality !== 'absent') {
-    var lbl = (s.label || '').toLowerCase();
-    if (s.quality === 'peak') out.push(/peak/.test(lbl) ? sp + ' are at the peak of their run.' : sp + ' are at peak season (' + lbl + ').');
-    else if (s.quality === 'good') out.push(o.migratory ? sp + ' are in the river (' + lbl + ').' : sp + ' are in season (' + lbl + ').');
-    else out.push('It’s a slow time of year for ' + sp + ' (' + lbl + ').');
+    // The season calendar is an expectation, not a sighting: the app has no count of fish in the river, so these lines
+    // say the season is under way and never that fish are here.
+    var lbl = (s.label || '').toLowerCase(), spl = sp.toLowerCase();
+    if (s.quality === 'slow') out.push('It\u2019s a slow stretch of the season for ' + spl + ' (' + lbl + ').');
+    else out.push(lbl.charAt(0).toUpperCase() + lbl.slice(1) + ' season for ' + spl + ' is under way'
+      + (s.quality === 'peak' && !/peak/.test(lbl) ? ', rated peak on the season calendar' : '') + '.');
   }
   var notes = o.sectionNotes || [];
-  if (notes.indexOf('Fish still concentrated at the mouth') !== -1) out.push('Early in the run, most fish are still near the mouth, so this stretch beats the water upstream.');
-  else if (notes.indexOf('Staging at the mouth') !== -1) out.push('Fish are staging off the mouth, so this is the stretch to fish.');
+  if (notes.indexOf('Fish still concentrated at the mouth') !== -1) out.push('Early in the run, fish usually hold near the mouth, so this stretch ranks above the water upstream.');
+  else if (notes.indexOf('Staging at the mouth') !== -1) out.push('This is when fish usually stage off the mouth, so this stretch ranks first.');
 
   var f = o.flow;
   if (!o.fishInLake && f) {
