@@ -86,18 +86,18 @@ const mins = (s) => C.localMinutes(s);
   for (const score of [0, 3, 7, 12]) {
     const conf = C.scoreToConfidence(score);
     const q = C.confidenceRead(conf, { flowMissing: true });
-    assert.equal(q.text, 'Conditions: Unknown · no flow reading', 'score ' + score + ': no rating word without flow');
+    assert.equal(q.text, 'Conditions here: Unknown · no flow reading', 'score ' + score + ': no rating word without flow');
     assert.ok(!/Good|Excellent|Marginal|Tough/.test(q.text), 'no positive or negative call');
     assert.equal(q.cls, 'conf-unknown'); assert.equal(q.unknown, true);
     assert.match(q.title, /no flow reading/); assert.match(q.title, /Check the gauge/);
   }
   const good = C.scoreToConfidence(7);
-  assert.equal(C.confidenceRead(good, { flowMissing: true, flowIrrelevant: true }).text, 'Conditions: Good', 'fish in the lake: flow does not count');
-  assert.equal(C.confidenceRead(good, {}).text, 'Conditions: Good');
+  assert.equal(C.confidenceRead(good, { flowMissing: true, flowIrrelevant: true }).text, 'Conditions here: Good', 'fish in the lake: flow does not count');
+  assert.equal(C.confidenceRead(good, {}).text, 'Conditions here: Good');
   assert.equal(C.confidenceRead(good, {}).cls, good.cls);
-  assert.equal(C.confidenceRead(C.scoreToConfidence(12), { weatherMissing: true }).text, 'Conditions: Unknown · no weather data');
-  assert.equal(C.confidenceRead(good, { flowMissing: true, weatherMissing: true }).text, 'Conditions: Unknown · no flow reading, no weather data');
-  assert.equal(C.confidenceRead(good, { potential: true }).text, 'Conditions: Potentially good', 'a flow estimate still rates the day');
+  assert.equal(C.confidenceRead(C.scoreToConfidence(12), { weatherMissing: true }).text, 'Conditions here: Unknown · no weather data');
+  assert.equal(C.confidenceRead(good, { flowMissing: true, weatherMissing: true }).text, 'Conditions here: Unknown · no flow reading, no weather data');
+  assert.equal(C.confidenceRead(good, { potential: true }).text, 'Conditions here: Potentially good', 'a flow estimate still rates the day');
   // The score itself is unchanged by a missing reading (rankings use it).
   assert.equal(C.scoreToConfidence(7).word, 'Good');
 }
@@ -350,8 +350,38 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(fx.sky.text, 'No effect');
   fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.flowHigh + 5, 10, 80, null, false, null));
   assert.equal(fx.flow.text, 'Caps the day at Tough', 'blown out caps at Tough');
-  assert.deepEqual(C.ratingEffects(C.conditionsParts(5, cfg, null, 10, 80, null, false, null)), {}, 'no flow, nothing scored');
+  assert.equal(C.ratingEffects(C.conditionsParts(5, cfg, null, 10, 80, null, false, null)).sky.text, 'Not scored for this date', 'no flow: nothing live is scored');
   assert.deepEqual(C.ratingEffects(null), {});
+  // A cap does not leave water and sky claiming to help
+  fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.flowLow - 1, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'Caps the day at Tough');
+  assert.equal(fx.temp.text, 'Flow cap overrides'); assert.equal(fx.sky.text, 'Flow cap overrides');
+  fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.sweetMax + 1, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'Caps the day at Marginal');
+  // Run days: not scored, not missing
+  fx = C.ratingEffects(C.conditionsParts(null, cfg, (cfg.sweetMin + cfg.sweetMax) / 2, null, null, 70, false, null));
+  assert.equal(fx.temp.text, 'Not used for run rating'); assert.equal(fx.sky.text, 'Not used for run rating'); assert.equal(fx.flow.text, 'Helps the rating');
+  fx = C.ratingEffects(C.conditionsParts(null, cfg, 3, null, null, 70, true, null));
+  assert.equal(fx.flow.text, 'Not used at the mouth');
+  for (const k of ['flow','temp','sky']) assert.ok(!/hold|cap/i.test((fx[k]||{}).text || ''), 'unscored is never negative');
+}
+
+// limitRead: the note under a Marginal or Tough pill
+{
+  const cfg = C.getRiverConfig('Lower Credit River');
+  const rate = (flow, wt, cloud, stg, lake, base) => { const parts = C.conditionsParts(base == null ? 2 : base, cfg, flow, wt, cloud, stg, lake, null); return { parts, conf: C.scoreToConfidence(parts.total) }; };
+  let r = rate(cfg.flowLow - 1, 10, 80), L = C.limitRead(Object.assign({ cfg, flow: cfg.flowLow - 1, flowKind: 'live', waterC: 10 }, r));
+  assert.match(L.text, /on the live gauge, too low to fish well\.$/); assert.equal(L.kind, 'measured');
+  r = rate(cfg.flowHigh + 5, 10, 80); L = C.limitRead(Object.assign({ cfg, flow: cfg.flowHigh + 5, flowKind: 'live' }, r)); assert.match(L.text, /blown out\.$/);
+  r = rate(cfg.sweetMax + 1, 10, 80, null, false, 10); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMax + 1, flowKind: 'live' }, r)); assert.match(L.text, /holds the day at Marginal/);
+  r = rate(cfg.flowLow + 0.5, 10, 20, null, false, 0); L = C.limitRead(Object.assign({ cfg, flow: cfg.flowLow + 0.5, flowKind: 'estimate' }, r));
+  assert.match(L.text, /^Flow is estimated at .* below the prime range of /); assert.equal(L.kind, 'estimated');
+  r = rate(cfg.sweetMin + 1, 20, 20, null, false, 0); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live', waterC: 20, waterKind: 'modelled' }, r));
+  assert.ok(L && /^Water is about 20\u00b0C \(modelled\), above the feeding range\.$/.test(L.text), 'hot water: ' + JSON.stringify(L));
+  r = rate(cfg.sweetMin + 1, null, null, 20, false); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live' }, r)); assert.equal(L.text, 'The modelled run at the mouth is weak.');
+  r = rate(null, 10, 80, null, false, 4); L = C.limitRead(Object.assign({ cfg, flow: null }, r)); assert.equal(L.kind, 'calendar');
+  for (const sc of [6, 7, 10, 14]) assert.equal(C.limitRead({ conf: C.scoreToConfidence(sc), parts: { parts: [] }, cfg }), null, 'Good and Excellent get no note');
+  assert.equal(C.limitRead(null), null);
 }
 
 console.log('shared reads: all checks passed');

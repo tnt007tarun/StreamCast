@@ -2510,9 +2510,9 @@ function confidenceRead(conf, o) {
   var missing = [];
   if (o.flowMissing && !o.flowIrrelevant) missing.push('no flow reading');
   if (o.weatherMissing) missing.push('no weather data');
-  if (!missing.length) return { text: 'Conditions: ' + confidenceWord(conf, o.potential), cls: conf.cls, unknown: false, title: '' };
+  if (!missing.length) return { text: 'Conditions here: ' + confidenceWord(conf, o.potential), cls: conf.cls, unknown: false, title: '' };
   return {
-    text: 'Conditions: Unknown \u00b7 ' + missing.join(', '),
+    text: 'Conditions here: Unknown \u00b7 ' + missing.join(', '),
     cls: 'conf-unknown',
     unknown: true,
     title: 'Not rated: ' + missing.join(' and ') + '. Check the gauge before you drive.'
@@ -3226,12 +3226,69 @@ function scoreDay(o) {
 function ratingEffects(parts) {
   var out = {};
   if (!parts) return out;
-  (parts.parts || []).forEach(function(x) {
+  var list = parts.parts || [];
+  list.forEach(function(x) {
     if (x.key !== 'flow' && x.key !== 'temp' && x.key !== 'sky') return;
     out[x.key] = x.pts > 0 ? { dir: 'up', text: 'Helps the rating' } : x.pts < 0 ? { dir: 'down', text: 'Holds it back' } : { dir: 'flat', text: 'No effect' };
   });
-  if (parts.cap) out.flow = { dir: 'down', text: /Tough/.test(parts.cap.label) ? 'Caps the day at Tough' : 'Caps the day at Marginal' };
+  // A reading the rating does not use says so, which is different from a reading that is missing (the tile itself says
+  // "No data", and the app adds "No data, not rated"). Run days are rated on run strength; with no flow for the date
+  // nothing live is scored (2026-11-03).
+  if (parts.replaced) {
+    if (!out.temp) out.temp = { dir: 'flat', text: 'Not used for run rating' };
+    if (!out.sky) out.sky = { dir: 'flat', text: 'Not used for run rating' };
+    if (!out.flow) out.flow = { dir: 'flat', text: 'Not used at the mouth' };
+  } else if (!list.length) {
+    ['flow', 'temp', 'sky'].forEach(function(k) { out[k] = { dir: 'flat', text: 'Not scored for this date' }; });
+  }
+  // A flow cap replaces the flow line, since the cap is what the reader needs to know. While it holds, a good water or
+  // sky reading does not lift the day, so it does not claim to help.
+  if (parts.cap) {
+    out.flow = { dir: 'down', text: /Tough/.test(parts.cap.label) ? 'Caps the day at Tough' : 'Caps the day at Marginal' };
+    ['temp', 'sky'].forEach(function(k) {
+      if (out[k] && out[k].dir === 'up') out[k] = { dir: 'flat', text: 'Flow cap overrides' };
+    });
+  }
   return out;
+}
+
+// One or two plain sentences on what holds a Marginal or Tough rating down, and whether that reading is measured,
+// modelled or estimated (2026-11-03). Pure: the app words the "why this reach" clause in front of it.
+// o: {conf (scoreToConfidence), parts (conditionsParts output), cfg, flow, flowKind ('live'|'estimate'), waterC,
+//     waterKind ('measured'|'modelled'), fish}. Returns {text, kind: 'measured'|'modelled'|'estimated'|'calendar'} or
+// null for Excellent and Good, and when the rating is Unknown (the pill already says what is missing).
+function limitRead(o) {
+  if (!o || !o.conf || !o.parts) return null;
+  if (o.conf.word !== 'Marginal' && o.conf.word !== 'Tough') return null;
+  var cfg = o.cfg || {}, list = o.parts.parts || [];
+  var rnd = function(n) { return String(Math.round(n * 10) / 10); };
+  var estimated = o.flowKind === 'estimate';
+  var flowIs = function() { return 'Flow is ' + (estimated ? 'estimated at ' + rnd(o.flow) + ' m\u00b3/s' : rnd(o.flow) + ' m\u00b3/s on the live gauge'); };
+  var flowKind = estimated ? 'estimated' : 'measured';
+  var range = cfg.sweetMin + ' to ' + cfg.sweetMax + ' m\u00b3/s';
+  var band = (o.flow != null && cfg.sweetMin != null) ? flowBand(o.flow, cfg) : null;
+  if (o.parts.cap && band) {
+    var tail = { low: 'too low to fish well', blown: 'blown out', high: 'above prime, which holds the day at Marginal' }[band];
+    if (tail) return { text: flowIs() + ', ' + tail + '.', kind: flowKind };
+  }
+  var temp = null, run = null;
+  list.forEach(function(x) { if (x.key === 'temp' && x.pts < 0) temp = x; if (x.key === 'run') run = x; });
+  if (temp && o.waterC != null) {
+    var wk = o.waterKind === 'measured' ? 'measured' : 'modelled';
+    var w = wk === 'measured' ? rnd(o.waterC) : String(Math.round(o.waterC));
+    return { text: 'Water is ' + (wk === 'measured' ? '' : 'about ') + w + '\u00b0C (' + wk + '), ' +
+      (o.waterC < TEMP_MIN ? 'below' : 'above') + ' the feeding range.', kind: wk };
+  }
+  if (run && run.pts < 8) {
+    return { text: 'The modelled run at the mouth is ' + (run.pts >= 5 ? 'only fair' : 'weak') + '.', kind: 'modelled' };
+  }
+  if (band === 'normal') {
+    return { text: flowIs() + ', below the prime range of ' + range + '.', kind: flowKind };
+  }
+  if (!list.length && !o.parts.replaced) {
+    return { text: 'There is no flow reading for this date, so this is the season rating.', kind: 'calendar' };
+  }
+  return { text: 'The season calendar rates this a slow time' + (o.fish ? ' for ' + o.fish : '') + '.', kind: 'calendar' };
 }
 
 // A flow estimate for a future day (worker/flowforecast.js, about {q, lead}) can pull the rating down on days 1
@@ -3328,7 +3385,7 @@ if (typeof globalThis !== 'undefined') {
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
-    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, ratingEffects: ratingEffects,
+    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, ratingEffects: ratingEffects, limitRead: limitRead,
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,

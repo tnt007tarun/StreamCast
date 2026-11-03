@@ -455,6 +455,19 @@ Merged recently:
   `rankRivers()` is unchanged apart from dropping its `parts` field; rankings and the landing cards are the same. Checked
   48 rendered cases against #129: same pill word, headline, gear, access spot and regs.
 
+- **Phase 3b, pill label, note and tile tags** (TJ, 2026-11-03, on #130): the pill reads "Conditions here: Excellent / Good /
+  Marginal / Tough" (`confidenceRead()`), so it is clearly about the reach on screen and not the destination pick. When the
+  pill is Marginal or Tough, `#tp-limit` (under the pill) says what holds it down and whether that reading is measured,
+  modelled or estimated: `limitRead()` in the core (cap first, then a negative water step, then a weak or fair run, then flow
+  below prime, then the calendar). "Picked for season and distance." is added only when the app chose the reach from a
+  search (`window._pickSource === 'search'`, not after an upstream move, a chip tap, a deep link or a redirect).
+  Never shown for Excellent, Good, Unknown or closed. `renderPillNote()` in `app.js`, state in `window._pillState`, redrawn
+  after the drive line and the staging re-rate. Tile tags (`ratingEffects()`): under a flow cap, a good Water or Sky reading
+  says "Flow cap overrides" instead of "Helps the rating"; run days say "Not used for run rating" (Water, Sky) and "Not used
+  at the mouth" (Flow, fish in the lake); a future date with no flow says "Not scored for this date"; a missing reading says
+  "No data, not rated" (neutral, never "Holds it back"). Scoring, ranking, regs and species logic unchanged (8 rendered
+  cases match #130 apart from the label).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -516,6 +529,9 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+16. **Alternative reach when the pick is Tough (analysis only, TJ 2026-11-03):** a "Consider another nearby reach" line was
+   investigated, not built. Findings and the decisions TJ still has to make are in the PR #130 thread. Nothing in ranking changed.
 
 15. **Pill basis (done 2026-11-02, Phase 3):** the pill now rates the viewed reach on conditions only, like the weekly
    email, and the drive verdict chip is gone (TJ approved).

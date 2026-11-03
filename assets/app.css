@@ -3147,6 +3147,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .tp-tile-effect.fx-up   { color:var(--good-on-panel); opacity:1; }
   #results .tp-tile-effect.fx-down { color:var(--warn-on-panel); opacity:1; }
   #results .drive-time { white-space:nowrap; }
+  /* Why this reach and what holds the rating down, only when conditions are Marginal or Tough. */
+  #results .tp-limit { margin:-.25rem 0 .9rem; max-width:680px; font:400 .95rem/1.5 var(--font-body); opacity:.92; }
+  #results .tp-limit[hidden] { display:none; }
   /* Notes: the why lines, under the tiles. */
   #results .tp-notes { margin:1rem 0 .25rem; }
   #results .tp-notes[hidden] { display:none; }

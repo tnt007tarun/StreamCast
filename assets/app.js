@@ -514,9 +514,14 @@ function renderStagingCard(sectionName, weather) {
         _confEl2.textContent = _cr2.text;
         _confEl2.className = 'tp-confidence ' + _cr2.cls;
         _confEl2.title = _cr2.title;
-        window._tileEffects = _cr2.unknown ? null : ratingEffects(conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
-          null, null, pct, window._stagingInLake));
+        var _partsRe = conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
+          null, null, pct, window._stagingInLake);
+        window._tileEffects = _cr2.unknown ? null : ratingEffects(_partsRe);
         if (window._tileOpts) { try { renderConditionTiles(window._tileOpts); } catch(_tileErr5) {} }
+        var _stRe = Object.assign({}, window._pillState || {}, { conf: _conf2, parts: _partsRe, cfg: _cfgRe, unknown: !!_cr2.unknown, closed: false,
+          flow: _reRate.flow != null ? _reRate.flow : window._pillFlow, flowKind: (_reRate.flow != null && window._pillFlow == null) ? 'estimate' : 'live' });
+        window._pillState = _stRe;
+        renderPillNote(_stRe);
       }
     })();
     // If this card is telling the user the fish are STAGING in the lake, the Technique &
@@ -1476,7 +1481,7 @@ function goToResults(){
   document.getElementById("results").style.display=""; document.getElementById("results").classList.add("active");
   window.scrollTo(0,0);
   initNotifyBar();
-  window._viewSource = 'search';
+  window._viewSource = 'search'; window._pickSource = 'search';
   // Push history state so browser back button returns to dashboard
   history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
   renderResults();
@@ -1501,7 +1506,7 @@ function goToSection(section, speciesName) {
   selectedRiver = section + (loc ? ', ' + loc.replace(/–/g, '-') : '');
   selectedRiverIsAuto = false;
   track('Redirect Followed', { river: section, species: speciesName || '' });
-  window._viewSource = 'redirect';
+  window._viewSource = 'redirect'; window._pickSource = 'redirect';
   setResHeader(selectedRiver);
   history.pushState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
   window.scrollTo(0, 0);
@@ -1689,7 +1694,7 @@ function goBack(){
     var _tdEl = document.getElementById('trip-date');
     if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) _tdEl.value = _dParam;
     initNotifyBar();
-    window._viewSource = 'deep-link';
+    window._viewSource = 'deep-link'; window._pickSource = 'deep-link';
     history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
     renderResults();
     setTimeout(loadBaitImages, 800);
@@ -3786,6 +3791,8 @@ function renderConditionTiles(opts) {
 
   // effect: how this reading moved the Conditions rating (ratingEffects in the core), or null for no line.
   var _fx = window._tileEffects || {};
+  // A reading that is missing is not a bad reading: it says so in neutral words and is not rated.
+  var _missingFx = { dir: 'flat', text: 'No data, not rated' };
   function tile(label, value, meaning, state, smallVal, effect) {
     return '<div class="tp-tile ' + state + '">' +
       '<div class="tp-tile-bar"></div>' +
@@ -3821,7 +3828,7 @@ function renderConditionTiles(opts) {
     flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState, false, _fx.flow);
   } else if (opts.isToday && opts.flow == null) {
     // Today but gauge down
-    flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true);
+    flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true, window._stagingInLake ? _fx.flow : _missingFx);
   } else if (opts.flowEst) {
     // Future date with an estimate (renderFlowEstimate() has the detail): number for days 1 to 2, range after
     var e = opts.flowEst, eb = flowBand(e.q, opts);
@@ -3840,10 +3847,30 @@ function renderConditionTiles(opts) {
   var baitMeaning = bait.length > 9 ? bait.split(' ').slice(-1)[0] : 'Recommended';
 
   host.innerHTML =
-    tile('Water', waterVal, waterMeaning, waterState, false, _fx.temp) +
-    tile('Sky', skyVal, skyMeaning, skyState, false, _fx.sky) +
+    tile('Water', waterVal, waterMeaning, waterState, false, _wr.grade === 'na' ? _missingFx : _fx.temp) +
+    tile('Sky', skyVal, skyMeaning, skyState, false, _sr.grade === 'na' ? _missingFx : _fx.sky) +
     flowTile +
     tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
+}
+
+// The short note under the pill when conditions are Marginal or Tough (TJ, 2026-11-03): why this reach, what holds the
+// rating down, and whether that reading is measured, modelled or estimated. limitRead() in the core words the second
+// half; this adds why the reach is on screen, only when the app picked it from season and distance.
+function renderPillNote(st) {
+  var el = document.getElementById('tp-limit');
+  if (!el) return;
+  el.hidden = true; el.textContent = '';
+  if (!st || st.unknown || st.closed) return;
+  var lim = limitRead({ conf: st.conf, parts: st.parts, cfg: st.cfg, flow: st.flow, flowKind: st.flowKind,
+    waterC: st.waterC, waterKind: st.waterKind, fish: st.fish });
+  if (!lim) return;
+  var why = '';
+  if (window._pickSource === 'search' && !window._upstreamFrom) {
+    why = (document.getElementById('tp-drive-time') && document.getElementById('tp-drive-time').style.display !== 'none')
+      ? 'Picked for season and distance. ' : 'Picked for the season. ';
+  }
+  el.textContent = why + lim.text;
+  el.hidden = false;
 }
 
 // The Conditions pill's text and colour, for the hero and the staging card's re-rate (confidenceRead in the core).
@@ -4573,9 +4600,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // The tiles say how each reading moved the rating (conditionsParts in the core, nothing recomputed by hand).
     var _closedPill = _sectionClosed || _spClosedPill;
     var _crNow = !_closedPill ? confidencePill(_conf, _rate.potential) : null;
-    window._tileEffects = (_closedPill || (_crNow && _crNow.unknown)) ? null
-      : ratingEffects(conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx));
+    var _partsNow = _closedPill ? null
+      : conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx);
+    window._tileEffects = (_closedPill || (_crNow && _crNow.unknown)) ? null : ratingEffects(_partsNow);
     if (_tileOpts) { try { renderConditionTiles(_tileOpts); } catch(_tileErr4) {} }
+    window._pillState = { conf: _conf, parts: _partsNow, cfg: _cfgPill, closed: !!_closedPill, unknown: !!(_crNow && _crNow.unknown),
+      flow: _rate.flow != null ? _rate.flow : flow, flowKind: (_rate.flow != null && flow == null) ? 'estimate' : 'live',
+      waterC: wt, waterKind: (window._waterTempInfo && window._waterTempInfo.kind === 'measured') ? 'measured' : 'modelled',
+      fish: window._readSpecies || null };
+    renderPillNote(window._pillState);
   }
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
@@ -4597,6 +4630,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>';
     _driveEl.style.display = 'block';
   }
+  // The pill note says "season and distance" only once the drive line is up.
+  if (window._pillState) renderPillNote(window._pillState);
 
   // The legal-season pass can name a different fish (a closed species swapped for an open one). Keep the window, the
   // water wording and the tiles on that fish too.
@@ -4761,7 +4796,7 @@ function renderRiverRanker(locKey, maxMinutes) {
       setResHeader(selectedRiver);
       grid.querySelectorAll('.rrank-card').forEach(function(c){ c.style.outline = ''; });
       this.style.outline = '2px solid var(--fern)';
-      window._viewSource = 'nearby';
+      window._viewSource = 'nearby'; window._pickSource = 'nearby';
       renderResults();
     });
   });
@@ -5828,7 +5863,7 @@ function renderDefaultPreview() {
       document.getElementById('results').style.display = ''; document.getElementById('results').classList.add('active');
       window.scrollTo(0, 0);
       initNotifyBar();
-      window._viewSource = 'home-list';
+      window._viewSource = 'home-list'; window._pickSource = 'home-list';
       renderResults();
       setTimeout(loadBaitImages, 800);
     });
