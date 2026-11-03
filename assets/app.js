@@ -2449,12 +2449,12 @@ function speciesReads(sp) {
   var i = window._readInputs || {};
   var sun = window._sun || {};
   var win = fishingWindow({ sunrise: sun.sunrise, sunset: sun.sunset, periodCloud: window._periodCloud, cloudPct: i.cloudPct,
-    weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, nowMin: i.nowMin, species: sp });
+    weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, nowMin: i.nowMin, species: sp, date: getTripDateStr() });
   // Today's window is over: the next day's, from tomorrow's sunrise and cloud. The date the reader picked stays as it is.
   var next = null, nx = window._sunNext;
   if (win.passed && nx) {
     next = fishingWindow({ sunrise: nx.sunrise, sunset: nx.sunset, periodCloud: nx.periodCloud, cloudPct: i.cloudPct,
-      weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, species: sp });
+      weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, species: sp, date: nx.date || null });
   }
   var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
   var water = waterTempRead(i.wt, i.wtInfo, { species: sp, seasonal: sp ? getCurrentSeason(sp, getTripDateStr()) : null, weatherOk: i.weatherOk,
@@ -2931,7 +2931,7 @@ async function renderResults(){
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
   // The note follows the same 8 AM / 12 PM / 6 PM forecast as the strip and the Best Window card, so the three never
   // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
-  document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc) : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
+  document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc, window._fishWindow && window._fishWindow.mode === 'winter') : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
   document.getElementById("skystat").className="gs "+sc;
   // The temperature column and the Best Window card were painted by speciesReads() above.
 
@@ -3610,7 +3610,14 @@ function rankRivers(rivers, speciesKey, dateStr) {
 // ── SKY PERIOD STRIP ─────────────────────────────────────────────────────────
 // One line on the day's sky for the Temperature & Light card. With the period forecast it describes the day; without
 // it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
-function skyDayNote(pc, sc) {
+function skyDayNote(pc, sc, winter) {
+  // Peak winter (TJ, 2026-11-02): sun helps, so the usual "bright slows the bite" lines would contradict the Best Window
+  // card. Describe the sky only.
+  if (winter) {
+    if (!pc) return skyRead(window._readInputs ? window._readInputs.cloudPct : null).word + '.';
+    var wm = skyRead(pc.morning).word, wd = skyRead(pc.midday).word, we = skyRead(pc.evening).word;
+    return (wm === wd && wd === we) ? wm + ' all day.' : wm + ' early, ' + wd.toLowerCase() + ' at midday, ' + we.toLowerCase() + ' later.';
+  }
   if (!pc) return sc==="good" ? "Overcast. Fish feed through the whole water column."
     : sc==="warn" ? "Some cloud. Best early and late; midday slows."
     : "Clear sky. Fish early and late; the bite slows once the sun is high.";

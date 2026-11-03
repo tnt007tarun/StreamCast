@@ -426,6 +426,9 @@ Merged recently:
   trout only (`troutHeat`); salmon get "well above the feeding range". Both go through `liveConditionsScore(..., ctx)`
   and `conditionsScore(..., ctx)`: the app's pill (fish the headline names) and the weekly email (`scoreDay()`); with no
   fish named the old steps apply, so rankings and the landing cards are unchanged.
+  (4) Peak winter (TJ): in January and February `fishingWindow()` gives late morning through the afternoon (10 AM to
+  4 PM, cut at sunset; `WINTER_MIDDAY_MONTHS`, `WINTER_WINDOW`) whatever the cloud, because the sun warms the water a
+  little and wakes the fish; the sky note then describes the sky only. December and March keep the sky rules.
   Checked: 20 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep link, a
   fallback species, after sunset) match `main` on river, species, technique, gear, bait, access spot and regs.
 
@@ -494,7 +497,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 14. **Phase 1 follow-ups (2026-11-02):** trend wording, winter run temperatures and the trout-only 18 °C rule are
    done (see Current state). Still open: (a) TJ thinks river water can't go below about 5 °C under ice; most rivers run
    near 0 to 1 °C under ice, spring-fed reaches warmer. Check against the CVC `wt:log:*` readings this winter before
-   moving `COLD_RUN_MIN`. (b) Window lengths (2 h early, 3 h morning, last 2 h evening) and no cold-water time rule.
+   moving `COLD_RUN_MIN`. (b) Window lengths (2 h early, 3 h morning, last 2 h evening, winter 10 AM to 4 PM) are first
+   settings for TJ to adjust. (c) The score's cloud bonus (overcast +2) still applies in January and February.
 
 0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
    in the repo are done (#73); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.

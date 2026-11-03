@@ -2525,12 +2525,22 @@ function confidenceRead(conf, o) {
 // forecast (70% overcast, under 30% bright); every period fishable means all day, none means the first hours of
 // light only, and with only a daily mean, part cloud means morning and evening. Before 2026-11-02 those periods were
 // fixed clock times (6 to 9 AM and 6 to 8 PM), which on a November trip put the evening after dark.
+// In January and February (TJ, 2026-11-02) the window is late morning through the afternoon, whatever the cloud.
 // Times never fall before sunrise or after sunset. Warm water (above TEMP_MAX) keeps the early hours only for trout,
 // the rule behind "Warming. Early morning only." No other species gets its own times: the code has no rule for that.
 var WINDOW_EARLY_MIN = 120;    // "early morning only": the first two hours of light (was 6 to 8 AM in summer)
 var WINDOW_MORNING_MIN = 180;  // morning on a part-cloud day: was 6 to 9 AM
 var WINDOW_EVENING_MIN = 120;  // evening on a part-cloud day: was 6 to 8 PM, the last two hours before a summer sunset
 var WINDOW_MIDDAY = [600, 900]; // 10 AM to 3 PM, the period the cloud forecast averages (hours 10 to 14)
+// Peak winter (TJ, 2026-11-02): January and February fish best late morning through the afternoon. 10 AM to 4 PM,
+// cut at sunset. The months are TJ's; the clock times are a first setting for him to adjust.
+var WINTER_MIDDAY_MONTHS = [0, 1];
+var WINTER_WINDOW = [600, 960];
+// Month (0 to 11) from 'YYYY-MM-DD...' or null.
+function winterMonthOf(s) {
+  var m = typeof s === 'string' ? s.match(/^\d{4}-(\d\d)-\d\d/) : null;
+  return m ? (+m[1]) - 1 : null;
+}
 
 // 'YYYY-MM-DDTHH:MM' (Open-Meteo local time) to minutes after midnight.
 function localMinutes(s) {
@@ -2547,7 +2557,8 @@ function clockText(min, exact) {
 
 // o: {sunrise, sunset ('YYYY-MM-DDTHH:MM'), periodCloud {morning, midday, evening} or null, cloudPct, weatherOk,
 //     waterTemp, waterOk (the temperature is a real reading or estimate, not the no-weather stand-in),
-//     nowMin (minutes after midnight, today's trips only), species (the warm-water rule is for trout only)}
+//     nowMin (minutes after midnight, today's trips only), species (the warm-water rule is for trout only),
+//     date ('YYYY-MM-DD', the trip date; taken from sunrise when missing)}
 // Returns {mode, grade, text (the Best Window card), phrase (after "Fish" in the headline, null once today's window
 // is over), note, ranges (the whole day, [[startMin, endMin], ...]), remaining (what is left today), passed,
 // approximate}.
@@ -2556,10 +2567,16 @@ function fishingWindow(o) {
   var rise = localMinutes(o.sunrise), set = localMinutes(o.sunset);
   var sun = rise != null && set != null && set - rise > 240;
   var mode, active = null, note;
+  var month = winterMonthOf(o.date || o.sunrise);
 
   if (o.waterOk && o.waterTemp != null && o.waterTemp > TEMP_MAX && troutRule(o.species)) {
     mode = 'early';
     note = 'Warm water. Fish the cool first hours of light.';
+  } else if (month != null && WINTER_MIDDAY_MONTHS.indexOf(month) !== -1) {
+    // TJ's rule (2026-11-02): in peak winter the best fishing is late morning through the afternoon, once the sun has
+    // warmed the water a little and woken the fish up. It holds whatever the cloud, so it comes before the sky rules.
+    mode = 'winter';
+    note = 'Peak winter. The sun warms the water a little through the day, so late morning to afternoon fishes best.';
   } else if (o.weatherOk === false) {
     mode = 'earlylate';
     note = 'Weather didn’t load, so this is a general guide, not today’s sky.';
@@ -2584,10 +2601,11 @@ function fishingWindow(o) {
       : 'Clear sky. The bite slows once the sun is up.';
   }
 
-  var grade = mode === 'allday' ? 'good' : mode === 'early' ? 'bad' : 'warn';
+  var grade = mode === 'allday' || mode === 'winter' ? 'good' : mode === 'early' ? 'bad' : 'warn';
   var ranges = null, shown = null, passed = false, text, phrase;
   if (sun) {
     if (mode === 'allday') ranges = [[rise, set]];
+    else if (mode === 'winter') ranges = [[Math.max(rise, WINTER_WINDOW[0]), Math.min(set, WINTER_WINDOW[1])]];
     else if (mode === 'early') ranges = [[rise, Math.min(set, rise + WINDOW_EARLY_MIN)]];
     else if (mode === 'earlylate') ranges = [[rise, rise + WINDOW_MORNING_MIN], [Math.max(rise + WINDOW_MORNING_MIN, set - WINDOW_EVENING_MIN), set]];
     else {
@@ -2635,7 +2653,8 @@ function fishingWindow(o) {
     }
   } else {
     // No sunrise and sunset: say which part of the day, no clock times.
-    var words = { allday: 'All day', early: 'The first two hours of light', earlylate: 'Early morning and the last two hours before dark' };
+    var words = { allday: 'All day', early: 'The first two hours of light', earlylate: 'Early morning and the last two hours before dark',
+      winter: 'Late morning through the afternoon' };
     if (mode === 'periods') {
       var pw = { morning: 'morning', midday: 'midday', evening: 'late afternoon to dark' };
       text = active.map(function(p) { return pw[p]; }).join(' and ');

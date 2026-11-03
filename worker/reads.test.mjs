@@ -124,8 +124,8 @@ const mins = (s) => C.localMinutes(s);
     const warm = C.fishingWindow({ sunrise: sun.sunrise, sunset: sun.sunset, cloudPct: 90, weatherOk: true, waterTemp: 16, waterOk: true });
     assert.equal(warm.mode, 'early', season + ': warm water keeps the first hours');
     const warmSalmon = C.fishingWindow({ sunrise: sun.sunrise, sunset: sun.sunset, cloudPct: 90, weatherOk: true, waterTemp: 16, waterOk: true, species: 'Chinook Salmon' });
-    assert.equal(warmSalmon.mode, 'allday', season + ': the warm-water rule is for trout only');
-    assert.equal(C.fishingWindow({ sunrise: sun.sunrise, sunset: sun.sunset, cloudPct: 90, weatherOk: true, waterTemp: 16, waterOk: false }).mode, 'allday',
+    assert.equal(warmSalmon.mode, season === 'winter' ? 'winter' : 'allday', season + ': the warm-water rule is for trout only');
+    assert.equal(C.fishingWindow({ sunrise: sun.sunrise, sunset: sun.sunset, cloudPct: 90, weatherOk: true, waterTemp: 16, waterOk: false }).mode, season === 'winter' ? 'winter' : 'allday',
       season + ': a stand-in temperature never sets the window');
     inDaylight(warm, sun, season + ' warm');
   }
@@ -138,9 +138,28 @@ const mins = (s) => C.localMinutes(s);
   // Summer: the same rule lands later in the evening, still ending at sunset.
   const jul = C.fishingWindow({ sunrise: SUN.summer.sunrise, sunset: SUN.summer.sunset, cloudPct: 50, weatherOk: true });
   assert.equal(jul.text, 'Sunrise (5:37 AM) to about 8:35 AM, and 7:05 PM to sunset (9:03 PM)');
-  // Winter clear day: the first two hours of light, not "before 8 AM" (sunrise is 7:46).
-  const jan = C.fishingWindow({ sunrise: SUN.winter.sunrise, sunset: SUN.winter.sunset, cloudPct: 5, weatherOk: true });
-  assert.equal(jan.text, 'Sunrise (7:46 AM) to about 9:45 AM');
+  // Peak winter (TJ, 2026-11-02): January and February fish best late morning through the afternoon, whatever the cloud.
+  for (const cloud of [0, 30, 60, 100]) {
+    const jan = C.fishingWindow({ sunrise: SUN.winter.sunrise, sunset: SUN.winter.sunset, cloudPct: cloud, weatherOk: true, date: SUN.winter.date });
+    assert.equal(jan.mode, 'winter'); assert.equal(jan.text, '10 AM to 4 PM'); assert.equal(jan.phrase, 'from 10 AM to 4 PM');
+    assert.match(jan.note, /Peak winter/);
+  }
+  const feb = C.fishingWindow({ sunrise: '2027-02-10T07:20', sunset: '2027-02-10T17:44', periodCloud: { morning: 5, midday: 5, evening: 5 }, weatherOk: true });
+  assert.equal(feb.mode, 'winter', 'the month comes from sunrise when no date is passed');
+  // Not December or March: those keep the sky rules (a clear December day is the first two hours of light).
+  const dec = C.fishingWindow({ sunrise: '2026-12-10T07:40', sunset: '2026-12-10T16:42', cloudPct: 5, weatherOk: true, date: '2026-12-10' });
+  assert.equal(dec.text, 'Sunrise (7:40 AM) to about 9:40 AM');
+  assert.equal(C.fishingWindow({ sunrise: '2027-03-05T06:49', sunset: '2027-03-05T18:12', cloudPct: 5, weatherOk: true, date: '2027-03-05' }).mode, 'early');
+  // A short winter day: cut at sunset, never past it.
+  const shortDay = C.fishingWindow({ sunrise: '2027-01-02T07:51', sunset: '2027-01-02T15:50', cloudPct: 50, weatherOk: true, date: '2027-01-02' });
+  assert.equal(shortDay.text, '10 AM to sunset (3:50 PM)');
+  // Today in winter: partly through, and after 4 PM.
+  const jw = { sunrise: SUN.winter.sunrise, sunset: SUN.winter.sunset, cloudPct: 50, weatherOk: true, date: SUN.winter.date };
+  assert.equal(C.fishingWindow(Object.assign({ nowMin: 13 * 60 }, jw)).text, 'Now to about 4 PM');
+  assert.equal(C.fishingWindow(Object.assign({ nowMin: 16 * 60 + 30 }, jw)).passed, true);
+  // No weather or no sun data: still the winter rule, without clock times when sunrise is missing.
+  assert.equal(C.fishingWindow({ weatherOk: false, sunrise: SUN.winter.sunrise, sunset: SUN.winter.sunset }).mode, 'winter');
+  assert.equal(C.fishingWindow({ weatherOk: true, cloudPct: 5, date: '2027-01-15' }).text, 'Late morning through the afternoon');
   // Spring overcast: all day.
   const apr = C.fishingWindow({ sunrise: SUN.spring.sunrise, sunset: SUN.spring.sunset, cloudPct: 85, weatherOk: true });
   assert.equal(apr.mode, 'allday'); assert.equal(apr.text, 'All day, sunrise to sunset (6:24 AM to 8:10 PM)');
