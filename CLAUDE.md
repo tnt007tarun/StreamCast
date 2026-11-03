@@ -96,7 +96,7 @@ Technique panel and the summary tile each kept their own rule and disagreed.
 - Rating and legality live in `conditions-core.js` so the app and the Worker's emails share them. Score:
   `sectionSeasonScore()` (species, season, mouth or river, closures), plus drive time in `rankRivers()` (app), plus
   water via `conditionsScore()`. `scoreDay()` is the one-day version for emails. `scoreToConfidence().word` is the
-  Conditions pill word and `driveVerdict()` the drive verdict. Anything new there must stay free of DOM and window state.
+  Conditions pill word. The pill rates the reach on screen on conditions only (no drive time, TJ 2026-11-02); `rankRivers()` still adds drive time to rank. Anything new there must stay free of DOM and window state.
 - Gear wording: `bringPhraseFor(method)`; staging read: `stagingSectionFor()` + `stagingRead()`; modelled water
   temperature: `waterTempFromHistory()`. The hero, staging card and weekly email all call these.
 - Gear and method: `methodSpeciesKey(section)` plus `salmonMethodMode()`. **Never read
@@ -438,10 +438,20 @@ Merged recently:
   its fixed bottom spot and 300 px scroll trigger but is about two thirds the height on phones (title and close on one
   row, a short note from the offer's `subShort`, 44 px field and button, 16 px input so iOS doesn't zoom, safe area);
   while it shows, `reserveBarSpace()` pads the results page so the end of the page scrolls clear of it. "How this was
-  rated" under the pill lists the steps from `conditionsParts()` (the score is now the sum of `liveConditionsParts()`;
-  `worker/parts.test.mjs` checks 806,400 cases against the old functions) plus the season, drive and method points
-  from `rankRivers()` (`parts`). Results labels 12 px minimum (`#results { --fs-label: 12px }`), condition tiles two by
+  rated" under the pill (replaced by the Phase 3 tile tags below) used `conditionsParts()` (the score is now the sum of
+  `liveConditionsParts()`; `worker/parts.test.mjs` checks 806,400 cases against the old functions). Results labels 12 px minimum (`#results { --fs-label: 12px }`), condition tiles two by
   two on phones. When and Bring are serif, 1.1rem, with a teal label above and a teal left rule (TJ picked option E, 2026-11-02). The all-day window reads "Sunrise to sunset (…), with cloud cover all day".
+
+- **Phase 3, conditions-only pill** (TJ, 2026-11-02, stacked on #129): the Conditions pill rates the reach on screen
+  with the same inputs as the weekly email, `sectionSeasonScore(section, the fish the headline names, date, section)`
+  then `conditionsScore()`. It used the top-ranked river's `rankRivers()` score, which includes drive time and the method
+  bonus and can belong to a different reach; that double-counted drive time with the verdict chip. The "Worth the drive"
+  chip and `driveVerdict()` are gone (drive time stays as plain text with its "est. from city centre" note); "How this was
+  rated" is gone too. Each tile (Water, Sky, Flow) now says how its reading moved the rating: "Helps the rating", "No
+  effect", "Holds it back", or the flow cap ("Caps the day at Marginal/Tough"), from `ratingEffects(conditionsParts(...))`
+  in the core. No line when the reading wasn't scored (future date with no flow, run days where the run strength decides).
+  `rankRivers()` is unchanged apart from dropping its `parts` field; rankings and the landing cards are the same. Checked
+  48 rendered cases against #129: same pill word, headline, gear, access spot and regs.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -505,11 +515,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-15. **For TJ, from Phase 2 (2026-11-02):** the Conditions pill's base score is the top-ranked river's `rankRivers()`
-   score, which includes drive time (+4 under 30 min, +2 under 60, -2 over 120) and a method bonus, and after "See …"
-   or an upstream switch it can be a different reach from the one on screen (deep links fall back to a calendar
-   estimate). The weekly email (`scoreDay()`) has no drive points. Proposal: rate the viewed reach without drive time,
-   or call the pill a trip rating. Not changed.
+15. **Pill basis (done 2026-11-02, Phase 3):** the pill now rates the viewed reach on conditions only, like the weekly
+   email, and the drive verdict chip is gone (TJ approved).
 
 14. **Phase 1 follow-ups (2026-11-02):** trend wording, winter run temperatures and the trout-only 18 °C rule are
    done (see Current state). Still open: (a) TJ thinks river water can't go below about 5 °C under ice; most rivers run

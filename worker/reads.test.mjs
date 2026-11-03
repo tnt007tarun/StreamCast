@@ -336,4 +336,22 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.fishingWindow(Object.assign({ species: null }, base)).mode, 'early', 'unknown fish: the trout rule, as before');
 }
 
+// ratingEffects: the words the tiles show for how each reading moved the rating
+{
+  const cfg = C.getRiverConfig('Lower Credit River');
+  const mid = (cfg.sweetMin + cfg.flowLow) / 2;
+  let fx = C.ratingEffects(C.conditionsParts(2, cfg, mid, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'No effect');
+  assert.equal(fx.temp.text, 'Helps the rating');
+  assert.equal(fx.sky.text, 'Helps the rating');
+  fx = C.ratingEffects(C.conditionsParts(2, cfg, (cfg.sweetMin + cfg.sweetMax) / 2, 20, 10, null, false, { troutHeat: true }));
+  assert.equal(fx.flow.text, 'Helps the rating');
+  assert.equal(fx.temp.text, 'Holds it back');
+  assert.equal(fx.sky.text, 'No effect');
+  fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.flowHigh + 5, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'Caps the day at Tough', 'blown out caps at Tough');
+  assert.deepEqual(C.ratingEffects(C.conditionsParts(5, cfg, null, 10, 80, null, false, null)), {}, 'no flow, nothing scored');
+  assert.deepEqual(C.ratingEffects(null), {});
+}
+
 console.log('shared reads: all checks passed');

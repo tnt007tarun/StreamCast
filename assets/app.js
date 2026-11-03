@@ -514,22 +514,9 @@ function renderStagingCard(sectionName, weather) {
         _confEl2.textContent = _cr2.text;
         _confEl2.className = 'tp-confidence ' + _cr2.cls;
         _confEl2.title = _cr2.title;
-        renderRatingBreakdown(_cr2.unknown ? null : { parts: conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
-          null, null, pct, window._stagingInLake), base: null, baseFrom: null, potential: _reRate.potential, total: _newScore, here: '' });
-      }
-
-      var _driveEl2 = document.getElementById('tp-drive-time');
-      if (_driveEl2) {
-        var _verdictEl = _driveEl2.querySelector('.drive-verdict');
-        if (_verdictEl) {
-          // Re-derive drive time from the same element's existing text — parse isn't reliable,
-          // so just recompute the class/label using the known distance already rendered.
-          var _dtMatch = _driveEl2.textContent.match(/(\d+)\s*(min|hr)/);
-          var _dt2 = _dtMatch ? (_dtMatch[2] === 'hr' ? parseInt(_dtMatch[1])*60 : parseInt(_dtMatch[1])) : 999;
-          var _dv2 = driveVerdictShown(_newScore, _dt2, false); // closed sections returned above
-          _verdictEl.textContent = _dv2.text;
-          _verdictEl.className = 'drive-verdict ' + _dv2.cls;
-        }
+        window._tileEffects = _cr2.unknown ? null : ratingEffects(conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
+          null, null, pct, window._stagingInLake));
+        if (window._tileOpts) { try { renderConditionTiles(window._tileOpts); } catch(_tileErr5) {} }
       }
     })();
     // If this card is telling the user the fish are STAGING in the lake, the Technique &
@@ -3592,11 +3579,9 @@ function rankRivers(rivers, speciesKey, dateStr) {
 
     // Prefer rivers closer by
     var drive = r.driveTime || 60;
-    var _seasonPts = score, _drivePts = 0, _techPts = 0;
-    if (drive < 30) _drivePts = 4;
-    else if (drive < 60) _drivePts = 2;
-    else if (drive > 120) _drivePts = -2;
-    score += _drivePts;
+    if (drive < 30) score += 4;
+    else if (drive < 60) score += 2;
+    else if (drive > 120) score -= 2;
 
     // Regs — flag any catch-and-release / sanctuary
     var regs = RIVER_REGS[r.name];
@@ -3610,7 +3595,6 @@ function rankRivers(rivers, speciesKey, dateStr) {
     var techniques = (window._selectedTechs || []);
     if (techniques.length > 0 && cfg.routine) {
       score += 1; // minor bonus for having routine data
-      _techPts = 1;
     }
 
     return {
@@ -3620,9 +3604,7 @@ function rankRivers(rivers, speciesKey, dateStr) {
       score: score,
       notes: notes,
       warnings: warnings,
-      cfg: cfg,
-      // How the score was built, for the "How this was rated" note under the Conditions pill. Not used to rank.
-      parts: { season: _seasonPts, drive: _drivePts, tech: _techPts }
+      cfg: cfg
     };
   }).sort(function(a,b) { return b.score - a.score; });
 }
@@ -3802,13 +3784,16 @@ function renderConditionTiles(opts) {
   var _sn = document.getElementById('tp-staging-note');
   if (_sn) _sn.style.display = 'none';
 
-  function tile(label, value, meaning, state, smallVal) {
+  // effect: how this reading moved the Conditions rating (ratingEffects in the core), or null for no line.
+  var _fx = window._tileEffects || {};
+  function tile(label, value, meaning, state, smallVal, effect) {
     return '<div class="tp-tile ' + state + '">' +
       '<div class="tp-tile-bar"></div>' +
       '<div class="tp-tile-body">' +
         '<div class="tp-tile-lbl">' + label + '</div>' +
         '<div class="tp-tile-val' + (smallVal ? ' sm' : '') + '">' + value + '</div>' +
         '<div class="tp-tile-meaning">' + meaning + '</div>' +
+        (effect ? '<div class="tp-tile-effect fx-' + effect.dir + '">' + effect.text + '</div>' : '') +
       '</div></div>';
   }
 
@@ -3833,7 +3818,7 @@ function renderConditionTiles(opts) {
     // normal flow "Low" while the card said "Normal".
     var f = opts.flow, _fr = flowRead(f, opts, { isToday: true });
     var fState = _tileState[_fr.grade], fMeaning = _fr.word;
-    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState);
+    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState, false, _fx.flow);
   } else if (opts.isToday && opts.flow == null) {
     // Today but gauge down
     flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true);
@@ -3855,8 +3840,8 @@ function renderConditionTiles(opts) {
   var baitMeaning = bait.length > 9 ? bait.split(' ').slice(-1)[0] : 'Recommended';
 
   host.innerHTML =
-    tile('Water', waterVal, waterMeaning, waterState) +
-    tile('Sky', skyVal, skyMeaning, skyState) +
+    tile('Water', waterVal, waterMeaning, waterState, false, _fx.temp) +
+    tile('Sky', skyVal, skyMeaning, skyState, false, _fx.sky) +
     flowTile +
     tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
 }
@@ -3866,50 +3851,6 @@ function confidencePill(conf, potential) {
   var m = window._pillMissing || {};
   return confidenceRead(conf, { potential: potential, flowMissing: m.flowMissing, weatherMissing: m.weatherMissing,
     flowIrrelevant: !!window._stagingInLake });
-}
-
-// The drive verdict under the headline. Same driveVerdict() and score; when the pill can't rate the day (no flow reading
-// or no weather) the verdict makes no call either, instead of "Worth the drive" beside "Unknown".
-function driveVerdictShown(score, driveMin, closed) {
-  if (closed) return driveVerdict(score, driveMin, closed);
-  if (confidencePill(scoreToConfidence(score), false).unknown) return { text: '~ Not rated. Check the gauge before you drive', cls: 'verdict-maybe' };
-  return driveVerdict(score, driveMin, closed);
-}
-
-// "How this was rated" under the Conditions pill (Phase 2, 2026-11-02). r: {parts (conditionsParts), base, baseFrom
-// (the ranked river the base came from, with its parts), potential, total, here}; null hides it. Every number here
-// comes from the scoring functions; this only lays them out.
-function renderRatingBreakdown(r) {
-  var pill = document.getElementById('tp-confidence');
-  if (!pill) return;
-  var el = document.getElementById('tp-rating');
-  if (!el) { el = document.createElement('details'); el.id = 'tp-rating'; el.className = 'tp-rating'; pill.parentNode.insertBefore(el, pill.nextSibling); }
-  if (!r) { el.hidden = true; return; }
-  el.hidden = false;
-  var pts = function(n) { return n > 0 ? '+' + n : n < 0 ? '\u2212' + Math.abs(n) : '0'; };
-  var rows = [];
-  var p = r.parts;
-  if (!p.replaced) {
-    var bf = r.baseFrom;
-    if (bf && bf.parts) {
-      var seasonLbl = (bf.notes && bf.notes.length ? bf.notes.join(', ') : 'Season') + (bf.name && bf.name !== r.here ? ' (scored on ' + secShort(bf.name) + ')' : '');
-      rows.push([seasonLbl.charAt(0).toUpperCase() + seasonLbl.slice(1), bf.parts.season]);
-      if (bf.parts.drive) rows.push(['Drive time (' + bf.driveTime + ' min)', bf.parts.drive]);
-      if (bf.parts.tech) rows.push(['Method picked', bf.parts.tech]);
-    } else {
-      rows.push(['Season (estimate from the species calendar)', r.base]);
-    }
-  }
-  p.parts.forEach(function(x) { rows.push([x.label, x.pts]); });
-  var notes = [];
-  if (!p.parts.length && !p.replaced) notes.push('No flow reading for this date, so water and sky aren\u2019t scored.');
-  if (p.cap) notes.push(p.cap.label + '.');
-  if (r.potential) notes.push('Flow is the estimate for this date.');
-  var word = scoreToConfidence(r.total).word;
-  el.innerHTML = '<summary>How this was rated</summary>'
-    + '<ul>' + rows.map(function(x) { return '<li><span>' + x[0] + '</span><span class="tp-rating-pts">' + pts(x[1]) + '</span></li>'; }).join('') + '</ul>'
-    + (notes.length ? '<p>' + notes.join(' ') + '</p>' : '')
-    + '<p>Total ' + r.total + ', rated ' + word + ' (10 or more is Excellent, 6 Good, 2 Marginal, under 2 Tough).</p>';
 }
 
 function localTodayStr() {
@@ -4012,6 +3953,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
   // Render the conditions tile grid (hero). Redrawn below once the species is settled (the water tile's wording).
   var _tileOpts = null;
+  window._tileEffects = null; // set below, once the rating is known (ratingEffects in the core)
   (function(){
     var _td = document.getElementById('trip-date');
     var _ds = _td && _td.value ? _td.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
@@ -4024,6 +3966,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         topMethod: topMethod, isToday: _isToday, weatherOk: weatherOk,
         flowEst: _isToday ? null : window._flowEst
       };
+    window._tileOpts = _tileOpts;
     try { renderConditionTiles(_tileOpts); } catch(_tileErr) { console.warn('condition tiles', _tileErr); }
   })();
 
@@ -4593,17 +4536,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _confEl = document.getElementById('tp-confidence');
   window._pillMissing = { flowMissing: _heroIsToday && flow == null, weatherMissing: !weatherOk };
   if (_confEl) {
-    var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
-    var _baseFrom = (_topScore != null && rankedRivers[0].parts) ? rankedRivers[0] : null;
-    // In expert mode, estimate score from season quality
-    if (_topScore == null) {
-      var _cfg2 = getRiverConfig(selectedRiver);
-      var _bka2 = Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
-      var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
-      var _spName = _bka2.length ? _sm2[_bka2[0]] : null;
-      var _seas = _spName ? getCurrentSeason(_spName) : null;
-      _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
-    }
+    // The pill rates the reach on screen on its conditions: season and species, then the water. Same inputs as the
+    // weekly email (scoreDay). Drive time and the method bonus rank rivers in rankRivers() but are not part of this
+    // rating (TJ, 2026-11-02), so it no longer depends on which river ranked first.
+    var _hereSec = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _bka2 = Array.isArray(speciesKey) ? speciesKey : (speciesKey ? [speciesKey] : []);
+    var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+    // The fish the headline names (window._readSpecies, as the temperature rule below), else the picks.
+    var _pillFish = window._readSpecies ? [window._readSpecies] : _bka2.map(function(k){ return _sm2[k]; }).filter(Boolean);
+    var _topScore = sectionSeasonScore(_hereSec, _pillFish, getTripDateStr(), _hereSec).score;
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
     // A future date has no reading; days 1 to 2 use the flow estimate, which can only pull the rating down.
     var _cfgPill = getRiverConfig(selectedRiver), _baseScore = _topScore;
@@ -4629,14 +4570,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _confEl.title = _cr.title || (_rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '');
     }
     _confEl.style.display = 'inline-block';
-    // How this was rated: the same steps the score took (conditionsParts in the core), nothing recomputed by hand.
+    // The tiles say how each reading moved the rating (conditionsParts in the core, nothing recomputed by hand).
     var _closedPill = _sectionClosed || _spClosedPill;
     var _crNow = !_closedPill ? confidencePill(_conf, _rate.potential) : null;
-    renderRatingBreakdown(_closedPill || (_crNow && _crNow.unknown) ? null : {
-      parts: conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx),
-      base: _baseScore, baseFrom: _baseFrom, potential: _rate.potential, total: _topScore,
-      here: selectedRiver ? selectedRiver.split(',')[0].trim() : ''
-    });
+    window._tileEffects = (_closedPill || (_crNow && _crNow.unknown)) ? null
+      : ratingEffects(conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx));
+    if (_tileOpts) { try { renderConditionTiles(_tileOpts); } catch(_tileErr4) {} }
   }
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
@@ -4655,12 +4594,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _lk = window._beginnerLocKey || '';
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
 
-    // Drive worthiness verdict: combines score and distance (driveVerdict in conditions-core.js)
-    var _dv = driveVerdictShown(_topScore, _dt, _sectionClosed);
-    var _worthIt = _dv.text, _verdictCls = _dv.cls;
-
     _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
-      + '<span class="drive-verdict ' + _verdictCls + '">' + _worthIt + '</span>'
       + '<span class="drive-note">est. from city centre</span>';
     _driveEl.style.display = 'block';
   }

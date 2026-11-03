@@ -3220,15 +3220,18 @@ function scoreDay(o) {
            confidence: closed ? null : scoreToConfidence(score), notes: base.notes, warnings: base.warnings };
 }
 
-// Is the drive worth it? Combines the score with the drive time in minutes.
-function driveVerdict(score, driveMin, closed) {
-  if (closed) return { text: '✕ Closed on this date', cls: 'verdict-no' };
-  if (score >= 10 && driveMin <= 60) return { text: '✓ Worth the drive', cls: 'verdict-yes' };
-  if (score >= 6 && driveMin <= 90) return { text: '✓ Worth the drive', cls: 'verdict-yes' };
-  if (score >= 6 && driveMin <= 150) return { text: '✓ Conditions good, but a long drive', cls: 'verdict-maybe' };
-  if (score >= 2 && driveMin <= 60) return { text: '~ Marginal conditions. Short drive, your call', cls: 'verdict-maybe' };
-  if (score < 2) return { text: '✕ Tough day. Consider staying local', cls: 'verdict-no' };
-  return { text: '~ Long drive for current conditions', cls: 'verdict-maybe' };
+// How each reading moved the Conditions rating, for the tiles (2026-11-02). parts: conditionsParts() output.
+// Returns {flow, temp, sky}, each {dir: 'up'|'flat'|'down', text}, or missing when that reading wasn't scored. A flow cap
+// replaces the flow line, since the cap is what the reader needs to know.
+function ratingEffects(parts) {
+  var out = {};
+  if (!parts) return out;
+  (parts.parts || []).forEach(function(x) {
+    if (x.key !== 'flow' && x.key !== 'temp' && x.key !== 'sky') return;
+    out[x.key] = x.pts > 0 ? { dir: 'up', text: 'Helps the rating' } : x.pts < 0 ? { dir: 'down', text: 'Holds it back' } : { dir: 'flat', text: 'No effect' };
+  });
+  if (parts.cap) out.flow = { dir: 'down', text: /Tough/.test(parts.cap.label) ? 'Caps the day at Tough' : 'Caps the day at Marginal' };
+  return out;
 }
 
 // A flow estimate for a future day (worker/flowforecast.js, about {q, lead}) can pull the rating down on days 1
@@ -3325,7 +3328,7 @@ if (typeof globalThis !== 'undefined') {
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
-    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict,
+    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, ratingEffects: ratingEffects,
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
