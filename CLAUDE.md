@@ -23,7 +23,7 @@ build, and the Cloudflare check on the PR links to it.
 | Path | What it is |
 |---|---|
 | `index.html` | App markup only |
-| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs` |
+| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs`, `node worker/reads.test.mjs` |
 | `assets/app.js` | App UI and logic (~6k lines, one file, no build step) |
 | `assets/app.css` | All app styling, in cascade layers. See `assets/README.md` |
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
@@ -102,6 +102,11 @@ Technique panel and the summary tile each kept their own rule and disagreed.
 - Gear and method: `methodSpeciesKey(section)` plus `salmonMethodMode()`. **Never read
   `selectedSpecies[0]` for a decision.** The user can select several species.
 - If two parts of the UI show the same idea, they must call the same function.
+- Display reads (2026-11-02): sky words and grade `skyRead()` (70% overcast, under 30% bright; `clsSky()` uses the same
+  steps), water temperature `waterTempRead()` (value, "About" + whole degrees when modelled, tag, sentence), flow
+  `flowRead()` (band word, gauge source and reading time), the Conditions pill `confidenceRead()`, the time to fish
+  `fishingWindow()` (from the trip date's sunrise and sunset), and the hero's why lines `heroReasons()`. The tiles, the
+  conditions columns, the Best Window card and the hero all call these; don't word one of those readings by hand.
 - Recommended access spot: `bestAccessSpot(access, atMouth)`. The hero headline and the access cards both use it.
 - Moving people to another reach: the hero's `_goto` (legal-season pass, then the upstream pass via
   `furthestUpstreamOpen()`). Both use the "See … →" button and `goToSection()`.
@@ -395,6 +400,38 @@ Merged recently:
   Coho removed from Lower Credit and Bronte lower and mid (the Humber never listed them); copy on the Credit, Bronte,
   Humber and salmon-run-timing pages follows. The "Run alert drafts" task has a species rule (Credit: steelhead only).
 
+- **Phase 1, recommendation trust** (2026-11-02, from the UX audit): the hero's `#tp-why` was emptied on every render;
+  it now shows two or three reasons from `heroReasons()` (season window, mouth note from `sectionSeasonScore()`, flow,
+  water temp), only under a headline that sends the reader out. The best window was fixed clock times (6 to 9 AM and
+  6 to 8 PM, after dark in November) and the headline said "Fish Morning"; it now comes from Open-Meteo's daily
+  `sunrise`/`sunset` for the trip date (`fishingWindow()`), and says when the sun data or the weather is missing. The
+  period choice is the old rule. Sky grades were 20, 25, 30 or 40 depending on the panel; now 70/30 everywhere (display
+  only: `liveConditionsScore()` keeps its own steps, rankings unchanged). With no weather the page used to model the
+  water and sky from a stand-in 12 °C and 50%; it now says there is no data. Modelled water shows "About 10°C ·
+  Modelled"; a live CVC reading keeps one decimal. The flow card shows the gauge and the reading time in Toronto time
+  (it printed WSC's UTC timestamp as local). The warm-water early-hours rule applies to trout only.
+  Follow-up the same day (TJ): no live flow today, or no weather, the pill makes no call: "Conditions: Unknown · no flow
+  reading" (`conf-unknown`, neutral) and the drive verdict "~ Not rated. Check the gauge before you drive"
+  (`driveVerdictShown()`); the score and rankings are unchanged. Why lines word the season as an expectation from the
+  calendar ("Fall return season for steelhead is under way"), never as fish seen in the river (the app has no counts).
+  The hero, the fishing window, the water wording, the water tile and the why lines all use the fish the headline
+  names (`speciesReads()` in `app.js`, called again once `buildTopPick()` settles the species). Today's window shows
+  only what is left ("Now to about 9:50 AM"); once it is over the hero says so and gives tomorrow's window from
+  tomorrow's sunrise and cloud (today's Open-Meteo call now asks for 2 days); the picked date never changes.
+  Decided by TJ the same evening: (1) flow trend copy reads direction against the band (`flowTrendRead(trend, band)`,
+  `FLOW_TREND_TEXT`): a river dropping through prime is the usual good day, a rise is coloured water; same idea in the
+  default routine step, the staging run chip and headline, and the streamer card. (2) Winter run fish: steelhead and
+  lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C (+1), below 1 °C stays -3 (`tempContext()`,
+  `coldTolerantFish()`, `COLD_RUN_MIN`); the water reads "Cold" in amber. (3) The 18 °C advisory and its -3 are for
+  trout only (`troutHeat`); salmon get "well above the feeding range". Both go through `liveConditionsScore(..., ctx)`
+  and `conditionsScore(..., ctx)`: the app's pill (fish the headline names) and the weekly email (`scoreDay()`); with no
+  fish named the old steps apply, so rankings and the landing cards are unchanged.
+  (4) Peak winter (TJ): in January and February `fishingWindow()` gives late morning through the afternoon (10 AM to
+  4 PM, cut at sunset; `WINTER_MIDDAY_MONTHS`, `WINTER_WINDOW`) whatever the cloud, because the sun warms the water a
+  little and wakes the fish; the sky note then describes the sky only. December and March keep the sky rules.
+  Checked: 20 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep link, a
+  fallback species, after sunset) match `main` on river, species, technique, gear, bait, access spot and regs.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -456,6 +493,12 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+14. **Phase 1 follow-ups (2026-11-02):** trend wording, winter run temperatures and the trout-only 18 °C rule are
+   done (see Current state). Still open: (a) TJ thinks river water can't go below about 5 °C under ice; most rivers run
+   near 0 to 1 °C under ice, spring-fed reaches warmer. Check against the CVC `wt:log:*` readings this winter before
+   moving `COLD_RUN_MIN`. (b) Window lengths (2 h early, 3 h morning, last 2 h evening, winter 10 AM to 4 PM) are first
+   settings for TJ to adjust. (c) The score's cloud bonus (overcast +2) still applies in January and February.
 
 0. **Signups:** bindings restored and test signup verified in KV and Resend (2026-10-15). Unsubscribe and the Worker
    in the repo are done (#73); the Worker version with `/unsubscribe` was deployed 2026-10-15 before the page merged.

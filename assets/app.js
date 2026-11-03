@@ -510,8 +510,10 @@ function renderStagingCard(sectionName, weather) {
       var _confEl2 = document.getElementById('tp-confidence');
       if (_confEl2) {
         var _conf2 = scoreToConfidence(_newScore);
-        _confEl2.textContent = 'Conditions: ' + confidenceWord(_conf2, _reRate.potential);
-        _confEl2.className = 'tp-confidence ' + _conf2.cls;
+        var _cr2 = confidencePill(_conf2, _reRate.potential);
+        _confEl2.textContent = _cr2.text;
+        _confEl2.className = 'tp-confidence ' + _cr2.cls;
+        _confEl2.title = _cr2.title;
       }
 
       var _driveEl2 = document.getElementById('tp-drive-time');
@@ -522,7 +524,7 @@ function renderStagingCard(sectionName, weather) {
           // so just recompute the class/label using the known distance already rendered.
           var _dtMatch = _driveEl2.textContent.match(/(\d+)\s*(min|hr)/);
           var _dt2 = _dtMatch ? (_dtMatch[2] === 'hr' ? parseInt(_dtMatch[1])*60 : parseInt(_dtMatch[1])) : 999;
-          var _dv2 = driveVerdict(_newScore, _dt2, false); // closed sections returned above
+          var _dv2 = driveVerdictShown(_newScore, _dt2, false); // closed sections returned above
           _verdictEl.textContent = _dv2.text;
           _verdictEl.className = 'drive-verdict ' + _dv2.cls;
         }
@@ -1747,7 +1749,7 @@ async function fetchWeather(cfg){
   // Use local date not UTC — after 8PM Eastern, UTC is already "tomorrow"
   var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   if(dateStr===today){
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m&hourly=cloudcover&timezone=America%2FToronto&forecast_days=1");
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m&hourly=cloudcover&daily=sunrise,sunset&timezone=America%2FToronto&forecast_days=2");
     var d=await r.json();
     // Build period cloud from hourly forecast for today (same logic as forecast branch)
     var _hc = d.hourly && d.hourly.cloudcover ? d.hourly.cloudcover : null;
@@ -1756,9 +1758,16 @@ async function fetchWeather(cfg){
       var avg6 = function(h,s,e){var sl=h.slice(s,e+1);return Math.round(sl.reduce(function(a,v){return a+v;},0)/sl.length);};
       _pc = { morning: avg6(_hc,5,9), midday: avg6(_hc,10,14), evening: avg6(_hc,15,20) };
     }
-    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,periodCloud:_pc,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m};
+    // Tomorrow's sun and cloud (hours 24 to 47): shown only when today's window is over.
+    var _next = null;
+    if (d.daily && d.daily.sunrise && d.daily.sunrise[1] && d.daily.sunset && d.daily.sunset[1]) {
+      _next = { date: d.daily.time ? d.daily.time[1] : null, sunrise: d.daily.sunrise[1], sunset: d.daily.sunset[1],
+        periodCloud: (_hc && _hc.length >= 45) ? { morning: avg6(_hc,29,33), midday: avg6(_hc,34,38), evening: avg6(_hc,39,44) } : null };
+    }
+    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,periodCloud:_pc,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m,
+      sunrise:(d.daily&&d.daily.sunrise?d.daily.sunrise[0]:null),sunset:(d.daily&&d.daily.sunset?d.daily.sunset[0]:null),next:_next};
   } else {
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max,sunrise,sunset&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
     var d=await r.json();
     var avg=(d.daily.temperature_2m_max[0]+d.daily.temperature_2m_min[0])/2;
     // Compute per-period cloud cover from hourly data (hours are 0-23 for that day)
@@ -1773,7 +1782,8 @@ async function fetchWeather(cfg){
         evening: avg6(_hourlyCloud, 15, 20)
       };
     }
-    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],periodCloud:_periodCloud,windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null)};
+    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],periodCloud:_periodCloud,windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null),
+      sunrise:(d.daily.sunrise?d.daily.sunrise[0]:null),sunset:(d.daily.sunset?d.daily.sunset[0]:null)};
   }
 }
 
@@ -1835,11 +1845,11 @@ async function waterTempFor(section, cfg, dateStr, isToday, airTemp) {
   if (model != null) return { value: model, kind: 'model', place: null };
   return { value: waterTempEst(airTemp, dateStr), kind: 'rough', place: null };
 }
+// The source half of the temperature line; waterTempRead() gives the value, the tag and the meaning.
 function waterTempSourceText(info, airTemp) {
-  if (!info) return 'Est. water temp (air: ' + airTemp + '\u00b0C). ';
-  if (info.kind === 'measured') return 'Measured water temp, ' + info.place + ' (Credit Valley Conservation, live). ';
-  if (info.kind === 'model') return 'Est. water temp from the last few weeks of weather (air: ' + airTemp + '\u00b0C). ';
-  return 'Rough est. water temp (air: ' + airTemp + '\u00b0C). ';
+  if (info && info.kind === 'measured') return 'Measured at ' + info.place + ' (Credit Valley Conservation, live). ';
+  if (info && info.kind === 'model') return 'Worked out from the last few weeks of weather, not a river reading (air today ' + airTemp + '\u00b0C). ';
+  return 'Rough estimate from the air temperature (' + airTemp + '\u00b0C), not a river reading. ';
 }
 
 // ── FLOW ──────────────────────────────────────────────────────────────────────
@@ -2273,7 +2283,7 @@ function updateMethods(fc,tc,sc,flow,wt){
           d:adapt("Swing or strip through deeper pools and undercut banks. Most effective in low light.",
                   "Surface lures draw reaction strikes from aggressive fish in low light.",
                   "Drift bait along the bottom through deeper holding water."),
-          c:adapt("<span>Best: Low light, overcast, rising flow</span><span>Fish: Deep pools, undercut banks</span>",
+          c:adapt("<span>Best: Low light, overcast, coloured water</span><span>Fish: Deep pools, undercut banks</span>",
                   "<span>Lures: Surface plugs, poppers</span><span>Dawn and dusk</span>",
                   "<span>Bait: Roe, worms + split shot</span><span>Fish: Deep runs</span>")};
     }
@@ -2432,6 +2442,61 @@ function autoUpstreamSection() {
   return up ? { from: here, section: up.section, species: up.species } : null;
 }
 
+// The reads that depend on which fish the page is about: the fishing window (fishingWindow) and the water temperature
+// wording (waterTempRead), plus the Best Window card and the temperature column that show them. Inputs that don't
+// depend on the fish come from renderResults() (window._readInputs). Returns {win, next, water, species}.
+function speciesReads(sp) {
+  var i = window._readInputs || {};
+  var sun = window._sun || {};
+  var win = fishingWindow({ sunrise: sun.sunrise, sunset: sun.sunset, periodCloud: window._periodCloud, cloudPct: i.cloudPct,
+    weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, nowMin: i.nowMin, species: sp, date: getTripDateStr() });
+  // Today's window is over: the next day's, from tomorrow's sunrise and cloud. The date the reader picked stays as it is.
+  var next = null, nx = window._sunNext;
+  if (win.passed && nx) {
+    next = fishingWindow({ sunrise: nx.sunrise, sunset: nx.sunset, periodCloud: nx.periodCloud, cloudPct: i.cloudPct,
+      weatherOk: i.weatherOk, waterTemp: i.wt, waterOk: i.waterOk, species: sp, date: nx.date || null });
+  }
+  var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+  var water = waterTempRead(i.wt, i.wtInfo, { species: sp, seasonal: sp ? getCurrentSeason(sp, getTripDateStr()) : null, weatherOk: i.weatherOk,
+    coldTolerant: sp ? coldTolerantFish(sp, getTripDateStr(), _here) : false });
+  window._fishWindow = win; window._fishWindowNext = next; window._waterRead = water; window._readSpecies = sp;
+
+  // Best Window card
+  var twin = document.getElementById("twin"), tnote = document.getElementById("tnote");
+  if (twin && tnote) {
+    if (win.passed) {
+      twin.textContent = win.text;
+      tnote.textContent = next ? 'Tomorrow: ' + next.text + '. ' + next.note : 'Sunset has passed.';
+    } else {
+      twin.textContent = win.text;
+      tnote.textContent = win.note;
+    }
+  }
+  // Temperature column
+  var cls = water.grade === 'na' ? 'warn' : water.grade;
+  var el = function(id){ return document.getElementById(id); };
+  if (el("tval")) {
+    el("tval").textContent = water.grade === 'na' ? "\u2014" : water.value;
+    el("tlbl").textContent = water.grade === 'na' ? water.sentence
+      : water.display + " \u00b7 " + water.tag + ". " + waterTempSourceText(i.wtInfo, i.airTemp) + water.sentence;
+    el("tgv").textContent = water.grade === 'na' ? "\u2014" : water.display;
+    el("tbar").style.width = (water.grade === 'na' ? 0 : barW(i.wt, 0, 22)) + "%"; el("tbar").className = "gf " + cls;
+    el("tstat").innerHTML = '<span class="status-dot dot-' + (cls === "good" ? "good" : cls === "warn" ? "warn" : "bad") + '"></span>'
+      + (water.grade === 'na' ? 'No data' : water.word);
+    el("tstat").className = "gs " + cls;
+  }
+  return { win: win, next: next, water: water, species: sp };
+}
+
+// The time part of the hero headline. lead: "Fish ..." to open a sentence; inline: "fish ..., " inside one.
+// After today's window: say it is over and give tomorrow's, without changing the date the reader picked.
+function fishTimeHtml(win, next, inline) {
+  if (!win.passed) return inline ? 'fish ' + win.phrase + ', and bring your ' : 'Fish <em>' + win.phrase + '</em>. ';
+  if (next && next.phrase) return inline ? 'tomorrow fish ' + next.phrase + ' (today\u2019s window is over), and bring your '
+    : 'Today\u2019s window is over; tomorrow, fish <em>' + next.phrase + '</em>. ';
+  return inline ? 'and bring your ' : 'Today\u2019s window is over. ';
+}
+
 async function renderResults(){
   window._upstreamFrom = null;
   var _au = autoUpstreamSection();
@@ -2463,12 +2528,16 @@ async function renderResults(){
   var _vsig=document.getElementById("vsig"); if(_vsig){_vsig.className="vsig"; _vsig.textContent="\u2026";}
 
   var airTemp=null, cloudPct=null, weatherOk=false, _stagingWeather=null;
+  // Per search: a failed fetch must not reuse the last river's cloud forecast or sunrise.
+  window._periodCloud = null; window._sun = null; window._sunNext = null; window._pillMissing = null;
   try{
     var wx=await fetchWeather(cfg);
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
       airTemp=wx.airTemp; cloudPct=wx.cloudPct; weatherOk=true;
       _stagingWeather = {cloudPct:wx.cloudPct, windDir:wx.windDir, windSpeed:wx.windSpeed};
       window._periodCloud = wx.periodCloud || null;
+      window._sun = (wx.sunrise && wx.sunset) ? { sunrise: wx.sunrise, sunset: wx.sunset } : null;
+      window._sunNext = wx.next || null;
     }
   } catch(e){ console.warn("Weather failed",e); }
   // Fall back to seasonal-typical only if the fetch genuinely failed
@@ -2507,6 +2576,8 @@ async function renderResults(){
     flowEst=await fetchFlowForecastDay(cfg.gauge, dateStr);
   }
   window._flowEst=flowEst;   // the summary tile reads it
+  // What the Conditions pill is missing (confidencePill), set before the staging re-rate can repaint the pill.
+  window._pillMissing = { flowMissing: isToday && flow == null, weatherMissing: !weatherOk };
 
   // Must sit OUTSIDE the isToday branch: a forecast date skipped both of these, which
   // left the access grid empty and the staging phase unresolved, so the hero fell back to
@@ -2526,7 +2597,10 @@ async function renderResults(){
     }
   }
 
-  var skyl=cloudPct>=80?"Overcast":cloudPct>=50?"Mostly Cloudy":cloudPct>=20?"Partly Cloudy":"Clear";
+  // Sky words, grade and the fishing window come from the core (skyRead, fishingWindow), so the tile, the column,
+  // the Best Window card and the hero say the same thing.
+  var _skyRead = skyRead(weatherOk ? cloudPct : null);
+  var skyl = _skyRead.word;
   var fc=flow!=null?clsFlow(flow,cfg):"warn";
   var tc=weatherOk?clsTemp(wt):"warn"; var sc=weatherOk?clsSky(cloudPct):"warn";
   var score=[fc,tc,sc].reduce(function(a,c){return a+(c==="good"?2:c==="warn"?1:0);},0);
@@ -2622,6 +2696,13 @@ async function renderResults(){
       }
     }
   }
+  // The window and the water wording depend on the fish. speciesReads() works them out for the pick (or the default
+  // species) now, and buildTopPick() calls it again with the species the hero settles on, so the headline, the Best
+  // Window card, the temperature column and the why lines all talk about the same fish.
+  window._readInputs = { wt: wt, wtInfo: _wtInfo, airTemp: airTemp, weatherOk: weatherOk, cloudPct: cloudPct,
+    waterOk: weatherOk || !!(_wtInfo && _wtInfo.kind === 'measured'), nowMin: isToday ? now.getHours() * 60 + now.getMinutes() : null };
+  var _win = speciesReads(targetName || defaultTargetSpecies(cfg, wt) || null).win;
+  var tw = _win.text;
   // Build a species-aware prefix for the plain summary
   var speciesPrefix = "";
   var speciesOverride = false; // if true, species situation overrides weather verdict
@@ -2724,7 +2805,7 @@ async function renderResults(){
         var _recs3 = recommendSpecies(cfg);
         if (_recs3.length > 0) _noSpecRec2 = ' Best bet today: ' + _recs3[0].name + '.';
       }
-      plainSummary = "⚠️ Marginal: "+issues.join(", ")+". Target the "+tw+" window and focus on prime lies." + _noSpecRec2;
+      plainSummary = "⚠️ Marginal: "+issues.join(", ")+". Fish "+_win.phrase+" and focus on prime lies." + _noSpecRec2;
     }
     // Append species note if we have one
     if (speciesPrefix) plainSummary += " " + speciesPrefix;
@@ -2741,22 +2822,9 @@ async function renderResults(){
   }
   // Quick stats in banner
   // Use period cloud data for summary card if available
-  var _pcSumm = window._periodCloud;
-  var tw, _twColor, _twNote;
-  if (_pcSumm) {
-    var _g = function(c){ return c>=70?'good':c>=30?'warn':'bad'; };
-    var _periods = [{l:'AM',g:_g(_pcSumm.morning)},{l:'Mid',g:_g(_pcSumm.midday)},{l:'PM',g:_g(_pcSumm.evening)}];
-    var _good = _periods.filter(function(p){return p.g==='good';}).map(function(p){return p.l;});
-    var _ok   = _periods.filter(function(p){return p.g==='warn';}).map(function(p){return p.l;});
-    var _all  = _good.concat(_ok);
-    if (_all.length===3){ tw='All day'; _twColor='#6dbf8a'; _twNote='Full day'; }
-    else if (_all.length===0){ tw='Dawn only'; _twColor='#e07070'; _twNote='Dawn only'; }
-    else { tw=_all.join('+')+' best'; _twColor='#e8a85a'; _twNote=_all.length===1?'Narrow window':'Mixed'; }
-  } else {
-    tw=sc==="good"?"All Day":sc==="warn"?"6–9 AM & 6–8 PM":"6–8:30 AM only";
-    _twColor=sc==="good"?"#6dbf8a":sc==="warn"?"#e8a85a":"#e07070";
-    _twNote=sc==="good"?"Full day":sc==="warn"?"Compressed":"Dawn only";
-  }
+  // tw is the fishing window from fishingWindow() above.
+  var _twColor = _win.grade==="good"?"#6dbf8a":_win.grade==="warn"?"#e8a85a":"#e07070";
+  var _twNote = _win.mode==="allday"?"Full day":_win.mode==="early"?"First hours of light":"Mixed";
   // Flow stat box removed from banner - data lives in conditions section below
   document.getElementById("sum-window").textContent=tw;
   document.getElementById("sum-window").style.color=_twColor;
@@ -2809,7 +2877,9 @@ async function renderResults(){
   var _vh=document.getElementById("vhead"); if(_vh)_vh.textContent=vh;
   var _vb=document.getElementById("vbody"); if(_vb)_vb.textContent=vb;
 
-  // Flow column
+  // Flow column. Wording, source and reading time from flowRead() in the core.
+  var _flowRead = flowRead(flow, cfg, { at: flowAt, isToday: isToday });
+  window._flowRead = _flowRead;
   if(flow!=null){
     var ta=trend==="up"?"up":trend==="down"?"down":"stable";
     document.getElementById("fval").textContent=flow;
@@ -2820,7 +2890,8 @@ async function renderResults(){
       :flow<=cfg.sweetMax?flow+" m³/s, prime flow ("+sweetRange+")."
       :flow<=cfg.flowHigh?flow+" m³/s, elevated. Target the slower edges."
       :flow+" m³/s, too high for safe wading.";
-    document.getElementById("flbl").textContent=fd+(flowAt?" \u00b7 Obs: "+flowAt.slice(0,16).replace("T"," "):"");
+    // The old line printed the gauge's UTC timestamp as if it were local time.
+    document.getElementById("flbl").textContent=fd+" "+_flowRead.source+".";
     document.getElementById("fgv").textContent=flow+" m\u00b3/s";
     var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh)+"%";fb.className="gf "+fc;
     var _fb=flowBand(flow,cfg);document.getElementById("fstat").innerHTML=(_fb==="normal"||_fb==="prime")?clsLbl(fc).replace("Ideal",_fb==="prime"?"Prime":"Normal"):clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
@@ -2828,7 +2899,7 @@ async function renderResults(){
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
     document.getElementById("fcl").innerHTML=[
       {t:"Flow "+flow+" m\u00b3/s ("+({low:"too low",normal:"normal",prime:"prime",high:"high",blown:"blown out"}[flowBand(flow,cfg)]||"")+"; prime: "+sweetRange+")",c:fc},
-      {t:"Trend: "+(trend==="up"?"Rising ↑, a good sign":trend==="down"?"Falling ↓, keep an eye on it":"Stable \u2192 watch for changes"),c:trend==="up"?"good":"warn"},
+      {t:"Trend: "+flowTrendRead(trend, flowBand(flow,cfg), fc).text,c:flowTrendRead(trend, flowBand(flow,cfg), fc).grade},
       {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"},
       {t:"Fish lies: "+(fc==="good"?"Predictable":"Scattered and harder to find"),c:fc}
     ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
@@ -2837,18 +2908,12 @@ async function renderResults(){
   } else {
     document.getElementById("fval").textContent="\u2014";
     document.getElementById("ftrend").textContent="";
-    document.getElementById("flbl").textContent=(isToday?"Live data unavailable. Use the gauge link.":"No flow estimate for this date. Check the gauge on the day.")+" You want to see "+cfg.sweetMin+"–"+cfg.sweetMax+" m³/s for this river.";
+    document.getElementById("flbl").textContent=isToday?_flowRead.sentence:"No flow estimate for this date. Check the gauge on the day. You want "+_flowRead.range+" for this stretch.";
     document.getElementById("fgv").textContent="\u2014";
-    document.getElementById("fstat").innerHTML='<span class="status-dot dot-warn"></span>CHECK GAUGE';document.getElementById("fstat").className="gs warn";
+    document.getElementById("fstat").innerHTML='<span class="status-dot dot-warn"></span>'+(isToday?'GAUGE UNAVAILABLE':'CHECK GAUGE');document.getElementById("fstat").className="gs warn";
     document.getElementById("fcl").innerHTML="<li><span class=\"ci warn\">\u25b3</span><span>Check the gauge link above for current flow before heading out.</span></li>";
   }
 
-  // Temp column
-  document.getElementById("tval").textContent=wt;
-  document.getElementById("tlbl").textContent=waterTempSourceText(_wtInfo, airTemp)+(tc==="good"?"Prime feeding range for trout.":tc==="warn"?(wt<TEMP_MIN?"Below prime. Fish sluggish.":"Warming. Early morning only."):(wt>=TEMP_STRESS?"Conservation advisory: stop fishing above 18\u00b0C.":"Too cold. Fish inactive."));
-  document.getElementById("tgv").textContent=wt+"\u00b0C";
-  var tb=document.getElementById("tbar");tb.style.width=barW(wt,0,22)+"%";tb.className="gf "+tc;
-  document.getElementById("tstat").innerHTML=clsLbl(tc);document.getElementById("tstat").className="gs "+tc;
   // Combined temp+sky indicator — average the two classifications
   var _clsRank = {good:2, warn:1, bad:0};
   var _tcRank = _clsRank[tc] !== undefined ? _clsRank[tc] : 1;
@@ -2860,29 +2925,15 @@ async function renderResults(){
 
   // Sky column
   // Today the headline number is the cloud right now; say so, since the strip below is the day's forecast.
-  document.getElementById("skyv").textContent=skyl+(isToday&&window._periodCloud?" now":"")+" ("+cloudPct+"%)";
+  document.getElementById("skyv").textContent=weatherOk ? skyl+(isToday&&window._periodCloud?" now":"")+" ("+cloudPct+"%)" : "No weather data";
   renderSkyPeriodStrip(window._periodCloud || null);
   // sky sub-indicators removed — combined into temp-dot
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
   // The note follows the same 8 AM / 12 PM / 6 PM forecast as the strip and the Best Window card, so the three never
   // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
-  document.getElementById("skystat").textContent=skyDayNote(window._periodCloud, sc);
+  document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc, window._fishWindow && window._fishWindow.mode === 'winter') : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
   document.getElementById("skystat").className="gs "+sc;
-  // Best Window card — reuse the period-aware window text computed for the summary card
-  var _bwNote;
-  if (window._periodCloud) {
-    var _pcg = function(c){ return c>=70?'good':c>=30?'warn':'bad'; };
-    var _pcM=_pcg(window._periodCloud.morning), _pcD=_pcg(window._periodCloud.midday), _pcE=_pcg(window._periodCloud.evening);
-    var _skip=[];
-    if(_pcM==='bad')_skip.push('clear morning');
-    if(_pcD==='bad')_skip.push('bright midday');
-    if(_pcE==='bad')_skip.push('clear evening');
-    _bwNote = _skip.length ? 'Skip '+_skip.join(', ')+'.' : 'Cloud cover holds, so fish any time.';
-  } else {
-    _bwNote = sc==="good"?"Overcast opens the full day. Don't sleep in.":sc==="warn"?"Partly cloudy compresses your window. Get on at first light.":"Clear sky kills the bite fast. Be on the water before sunrise.";
-  }
-  document.getElementById("twin").textContent=tw;
-  document.getElementById("tnote").textContent=_bwNote;
+  // The temperature column and the Best Window card were painted by speciesReads() above.
 
   window._defaultTargetSpecies = defaultTargetSpecies(cfg, wt);
   updateMethods(fc,tc,sc,flow,wt);
@@ -3559,15 +3610,24 @@ function rankRivers(rivers, speciesKey, dateStr) {
 // ── SKY PERIOD STRIP ─────────────────────────────────────────────────────────
 // One line on the day's sky for the Temperature & Light card. With the period forecast it describes the day; without
 // it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
-function skyDayNote(pc, sc) {
+function skyDayNote(pc, sc, winter) {
+  // Peak winter (TJ, 2026-11-02): sun helps, so the usual "bright slows the bite" lines would contradict the Best Window
+  // card. Describe the sky only.
+  if (winter) {
+    if (!pc) return skyRead(window._readInputs ? window._readInputs.cloudPct : null).word + '.';
+    var wm = skyRead(pc.morning).word, wd = skyRead(pc.midday).word, we = skyRead(pc.evening).word;
+    return (wm === wd && wd === we) ? wm + ' all day.' : wm + ' early, ' + wd.toLowerCase() + ' at midday, ' + we.toLowerCase() + ' later.';
+  }
   if (!pc) return sc==="good" ? "Overcast. Fish feed through the whole water column."
     : sc==="warn" ? "Some cloud. Best early and late; midday slows."
     : "Clear sky. Fish early and late; the bite slows once the sun is high.";
-  var g = function(c){ return c>=70?'good':c>=30?'warn':'bad'; };
+  var g = clsSky; // 70% overcast, under 30% bright: the same grade as the strip and Best Window
   var m = g(pc.morning), d = g(pc.midday), e = g(pc.evening);
   if (m==='good' && d==='good' && e==='good') return "Overcast all day. Fish feed through the whole water column.";
-  if (m==='bad' && d==='bad' && e==='bad') return "Clear all day. Fish first and last light; midday will be slow.";
-  if (m==='warn' && d==='warn' && e==='warn') return "Partly cloudy all day. Best early and late; midday slows.";
+  // These two used to give their own times ("first and last light", "best early and late") while the Best Window
+  // card said first light only and all day. Times now come from the Best Window card alone (fishingWindow).
+  if (m==='bad' && d==='bad' && e==='bad') return "Clear all day, so the bite slows once the sun is up.";
+  if (m==='warn' && d==='warn' && e==='warn') return "Partly cloudy all day.";
   var r = {bad:0, warn:1, good:2}, M = r[m], D = r[d], E = r[e];
   if (D < M && D < E) return "Bright at midday. Fish morning and evening.";
   if (M <= D && D <= E && M < E) return "Brighter early, cloudier later. The bite should pick up as the cloud comes in.";
@@ -3580,10 +3640,9 @@ function renderSkyPeriodStrip(periodCloud) {
   if (!strip) return;
   if (!periodCloud) { strip.style.display = 'none'; return; }
 
-  function skyGrade(c) { return c >= 70 ? 'good' : c >= 30 ? 'warn' : 'bad'; }
-  function skyLabel(c) {
-    return c >= 70 ? 'Overcast' : c >= 50 ? 'Mostly Cloudy' : c >= 20 ? 'Partly Cloudy' : 'Clear';
-  }
+  // Grade and words from skyRead() in the core, like the column headline and the hero tile.
+  function skyGrade(c) { return clsSky(c); }
+  function skyLabel(c) { return skyRead(c).word; }
 
   // SVG icons as inline strings
   var sunRays = '';
@@ -3602,7 +3661,7 @@ function renderSkyPeriodStrip(periodCloud) {
 
   var SVG_CLOUD = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 18 Q3 18 3 15 Q3 12 6 12 Q6 9.5 9 9.5 Q12 9.5 12.5 12 Q15 12 15 15 Q15 18 12 18 Z" fill="#6b9a95"/></svg>';
 
-  function getIcon(c) { return c>=70 ? SVG_CLOUD : c>=30 ? SVG_PARTLY : SVG_SUN; }
+  function getIcon(c) { var g = clsSky(c); return g === 'good' ? SVG_CLOUD : g === 'warn' ? SVG_PARTLY : SVG_SUN; }
 
   var periods = [
     { id:'morning', time:'8 AM',  val:periodCloud.morning },
@@ -3732,39 +3791,31 @@ function renderConditionTiles(opts) {
       '</div></div>';
   }
 
-  // 1) WATER TEMP — ideal 8–14 for trout
-  var wt = opts.wt;
-  var waterState, waterMeaning;
-  if (wt == null) { waterState = 'na'; waterMeaning = 'No data'; }
-  else if (window._weatherOk === false && !(window._waterTempInfo && window._waterTempInfo.kind === 'measured')) { waterState = 'na'; waterMeaning = 'Est. only'; }
-  else if (wt >= 8 && wt <= 14) { waterState = 'good'; waterMeaning = 'Ideal'; }
-  else if (wt >= 5 && wt < 8) { waterState = 'ok'; waterMeaning = 'Cool'; }
-  else if (wt > 14 && wt <= 18) { waterState = 'ok'; waterMeaning = 'Warm'; }
-  else if (wt > 18) { waterState = 'poor'; waterMeaning = 'Too warm'; }
-  else { waterState = 'poor'; waterMeaning = 'Too cold'; }
-  var waterVal = (wt == null) ? '—' : (Math.round(wt * 10) / 10) + '\u00b0';
+  // 1) WATER TEMP: waterTempRead() in the core (same grade, word and rounding as the conditions column)
+  var _wr = window._waterRead || waterTempRead(opts.wt, window._waterTempInfo, { weatherOk: opts.weatherOk });
+  var _tileState = { good: 'good', warn: 'ok', bad: 'poor', na: 'na' };
+  var waterState = _tileState[_wr.grade];
+  var waterMeaning = _wr.grade === 'na' ? 'No data' : _wr.word + ' \u00b7 ' + _wr.tag.toLowerCase();
+  var waterVal = _wr.grade === 'na' ? '\u2014' : (_wr.measured ? '' : '~') + _wr.value + '\u00b0';
 
-  // 2) SKY / CLOUD — overcast is best for trout
-  var cp = opts.cloudPct;
-  var skyState, skyMeaning;
-  if (cp == null) { skyState = 'na'; skyMeaning = 'No data'; }
-  else if (cp >= 50) { skyState = 'good'; skyMeaning = 'Good cover'; }
-  else if (cp >= 25) { skyState = 'ok'; skyMeaning = 'Some cover'; }
-  else { skyState = 'poor'; skyMeaning = 'Bright/clear'; }
-  var skyVal = (cp == null) ? '—' : cp + '%';
+  // 2) SKY / CLOUD: skyRead() in the core (70% overcast, under 30% bright)
+  var _sr = skyRead(opts.weatherOk === false ? null : opts.cloudPct);
+  var skyState = _tileState[_sr.grade];
+  // Today the number is the cloud right now (the column says so too); the window follows the day's forecast.
+  var skyMeaning = _sr.cover + (opts.isToday && window._periodCloud && _sr.grade !== 'na' ? ' now' : '');
+  var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '%';
 
   // 3) FLOW — today: live value + state; future: target range, muted
   var flowTile;
   if (opts.isToday && opts.flow != null) {
-    var f = opts.flow, fState, fMeaning;
-    if (f >= opts.sweetMin && f <= opts.sweetMax) { fState = 'good'; fMeaning = 'In range'; }
-    else if (f < opts.sweetMin && f >= (opts.flowLow || opts.sweetMin * 0.3)) { fState = 'ok'; fMeaning = 'Low'; }
-    else if (f > opts.sweetMax && f <= (opts.flowHigh || opts.sweetMax * 2)) { fState = 'ok'; fMeaning = 'High'; }
-    else { fState = 'poor'; fMeaning = f < opts.sweetMin ? 'Too low' : 'Too high'; }
-    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning, fState);
+    // Band words from flowRead() (flowBand: low, normal, prime, high, blown), like the flow card. The tile used to call
+    // normal flow "Low" while the card said "Normal".
+    var f = opts.flow, _fr = flowRead(f, opts, { isToday: true });
+    var fState = _tileState[_fr.grade], fMeaning = _fr.word;
+    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState);
   } else if (opts.isToday && opts.flow == null) {
     // Today but gauge down
-    flowTile = tile('Flow', 'N/A', 'Check gauge', 'na', true);
+    flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true);
   } else if (opts.flowEst) {
     // Future date with an estimate (renderFlowEstimate() has the detail): number for days 1 to 2, range after
     var e = opts.flowEst, eb = flowBand(e.q, opts);
@@ -3789,9 +3840,30 @@ function renderConditionTiles(opts) {
     tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
 }
 
+// The Conditions pill's text and colour, for the hero and the staging card's re-rate (confidenceRead in the core).
+function confidencePill(conf, potential) {
+  var m = window._pillMissing || {};
+  return confidenceRead(conf, { potential: potential, flowMissing: m.flowMissing, weatherMissing: m.weatherMissing,
+    flowIrrelevant: !!window._stagingInLake });
+}
+
+// The drive verdict under the headline. Same driveVerdict() and score; when the pill can't rate the day (no flow reading
+// or no weather) the verdict makes no call either, instead of "Worth the drive" beside "Unknown".
+function driveVerdictShown(score, driveMin, closed) {
+  if (closed) return driveVerdict(score, driveMin, closed);
+  if (confidencePill(scoreToConfidence(score), false).unknown) return { text: '~ Not rated. Check the gauge before you drive', cls: 'verdict-maybe' };
+  return driveVerdict(score, driveMin, closed);
+}
+
+function localTodayStr() {
+  var n = new Date();
+  return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+}
+
 function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weatherOk) {
   var band = document.getElementById('tpband');
   if (!band) return;
+  var _heroIsToday = getTripDateStr() === localTodayStr();
 
   var speciesMap = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var _bka=Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
@@ -3844,45 +3916,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   }
   bestSpot = bestAccessSpot(cfg.access, _stagingActive);
 
-  // Best time window
-  var skyl = cloudPct >= 80 ? 'Overcast' : cloudPct >= 50 ? 'Mostly Cloudy' : cloudPct >= 20 ? 'Partly Cloudy' : 'Clear';
+  // Best time window: fishingWindow() in the core (computed in renderResults from the trip date's sunrise and sunset).
+  // It used to be worked out a second time here, with fixed clock times.
+  var _win = window._fishWindow || fishingWindow({ cloudPct: cloudPct, weatherOk: weatherOk });
   var sc = clsSky(cloudPct);
-  // Compute best fishing window using hourly period data if available, else fall back to daily mean
-  var tw, tnoteText;
-  var _pc = window._periodCloud;
-  if (_pc) {
-    // Grade each period: good ≥70% cloud, warn 30-69%, bad <30%
-    var _grade = function(c){ return c >= 70 ? 'good' : c >= 30 ? 'warn' : 'bad'; };
-    var _mg = _grade(_pc.morning), _dg = _grade(_pc.midday), _eg = _grade(_pc.evening);
-    // Build window label from which periods are good or warn
-    var _goodPeriods = [], _warnPeriods = [];
-    if (_mg === 'good') _goodPeriods.push('Morning (6–10 AM)');
-    else if (_mg === 'warn') _warnPeriods.push('Morning (6–10 AM)');
-    if (_dg === 'good') _goodPeriods.push('Midday (10 AM–3 PM)');
-    else if (_dg === 'warn') _warnPeriods.push('Midday (10 AM–3 PM)');
-    if (_eg === 'good') _goodPeriods.push('Evening (3–8 PM)');
-    else if (_eg === 'warn') _warnPeriods.push('Evening (3–8 PM)');
-    var _active = _goodPeriods.concat(_warnPeriods);
-    if (_active.length === 3) {
-      tw = 'All day';
-      tnoteText = 'Consistent cloud cover all day. Fish any time.';
-    } else if (_active.length === 0) {
-      tw = 'Early morning only (before 8 AM)';
-      tnoteText = 'Clear sky all day. Be on the water before sunrise.';
-    } else {
-      tw = _active.join(' & ');
-      // Explain why skipped periods are skipped
-      var _skipped = [];
-      if (_mg === 'bad') _skipped.push('mornings are clear (sun kills the bite)');
-      if (_dg === 'bad') _skipped.push('midday is bright');
-      if (_eg === 'bad') _skipped.push('evening clears out');
-      tnoteText = _skipped.length ? 'Skip ' + _skipped.join('; ') + '.' : 'Mixed sky. Focus on the cloudy windows.';
-    }
-  } else {
-    // Fall back to daily mean
-    tw = sc === 'good' ? 'All day' : sc === 'warn' ? 'Morning (6–9 AM) & Evening (6–8 PM)' : 'Early morning only (before 8 AM)';
-    tnoteText = sc === 'good' ? 'Overcast opens the full day. Don\'t sleep in.' : sc === 'warn' ? 'Partly cloudy compresses your window. Get on at first light.' : 'Clear sky kills the bite fast. Be on the water before sunrise.';
-  }
+  var tw = _win.text;
 
   // Best method
   var _famLabels = {
@@ -3915,21 +3953,21 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // topMethod, a bait/roe method cannot stand on artificial-only water.
   topMethod = legalMethodName(topMethod, cfg);
 
-  // Render the conditions tile grid (hero)
+  // Render the conditions tile grid (hero). Redrawn below once the species is settled (the water tile's wording).
+  var _tileOpts = null;
   (function(){
     var _td = document.getElementById('trip-date');
     var _ds = _td && _td.value ? _td.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
     var _isToday = _ds === (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
-    try {
-      renderConditionTiles({
+    _tileOpts = {
         wt: wt, cloudPct: cloudPct, flow: flow,
         sweetMin: cfg.sweetMin != null ? cfg.sweetMin : 5,
         sweetMax: cfg.sweetMax != null ? cfg.sweetMax : 15,
         flowLow: cfg.flowLow, flowHigh: cfg.flowHigh,
         topMethod: topMethod, isToday: _isToday, weatherOk: weatherOk,
         flowEst: _isToday ? null : window._flowEst
-      });
-    } catch(_tileErr) { console.warn('condition tiles', _tileErr); }
+      };
+    try { renderConditionTiles(_tileOpts); } catch(_tileErr) { console.warn('condition tiles', _tileErr); }
   })();
 
   // Species situation — fall back to recommendation if target is out of season
@@ -4115,6 +4153,14 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   })()) || _multiTargetLabel || (recs.length > 0 ? recs[0].name : null);
   // Store effective recommended species so regs card can sync to it
   window._effectiveRecommendedSpecies = _displaySpecies || targetName || null;
+  // The fish the headline names. From here the fishing window, the water wording, the water tile and the why lines
+  // all use it (speciesReads), so a fallback species gets its own window, not the one worked out for the search.
+  var _finalSp = _displaySpecies ? _displaySpecies.split(' + ')[0] : (targetName || null);
+  var _reads = speciesReads(_finalSp);
+  _win = _reads.win;
+  var _winNext = _reads.next;
+  tw = _win.text;
+  if (_tileOpts) { try { renderConditionTiles(_tileOpts); } catch(_tileErr2) { console.warn('condition tiles', _tileErr2); } }
   // Patch any already-rendered regs labels to match the recommended species
   try { (function() {
     var _sp = window._effectiveRecommendedSpecies;
@@ -4150,7 +4196,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     });
   })(); } catch(_e) { console.warn('regs label patch', _e); }
   var headlineHtml;
-  var timeShort = tw.split(' (')[0].split(' and ')[0];
+  // The time part of the headline: fishTimeHtml() (e.g. "Fish from sunrise to about 9:50 AM", or tomorrow's window once
+  // today's is over). Splitting the window text used to give "Fish Morning".
   // Staging override: target is an absent staging species AND this is a lake-mouth staging zone
   var _stagingHeadline = null;
   try {
@@ -4169,7 +4216,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
             + 'See the staging report below for where and how to target them.';
         } else if (_sp2 && _sp2.active && _sp2.mode === 'run') {
           _stagingHeadline = '<em>' + _tgtName + '</em> are running into the river now. '
-            + 'See the staging report below, and fish the lower river on rising water.';
+            + 'See the staging report below, and fish the lower river after rain, as it starts to clear.';
         } else if (/Steelhead/i.test(_tgtName)) {
           // Steelhead have their own timing: out in the lake all summer, staging off the
           // mouths from September. The salmon copy below gave them a late-July timeline.
@@ -4194,7 +4241,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
           _stagingHeadline = '<em>' + _tgtName + '</em> are still in the lake, '
             + 'on ' + _riverShortName + ', ' + _timingHint + '. '
             + 'Occasional early fish show near the harbour mouth on cold-water days before then. '
-            + 'If you go, spoons and spinners at ' + _timeHint + '. Don’t expect consistency yet.';
+            // Was "spoons and spinners at overcast helps, so fish through the day" on overcast days.
+            + (cloudPct >= 70 ? 'If you go, overcast helps, so fish spoons and spinners through the day. '
+                              : 'If you go, fish spoons and spinners at dawn or dusk. ')
+            + 'Don’t expect consistency yet.';
         }
       }
     }
@@ -4213,7 +4263,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       + _slowNote + ' '
       + 'Try <em>' + fallbackSpecies + '</em> instead: '
       + 'head to <em>' + spotName + '</em>, '
-      + timeShort.toLowerCase() + ', '
+      + fishTimeHtml(_win, _winNext, true)
       + bringPhrase + '.';
   } else if (fallbackSpecies && targetName) {
     // Distinguish geographic mismatch from seasonal absence
@@ -4239,24 +4289,25 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       headlineHtml = '<em>' + targetName + '</em> aren’t found in this section. '
         + 'They live in the <em>' + _sibShort + '</em>. '
         + 'Fish <em>' + fallbackSpecies + '</em> here today: '
-        + 'head to <em>' + spotName + '</em>, ' + timeShort.toLowerCase() + ', ' + bringPhrase + '.';
+        + 'head to <em>' + spotName + '</em>, ' + fishTimeHtml(_win, _winNext, true) + bringPhrase + '.';
     } else if (_geoMismatch) {
       headlineHtml = '<em>' + targetName + '</em> aren’t found in this section. '
         + 'Fish <em>' + fallbackSpecies + '</em> instead, and '
         + 'head to <em>' + spotName + '</em>, '
-        + timeShort.toLowerCase() + ', '
+        + fishTimeHtml(_win, _winNext, true)
         + bringPhrase + '.';
     } else {
       headlineHtml = '<em>' + targetName + '</em> aren’t here yet. '
         + 'Fish <em>' + fallbackSpecies + '</em> instead, and '
         + 'head to <em>' + spotName + '</em>, '
-        + timeShort.toLowerCase() + ', '
+        + fishTimeHtml(_win, _winNext, true)
         + bringPhrase + '.';
     }
   } else if (targetName && _thermalStress && _TROUT.indexOf(targetName) !== -1 && !fallbackSpecies) {
     // Thermal stress, trout-only river — no safe recommendation possible
     headlineHtml = 'Water is <em>' + (wt || '—') + '°C</em>, above the safe limit for trout. '
-      + 'Consider waiting for cooler conditions or fishing early morning before 8 AM.';
+      + 'Consider waiting for cooler conditions, or fishing only '
+      + (_win.passed ? (_winNext && _winNext.phrase ? 'tomorrow ' + _winNext.phrase : 'in the first two hours of light') : _win.phrase) + '.';
   } else if (targetName && !fallbackSpecies &&
              (_riverSpecies.indexOf(targetName) === -1 || (seasonal && seasonal.quality === 'absent'))) {
     // Not in this section, or out of season, with nothing to suggest instead. The absent
@@ -4269,15 +4320,16 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   } else if (!targetName && _multiTarget) {
     // Multi-species selection: both are on this river, name them both
     headlineHtml = 'Head to <em>' + spotName + '</em>. '
-      + 'Fish <em>' + timeShort + '</em> for <em>' + _multiTargetLabel + '</em>. '
+      + (_win.passed ? fishTimeHtml(_win, _winNext, false) + 'Target <em>' + _multiTargetLabel + '</em>. '
+         : 'Fish <em>' + _win.phrase + '</em> for <em>' + _multiTargetLabel + '</em>. ')
       + 'Bring your <em>' + bringPhrase + '</em>.';
   } else if (!targetName && _displaySpecies) {
     headlineHtml = 'Try <em>' + _displaySpecies + '</em> at <em>' + spotName + '</em>. '
-      + 'Fish <em>' + timeShort + '</em>. '
+      + fishTimeHtml(_win, _winNext, false)
       + 'Bring your <em>' + bringPhrase + '</em>.';
   } else {
     headlineHtml = 'Head to <em>' + spotName + '</em>. '
-      + 'Fish <em>' + timeShort + '</em>. '
+      + fishTimeHtml(_win, _winNext, false)
       + 'Bring your <em>' + bringPhrase + '</em>.'
       + (_displaySpecies ? ' Target <em>' + _displaySpecies + '</em>.' : '');
   }
@@ -4483,6 +4535,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     return n && !_sectionClosed && speciesSeasonClosureFor(getRiverConfig(selectedRiver), n, getTripDateStr()) ? n : null;
   })();
   var _confEl = document.getElementById('tp-confidence');
+  window._pillMissing = { flowMissing: _heroIsToday && flow == null, weatherMissing: !weatherOk };
   if (_confEl) {
     var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
     // In expert mode, estimate score from season quality
@@ -4497,9 +4550,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
     // A future date has no reading; days 1 to 2 use the flow estimate, which can only pull the rating down.
     var _cfgPill = getRiverConfig(selectedRiver), _baseScore = _topScore;
+    // The temperature steps for the fish the headline names (tempContext: winter run fish, trout-only heat rule).
+    var _tctx = tempContext(window._readSpecies ? [window._readSpecies] : [], getTripDateStr(), selectedRiver ? selectedRiver.split(',')[0].trim() : '');
     var _rate = flow != null
-      ? { score: conditionsScore(_baseScore, _cfgPill, flow, wt, cloudPct, window._stagingPct, window._stagingInLake), potential: false, flow: flow }
-      : rateWithFlowEstimate(function(f){ return conditionsScore(_baseScore, _cfgPill, f, wt, cloudPct, window._stagingPct, window._stagingInLake); }, window._flowEst);
+      ? { score: conditionsScore(_baseScore, _cfgPill, flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx), potential: false, flow: flow }
+      : rateWithFlowEstimate(function(f){ return conditionsScore(_baseScore, _cfgPill, f, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx); }, window._flowEst);
     window._pillFlow = flow; // the staging card's re-rate uses the same live flow (or the same estimate rule)
     _topScore = _rate.score;
     var _conf = scoreToConfidence(_topScore);
@@ -4510,9 +4565,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _confEl.textContent = 'Closed for ' + _spClosedPill;
       _confEl.className = 'tp-confidence conf-tough';
     } else {
-      _confEl.textContent = 'Conditions: ' + confidenceWord(_conf, _rate.potential);
-      _confEl.className = 'tp-confidence ' + _conf.cls;
-      _confEl.title = _rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '';
+      // confidenceRead() in the core: with no live flow today (or no weather), say what the rating is missing.
+      var _cr = confidencePill(_conf, _rate.potential);
+      _confEl.textContent = _cr.text;
+      _confEl.className = 'tp-confidence ' + _cr.cls;
+      _confEl.title = _cr.title || (_rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '');
     }
     _confEl.style.display = 'inline-block';
   }
@@ -4534,7 +4591,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
 
     // Drive worthiness verdict: combines score and distance (driveVerdict in conditions-core.js)
-    var _dv = driveVerdict(_topScore, _dt, _sectionClosed);
+    var _dv = driveVerdictShown(_topScore, _dt, _sectionClosed);
     var _worthIt = _dv.text, _verdictCls = _dv.cls;
 
     _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
@@ -4542,9 +4599,43 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       + '<span style="font-size:.68rem;opacity:.55;margin-left:.4rem">est. from city centre</span>';
     _driveEl.style.display = 'block';
   }
-    'Head to <em>' + spotName + '</em>. Fish <em>' + tw.split(' (')[0].split(' and ')[0] + '</em>. Bring your <em>' + bringPhrase + '</em>.' ;
 
-  document.getElementById('tp-why').innerHTML = '';
+  // The legal-season pass can name a different fish (a closed species swapped for an open one). Keep the window, the
+  // water wording and the tiles on that fish too.
+  if (window._shownSpeciesName && window._shownSpeciesName !== window._readSpecies) {
+    speciesReads(window._shownSpeciesName);
+    if (_tileOpts) { try { renderConditionTiles(_tileOpts); } catch(_tileErr3) {} }
+  }
+  // Why this pick: two or three lines from heroReasons() in the core, built from values already worked out above.
+  // Only when the headline sends the reader to fish here; a closed reach, a redirect or a staging headline says why itself.
+  (function() {
+    var _whyEl = document.getElementById('tp-why');
+    if (!_whyEl) return;
+    _whyEl.innerHTML = '';
+    var _trip = getTripDateStr();
+    var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _sp = window._shownSpeciesName || (_multiTarget ? _multiTarget[0] : null);
+    if (!_sp || _goto || _stagingHeadline || _sectionClosed || _spClosedPill) return;
+    // Only under a headline that sends the reader out (every such headline names the gear); not under "water is above
+    // the safe limit", "aren't here yet" and the like, which carry their own reason.
+    if (document.getElementById('tp-headline').textContent.indexOf(bringPhrase) === -1) return;
+    if (_riverSpecies.indexOf(_sp) === -1) return;
+    var _seas = getCurrentSeason(_sp, _trip);
+    if (!_seas || _seas.quality === 'absent') return;
+    var _mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'].indexOf(_sp) !== -1 || (_sp === 'Brown Trout' && isLakeRunBrownSection(_here));
+    var _cfgFull = getRiverConfig(selectedRiver);
+    var _est = _heroIsToday ? null : window._flowEst;
+    var _lines = heroReasons({
+      species: _sp, seasonal: _seas, migratory: _mig,
+      sectionNotes: sectionSeasonScore(_here, [_sp], _trip).notes,
+      flow: window._flowRead || flowRead(flow, _cfgFull, { isToday: _heroIsToday }), flowValue: flow,
+      gaugeName: _cfgFull.gaugeName, isToday: _heroIsToday,
+      flowEst: _est, flowEstBand: _est && _est.q != null ? flowBand(_est.q, _cfgFull) : null,
+      fishInLake: !!window._stagingInLake,
+      water: window._readSpecies === _sp ? window._waterRead : waterTempRead(wt, window._waterTempInfo, { species: _sp, seasonal: _seas, weatherOk: weatherOk })
+    });
+    _whyEl.innerHTML = _lines.map(function(t) { return '<div class="why-row">' + t + '</div>'; }).join('');
+  })();
 
   // Species recommendation chips (no species selected)
   var chips = [];
@@ -4560,7 +4651,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     });
   }
   if (bestSpot) chips.push({ text: '📍 ' + bestSpot.loc, cls: '' });
-  chips.push({ text: '\u23f0 ' + tw.split(' and ')[0], cls: sc === 'good' ? 'good' : sc === 'warn' ? 'warn' : 'bad' });
+  chips.push({ text: '\u23f0 ' + window._fishWindow.text, cls: window._fishWindow.grade });
   chips.push({ text: '🪱 ' + topMethod, cls: 'good' });
   if (flow == null) chips.push({ text: '\u26a0\ufe0f Check gauge first', cls: 'warn' });
   if (bestSpot && bestSpot.crowd === 'low') chips.push({ text: '🧘 Low pressure spot', cls: 'good' });
@@ -4588,7 +4679,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     } else if (_stMode === 'run') {
       chips = [
         { text: '📍 Lower river', cls: '' },
-        { text: '🌊 Fish rising water after rain', cls: '' }
+        { text: '🌊 Fresh fish come in on rain. Fish the lower river as it clears.', cls: '' }
       ];
     } else {
       // Pre-staging: opportunistic early Chinook at harbour mouth only.
