@@ -23,7 +23,7 @@ build, and the Cloudflare check on the PR links to it.
 | Path | What it is |
 |---|---|
 | `index.html` | App markup only |
-| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs`, `node worker/reads.test.mjs` |
+| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs`, `node worker/reads.test.mjs`, `node worker/parts.test.mjs` |
 | `assets/app.js` | App UI and logic (~6k lines, one file, no build step) |
 | `assets/app.css` | All app styling, in cascade layers. See `assets/README.md` |
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
@@ -432,6 +432,17 @@ Merged recently:
   Checked: 20 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep link, a
   fallback species, after sunset) match `main` on river, species, technique, gear, bait, access spot and regs.
 
+- **Phase 2, mobile results polish** (2026-11-02, stacked on #128): go headlines name the place ("Head to <em>Erindale
+  Park</em> on the Lower Credit River."); when to fish and what to bring sit on their own lines (`renderHeroLines()`, the
+  fish named only when the species banner doesn't already say it). The email signup bar (every results page) keeps
+  its fixed bottom spot and 300 px scroll trigger but is about two thirds the height on phones (title and close on one
+  row, a short note from the offer's `subShort`, 44 px field and button, 16 px input so iOS doesn't zoom, safe area);
+  while it shows, `reserveBarSpace()` pads the results page so the end of the page scrolls clear of it. "How this was
+  rated" under the pill lists the steps from `conditionsParts()` (the score is now the sum of `liveConditionsParts()`;
+  `worker/parts.test.mjs` checks 806,400 cases against the old functions) plus the season, drive and method points
+  from `rankRivers()` (`parts`). Results labels 12 px minimum (`#results { --fs-label: 12px }`), condition tiles two by
+  two on phones. When and Bring are serif, 1.1rem, with a teal label above and a teal left rule (TJ picked option E, 2026-11-02). The all-day window reads "Sunrise to sunset (…), with cloud cover all day".
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -493,6 +504,12 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+15. **For TJ, from Phase 2 (2026-11-02):** the Conditions pill's base score is the top-ranked river's `rankRivers()`
+   score, which includes drive time (+4 under 30 min, +2 under 60, -2 over 120) and a method bonus, and after "See …"
+   or an upstream switch it can be a different reach from the one on screen (deep links fall back to a calendar
+   estimate). The weekly email (`scoreDay()`) has no drive points. Proposal: rate the viewed reach without drive time,
+   or call the pill a trip rating. Not changed.
 
 14. **Phase 1 follow-ups (2026-11-02):** trend wording, winter run temperatures and the trout-only 18 °C rule are
    done (see Current state). Still open: (a) TJ thinks river water can't go below about 5 °C under ice; most rivers run
