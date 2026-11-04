@@ -235,7 +235,27 @@
     });
   }
 
+
+  // How far people scroll (TJ, 2026-11-03): one Umami "Scroll Depth {page, depth}" at 25, 50, 75 and 100 percent of the
+  // page, once each per page view. Not on the homepage (the app). Read with Signup Box Seen to see where readers stop.
+  function trackScrollDepth() {
+    if (location.pathname === '/' || !('addEventListener' in window)) return;
+    var marks = [25, 50, 75, 100], sent = {}, ticking = false;
+    function check() {
+      ticking = false;
+      var doc = document.documentElement, total = Math.max(doc.scrollHeight, document.body ? document.body.scrollHeight : 0);
+      if (!total) return;
+      var pct = ((window.pageYOffset || doc.scrollTop || 0) + window.innerHeight) / total * 100;
+      marks.forEach(function (m) {
+        if (!sent[m] && pct >= (m === 100 ? 98 : m)) { sent[m] = 1; track('Scroll Depth', { page: location.pathname, depth: m }); }
+      });
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(check); } }, { passive: true });
+    check();
+  }
+
   function init() {
+    trackScrollDepth();
     var boxes = document.querySelectorAll('.hff-signup');
     if (!boxes.length) return;
     var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
