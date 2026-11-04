@@ -1055,20 +1055,14 @@ function renderRiverUI(cfg) {
   (function() {
     var sa = document.getElementById('section-access');
     var sc = document.getElementById('section-conditions');
-    var numA = document.getElementById('sec-num-access');
-    var numC = document.getElementById('sec-num-conditions');
     if (!sa || !sc) return;
     // Reorder via actual DOM movement (robust — doesn't rely on flex order)
     if (appMode === 'expert') {
       // Expert: Conditions before Access. Move section-conditions before section-access.
       sa.parentNode.insertBefore(sc, sa);
-      if (numA) numA.textContent = '2';
-      if (numC) numC.textContent = '1';
     } else {
       // Beginner: Access before Conditions. Move section-access before section-conditions.
       sc.parentNode.insertBefore(sa, sc);
-      if (numA) numA.textContent = '1';
-      if (numC) numC.textContent = '2';
     }
   })();
 
