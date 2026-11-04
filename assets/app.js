@@ -997,17 +997,14 @@ function renderRiverUI(cfg) {
       var k = s.name + '|' + why;
       if (seen[k]) return '';
       seen[k] = 1;
-      return '<li><strong>' + s.name + '</strong>: ' + why + '</li>';
+      return '<p><strong>Closed on this date: ' + s.name + '.</strong> ' + why.replace(/\.?$/, '.') + '</p>';
     }).join('');
     if (!rows) return;
     var box = document.createElement('div');
-    box.className = 'closed-notice';
-    box.innerHTML = '<div class="cn-lbl">\u26a0 Closed on this date</div><ul>' + rows + '</ul>' +
-      '<div class="cn-foot">Sanctuary closures from the Ontario 2026 regulations. ' +
-      'Always confirm the exact boundary before you fish.</div>';
-    // Top of the cards column, not beside it (the parent is the cards/map grid), and first
-    // so it isn't hidden below the fold of the scrolling card list.
-    host.insertBefore(box, host.firstChild);
+    box.className = 'closed-notice cn-line';
+    box.innerHTML = rows + '<p class="cn-foot">From the Ontario 2026 regulations. Confirm the exact boundary before you fish.</p>';
+    // A quiet line under the open spots, not a red box above them (TJ, 2026-11-04).
+    host.appendChild(box);
   })();
 
   // Reorder coords to match _accessSorted (recommended spot first)
