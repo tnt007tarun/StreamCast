@@ -420,7 +420,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
     </div>
 
     <div class="col fi">
-      <div class="col-lbl">Temperature &amp; Light<span class="col-status-dot" id="temp-dot"></span></div>
+      <div class="col-lbl">Water temperature<span class="col-status-dot" id="temp-dot"></span></div>
       <div class="bnum-wrap"><div class="bnum" id="tval">—</div><div class="bnum-u">°C</div></div>
       <div class="bnum-l" id="tlbl">Loading temperature...</div>
       <div class="gw">
@@ -429,9 +429,12 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         <div class="gr"><span>0°C</span><span>Prime 8–14°C</span><span>20°C</span></div>
         <div class="gs" id="tstat">—</div>
       </div>
-      <hr class="divr">
+    </div>
+
+    <div class="col fi">
+      <div class="col-lbl">Sky &amp; light<span class="col-status-dot" id="sky-dot"></span></div>
       <div class="gw">
-        <div class="gh"><span class="gn">Sky Cover</span><span class="gv" id="skyv">—</span></div>
+        <div class="gh"><span class="gn">Sky cover</span><span class="gv" id="skyv">—</span></div>
         <!-- Period cloud strip — populated by JS when hourly data is available -->
         <div id="sky-period-strip" style="display:none;margin-top:10px">
           <div class="sps">

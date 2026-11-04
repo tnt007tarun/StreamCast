@@ -518,6 +518,10 @@ Merged recently:
   white on the dark tile strip. Whole-page count of distinct text styles went from 58 (11 sizes, 15 colours) to about 40.
   New results markup should use these roles, not a new font, size or colour. Left for later: the dark tile strip and 49 inline `style=`.
 
+- **Sky card** (TJ, 2026-11-03): "Temperature & Light" is two cards. Water temperature (`#temp-dot`, the water read) and Sky & light
+  (`#sky-dot`; cloud cover, the 8 AM / 12 PM / 6 PM strip, Best Window). The old combined dot averaged both, so each card now takes
+  its own `clsTemp()` / `clsSky()` class. Three cards across on desktop (`#results .cgrid`), one column under 900 px.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
