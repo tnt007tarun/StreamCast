@@ -499,6 +499,13 @@ Merged recently:
   (his words); Roe Bag, Soft Bead, Little Cleo, Vibrax and Woolly Bugger stay as they were. Dead `icon:` fields in `RIVER_REGS` and `RIVER_CONFIG`
   (📋 🚫 💧 🔁) are not rendered; left alone. Audit phases still open: 3 (visual system) and 4 (homepage photo and river-page Today strips).
 
+- **Visual system, fonts** (TJ, 2026-11-03, audit Phase 3, PR 2 of 2; app only, guides and river pages carry their own styles):
+  Source Serif 4 leads `--font-serif` (headings, hero sentence; Charter and Georgia stay as fallbacks), Outfit is the one UI
+  sans (Nunito is gone from `app.css` and the Google Fonts link), JetBrains Mono is for numbers only. The 58 label rules that
+  were tracked mono capitals are now sentence-case Outfit (`text-transform:none`, no tracking), and the drive line and the
+  Top Bait tile word (`.tp-word`) use the sans. Guides and river pages keep their own system fonts for now. Still open from
+  the audit's Phase 3: dark tile strip, results reorder (TJ did not pick them), and the 49 inline `style=` attributes in `index.html`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

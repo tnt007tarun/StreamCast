@@ -3851,7 +3851,7 @@ function renderConditionTiles(opts) {
     tile('Water', waterVal, waterMeaning, waterState, false, _wr.grade === 'na' ? _missingFx : _fx.temp) +
     tile('Sky', skyVal, skyMeaning, skyState, false, _sr.grade === 'na' ? _missingFx : _fx.sky) +
     flowTile +
-    tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
+    tile('Top Bait', '<span class="tp-word">' + baitShort + '</span>', baitMeaning, 'good', baitShort.length > 8);
 }
 
 // ── ALTERNATIVE REACH (TJ, 2026-11-03) ────────────────────────────────────────────────────────────
