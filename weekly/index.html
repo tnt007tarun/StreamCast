@@ -28,6 +28,10 @@ a{color:var(--fern)}
 .wrap{max-width:560px;margin:0 auto;padding:0 1.4rem;width:100%}
 .mast{border-bottom:1px solid var(--rule)}
 .mast .wrap{padding-top:1.1rem;padding-bottom:1.1rem}
+.mast .brand,.mast .wrap>a:first-child{display:inline-flex;align-items:center;gap:.5rem}
+.mast .brand img,.mast .wrap>a:first-child img{width:26px;height:26px;display:block;flex:none}
+@media(max-width:360px){.mast .brand,.mast .wrap>a:first-child{gap:.35rem;font-size:.95rem}.mast .brand img,.mast .wrap>a:first-child img{width:22px;height:22px}.mast nav{gap:.75rem}}
+@media(max-width:340px){.mast nav a[href="/"]{display:none}}
 .mast a{font:italic 700 1.05rem/1 Charter,Georgia,serif;color:var(--ink);text-decoration:none}
 main{flex:1;padding:2.5rem 0 4rem}
 h1{font:700 2rem/1.2 Charter,'Iowan Old Style',Georgia,serif;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em}
@@ -48,7 +52,7 @@ border:0;border-radius:8px;padding:.95rem 1.4rem;cursor:pointer;margin-top:1.4re
 </head>
 <body>
 
-<header class="mast"><div class="wrap"><a href="/">HereFishyFishy</a></div></header>
+<header class="mast"><div class="wrap"><a href="/"><img src="/favicon.svg?v=3" alt="" width="26" height="26">HereFishyFishy</a></div></header>
 
 <main><div class="wrap">
 
