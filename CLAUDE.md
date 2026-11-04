@@ -374,8 +374,8 @@ Merged recently:
   (`&ref=outlook`), TJ's note and photo, closures, and how the dates were picked. Same content as the monthly outlook
   email. One URL, replaced each month (no archive yet). The "Monthly outlook draft" task opens a PR updating it on the
   26th; TJ merges on the 1st. In the sitemap, llms.txt and the guides index.
-  Homepage: a "See this month's best dates by region" link under the hero badges (`.hero-outlook`, `?ref=home`,
-  Umami `Outlook Link Clicked {placement: hero}`). Not a `GUIDES` card: its month strip and season status don't fit
+  Homepage: a "See this month's best dates by region" link, moved 2026-11-03 from the hero to under the "Find my best spot" button (`.hero-outlook` in `.form-bottom`, `?ref=home`,
+  Umami `Outlook Link Clicked {placement: form}`, was `hero`). Not a `GUIDES` card: its month strip and season status don't fit
   a page that changes every month (2026-11-01).
 
 - **Add to home screen** (TJ, 2026-10-31): `site.webmanifest` is `standalone` (full screen from the home-screen icon,
@@ -545,6 +545,19 @@ Merged recently:
   Sixteen Mile, from Umami app picks), the rest behind "More rivers (9)" (TJ, 2026-11-03); a prefilled other river opens the list.
   Pages load `/assets/signup.js?v=3`: TJ's browser kept an old cached copy after #137 (no picker on `/weekly/`). Bump `v` when
   `signup.js` changes in a way pages depend on.
+
+- **Phase 4, home photo and river-page Today strips** (TJ, 2026-11-03, audit Phase 4): the home hero has TJ's Humber chrome
+  steelhead (`images/hero/home-steelhead.webp`, 1100 px crop around the fish, 61 KB) as the background of `.hero-photo`, under a dark wash with white
+  text, so it adds no height (form still starts about 206 px on a 390 x 844 phone). A paper lip behind the form tabs (`.mode-wrap`)
+  because the card is pulled 30 px up over the photo edge. The six river pages (credit, humber, bronte, don, ganaraska and bowmanville
+  salmon-run) load `conditions-core.js` and `assets/today-strip.js`, which finds the `.now` block, reads the reach and fish from its
+  app link and adds Flow, Water and Conditions tiles plus a one-line source (`.hff-today`, styles injected by the script). All wording
+  and rating come from the core (`flowRead`, `waterTempRead`, `rateReachToday`). Rules: nothing is added unless live flow is under 3 h old,
+  weather loaded and there is a real water read (live CVC on the Credit, else modelled); no strip on a closed reach; the fish is the
+  page's, or Steelhead when the reach lists it and it is in better season (or the page's fish is in its "Late Run" tail), and the link
+  into the app then switches to `species=steelhead`; with the fish out of season (rank 0) the Conditions tile is dropped.
+  Checked with mocked gauge and weather at 390 and 1280 px (no scroll, no page errors), since cloud sessions can't reach the APIs: look
+  at a real preview. New river pages with a `.now` block and an app link get the strip by adding the two script tags.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
