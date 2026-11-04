@@ -541,6 +541,8 @@ Merged recently:
   on Friday: `reachForRiver()` in the core (`bestReachForSpecies()`, moved from `app.js` `bestSectionForSpecies()`
   unchanged, 2,448 river/species/date cases match, plus the upstream rule). The steelhead boxes on river pages and the
   notify bar still save a reach. Welcome email lists the fish and rivers (`weeklyWhat()`).
+  Pages load `/assets/signup.js?v=2`: TJ's browser kept an old cached copy after #137 (no picker on `/weekly/`). Bump `v` when
+  `signup.js` changes in a way pages depend on.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
