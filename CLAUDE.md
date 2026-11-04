@@ -499,6 +499,29 @@ Merged recently:
   (his words); Roe Bag, Soft Bead, Little Cleo, Vibrax and Woolly Bugger stay as they were. Dead `icon:` fields in `RIVER_REGS` and `RIVER_CONFIG`
   (📋 🚫 💧 🔁) are not rendered; left alone. Audit phases still open: 3 (visual system) and 4 (homepage photo and river-page Today strips).
 
+- **Visual system, quick wins** (TJ, 2026-11-03, audit Phase 3, PR 1 of 2): the results header uses `logo.png` instead of the
+  three-line `.res-logo-wave` (it read as a dead menu button); section numbers (`.sec-num`) and pillar numbers (`.p-step`)
+  are gone from the markup and `app.js`; pillar labels (`.p-lbl`) are sentence-case sans. Dead CSS for the removed pieces is
+  left in place. Next in Phase 3 (TJ picked): fonts (Source Serif 4 for headings and hero, Outfit for UI, JetBrains Mono for
+  numbers only, Nunito dropped). TJ did not pick the dark tile strip or the results reorder for now.
+- **Visual system, fonts** (TJ, 2026-11-03, audit Phase 3, PR 2 of 2; app only, guides and river pages carry their own styles):
+  Source Serif 4 leads `--font-serif` (headings, hero sentence; Charter and Georgia stay as fallbacks), Outfit is the one UI
+  sans (Nunito is gone from `app.css` and the Google Fonts link), JetBrains Mono is for numbers only. The 58 label rules that
+  were tracked mono capitals are now sentence-case Outfit (`text-transform:none`, no tracking), and the drive line and the
+  Top Bait tile word (`.tp-word`) use the sans. Guides and river pages keep their own system fonts for now. Still open from
+  the audit's Phase 3: dark tile strip, results reorder (TJ did not pick them), and the 49 inline `style=` attributes in `index.html`.
+
+- **Results type system** (TJ, 2026-11-03: "so much happening in terms of fonts, sizes, sections"): the last block of `@layer overrides`
+  in `app.css` gives the results page named roles. Serif (Source Serif 4): display 24 (hero headline), heading 20 (section and card
+  heads), title 17. Sans (Outfit): body 15, note 13 muted, label and chip 12 (600, sentence case). Mono: the number itself only
+  (`.bnum`, `.tp-tile-val`, gauge axis numbers). Colours: `--t-ink`, `--t-body`, `--t-muted`, teal for good, amber for caution,
+  white on the dark tile strip. Whole-page count of distinct text styles went from 58 (11 sizes, 15 colours) to about 40.
+  New results markup should use these roles, not a new font, size or colour. Left for later: the dark tile strip and 49 inline `style=`.
+
+- **Sky card** (TJ, 2026-11-03): "Temperature & Light" is two cards. Water temperature (`#temp-dot`, the water read) and Sky & light
+  (`#sky-dot`; cloud cover, the 8 AM / 12 PM / 6 PM strip, Best Window). The old combined dot averaged both, so each card now takes
+  its own `clsTemp()` / `clsSky()` class. Three cards across on desktop (`#results .cgrid`), one column under 900 px.
+
 - **Weekly email by river, several picks** (TJ, 2026-11-03): the homepage weekly box and `/weekly/` pick whole rivers
   (up to 3, `MAX_WEEKLY_RIVERS`) and any fish on them, as tappable chips (`weeklyPicker()` in `assets/signup.js`, also
   `window.HFF_weeklyPicker` for `/weekly/`). `/subscribe` takes `weekly` as one entry or a list; entries are
