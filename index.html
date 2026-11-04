@@ -431,10 +431,10 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
       </div>
     </div>
 
-    <div class="col fi">
+    <div class="col fi" id="sky-col">
       <div class="col-lbl">Sky &amp; light<span class="col-status-dot" id="sky-dot"></span></div>
       <div class="gw">
-        <div class="gh"><span class="gn">Sky cover</span><span class="gv" id="skyv">—</span></div>
+        <div class="gh"><span class="gv" id="skyv">—</span></div>
         <!-- Period cloud strip — populated by JS when hourly data is available -->
         <div id="sky-period-strip" style="display:none;margin-top:10px">
           <div class="sps">
@@ -457,8 +457,6 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         </div>
         <div class="gs" id="skystat">—</div>
       </div>
-      <hr class="divr">
-      <div class="col-lbl">Best Window Today</div>
       <div id="twin" class="best-window">—</div>
       <div id="tnote" class="best-window-note"></div>
     </div>

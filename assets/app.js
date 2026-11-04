@@ -2457,7 +2457,7 @@ function speciesReads(sp) {
       twin.textContent = win.text;
       tnote.textContent = next ? 'Tomorrow: ' + next.text + '. ' + next.note : 'Sunset has passed.';
     } else {
-      twin.textContent = win.text;
+      twin.textContent = 'Best window: ' + win.text;
       tnote.textContent = win.note;
     }
   }

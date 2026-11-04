@@ -3264,4 +3264,10 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .ac-chevron, #results .p-alt-chev, #results .more-river-chev { font:400 .75rem/1 var(--font-body); }
   #results .rb-open, #results .regs-bullets strong { font-weight:600; }
   #results .p-lbl { font:600 .9375rem/1.2 var(--font-body); letter-spacing:0; text-transform:none; color:var(--t-ink); }
+  /* Cards: no rule under the card title; the Sky card has no inner rules and its first line is the reading itself */
+  #results .cgrid .col-lbl { border-bottom:0; padding-bottom:0; margin-bottom:.9rem; }
+  #sky-col .gw { margin-bottom:.9rem; }
+  #sky-col .best-window { margin-top:.9rem; padding-top:.9rem; border-top:0; }
+  #sky-col .gh { justify-content:flex-start; }
+  #sky-col .gv { font:600 .9375rem/1.4 var(--font-body); color:var(--t-ink); }
 }
