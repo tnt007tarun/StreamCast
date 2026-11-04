@@ -3166,4 +3166,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* Two condition columns now that the Pre-Trip Routine card is gone (flow, then temperature and light) */
   #results .cgrid { grid-template-columns:1fr 1fr; }
   @media (max-width:900px) { #results .cgrid { grid-template-columns:1fr; } }
+  /* Quick wins: section and pillar numbers are gone; pillar labels use the sentence-case sans, not tracked capitals */
+  #results .p-lbl { font:600 var(--fs-md, 14px)/1.2 'Outfit', sans-serif; letter-spacing:0; text-transform:none; color:var(--text-strong); }
+  #results .sec-label h3 { font-size:1.15rem; }
 }

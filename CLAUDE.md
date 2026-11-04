@@ -499,6 +499,12 @@ Merged recently:
   (his words); Roe Bag, Soft Bead, Little Cleo, Vibrax and Woolly Bugger stay as they were. Dead `icon:` fields in `RIVER_REGS` and `RIVER_CONFIG`
   (📋 🚫 💧 🔁) are not rendered; left alone. Audit phases still open: 3 (visual system) and 4 (homepage photo and river-page Today strips).
 
+- **Visual system, quick wins** (TJ, 2026-11-03, audit Phase 3, PR 1 of 2): the results header uses `logo.png` instead of the
+  three-line `.res-logo-wave` (it read as a dead menu button); section numbers (`.sec-num`) and pillar numbers (`.p-step`)
+  are gone from the markup and `app.js`; pillar labels (`.p-lbl`) are sentence-case sans. Dead CSS for the removed pieces is
+  left in place. Next in Phase 3 (TJ picked): fonts (Source Serif 4 for headings and hero, Outfit for UI, JetBrains Mono for
+  numbers only, Nunito dropped). TJ did not pick the dark tile strip or the results reorder for now.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
