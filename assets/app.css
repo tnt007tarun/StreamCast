@@ -3297,6 +3297,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .hero-sub { color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
   /* The form card is pulled up over the photo edge; a paper lip behind the tabs keeps their text readable. */
   #landing .mode-wrap { background: var(--ed-paper, #fbf9f5); border-radius: 6px 6px 0 0; }
+  /* Room between the photo and the mode tabs (TJ): the card is pulled 30px up, so this margin is what is left over. */
+  #landing .hero-photo { margin-bottom: 3rem; }
+  @media (max-width: 600px) { #landing .hero-photo { margin-bottom: 1.1rem; } }
   #landing .hero-outlook { color: #fff; text-decoration-color: rgba(255,255,255,.6); }
   #landing .hero-outlook:hover, #landing .hero-outlook:focus-visible { color: #fff; text-decoration-color: #fff; }
 }
