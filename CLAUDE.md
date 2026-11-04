@@ -128,6 +128,7 @@ short-name splits accept either character.
   A lone `—` as a "no data" placeholder in a number tile is fine.
 - Avoid AI tells: "honest/honestly", "genuinely", "deliberately", "simply", "actually",
   "not X but Y", colon reveals, tidy closing lines.
+- **No emoji in the interface** (TJ, 2026-11-03): plain ★ and ✓ marks are fine.
 - **He is "TJ" on the site**, never "Tarun": bylines (`.meta` span), JSON-LD `author.name`, captions (TJ, 2026-11-02).
 - Only TJ's stated facts go in first person. Don't invent where, when or how he caught something.
   Ask him.
@@ -488,6 +489,16 @@ Merged recently:
   live CVC water for alternatives (modelled). Ranking, pill scoring, regs and fishing windows are unchanged. Umami:
   `Alternative Reach Shown {river, alt, rating, primary}` (once per river/alt/species/date) and
   `Alternative Reach Clicked {river, alt}`. Tests: `worker/reads.test.mjs`.
+- **Voice and emoji pass** (TJ, 2026-11-03, from the Nov 2 UX audit, Phase 2): no emoji in the interface (mode toggle, notify bar,
+  stocking heading, species and conditions summaries, landing cards, Navigate links, the drive line). Plain ★ and ✓ marks stay.
+  The Pre-Trip Routine card is gone from the results page (`cfg.routine` stays in the config: `rankRivers()` gives it a +1 score
+  bonus, and removing it would change rankings); the condition columns are now two. "Weekday fishing is significantly quieter"
+  removed. Float tip is TJ's wording: "Cast upstream, keep the line off the water, set the hook when the float stops or drops."
+  Gear cards: "Fish it anywhere, always", two "Deadly" lines and "When nothing else works" were not TJ's words and are now plain.
+  Still to check with TJ, other superlatives on the gear cards (`.bcond` in `index.html`): Roe Bag "most effective float fishing bait
+  in Ontario rivers", Soft Bead "Highly effective", Hard Bead "top producers", Little Cleo "Top producer at harbour mouths",
+  Vibrax "Best in overcast conditions", Woolly Bugger "Grand River standard". Dead `icon:` fields in `RIVER_REGS` and `RIVER_CONFIG`
+  (📋 🚫 💧 🔁) are not rendered; left alone. Audit phases still open: 3 (visual system) and 4 (homepage photo and river-page Today strips).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
