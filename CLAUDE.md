@@ -23,7 +23,7 @@ build, and the Cloudflare check on the PR links to it.
 | Path | What it is |
 |---|---|
 | `index.html` | App markup only |
-| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs`, `node worker/reads.test.mjs` |
+| `assets/conditions-core.js` | Config and the rules that rate and legalise water (river config, regs, seasons, closures, scoring). Pure: no DOM, window or fetch. Loaded before `app.js`, and bundled into the Worker (`globalThis.HFF_CORE`). Checks: `node worker/core.test.mjs`, `node worker/reads.test.mjs`, `node worker/parts.test.mjs` |
 | `assets/app.js` | App UI and logic (~6k lines, one file, no build step) |
 | `assets/app.css` | All app styling, in cascade layers. See `assets/README.md` |
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
@@ -96,7 +96,7 @@ Technique panel and the summary tile each kept their own rule and disagreed.
 - Rating and legality live in `conditions-core.js` so the app and the Worker's emails share them. Score:
   `sectionSeasonScore()` (species, season, mouth or river, closures), plus drive time in `rankRivers()` (app), plus
   water via `conditionsScore()`. `scoreDay()` is the one-day version for emails. `scoreToConfidence().word` is the
-  Conditions pill word and `driveVerdict()` the drive verdict. Anything new there must stay free of DOM and window state.
+  Conditions pill word. The pill rates the reach on screen on conditions only (no drive time, TJ 2026-11-02); `rankRivers()` still adds drive time to rank. Anything new there must stay free of DOM and window state.
 - Gear wording: `bringPhraseFor(method)`; staging read: `stagingSectionFor()` + `stagingRead()`; modelled water
   temperature: `waterTempFromHistory()`. The hero, staging card and weekly email all call these.
 - Gear and method: `methodSpeciesKey(section)` plus `salmonMethodMode()`. **Never read
@@ -161,6 +161,8 @@ short-name splits accept either character.
 4. Open a PR. In cloud sessions `gh pr create` fails (GraphQL is blocked), so use
    `gh api repos/tnt007tarun/StreamCast/pulls -f title=... -f head=... -f base=main -F body=@file`.
 5. The PR description says what changed, why, and what you tested. TJ merges.
+   Avoid stacked PRs (a PR whose base is another `claude/` branch). If one is unavoidable, retarget it to `main` before
+   TJ merges: #129 and #130 merged into their parent branches and never reached the site (fixed in #132, 2026-11-03).
 6. After a merge, remind TJ to request indexing in Search Console for any new URL.
 
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
@@ -438,6 +440,55 @@ Merged recently:
   bronte, ganaraska and don (now 24 to 48% down the page). `assets/signup.js` also sends `Scroll Depth {page, depth: 25|50|75|100}`
   once each per page view (not on the homepage). Offer check (2026-11-03): every box matches its page; the Don's run-alert box says "salmon" only (no steelhead reach). Salmon pages (salmon-run-timing, float tips, Bowmanville and Ganaraska salmon pages) offer the weekly steelhead email from October to April by TJ's 2026-10-28 rule. Re-check in 3 to 4 weeks: seen / views per page, mid vs end, and where depth drops.
 
+- **Phase 2, mobile results polish** (2026-11-02, stacked on #128): go headlines name the place ("Head to <em>Erindale
+  Park</em> on the Lower Credit River."); when to fish and what to bring sit on their own lines (`renderHeroLines()`, the
+  fish named only when the species banner doesn't already say it). The email signup bar (every results page) keeps
+  its fixed bottom spot and 300 px scroll trigger but is about two thirds the height on phones (title and close on one
+  row, a short note from the offer's `subShort`, 44 px field and button, 16 px input so iOS doesn't zoom, safe area);
+  while it shows, `reserveBarSpace()` pads the results page so the end of the page scrolls clear of it. "How this was
+  rated" under the pill (replaced by the Phase 3 tile tags below) used `conditionsParts()` (the score is now the sum of
+  `liveConditionsParts()`; `worker/parts.test.mjs` checks 806,400 cases against the old functions). Results labels 12 px minimum (`#results { --fs-label: 12px }`), condition tiles two by
+  two on phones. When and Bring are serif, 1.1rem, with a teal label above and a teal left rule (TJ picked option E, 2026-11-02). The all-day window reads "Sunrise to sunset (…), with cloud cover all day".
+
+- **Phase 3, conditions-only pill** (TJ, 2026-11-02, stacked on #129): the Conditions pill rates the reach on screen
+  with the same inputs as the weekly email, `sectionSeasonScore(section, the fish the headline names, date, section)`
+  then `conditionsScore()`. It used the top-ranked river's `rankRivers()` score, which includes drive time and the method
+  bonus and can belong to a different reach; that double-counted drive time with the verdict chip. The "Worth the drive"
+  chip and `driveVerdict()` are gone (drive time stays as plain text; the "est. from city centre" line was dropped, TJ 2026-11-03); "How this was
+  rated" is gone too. Each tile (Water, Sky, Flow) now says how its reading moved the rating: "Helps the rating", "No
+  effect", "Holds it back", or the flow cap ("Caps the day at Marginal/Tough"), from `ratingEffects(conditionsParts(...))`
+  in the core. No line when the reading wasn't scored (future date with no flow, run days where the run strength decides).
+  The why lines (`#tp-why`, from `heroReasons()`) moved from under the pill to below the tiles, under a "Notes" heading
+  (`#tp-notes`, hidden when there are no lines; TJ 2026-11-03).
+  `rankRivers()` is unchanged apart from dropping its `parts` field; rankings and the landing cards are the same. Checked
+  48 rendered cases against #129: same pill word, headline, gear, access spot and regs.
+
+- **Phase 3b, pill label, note and tile tags** (TJ, 2026-11-03, on #130): the pill reads "Conditions here: Excellent / Good /
+  Marginal / Tough" (`confidenceRead()`), so it is clearly about the reach on screen and not the destination pick. When the
+  pill is Marginal or Tough, `#tp-limit` (under the pill) says what holds it down and whether that reading is measured,
+  modelled or estimated: `limitRead()` in the core (cap first, then a negative water step, then a weak or fair run, then flow
+  below prime, then the calendar). "Picked for season and distance." is added only when the app chose the reach from a
+  search (`window._pickSource === 'search'`, not after an upstream move, a chip tap, a deep link or a redirect).
+  Never shown for Excellent, Good, Unknown or closed. `renderPillNote()` in `app.js`, state in `window._pillState`, redrawn
+  after the drive line and the staging re-rate. Tile tags (`ratingEffects()`): under a flow cap, a good Water or Sky reading
+  says "Flow cap overrides" instead of "Helps the rating"; run days say "Not used for run rating" (Water, Sky) and "Not used
+  at the mouth" (Flow, fish in the lake); a future date with no flow says "Not scored for this date"; a missing reading says
+  "No data, not rated" (neutral, never "Holds it back"). Scoring, ranking, regs and species logic unchanged (8 rendered
+  cases match #130 apart from the label).
+- **Phase 3c, alternative reach** (TJ, 2026-11-03, on #130): a compact "Consider another nearby reach" section (`#tp-alt`)
+  under the pill and its note, with the existing "See ... →" button (`goToSection()`). Rules (all TJ): only when today's
+  pill is Tough, or Unknown because the primary gauge is down while weather is fine (the card then says conditions here
+  are unrated because the gauge is not reporting, no comparison); never on future dates; the alternative must be Good or
+  Excellent, at most 20 minutes farther to drive than the primary (20 allowed, 21 not), one only, same fish as the
+  headline. Core (`conditions-core.js`): `alternativeMode()`, `alternativeCandidates()` (resolves each reach to its final
+  upstream reach with `upstreamMigratoryWant()`, dedupes, then `sectionClosedOn()` and `speciesFishableIn()`),
+  `rateReachToday()` (same chain as `scoreDay()`), `pickAlternative()`, `alternativeText()`. App (`updateAlternative()`):
+  each candidate is rated on its own gauge, its own weather and its own water read; reliable means live flow no older than
+  3 h, weather present, and a real water read; otherwise nothing is shown. A missing live lake temperature does not block it (the seasonal estimate is used, as in the primary pill; TJ 2026-11-03). No
+  live CVC water for alternatives (modelled). Ranking, pill scoring, regs and fishing windows are unchanged. Umami:
+  `Alternative Reach Shown {river, alt, rating, primary}` (once per river/alt/species/date) and
+  `Alternative Reach Clicked {river, alt}`. Tests: `worker/reads.test.mjs`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -445,7 +496,7 @@ Merged recently:
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
-  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
@@ -499,6 +550,12 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+16. **Alternative reach (built 2026-11-03, Phase 3c):** see Current state. Open: wording "Conditions there" vs "Conditions
+   here"; alternatives use regional weather and modelled water (no live CVC); judge on Shown vs Clicked in Umami.
+
+15. **Pill basis (done 2026-11-02, Phase 3):** the pill now rates the viewed reach on conditions only, like the weekly
+   email, and the drive verdict chip is gone (TJ approved).
 
 14. **Phase 1 follow-ups (2026-11-02):** trend wording, winter run temperatures and the trout-only 18 °C rule are
    done (see Current state). Still open: (a) TJ thinks river water can't go below about 5 °C under ice; most rivers run

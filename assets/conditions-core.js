@@ -2510,9 +2510,9 @@ function confidenceRead(conf, o) {
   var missing = [];
   if (o.flowMissing && !o.flowIrrelevant) missing.push('no flow reading');
   if (o.weatherMissing) missing.push('no weather data');
-  if (!missing.length) return { text: 'Conditions: ' + confidenceWord(conf, o.potential), cls: conf.cls, unknown: false, title: '' };
+  if (!missing.length) return { text: 'Conditions here: ' + confidenceWord(conf, o.potential), cls: conf.cls, unknown: false, title: '' };
   return {
-    text: 'Conditions: Unknown \u00b7 ' + missing.join(', '),
+    text: 'Conditions here: Unknown \u00b7 ' + missing.join(', '),
     cls: 'conf-unknown',
     unknown: true,
     title: 'Not rated: ' + missing.join(' and ') + '. Check the gauge before you drive.'
@@ -2641,7 +2641,9 @@ function fishingWindow(o) {
       text = 'Today’s window is over';
       phrase = null;
     } else if (mode === 'allday' && shown[0][0] === rise) {
-      text = 'All day, sunrise to sunset (' + clockText(rise, true) + ' to ' + clockText(set, true) + ')';
+      // The whole day stays fishable under steady cloud (the old rule); say why, so it doesn't read as every hour being
+      // equally good (TJ, 2026-11-02).
+      text = 'Sunrise to sunset (' + clockText(rise, true) + ' to ' + clockText(set, true) + '), with cloud cover all day';
       phrase = 'any time from sunrise to sunset';
     } else {
       text = shown.map(function(r) { return from(r[0], true) + ' to ' + to(r, true); }).join(', and ');
@@ -2872,29 +2874,37 @@ function getCurrentSeason(speciesName, dateStr, section) {
 // With it (TJ, 2026-11-02): steelhead and lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C
 // (winter run water), and the -3 above 18 °C is for trout only (salmon at the mouth in late summer).
 function liveConditionsScore(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx) {
-  var s = 0;
+  return liveConditionsParts(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx)
+    .reduce(function(a, p) { return a + p.pts; }, 0);
+}
+// The same steps as a list, so the app can show how a rating was built (Phase 2, 2026-11-02). liveConditionsScore()
+// is the sum of these; there is one copy of the steps.
+function liveConditionsParts(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, ctx) {
+  var out = [];
   // Flow
   if (flow != null) {
-    if (flow >= sweetMin && flow <= sweetMax)         s += 5;  // in sweet spot
-    else if (flow >= flowLow && flow <= flowHigh)     s += 0;  // fishable but not ideal
-    else                                              s -= 4;  // blown or too low
+    if (flow >= sweetMin && flow <= sweetMax)     out.push({ key: 'flow', pts: 5, label: 'Flow in the prime range' });
+    else if (flow >= flowLow && flow <= flowHigh) out.push({ key: 'flow', pts: 0, label: flow < sweetMin ? 'Flow normal, below prime' : 'Flow above prime' });
+    else                                          out.push({ key: 'flow', pts: -4, label: flow < flowLow ? 'Flow too low' : 'Flow blown out' });
   }
   // Temperature
   if (tempC != null) {
-    if (tempC >= 8  && tempC <= 14)  s += 3;  // prime
-    else if (tempC >= 4  && tempC < 8)  s += 1;
-    else if (tempC > 14 && tempC <= 18) s += 1;
-    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < 4) s += 1;  // winter run water
-    else if (ctx && !ctx.troutHeat && tempC > 18) s += 1;                           // no trout heat rule
-    else                                s -= 3;  // too cold or too warm
+    var t;
+    if (tempC >= 8  && tempC <= 14)  t = { pts: 3, label: 'Water in the 8 to 14\u00b0C feeding range' };
+    else if (tempC >= 4  && tempC < 8)  t = { pts: 1, label: 'Water cool (4 to 8\u00b0C)' };
+    else if (tempC > 14 && tempC <= 18) t = { pts: 1, label: 'Water warm (14 to 18\u00b0C)' };
+    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < 4) t = { pts: 1, label: 'Cold winter run water' };
+    else if (ctx && !ctx.troutHeat && tempC > 18) t = { pts: 1, label: 'Water over 18\u00b0C (no trout rule for this fish)' };
+    else t = { pts: -3, label: tempC < 4 ? 'Water too cold' : 'Water too warm' };
+    t.key = 'temp'; out.push(t);
   }
   // Sky
   if (cloudPct != null) {
-    if (cloudPct >= 60)  s += 2;  // overcast — ideal
-    else if (cloudPct >= 30) s += 1;
-    // clear = 0 bonus
+    if (cloudPct >= 60) out.push({ key: 'sky', pts: 2, label: 'Overcast' });
+    else if (cloudPct >= 30) out.push({ key: 'sky', pts: 1, label: 'Some cloud' });
+    else out.push({ key: 'sky', pts: 0, label: 'Bright sky' });
   }
-  return s;
+  return out;
 }
 
 function scoreToConfidence(score) {
@@ -3166,17 +3176,36 @@ function flowBand(f, cfg) {
   return 'blown';
 }
 function conditionsScore(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx) {
+  return conditionsParts(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx).total;
+}
+// conditionsScore() as its steps: {total, parts [{key, pts, label}], cap (null or {to, label}), replaced (the base score
+// isn't used: a run day is rated on run strength)}. One copy of the rule; conditionsScore() returns .total.
+function conditionsParts(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx) {
+  var parts = [], total, cap = null;
+  var capped = function(sum) {
+    var c = flowCapScore(sum, cfg, flow);
+    if (c !== sum) cap = { to: c, label: (flow < cfg.flowLow || flow > cfg.flowHigh) ? 'Flow too low or blown out caps the day at Tough'
+      : 'Flow above prime caps the day at Marginal' };
+    return c;
+  };
   if (stagingPct != null) {
     var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
-    if (fishInLake) return s;
+    parts.push({ key: 'run', pts: s, label: 'Run strength at the mouth (' + (stagingPct >= 65 ? 'strong' : stagingPct >= 40 ? 'fair' : 'weak') + ')' });
+    if (fishInLake) return { total: s, parts: parts, cap: null, replaced: true };
     // A strong run with prime flow in the river is the best day there is: Excellent (TJ, 2026-10-24).
-    if (s >= 8 && flowBand(flow, cfg) === 'prime') s = RUN_PRIME_SCORE;
-    return flowCapScore(s, cfg, flow);
+    var band = flowBand(flow, cfg);
+    if (s >= 8 && band === 'prime') { parts.push({ key: 'flow', pts: RUN_PRIME_SCORE - s, label: 'Strong run with prime flow' }); s = RUN_PRIME_SCORE; }
+    else if (band) parts.push({ key: 'flow', pts: 0, label: { low: 'Flow too low', normal: 'Flow normal, below prime', prime: 'Flow in the prime range',
+      high: 'Flow above prime', blown: 'Flow blown out' }[band] + (s >= 8 && band !== 'prime' ? ' (prime would make it Excellent)' : '') });
+    total = capped(s);
+    return { total: total, parts: parts, cap: cap, replaced: true };
   }
   if (cfg && flow != null) {
-    return flowCapScore(baseScore + liveConditionsScore(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx), cfg, flow);
+    parts = liveConditionsParts(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx);
+    total = capped(baseScore + parts.reduce(function(a, p) { return a + p.pts; }, 0));
+    return { total: total, parts: parts, cap: cap, replaced: false };
   }
-  return baseScore;
+  return { total: baseScore, parts: [], cap: null, replaced: false };
 }
 
 // One day on one section: what the weekly email scores. The app builds the same number from
@@ -3191,15 +3220,168 @@ function scoreDay(o) {
            confidence: closed ? null : scoreToConfidence(score), notes: base.notes, warnings: base.warnings };
 }
 
-// Is the drive worth it? Combines the score with the drive time in minutes.
-function driveVerdict(score, driveMin, closed) {
-  if (closed) return { text: '✕ Closed on this date', cls: 'verdict-no' };
-  if (score >= 10 && driveMin <= 60) return { text: '✓ Worth the drive', cls: 'verdict-yes' };
-  if (score >= 6 && driveMin <= 90) return { text: '✓ Worth the drive', cls: 'verdict-yes' };
-  if (score >= 6 && driveMin <= 150) return { text: '✓ Conditions good, but a long drive', cls: 'verdict-maybe' };
-  if (score >= 2 && driveMin <= 60) return { text: '~ Marginal conditions. Short drive, your call', cls: 'verdict-maybe' };
-  if (score < 2) return { text: '✕ Tough day. Consider staying local', cls: 'verdict-no' };
-  return { text: '~ Long drive for current conditions', cls: 'verdict-maybe' };
+// How each reading moved the Conditions rating, for the tiles (2026-11-02). parts: conditionsParts() output.
+// Returns {flow, temp, sky}, each {dir: 'up'|'flat'|'down', text}, or missing when that reading wasn't scored. A flow cap
+// replaces the flow line, since the cap is what the reader needs to know.
+function ratingEffects(parts) {
+  var out = {};
+  if (!parts) return out;
+  var list = parts.parts || [];
+  list.forEach(function(x) {
+    if (x.key !== 'flow' && x.key !== 'temp' && x.key !== 'sky') return;
+    out[x.key] = x.pts > 0 ? { dir: 'up', text: 'Helps the rating' } : x.pts < 0 ? { dir: 'down', text: 'Holds it back' } : { dir: 'flat', text: 'No effect' };
+  });
+  // A reading the rating does not use says so, which is different from a reading that is missing (the tile itself says
+  // "No data", and the app adds "No data, not rated"). Run days are rated on run strength; with no flow for the date
+  // nothing live is scored (2026-11-03).
+  if (parts.replaced) {
+    if (!out.temp) out.temp = { dir: 'flat', text: 'Not used for run rating' };
+    if (!out.sky) out.sky = { dir: 'flat', text: 'Not used for run rating' };
+    if (!out.flow) out.flow = { dir: 'flat', text: 'Not used at the mouth' };
+  } else if (!list.length) {
+    ['flow', 'temp', 'sky'].forEach(function(k) { out[k] = { dir: 'flat', text: 'Not scored for this date' }; });
+  }
+  // A flow cap replaces the flow line, since the cap is what the reader needs to know. While it holds, a good water or
+  // sky reading does not lift the day, so it does not claim to help.
+  if (parts.cap) {
+    out.flow = { dir: 'down', text: /Tough/.test(parts.cap.label) ? 'Caps the day at Tough' : 'Caps the day at Marginal' };
+    ['temp', 'sky'].forEach(function(k) {
+      if (out[k] && out[k].dir === 'up') out[k] = { dir: 'flat', text: 'Flow cap overrides' };
+    });
+  }
+  return out;
+}
+
+// One or two plain sentences on what holds a Marginal or Tough rating down, and whether that reading is measured,
+// modelled or estimated (2026-11-03). Pure: the app words the "why this reach" clause in front of it.
+// o: {conf (scoreToConfidence), parts (conditionsParts output), cfg, flow, flowKind ('live'|'estimate'), waterC,
+//     waterKind ('measured'|'modelled'), fish}. Returns {text, kind: 'measured'|'modelled'|'estimated'|'calendar'} or
+// null for Excellent and Good, and when the rating is Unknown (the pill already says what is missing).
+function limitRead(o) {
+  if (!o || !o.conf || !o.parts) return null;
+  if (o.conf.word !== 'Marginal' && o.conf.word !== 'Tough') return null;
+  var cfg = o.cfg || {}, list = o.parts.parts || [];
+  var rnd = function(n) { return String(Math.round(n * 10) / 10); };
+  var estimated = o.flowKind === 'estimate';
+  var flowIs = function() { return 'Flow is ' + (estimated ? 'estimated at ' + rnd(o.flow) + ' m\u00b3/s' : rnd(o.flow) + ' m\u00b3/s on the live gauge'); };
+  var flowKind = estimated ? 'estimated' : 'measured';
+  var range = cfg.sweetMin + ' to ' + cfg.sweetMax + ' m\u00b3/s';
+  var band = (o.flow != null && cfg.sweetMin != null) ? flowBand(o.flow, cfg) : null;
+  if (o.parts.cap && band) {
+    var tail = { low: 'too low to fish well', blown: 'blown out', high: 'above prime, which holds the day at Marginal' }[band];
+    if (tail) return { text: flowIs() + ', ' + tail + '.', kind: flowKind };
+  }
+  var temp = null, run = null;
+  list.forEach(function(x) { if (x.key === 'temp' && x.pts < 0) temp = x; if (x.key === 'run') run = x; });
+  if (temp && o.waterC != null) {
+    var wk = o.waterKind === 'measured' ? 'measured' : 'modelled';
+    var w = wk === 'measured' ? rnd(o.waterC) : String(Math.round(o.waterC));
+    return { text: 'Water is ' + (wk === 'measured' ? '' : 'about ') + w + '\u00b0C (' + wk + '), ' +
+      (o.waterC < TEMP_MIN ? 'below' : 'above') + ' the feeding range.', kind: wk };
+  }
+  if (run && run.pts < 8) {
+    return { text: 'The modelled run at the mouth is ' + (run.pts >= 5 ? 'only fair' : 'weak') + '.', kind: 'modelled' };
+  }
+  if (band === 'normal') {
+    return { text: flowIs() + ', below the prime range of ' + range + '.', kind: flowKind };
+  }
+  if (!list.length && !o.parts.replaced) {
+    return { text: 'There is no flow reading for this date, so this is the season rating.', kind: 'calendar' };
+  }
+  return { text: 'The season calendar rates this a slow time' + (o.fish ? ' for ' + o.fish : '') + '.', kind: 'calendar' };
+}
+
+// ── ALTERNATIVE REACH (TJ, 2026-11-03) ──────────────────────────────────────────────────────────
+// When the reach on screen rates Tough today, the app may offer ONE other nearby reach that rates Good or
+// Excellent. It never replaces the pick and never touches the ranking: the app finds candidates here, rates each
+// with its own gauge and weather, and shows the best. All pure, so the cases can be tested without a browser.
+var ALT_MAX_EXTRA_MIN = 20;   // at most this many extra minutes of driving over the reach on screen (20 is allowed, 21 is not)
+
+// Which migratory fish the upstream rule applies to on a reach (lake-run browns count where they run).
+function upstreamMigratoryWant(sectionName, speciesNames) {
+  var here = String(sectionName || '').split(',')[0].trim();
+  var mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'];
+  if (isLakeRunBrownSection(here)) mig.push('Brown Trout');
+  return (speciesNames || []).filter(function(n) { return mig.indexOf(n) !== -1; });
+}
+
+// 'tough': the reach on screen rates Tough. 'unrated': its gauge is not reporting (the pill says Unknown) but the
+// weather is fine, so a reach with live readings may still be offered. Anything else, and every other date than today,
+// gets nothing. o: {word, unknown, flowMissing, weatherMissing, closed, isToday, species}
+function alternativeMode(o) {
+  if (!o || !o.isToday || o.closed || !o.species) return null;
+  if (o.unknown) return (o.flowMissing && !o.weatherMissing) ? 'unrated' : null;
+  return o.word === 'Tough' ? 'tough' : null;
+}
+
+// Reaches worth rating, already filtered for everything that can be decided without a network call.
+// o: {primary, primaryDrive, ranked: [{name, drive}] (every reach in range, with its own drive time), species, date}
+// Each ranked reach is first resolved to the reach the app would actually open (the upstream rule), then kept only if
+// it is not the reach on screen, is open and fishable for that fish on the date, has a drive time, and is within
+// ALT_MAX_EXTRA_MIN of the reach on screen. One entry per final reach. Returns {list, skipped: [{name, why}]}.
+function alternativeCandidates(o) {
+  var list = [], skipped = [], seen = {};
+  var primary = String(o.primary || '').split(',')[0].trim();
+  var driveOf = {};
+  (o.ranked || []).forEach(function(r) { driveOf[r.name] = r.drive; });
+  if (o.primaryDrive == null || !o.species || !o.date) return { list: list, skipped: skipped };
+  (o.ranked || []).forEach(function(r) {
+    var final = r.name, want = upstreamMigratoryWant(r.name, [o.species]);
+    if (want.length && upstreamWindowOn(o.date)) { var up = furthestUpstreamOpen(r.name, want, o.date); if (up) final = up.section; }
+    if (final === primary) return skipped.push({ name: r.name, why: 'same as the reach on screen' });
+    if (seen[final]) return;   // two sections of one river that open the same reach
+    seen[final] = true;
+    var cfg = getRiverConfig(final);
+    if (!cfg) return skipped.push({ name: final, why: 'unknown reach' });
+    if (sectionClosedOn(cfg, o.date)) return skipped.push({ name: final, why: 'closed' });
+    if (!speciesFishableIn(final, o.species, o.date)) return skipped.push({ name: final, why: 'not fishable for ' + o.species });
+    var drive = driveOf[final];
+    if (drive == null) return skipped.push({ name: final, why: 'no drive time' });
+    var extra = drive - o.primaryDrive;
+    if (extra > ALT_MAX_EXTRA_MIN) return skipped.push({ name: final, why: 'over the drive cap (+' + extra + ' min)' });
+    list.push({ section: final, via: r.name, drive: drive, extra: extra });
+  });
+  return { list: list, skipped: skipped };
+}
+
+// One reach rated the way the pill rates it, from inputs the app gathers for that reach: its own gauge reading, its
+// own weather and water temperature, and (for migratory fish) the run read. Same chain as scoreWeek() in the weekly
+// email. o: {section, species, date, flow, waterTemp, cloudPct, windDir, windSpd, lakeTemp}
+// Returns {score, word, parts, usesWater, estimatedLake} (estimatedLake: the run read had no live lake temperature).
+function rateReachToday(o) {
+  var section = String(o.section || '').split(',')[0].trim();
+  var cfg = getRiverConfig(section);
+  var base = sectionSeasonScore(section, [o.species], o.date, section).score;
+  var stg = null;
+  if (['Chinook Salmon', 'Coho Salmon', 'Steelhead'].indexOf(o.species) !== -1) {
+    var z = stagingSectionFor(section);
+    if (z) stg = stagingRead(z, o.date, /Chinook|Coho/.test(o.species), o.species === 'Steelhead', o.lakeTemp, o.cloudPct, o.windDir, o.windSpd);
+  }
+  var inLake = !!(stg && stg.phase.mode === 'stage' && STAGING_ZONES[section]);
+  var parts = conditionsParts(base, cfg, o.flow, o.waterTemp, o.cloudPct, stg ? stg.pct : null, inLake, tempContext([o.species], o.date, section));
+  return { score: parts.total, word: scoreToConfidence(parts.total).word, parts: parts, usesWater: !parts.replaced,
+    estimatedLake: !!(stg && stg.tempIsEstimate) };
+}
+
+// The best of the rated candidates: Good or Excellent only, Excellent first, then the shortest extra drive, then name.
+// rated: [{section, extra, word, reliable}] (reliable: live gauge reading, its own weather, a real water or run read).
+function pickAlternative(rated) {
+  var rank = { Excellent: 2, Good: 1 };
+  var ok = (rated || []).filter(function(r) { return r.reliable && rank[r.word]; });
+  ok.sort(function(a, b) { return (rank[b.word] - rank[a.word]) || (a.extra - b.extra) || (a.section < b.section ? -1 : 1); });
+  return ok[0] || null;
+}
+
+// Wording, from the data. "Conditions there" (not "here") because "here" is the reach on screen.
+function alternativeText(alt, mode) {
+  var m = alt.extra;
+  return {
+    heading: 'Consider another nearby reach',
+    unrated: mode === 'unrated' ? 'Conditions here are unrated because the gauge is not reporting.' : '',
+    rating: 'Conditions there: ' + alt.word,
+    drive: m <= 0 ? 'No farther to drive.' : m < 5 ? 'A few minutes farther to drive.' : 'About ' + m + ' minutes farther to drive.',
+    button: 'See alternative reach \u2192'
+  };
 }
 
 // A flow estimate for a future day (worker/flowforecast.js, about {q, lead}) can pull the rating down on days 1
@@ -3292,11 +3474,13 @@ if (typeof globalThis !== 'undefined') {
     stagingZoneForSection: stagingZoneForSection, computeStagingScore: computeStagingScore, seasonalLakeTempEst: seasonalLakeTempEst,
     getSalmonPhase: getSalmonPhase, getSteelheadPhase: getSteelheadPhase, mouthPreferenceFor: mouthPreferenceFor,
     clsFlow: clsFlow, clsTemp: clsTemp, clsSky: clsSky, waterModelParams: waterModelParams, modelWaterTemp: modelWaterTemp,
-    liveConditionsScore: liveConditionsScore, scoreToConfidence: scoreToConfidence,
+    liveConditionsScore: liveConditionsScore, liveConditionsParts: liveConditionsParts, conditionsParts: conditionsParts, scoreToConfidence: scoreToConfidence,
     LIVE_WATER_STATIONS: LIVE_WATER_STATIONS, salmonMethodMode: salmonMethodMode, SALMON_MODE_METHOD: SALMON_MODE_METHOD,
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
-    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, driveVerdict: driveVerdict,
+    sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, ratingEffects: ratingEffects, limitRead: limitRead,
+    alternativeMode: alternativeMode, alternativeCandidates: alternativeCandidates, rateReachToday: rateReachToday, pickAlternative: pickAlternative,
+    alternativeText: alternativeText, upstreamMigratoryWant: upstreamMigratoryWant, ALT_MAX_EXTRA_MIN: ALT_MAX_EXTRA_MIN,
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,

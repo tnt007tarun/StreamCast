@@ -86,18 +86,18 @@ const mins = (s) => C.localMinutes(s);
   for (const score of [0, 3, 7, 12]) {
     const conf = C.scoreToConfidence(score);
     const q = C.confidenceRead(conf, { flowMissing: true });
-    assert.equal(q.text, 'Conditions: Unknown · no flow reading', 'score ' + score + ': no rating word without flow');
+    assert.equal(q.text, 'Conditions here: Unknown · no flow reading', 'score ' + score + ': no rating word without flow');
     assert.ok(!/Good|Excellent|Marginal|Tough/.test(q.text), 'no positive or negative call');
     assert.equal(q.cls, 'conf-unknown'); assert.equal(q.unknown, true);
     assert.match(q.title, /no flow reading/); assert.match(q.title, /Check the gauge/);
   }
   const good = C.scoreToConfidence(7);
-  assert.equal(C.confidenceRead(good, { flowMissing: true, flowIrrelevant: true }).text, 'Conditions: Good', 'fish in the lake: flow does not count');
-  assert.equal(C.confidenceRead(good, {}).text, 'Conditions: Good');
+  assert.equal(C.confidenceRead(good, { flowMissing: true, flowIrrelevant: true }).text, 'Conditions here: Good', 'fish in the lake: flow does not count');
+  assert.equal(C.confidenceRead(good, {}).text, 'Conditions here: Good');
   assert.equal(C.confidenceRead(good, {}).cls, good.cls);
-  assert.equal(C.confidenceRead(C.scoreToConfidence(12), { weatherMissing: true }).text, 'Conditions: Unknown · no weather data');
-  assert.equal(C.confidenceRead(good, { flowMissing: true, weatherMissing: true }).text, 'Conditions: Unknown · no flow reading, no weather data');
-  assert.equal(C.confidenceRead(good, { potential: true }).text, 'Conditions: Potentially good', 'a flow estimate still rates the day');
+  assert.equal(C.confidenceRead(C.scoreToConfidence(12), { weatherMissing: true }).text, 'Conditions here: Unknown · no weather data');
+  assert.equal(C.confidenceRead(good, { flowMissing: true, weatherMissing: true }).text, 'Conditions here: Unknown · no flow reading, no weather data');
+  assert.equal(C.confidenceRead(good, { potential: true }).text, 'Conditions here: Potentially good', 'a flow estimate still rates the day');
   // The score itself is unchanged by a missing reading (rankings use it).
   assert.equal(C.scoreToConfidence(7).word, 'Good');
 }
@@ -162,7 +162,7 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.fishingWindow({ weatherOk: true, cloudPct: 5, date: '2027-01-15' }).text, 'Late morning through the afternoon');
   // Spring overcast: all day.
   const apr = C.fishingWindow({ sunrise: SUN.spring.sunrise, sunset: SUN.spring.sunset, cloudPct: 85, weatherOk: true });
-  assert.equal(apr.mode, 'allday'); assert.equal(apr.text, 'All day, sunrise to sunset (6:24 AM to 8:10 PM)');
+  assert.equal(apr.mode, 'allday'); assert.equal(apr.text, 'Sunrise to sunset (6:24 AM to 8:10 PM), with cloud cover all day');
   // Periods: overcast morning and evening, bright midday.
   const per = C.fishingWindow({ sunrise: SUN.fall.sunrise, sunset: SUN.fall.sunset, periodCloud: { morning: 80, midday: 10, evening: 60 }, weatherOk: true });
   assert.equal(per.text, 'Sunrise (6:51 AM) to about 10 AM, and 3 PM to sunset (5:04 PM)');
@@ -334,6 +334,135 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.fishingWindow(Object.assign({ species: 'Rainbow Trout' }, base)).mode, 'early');
   assert.equal(C.fishingWindow(Object.assign({ species: 'Chinook Salmon' }, base)).mode, 'allday');
   assert.equal(C.fishingWindow(Object.assign({ species: null }, base)).mode, 'early', 'unknown fish: the trout rule, as before');
+}
+
+// ratingEffects: the words the tiles show for how each reading moved the rating
+{
+  const cfg = C.getRiverConfig('Lower Credit River');
+  const mid = (cfg.sweetMin + cfg.flowLow) / 2;
+  let fx = C.ratingEffects(C.conditionsParts(2, cfg, mid, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'No effect');
+  assert.equal(fx.temp.text, 'Helps the rating');
+  assert.equal(fx.sky.text, 'Helps the rating');
+  fx = C.ratingEffects(C.conditionsParts(2, cfg, (cfg.sweetMin + cfg.sweetMax) / 2, 20, 10, null, false, { troutHeat: true }));
+  assert.equal(fx.flow.text, 'Helps the rating');
+  assert.equal(fx.temp.text, 'Holds it back');
+  assert.equal(fx.sky.text, 'No effect');
+  fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.flowHigh + 5, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'Caps the day at Tough', 'blown out caps at Tough');
+  assert.equal(C.ratingEffects(C.conditionsParts(5, cfg, null, 10, 80, null, false, null)).sky.text, 'Not scored for this date', 'no flow: nothing live is scored');
+  assert.deepEqual(C.ratingEffects(null), {});
+  // A cap does not leave water and sky claiming to help
+  fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.flowLow - 1, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'Caps the day at Tough');
+  assert.equal(fx.temp.text, 'Flow cap overrides'); assert.equal(fx.sky.text, 'Flow cap overrides');
+  fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.sweetMax + 1, 10, 80, null, false, null));
+  assert.equal(fx.flow.text, 'Caps the day at Marginal');
+  // Run days: not scored, not missing
+  fx = C.ratingEffects(C.conditionsParts(null, cfg, (cfg.sweetMin + cfg.sweetMax) / 2, null, null, 70, false, null));
+  assert.equal(fx.temp.text, 'Not used for run rating'); assert.equal(fx.sky.text, 'Not used for run rating'); assert.equal(fx.flow.text, 'Helps the rating');
+  fx = C.ratingEffects(C.conditionsParts(null, cfg, 3, null, null, 70, true, null));
+  assert.equal(fx.flow.text, 'Not used at the mouth');
+  for (const k of ['flow','temp','sky']) assert.ok(!/hold|cap/i.test((fx[k]||{}).text || ''), 'unscored is never negative');
+}
+
+// limitRead: the note under a Marginal or Tough pill
+{
+  const cfg = C.getRiverConfig('Lower Credit River');
+  const rate = (flow, wt, cloud, stg, lake, base) => { const parts = C.conditionsParts(base == null ? 2 : base, cfg, flow, wt, cloud, stg, lake, null); return { parts, conf: C.scoreToConfidence(parts.total) }; };
+  let r = rate(cfg.flowLow - 1, 10, 80), L = C.limitRead(Object.assign({ cfg, flow: cfg.flowLow - 1, flowKind: 'live', waterC: 10 }, r));
+  assert.match(L.text, /on the live gauge, too low to fish well\.$/); assert.equal(L.kind, 'measured');
+  r = rate(cfg.flowHigh + 5, 10, 80); L = C.limitRead(Object.assign({ cfg, flow: cfg.flowHigh + 5, flowKind: 'live' }, r)); assert.match(L.text, /blown out\.$/);
+  r = rate(cfg.sweetMax + 1, 10, 80, null, false, 10); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMax + 1, flowKind: 'live' }, r)); assert.match(L.text, /holds the day at Marginal/);
+  r = rate(cfg.flowLow + 0.5, 10, 20, null, false, 0); L = C.limitRead(Object.assign({ cfg, flow: cfg.flowLow + 0.5, flowKind: 'estimate' }, r));
+  assert.match(L.text, /^Flow is estimated at .* below the prime range of /); assert.equal(L.kind, 'estimated');
+  r = rate(cfg.sweetMin + 1, 20, 20, null, false, 0); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live', waterC: 20, waterKind: 'modelled' }, r));
+  assert.ok(L && /^Water is about 20\u00b0C \(modelled\), above the feeding range\.$/.test(L.text), 'hot water: ' + JSON.stringify(L));
+  r = rate(cfg.sweetMin + 1, null, null, 20, false); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live' }, r)); assert.equal(L.text, 'The modelled run at the mouth is weak.');
+  r = rate(null, 10, 80, null, false, 4); L = C.limitRead(Object.assign({ cfg, flow: null }, r)); assert.equal(L.kind, 'calendar');
+  for (const sc of [6, 7, 10, 14]) assert.equal(C.limitRead({ conf: C.scoreToConfidence(sc), parts: { parts: [] }, cfg }), null, 'Good and Excellent get no note');
+  assert.equal(C.limitRead(null), null);
+}
+
+
+// ── Alternative reach (TJ, 2026-11-03) ───────────────────────────────────────
+{
+  const base = { isToday: true, closed: false, species: 'Steelhead' };
+  // 1 and 2: only Tough triggers; Excellent, Good and Marginal never do
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base)), 'tough');
+  for (const w of ['Excellent', 'Good', 'Marginal']) assert.equal(C.alternativeMode(Object.assign({ word: w }, base)), null, w + ' gets no alternative');
+  // 4: unrated because the gauge is down, weather fine: allowed. Weather missing: never.
+  assert.equal(C.alternativeMode(Object.assign({ unknown: true, flowMissing: true, weatherMissing: false }, base)), 'unrated');
+  assert.equal(C.alternativeMode(Object.assign({ unknown: true, flowMissing: false, weatherMissing: true }, base)), null);
+  assert.equal(C.alternativeMode(Object.assign({ unknown: true, flowMissing: true, weatherMissing: true }, base)), null);
+  // 5: today only; closed reach and no named fish get nothing
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base, { isToday: false })), null);
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base, { closed: true })), null);
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base, { species: null })), null);
+
+  const D = '2026-11-03';
+  const ranked = (m) => Object.entries(m).map(([name, drive]) => ({ name, drive }));
+  const L16 = 'Sixteen Mile Creek \u2014 Lower Reaches & Oakville Harbour', M16 = 'Sixteen Mile Creek \u2014 Middle Reaches & Main Valley';
+  const BL = 'Bronte Creek \u2014 Lower Estuary & Mouth', BM = 'Bronte Creek \u2014 Mid-Section & Provincial Park';
+  const HL = 'Lower Humber River', HM = 'Lower-Mid Humber (Old Mill to Eglinton)';
+  // 3 and 8: +20 is eligible, +21 is not, and the cap is relative to the reach on screen
+  let r = C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: 'Steelhead', date: D,
+    ranked: ranked({ 'Lower Credit River': 15, [M16]: 35, [BM]: 36, [HM]: 40 }) });
+  assert.deepEqual(r.list.map(x => x.section), [M16], 'exactly +20 stays, +21 and +25 go');
+  assert.equal(r.list[0].extra, 20);
+  assert.ok(r.skipped.some(x => x.name === BM && /over the drive cap \(\+21/.test(x.why)));
+  assert.ok(r.skipped.some(x => x.name === HM && /over the drive cap \(\+25/.test(x.why)), 'the +25 Humber case is not eligible');
+  // 10 and 11: duplicates collapse and the upstream rule decides the final reach
+  r = C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: 'Steelhead', date: D,
+    ranked: ranked({ 'Lower Credit River': 15, [L16]: 20, [M16]: 25, [BL]: 30, [BM]: 30, [HL]: 30, [HM]: 30 }) });
+  assert.deepEqual(r.list.map(x => x.section).sort(), [BM, HM, M16].sort(), 'one entry per final reach, each the reach the app opens');
+  assert.equal(r.list.find(x => x.section === M16).via, L16, 'the lower Sixteen Mile resolves upstream');
+  // the reach on screen is never its own alternative, even through an upstream resolve
+  r = C.alternativeCandidates({ primary: BM, primaryDrive: 30, species: 'Steelhead', date: D, ranked: ranked({ [BL]: 30, [BM]: 30 }) });
+  assert.equal(r.list.length, 0);
+  // 9: closed, out-of-season and unsuitable-species reaches never qualify
+  r = C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: 'Steelhead', date: D, ranked: ranked({
+    'Ganaraska River \u2014 Corbetts Dam (Closed Year-Round)': 20, 'Black Creek \u2014 Lower Watershed & Humber Confluence': 20,
+    'Lower Don River (Lake to Eglinton)': 20, 'Upper Credit River': 20 }) });
+  assert.equal(r.list.length, 0, JSON.stringify(r.skipped));
+  r = C.alternativeCandidates({ primary: BM, primaryDrive: 15, species: 'Brown Trout', date: D, ranked: ranked({ 'Upper Credit River': 20, 'Upper Humber River (Headwaters)': 20 }) });
+  assert.equal(r.list.length, 0, 'trout reaches that close Sept 30 are out on Nov 3');
+  // no drive time on the reach on screen, no named fish: nothing to compare
+  assert.equal(C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: null, species: 'Steelhead', date: D, ranked: ranked({ [M16]: 20 }) }).list.length, 0);
+  assert.equal(C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: null, date: D, ranked: ranked({ [M16]: 20 }) }).list.length, 0);
+
+  // rateReachToday uses the same chain as scoreDay (and the weekly email)
+  const cfgM = C.getRiverConfig(BM);
+  const ctxIn = { section: BM, species: 'Brown Trout', date: D, flow: cfgM.sweetMin + 0.2, waterTemp: 10, cloudPct: 80 };
+  const viaDay = C.scoreDay({ section: BM, species: ['Brown Trout'], date: D, flow: ctxIn.flow, waterTemp: 10, cloudPct: 80, stagingPct: null, fishInLake: false });
+  assert.equal(C.rateReachToday(ctxIn).score, viaDay.score, 'trout day matches scoreDay');
+  const cfgC = C.getRiverConfig('Lower Credit River');
+  const lt = 11, stg = C.stagingRead('Lower Credit River', D, false, true, lt, 60, 200, 10);
+  if (stg) {
+    const viaDay2 = C.scoreDay({ section: 'Lower Credit River', species: ['Steelhead'], date: D, flow: (cfgC.sweetMin + cfgC.sweetMax) / 2, waterTemp: 10, cloudPct: 60,
+      stagingPct: stg.pct, fishInLake: stg.phase.mode === 'stage' });
+    const mine = C.rateReachToday({ section: 'Lower Credit River', species: 'Steelhead', date: D, flow: (cfgC.sweetMin + cfgC.sweetMax) / 2, waterTemp: 10, cloudPct: 60, windDir: 200, windSpd: 10, lakeTemp: lt });
+    assert.equal(mine.score, viaDay2.score, 'run day matches scoreDay');
+    assert.equal(mine.estimatedLake, false);
+    assert.equal(C.rateReachToday({ section: 'Lower Credit River', species: 'Steelhead', date: D, flow: 8, waterTemp: 10, cloudPct: 60, windDir: 200, windSpd: 10, lakeTemp: null }).estimatedLake, true, 'no live lake temperature is flagged');
+  }
+  assert.equal(C.rateReachToday({ section: 'Lower Credit River', species: 'Steelhead', date: D, flow: cfgC.flowLow - 1, waterTemp: 10, cloudPct: 60, windDir: 200, windSpd: 10, lakeTemp: lt }).word, 'Tough', 'too low is Tough');
+
+  // pickAlternative: Good or Excellent, reliable only; Excellent first, then the shorter drive
+  const rate = (section, extra, word, reliable = true) => ({ section, extra, word, reliable });
+  assert.equal(C.pickAlternative([rate('a', 5, 'Marginal'), rate('b', 1, 'Tough')]), null, 'a Marginal alternative is never shown, even if closer');
+  assert.equal(C.pickAlternative([rate('a', 5, 'Excellent', false)]), null, 'unreliable data is never shown');
+  assert.equal(C.pickAlternative([rate('a', 5, 'Good'), rate('b', 18, 'Excellent')]).section, 'b', 'Excellent beats a closer Good');
+  assert.equal(C.pickAlternative([rate('a', 12, 'Excellent'), rate('b', 4, 'Excellent')]).section, 'b', 'then the shorter drive');
+  assert.equal(C.pickAlternative([]), null);
+  // wording
+  assert.equal(C.alternativeText({ word: 'Excellent', extra: 20 }, 'tough').drive, 'About 20 minutes farther to drive.');
+  assert.equal(C.alternativeText({ word: 'Good', extra: 0 }, 'tough').drive, 'No farther to drive.');
+  assert.equal(C.alternativeText({ word: 'Good', extra: 3 }, 'tough').drive, 'A few minutes farther to drive.');
+  assert.equal(C.alternativeText({ word: 'Good', extra: 3 }, 'tough').unrated, '');
+  assert.match(C.alternativeText({ word: 'Good', extra: 3 }, 'unrated').unrated, /unrated because the gauge is not reporting/);
+  assert.equal(C.alternativeText({ word: 'Excellent', extra: 9 }, 'tough').rating, 'Conditions there: Excellent');
+  assert.equal(C.ALT_MAX_EXTRA_MIN, 20);
 }
 
 console.log('shared reads: all checks passed');
