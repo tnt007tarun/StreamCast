@@ -564,6 +564,8 @@ Merged recently:
   a small drawing (`gearIcon(label, kind)` in `app.js`; kind is fly, pin for centrepin float, or spin), joined by a thin line.
   The specs are unchanged; the float setup now lists Float and Weights before Leader (rig order). Styles: `.gear-lad` at the
   end of `app.css` (unlayered, so it beats the old `.gear-item` boxes). A new gear label needs an icon in `gearIcon()`.
+  From 900 px up the same rows read left to right (rod to hook, line across, text centred under each icon); phones keep the
+  vertical ladder (TJ, 2026-11-04).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
