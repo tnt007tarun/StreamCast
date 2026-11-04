@@ -3283,3 +3283,20 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .tech-section .field-lbl { margin:0 0 .65rem; }
   #landing .tech-section .expert-only { margin-top:0; }
 }
+
+/* Home hero photo (TJ, 2026-11-03, audit Phase 4): TJ's Humber steelhead behind the headline. It is the background of the
+   copy block, so it adds no height and the form stays where it was. Dark wash for contrast; text turns white. */
+@layer overrides {
+  #landing .hero-photo {
+    background:
+      linear-gradient(rgba(10,22,30,.46), rgba(10,22,30,.66)),
+      url("/images/hero/home-steelhead.webp") center 58% / cover no-repeat;
+  }
+  #landing .hero-copy h1,
+  #landing .hero-copy p,
+  #landing .hero-sub { color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+  /* The form card is pulled up over the photo edge; a paper lip behind the tabs keeps their text readable. */
+  #landing .mode-wrap { background: var(--ed-paper, #fbf9f5); border-radius: 6px 6px 0 0; }
+  #landing .hero-outlook { color: #fff; text-decoration-color: rgba(255,255,255,.6); }
+  #landing .hero-outlook:hover, #landing .hero-outlook:focus-visible { color: #fff; text-decoration-color: #fff; }
+}

@@ -542,6 +542,19 @@ Merged recently:
   unchanged, 2,448 river/species/date cases match, plus the upstream rule). The steelhead boxes on river pages and the
   notify bar still save a reach. Welcome email lists the fish and rivers (`weeklyWhat()`).
 
+- **Phase 4, home photo and river-page Today strips** (TJ, 2026-11-03, audit Phase 4): the home hero has TJ's Humber chrome
+  steelhead (`images/hero/home-steelhead.webp`, 1000 px crop, 72 KB) as the background of `.hero-photo`, under a dark wash with white
+  text, so it adds no height (form still starts about 206 px on a 390 x 844 phone). A paper lip behind the form tabs (`.mode-wrap`)
+  because the card is pulled 30 px up over the photo edge. The six river pages (credit, humber, bronte, don, ganaraska and bowmanville
+  salmon-run) load `conditions-core.js` and `assets/today-strip.js`, which finds the `.now` block, reads the reach and fish from its
+  app link and adds Flow, Water and Conditions tiles plus a one-line source (`.hff-today`, styles injected by the script). All wording
+  and rating come from the core (`flowRead`, `waterTempRead`, `rateReachToday`). Rules: nothing is added unless live flow is under 3 h old,
+  weather loaded and there is a real water read (live CVC on the Credit, else modelled); no strip on a closed reach; the fish is the
+  page's, or Steelhead when the reach lists it and it is in better season (or the page's fish is in its "Late Run" tail), and the link
+  into the app then switches to `species=steelhead`; with the fish out of season (rank 0) the Conditions tile is dropped.
+  Checked with mocked gauge and weather at 390 and 1280 px (no scroll, no page errors), since cloud sessions can't reach the APIs: look
+  at a real preview. New river pages with a `.now` block and an app link get the strip by adding the two script tags.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
