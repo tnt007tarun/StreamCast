@@ -296,7 +296,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 <div id="results" style="display:none">
   <header class="res-header">
     <a class="res-logo-wrap" href="#" onclick="goBack();return false;" aria-label="Back to home" title="Back to home" style="text-decoration:none;cursor:pointer;">
-      <div class="res-logo-wave"><span></span><span></span><span></span></div>
+      <img src="/images/brand/logo.png" alt="" width="34" height="32" style="height:32px;width:auto;display:block;">
       <div class="res-logo-name">HereFishyFishy</div>
     </a>
     <div class="res-center">
@@ -379,7 +379,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
   <!-- SECTION 1 -->
   <div id="section-access">
-  <div class="sec-label fi"><div class="sec-num" id="sec-num-access">1</div><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions.</p></div></div>
+  <div class="sec-label fi"><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions.</p></div></div>
 
     <div class="asec fi">
     <div class="agrid" id="access-grid-wrap">
@@ -396,7 +396,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   </div><!-- /section-access -->
 
   <div id="section-conditions">
-  <div class="sec-label fi"><div class="sec-num" id="sec-num-conditions">2</div><div><h3>River Conditions</h3><p id="cond-subtitle">Flow, water temperature and sky. These three decide whether fish are feeding.</p></div></div>
+  <div class="sec-label fi"><div><h3>River Conditions</h3><p id="cond-subtitle">Flow, water temperature and sky. These three decide whether fish are feeding.</p></div></div>
 
   <div class="cond-card">
   <div class="cgrid">
@@ -464,7 +464,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   </div>  </div><!-- /section-conditions -->
 
   <!-- SECTION 2: Technique & Gear (accordion) -->
-  <div class="sec-label fi"><div class="sec-num">3</div><div><h3>Technique &amp; Gear</h3><p id="tg-subtitle">Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
+  <div class="sec-label fi"><div><h3>Technique &amp; Gear</h3><p id="tg-subtitle">Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
   <!-- Hidden bait data. renderBaitPillar() in app.js reads these cards to build the Bait pillar. Not dead code: keep it. -->
   <div id="bait-source" style="display:none">
@@ -526,7 +526,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
     <!-- PILLAR 1 — TECHNIQUE -->
     <div class="pillar" id="pillar-technique">
-      <div class="p-head"><div class="p-step">1</div><div class="p-lbl">Technique</div></div>
+      <div class="p-head"><div class="p-lbl">Technique</div></div>
       <div class="p-card p-tech">
         <h4 id="m1n">Nymphing</h4>
         <p id="m1d"></p>
@@ -536,7 +536,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
     <!-- PILLAR 2 — GEAR -->
     <div class="pillar" id="pillar-gear">
-      <div class="p-head"><div class="p-step">2</div><div class="p-lbl">Gear</div></div>
+      <div class="p-head"><div class="p-lbl">Gear</div></div>
       <div class="p-card">
         <div class="p-gearname" id="tg-gear-lbl">Setup</div>
         <div class="p-gearGrid" id="gear-grid"></div>
@@ -547,7 +547,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
     <!-- PILLAR 3 — BAIT -->
     <div class="pillar" id="pillar-bait">
-      <div class="p-head"><div class="p-step">3</div><div class="p-lbl" id="tg-bait-lbl">Bait</div></div>
+      <div class="p-head"><div class="p-lbl" id="tg-bait-lbl">Bait</div></div>
       <div class="p-card p-bait" id="tg-bait-card"></div>
       <div class="p-alts" id="tg-bait-alts"></div>
       <div class="p-baitfoot" id="tg-bait-foot" style="display:none"></div>
