@@ -2457,7 +2457,7 @@ function speciesReads(sp) {
       twin.textContent = win.text;
       tnote.textContent = next ? 'Tomorrow: ' + next.text + '. ' + next.note : 'Sunset has passed.';
     } else {
-      twin.textContent = win.text;
+      twin.textContent = 'Best window: ' + win.text;
       tnote.textContent = win.note;
     }
   }
@@ -2917,20 +2917,17 @@ async function renderResults(){
     document.getElementById("fcl").innerHTML="<li><span class=\"ci warn\">\u25b3</span><span>Check the gauge link above for current flow before heading out.</span></li>";
   }
 
-  // Combined temp+sky indicator — average the two classifications
-  var _clsRank = {good:2, warn:1, bad:0};
-  var _tcRank = _clsRank[tc] !== undefined ? _clsRank[tc] : 1;
-  var _scRank = _clsRank[sc] !== undefined ? _clsRank[sc] : 1;
-  var _avgRank = Math.round((_tcRank + _scRank) / 2);
-  var _avgCls  = _avgRank >= 2 ? "good" : _avgRank >= 1 ? "warn" : "bad";
+  // Water temperature and sky each have their own card and status dot
   var _td=document.getElementById("temp-dot");
-  if(_td){_td.className="col-status-dot visible dot-"+_avgCls;}
+  if(_td){_td.className="col-status-dot visible dot-"+tc;}
+  var _sd=document.getElementById("sky-dot");
+  if(_sd){_sd.className="col-status-dot visible dot-"+sc;}
 
   // Sky column
   // Today the headline number is the cloud right now; say so, since the strip below is the day's forecast.
   document.getElementById("skyv").textContent=weatherOk ? skyl+(isToday&&window._periodCloud?" now":"")+" ("+cloudPct+"%)" : "No weather data";
   renderSkyPeriodStrip(window._periodCloud || null);
-  // sky sub-indicators removed — combined into temp-dot
+  // the sky card has its own dot (sky-dot)
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
   // The note follows the same 8 AM / 12 PM / 6 PM forecast as the strip and the Best Window card, so the three never
   // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
@@ -3611,7 +3608,7 @@ function rankRivers(rivers, speciesKey, dateStr) {
 
 // ── BUILD TOP PICK BAND ───────────────────────────────────────────────────────
 // ── SKY PERIOD STRIP ─────────────────────────────────────────────────────────
-// One line on the day's sky for the Temperature & Light card. With the period forecast it describes the day; without
+// One line on the day's sky for the Sky & light card. With the period forecast it describes the day; without
 // it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
 function skyDayNote(pc, sc, winter) {
   // Peak winter (TJ, 2026-11-02): sun helps, so the usual "bright slows the bite" lines would contradict the Best Window
@@ -3845,7 +3842,7 @@ function renderConditionTiles(opts) {
     tile('Water', waterVal, waterMeaning, waterState, false, _wr.grade === 'na' ? _missingFx : _fx.temp) +
     tile('Sky', skyVal, skyMeaning, skyState, false, _sr.grade === 'na' ? _missingFx : _fx.sky) +
     flowTile +
-    tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
+    tile('Top Bait', '<span class="tp-word">' + baitShort + '</span>', baitMeaning, 'good', baitShort.length > 8);
 }
 
 // ── ALTERNATIVE REACH (TJ, 2026-11-03) ────────────────────────────────────────────────────────────
