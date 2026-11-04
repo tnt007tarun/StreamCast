@@ -431,6 +431,12 @@ Merged recently:
   little and wakes the fish; the sky note then describes the sky only. December and March keep the sky rules.
   Checked: 20 rendered cases (four seasons, gauge down, live flow, no weather, staging, closed reach, deep link, a
   fallback species, after sunset) match `main` on river, species, technique, gear, bait, access spot and regs.
+- **Signup boxes mid-page + scroll depth** (TJ, 2026-11-03): Umami, 7 days, box seen / page views: where-steelhead-hold 0 of 24,
+  don 0 of 7, winter-steelhead 2 of 19 (11%), ganaraska 17%, bowmanville 18%, humber 22%, bronte and salmon-run-timing 31%,
+  steelhead-run-timing 50% (mid). End boxes sat at the bottom of the page, so the box moved to mid-article
+  (`data-placement="mid"`, after the first main section or table) on where-steelhead-hold, winter-steelhead, humber, bowmanville,
+  bronte, ganaraska and don (now 24 to 48% down the page). `assets/signup.js` also sends `Scroll Depth {page, depth: 25|50|75|100}`
+  once each per page view (not on the homepage). Offer check (2026-11-03): every box matches its page; the Don's run-alert box says "salmon" only (no steelhead reach). Salmon pages (salmon-run-timing, float tips, Bowmanville and Ganaraska salmon pages) offer the weekly steelhead email from October to April by TJ's 2026-10-28 rule. Re-check in 3 to 4 weeks: seen / views per page, mid vs end, and where depth drops.
 
 - **Phase 2, mobile results polish** (2026-11-02, stacked on #128): go headlines name the place ("Head to <em>Erindale
   Park</em> on the Lower Credit River."); when to fish and what to bring sit on their own lines (`renderHeroLines()`, the
@@ -488,7 +494,7 @@ Merged recently:
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
-  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
