@@ -38,9 +38,9 @@ input,select{width:100%;font:400 1rem/1.3 -apple-system,BlinkMacSystemFont,'Sego
 background:#fff;border:1px solid var(--rule);border-radius:8px;padding:.8rem .9rem;-webkit-appearance:none;appearance:none}
 select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
 background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:2.2rem}
-button{font:600 1rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--fern);color:#fff;
+#go{font:600 1rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--fern);color:#fff;
 border:0;border-radius:8px;padding:.95rem 1.4rem;cursor:pointer;margin-top:1.4rem;width:100%}
-button:disabled{opacity:.6;cursor:default}
+#go:disabled{opacity:.6;cursor:default}
 .err{color:var(--alert);font-size:.95rem;margin-top:1rem}
 .small{font-size:.9rem;color:var(--muted)}
 [hidden]{display:none!important}
@@ -59,10 +59,7 @@ button:disabled{opacity:.6;cursor:default}
     <form id="form" novalidate>
       <label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" placeholder="your@email.com" required>
-      <label for="river">River</label>
-      <select id="river" required></select>
-      <label for="species">Fish</label>
-      <select id="species" required></select>
+      <div id="pick" style="margin-top:1.1rem"></div>
       <button type="submit" id="go">Send me the best days</button>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
@@ -71,13 +68,14 @@ button:disabled{opacity:.6;cursor:default}
 
   <section id="done" hidden>
     <h1>You&rsquo;re in</h1>
-    <p>Your first email comes when the week looks good for <strong id="done-what"></strong>. We sent a confirmation to <strong id="done-email" style="overflow-wrap:anywhere"></strong>.</p>
+    <p>Your first email comes when the week looks good for <span id="done-what"></span>. We sent a confirmation to <strong id="done-email" style="overflow-wrap:anywhere"></strong>.</p>
     <p><a id="done-link" href="/">Check today&rsquo;s conditions there</a></p>
   </section>
 
 </div></main>
 
 <script src="/assets/conditions-core.js"></script>
+<script src="/assets/signup.js"></script>
 <script>
 (function () {
   var PROXY = 'https://streamcast-proxy.tnt-tarun.workers.dev';
@@ -87,61 +85,50 @@ button:disabled{opacity:.6;cursor:default}
   var $ = function (id) { return document.getElementById(id); };
   function track(name, props) { try { if (window.umami) window.umami.track(name, props); } catch (e) {} }
 
-  // Reaches people can follow: active sections, grouped by river, shown with secLabel().
-  var river = $('river'), species = $('species');
-  var pick = document.createElement('option'); pick.value = ''; pick.textContent = 'Choose a river'; river.appendChild(pick);
-  Object.keys(RIVER_SECTIONS).sort().forEach(function (parent) {
-    var g = document.createElement('optgroup'); g.label = parent;
-    RIVER_SECTIONS[parent].forEach(function (s) {
-      var cfg = RIVER_CONFIG[s];
-      if (!cfg || cfg.active === false || !cfg.species || !cfg.species.length) return;
-      var o = document.createElement('option'); o.value = s; o.textContent = secShort(s); g.appendChild(o);
-    });
-    if (g.children.length) river.appendChild(g);
-  });
-  function fillSpecies(want) {
-    var cfg = RIVER_CONFIG[river.value] || {};
-    species.innerHTML = '';
-    (cfg.species || []).forEach(function (n) {
-      var o = document.createElement('option'); o.value = n; o.textContent = n; species.appendChild(o);
-    });
-    if (want) { for (var i = 0; i < species.options.length; i++) if (species.options[i].value === want) species.selectedIndex = i; }
-  }
-  // Prefill from the link: ?email= (the monthly outlook passes it), ?river=<section key>, ?species=<key or name>
+  // Whole rivers (up to 3) and any fish on them, as chips (assets/signup.js, TJ 2026-11-03). Prefill from the link:
+  // ?email= (the monthly outlook passes it), ?river= (a river or a reach key, comma list), ?species= (keys or names).
   $('email').value = (q.get('email') || '').trim();
-  var wantRiver = (q.get('river') || '').split(',')[0].trim();
-  if (wantRiver && RIVER_CONFIG[wantRiver]) river.value = wantRiver;
-  var sp = (q.get('species') || '').trim(), wantSp = null;
-  Object.keys(KEY).forEach(function (n) { if (KEY[n] === sp.toLowerCase() || n === sp) wantSp = n; });
-  fillSpecies(wantSp);
-  // Keep the fish from the link when the reader picks a river that has it
-  river.addEventListener('change', function () { fillSpecies(species.value || wantSp); });
-
+  var riverOf = function (v) {
+    v = v.trim();
+    if (RIVER_SECTIONS[v]) return v;
+    return Object.keys(RIVER_SECTIONS).filter(function (r) { return RIVER_SECTIONS[r].indexOf(v) !== -1; })[0] || null;
+  };
+  var wantRivers = [];
+  (q.get('river') || '').split(',').forEach(function (v) { var r = riverOf(v); if (r && wantRivers.indexOf(r) === -1) wantRivers.push(r); });
+  var wantSp = [];
+  (q.get('species') || '').split(',').forEach(function (v) {
+    v = v.trim();
+    Object.keys(KEY).forEach(function (n) { if ((KEY[n] === v.toLowerCase() || n === v) && wantSp.indexOf(n) === -1) wantSp.push(n); });
+  });
+  var picker = window.HFF_weeklyPicker($('pick'), { rivers: wantRivers, species: wantSp });
   var form = $('form'), btn = $('go'), err = $('err');
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var email = $('email').value.trim();
     err.hidden = true;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter your email address.'; err.hidden = false; return; }
-    if (!river.value || !species.value) { err.textContent = 'Please choose a river and a fish.'; err.hidden = false; return; }
+    var perr = picker.error();
+    if (perr) { err.textContent = perr; err.hidden = false; return; }
     btn.disabled = true; btn.textContent = 'Signing you up…';
-    var w = { section: river.value, species: species.value };
+    var w = picker.pairs(), rivers = picker.rivers(), fish = picker.species();
     fetch(PROXY + '/subscribe', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, kind: 'weekly', weekly: w })
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (!(r.ok && d && d.ok === true)) throw new Error('subscribe ' + r.status);
-        $('done-what').textContent = w.species + ' on ' + secLabel(w.section);
+        var andList = function (a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; };
+        $('done-what').innerHTML = '<strong>' + andList(fish).replace(/[<>&]/g, '') + '</strong> on <strong>' + andList(rivers).replace(/[<>&]/g, '') + '</strong>';
         $('done-email').textContent = email;
-        $('done-link').href = '/?river=' + encodeURIComponent(w.section) + '&species=' + (KEY[w.species] || '');
+        var t = new Date(), ds = t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2) + '-' + ('0' + t.getDate()).slice(-2);
+        $('done-link').href = '/?river=' + encodeURIComponent(reachForRiver(w[0].river, w[0].species, ds) || w[0].river) + '&species=' + (KEY[w[0].species] || '');
         $('ask').hidden = true; $('done').hidden = false;
-        track('Email Signup', { river: w.section, species: w.species, offer: 'weekly', page: 'weekly' });
+        track('Email Signup', { river: rivers.join(', '), species: fish.join(', '), offer: 'weekly', page: 'weekly' });
       });
     }).catch(function (e2) {
       btn.disabled = false; btn.textContent = 'Try again';
       err.textContent = 'That didn’t go through. Please try again in a minute.'; err.hidden = false;
-      track('Email Signup Failed', { river: w.section, reason: String(e2 && e2.message || e2), offer: 'weekly', page: 'weekly' });
+      track('Email Signup Failed', { river: rivers.join(', '), reason: String(e2 && e2.message || e2), offer: 'weekly', page: 'weekly' });
     });
   });
 })();

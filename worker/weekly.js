@@ -31,25 +31,65 @@ export function sectionKey(s) {
   const cfg = C.RIVER_CONFIG[base];
   return cfg && cfg.lat !== undefined && base !== 'default' ? base : null;
 }
-// The reach and species pairs a subscriber follows: `weekly` (signed up for this email) plus the
-// rivers and species saved by the notify bar before #86 (legacy). Pairs where the species doesn't
-// live on the reach are dropped.
-export function weeklyInterests(rec) {
+export const MAX_WEEKLY_RIVERS = 3;     // TJ, 2026-11-03: up to 3 rivers, any fish
+export function riverKey(r) {
+  const t = String(r || '').trim();
+  return C.RIVER_SECTIONS[t] ? t : null;
+}
+export function riverOfSection(sec) {
+  return Object.keys(C.RIVER_SECTIONS).find((r) => C.RIVER_SECTIONS[r].indexOf(sec) !== -1) || null;
+}
+function riverHasSpecies(river, sp) {
+  return C.RIVER_SECTIONS[river].some((s) => { const c = C.RIVER_CONFIG[s]; return c && c.active !== false && c.species && c.species.indexOf(sp) !== -1; });
+}
+// What a subscriber saved, cleaned: {river, species} (the form since 2026-11-03: a whole river) or {section, species}
+// (older signups and the steelhead boxes on river pages). Pairs where the fish isn't on that river or reach are
+// dropped, duplicates too. With maxRivers, only the first that many rivers are kept (newest first); /subscribe
+// passes MAX_WEEKLY_RIVERS, the Thursday run doesn't, so nobody saved before the cap loses a river.
+export function weeklyEntries(list, maxRivers) {
+  const out = [], seen = {}, rivers = [];
+  (Array.isArray(list) ? list : []).forEach((w) => {
+    if (!w || typeof w !== 'object') return;
+    const sp = speciesName(w.species);
+    if (!sp) return;
+    let e = null, river = null;
+    if (w.river) {
+      river = riverKey(w.river);
+      if (river && riverHasSpecies(river, sp)) e = { river, species: sp };
+    } else {
+      const sec = sectionKey(w.section);
+      const cfg = sec && C.RIVER_CONFIG[sec];
+      if (cfg && cfg.species && cfg.species.indexOf(sp) !== -1) { e = { section: sec, species: sp }; river = riverOfSection(sec) || sec; }
+    }
+    if (!e) return;
+    const k = (e.river || e.section) + '|' + sp;
+    if (seen[k]) return;
+    if (rivers.indexOf(river) === -1) {
+      if (maxRivers && rivers.length >= maxRivers) return;
+      rivers.push(river);
+    }
+    seen[k] = true;
+    out.push(e);
+  });
+  return out;
+}
+// The reach and species pairs to score this week: `weekly` (signed up for this email) plus the rivers and species
+// saved by the notify bar before #86 (legacy). A whole river is scored on the reach the app would open for that fish
+// on `dateStr` (reachForRiver(): open, has the fish, upstream rule), so it follows the season.
+export function weeklyInterests(rec, dateStr) {
   if (!rec || rec.unsubscribed) return [];
   const out = [], seen = {};
-  const add = (sec, sp) => {
-    const s = sectionKey(sec), n = speciesName(sp);
-    if (!s || !n) return;
-    const cfg = C.RIVER_CONFIG[s];
-    if (!cfg.species || cfg.species.indexOf(n) === -1) return;
-    const k = s + '|' + n;
+  const legacy = [];
+  (rec.rivers || []).forEach((r) => (rec.species || []).forEach((sp) => legacy.push({ section: r, species: sp })));
+  weeklyEntries((rec.weekly || []).concat(legacy)).forEach((e) => {
+    const section = e.river ? C.reachForRiver(e.river, e.species, dateStr) : e.section;
+    if (!section) return;
+    const k = section + '|' + e.species;
     if (seen[k]) return;
     seen[k] = true;
-    out.push({ section: s, species: n });
-  };
-  (rec.weekly || []).forEach((w) => w && add(w.section, w.species));
-  (rec.rivers || []).forEach((r) => (rec.species || []).forEach((sp) => add(r, sp)));
-  return out.slice(0, 5);
+    out.push(e.river ? { section, species: e.species, river: e.river } : { section, species: e.species });
+  });
+  return out;
 }
 export function addDays(iso, n) {
   const d = new Date(iso + 'T12:00:00Z');
@@ -263,7 +303,7 @@ export async function runWeekly(env, deps, opts = {}) {
 
   // Who follows what
   const recs = await deps.listRecords();
-  let people = recs.map((rec) => ({ rec, interests: weeklyInterests(rec) })).filter((p) => p.interests.length);
+  let people = recs.map((rec) => ({ rec, interests: weeklyInterests(rec, dates[0]) })).filter((p) => p.interests.length);
   if (people.length) {
     const gone = await deps.resendUnsubscribed();
     people = people.filter((p) => !gone.has(p.rec.email));
