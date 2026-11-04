@@ -179,7 +179,7 @@
     var html;
     if (kind === 'run') {
       html = '<div class="lbl">Run alerts</div>' +
-        '<p>Get an email when salmon or steelhead are running' + (river ? ' on the ' + esc(river) : ' on the river you fish') +
+        '<p>Get an email when ' + (river && !STEELHEAD_REACH[river] ? 'salmon are' : 'salmon or steelhead are') + ' running' + (river ? ' on the ' + esc(river) : ' on the river you fish') +
         '. Each alert is checked by an angler before it goes out.</p>' +
         '<form novalidate>' +
         (river ? '' : '<select aria-label="River" required><option value="">Choose a river</option>' +

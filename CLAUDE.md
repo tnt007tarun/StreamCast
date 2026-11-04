@@ -436,7 +436,7 @@ Merged recently:
   steelhead-run-timing 50% (mid). End boxes sat at the bottom of the page, so the box moved to mid-article
   (`data-placement="mid"`, after the first main section or table) on where-steelhead-hold, winter-steelhead, humber, bowmanville,
   bronte, ganaraska and don (now 24 to 48% down the page). `assets/signup.js` also sends `Scroll Depth {page, depth: 25|50|75|100}`
-  once each per page view (not on the homepage). Re-check in 3 to 4 weeks: seen / views per page, mid vs end, and where depth drops.
+  once each per page view (not on the homepage). Offer check (2026-11-03): every box matches its page; the Don's run-alert box says "salmon" only (no steelhead reach). Salmon pages (salmon-run-timing, float tips, Bowmanville and Ganaraska salmon pages) offer the weekly steelhead email from October to April by TJ's 2026-10-28 rule. Re-check in 3 to 4 weeks: seen / views per page, mid vs end, and where depth drops.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
