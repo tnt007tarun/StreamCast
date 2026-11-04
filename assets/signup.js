@@ -38,8 +38,12 @@
     'font:500 .9rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
     '.hff-chip[aria-pressed=true]{background:#1e7a6e;border-color:#1e7a6e;color:#fff}' +
     '.hff-chip[aria-pressed=true]::before{content:"\\2713\\00a0"}' +
+    '.hff-chip.more{border-style:dashed;color:#1e7a6e;font-weight:600}' +
     '.hff-pick .pnote{font-size:.8rem;color:#a63d2f;margin:.35rem 0 0;min-height:0}';
   var MAX_RIVERS = 3;
+  // Shown first, most used first (Umami app river picks, Sep to Oct 2026); the rest sit behind "More rivers" (TJ, 2026-11-03).
+  var TOP_RIVERS = ['Credit River', 'Humber River', 'Bronte Creek', 'Bowmanville Creek', 'Ganaraska River', 'Duffins Creek',
+    'Rouge River', 'Sixteen Mile Creek'];
   var FISH_ORDER = ['Steelhead', 'Chinook Salmon', 'Coho Salmon', 'Brown Trout', 'Rainbow Trout', 'Brook Trout'];
   function chipName(r) { return r.replace(/ River$/, ''); }
   function riverFish(r) {
@@ -57,6 +61,10 @@
     var all = Object.keys(window.RIVER_SECTIONS || {}).filter(function (r) { return riverFish(r).length; }).sort();
     var selR = (opts.rivers || []).filter(function (r) { return all.indexOf(r) !== -1; }).slice(0, MAX_RIVERS);
     var selF = (opts.species || []).filter(function (n) { return FISH_ORDER.indexOf(n) !== -1; });
+    var top = TOP_RIVERS.filter(function (r) { return all.indexOf(r) !== -1; });
+    var rest = all.filter(function (r) { return top.indexOf(r) === -1; });
+    // Open the full list when a prefilled river is one of the others.
+    var showAll = !top.length || selR.some(function (r) { return top.indexOf(r) === -1; });
     el.innerHTML = '<div class="hff-pick"><span class="plbl">Rivers <span>(up to ' + MAX_RIVERS + ')</span></span>' +
       '<div class="hff-chips r" role="group" aria-label="Rivers"></div><p class="pnote rn" hidden></p></div>' +
       '<div class="hff-pick"><span class="plbl">Fish</span><div class="hff-chips f" role="group" aria-label="Fish"></div></div>';
@@ -70,13 +78,16 @@
       return FISH_ORDER.filter(function (n) { return seen[n]; });
     }
     function draw() {
-      rBox.innerHTML = all.map(function (r) { return chip(chipName(r), r, selR.indexOf(r) !== -1); }).join('');
+      var shown = showAll ? top.concat(rest) : top;
+      rBox.innerHTML = shown.map(function (r) { return chip(chipName(r), r, selR.indexOf(r) !== -1); }).join('') +
+        (showAll || !rest.length ? '' : '<button type="button" class="hff-chip more" aria-expanded="false">More rivers (' + rest.length + ')</button>');
       var offered = fishOffered();
       selF = selF.filter(function (n) { return offered.indexOf(n) !== -1; });
       fBox.innerHTML = offered.map(function (n) { return chip(n, n, selF.indexOf(n) !== -1); }).join('');
     }
     rBox.addEventListener('click', function (e) {
       var b = e.target.closest('.hff-chip'); if (!b) return;
+      if (b.classList.contains('more')) { showAll = true; draw(); var nx = rBox.querySelectorAll('.hff-chip')[top.length]; if (nx) nx.focus(); return; }
       var v = b.getAttribute('data-v'), i = selR.indexOf(v);
       note.hidden = true;
       if (i !== -1) selR.splice(i, 1);
