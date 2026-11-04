@@ -1304,6 +1304,33 @@ function selectRiver(el,name,loc){
 function toggleTech(el){el.classList.toggle("active");}
 function clearTech(){document.querySelectorAll(".tech-chip").forEach(function(c){c.classList.remove("active");});}
 
+// Search pick that is open for the fish asked for. Within the travel range first; when nothing in range is open for any
+// selected species, every reach we cover (TJ, 2026-11-03: "where can I get into rainbow trout, irrespective of distance").
+// Steelhead water counts as Rainbow Trout water (legalSpeciesFor). Returns { pick, offered, widened } or null.
+function pickLegalReach(rivers, keys, dateStr, maxMin) {
+  var SM = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+  var names = keys.map(function(k){ return SM[k]; }).filter(Boolean);
+  var legal = [];
+  rivers.forEach(function(r) {
+    var offers = names.map(function(n){ return legalSpeciesFor(r.name, n, dateStr, true); }).filter(Boolean);
+    if (offers.length) { r.offers = offers; legal.push(r); }
+  });
+  var inRange = legal.filter(function(r){ return r.driveTime <= maxMin; });
+  var pool = inRange.length ? inRange : legal;
+  if (!pool.length) return null;
+  // Score each reach for the fish it offers (steelhead water as Steelhead), so a reach isn't credited for a species
+  // it doesn't legally offer today.
+  var KEY = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Steelhead':'steelhead','Brook Trout':'brook','Chinook Salmon':'chinook','Coho Salmon':'coho'};
+  var scored = [];
+  pool.forEach(function(r) {
+    scored.push(rankRivers([r], r.offers.map(function(n){ return KEY[n]; }), dateStr)[0]);
+  });
+  var top = scored.sort(function(a, b) { return b.score - a.score || a.driveTime - b.driveTime; })[0];
+  var offers = [];
+  pool.forEach(function(r){ if (r.name === top.name) offers = r.offers; });
+  return { pick: top, offered: offers, widened: !inRange.length };
+}
+
 function goToResults(){
   try { hideInstallHint(); } catch (e) {}
   // Track search
@@ -1456,6 +1483,34 @@ function goToResults(){
             return _rCfg && _rCfg.species && targetSpeciesNames.some(function(n){ return _rCfg.species.indexOf(n) !== -1; });
           });
           if (_siblingWithSpecies) bestPick = _siblingWithSpecies;
+        }
+      }
+      // The pick has to be open for the fish asked for. When it isn't (a resident-trout reach that closed Sept 30 was
+      // winning a Rainbow Trout search), take the best reach that is: in range first, then anywhere we cover.
+      // Steelhead water counts as Rainbow Trout water. TJ, 2026-11-03.
+      window._speciesNote = null;
+      var _bpLegal = !bestPick || targetSpeciesNames.some(function(n){ return legalSpeciesFor(bestPick.name, n, _tripDate); });
+      if (!_bpLegal) {
+        var _allR = getRivers(locKey, Infinity, Infinity);
+        _allR.forEach(function(r){ var _c=RIVER_CONFIG[r.name]; var _dk5=driveKeyFor(locKey); r.driveTime=(r.times&&(r.times[locKey]||r.times[_dk5]))||(_c&&_c.driveTime&&(_c.driveTime[locKey]||_c.driveTime[_dk5]))||60; });
+        var _lp = pickLegalReach(_allR, selectedSpecies, _tripDate, _maxMin);
+        if (_lp) {
+          bestPick = _lp.pick;
+          // Asked for Rainbow Trout, the open water is steelhead water: search as Steelhead and say so.
+          if (selectedSpecies.indexOf('rainbow') !== -1 && _lp.offered.indexOf('Rainbow Trout') === -1 && _lp.offered.indexOf('Steelhead') !== -1) {
+            selectedSpecies = selectedSpecies.map(function(k){ return k === 'rainbow' ? 'steelhead' : k; })
+              .filter(function(k, i, arr){ return arr.indexOf(k) === i; });
+            selectedSpeciesLabel = selectedSpecies.length === 1 ? 'Steelhead' : selectedSpecies.map(function(k){ return _sm[k]; }).join(' + ');
+            window._speciesNote = { river: _lp.pick.name, text: 'Steelhead are the rainbow trout open right now. They run up from the lake; resident rainbows are closed until the trout opener.' };
+          }
+          // Sent far for resident rainbows while steelhead water is open much closer: say so, with a way there (TJ).
+          else if (_lp.widened && selectedSpecies.indexOf('rainbow') !== -1) {
+            var _nearAll = _allR.filter(function(r){ return r.driveTime <= _maxMin; });
+            var _ns = pickLegalReach(_nearAll, ['steelhead'], _tripDate, _maxMin);
+            if (_ns && _ns.pick.driveTime < _lp.pick.driveTime - 20) {
+              window._speciesNote = { river: _lp.pick.name, near: _ns.pick.name, nearMin: _ns.pick.driveTime };
+            }
+          }
         }
       }
     }
@@ -4557,10 +4612,17 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _hd.parentNode.insertBefore(_note, _hd.nextSibling);
     }
     var _u = window._upstreamFrom;
-    _note.hidden = !_u;
+    var _sn = window._speciesNote;
+    var _snHere = _sn && !_u && selectedRiver && String(selectedRiver).split(',')[0].trim() === _sn.river;
+    _note.hidden = !_u && !_snHere;
     if (_u) {
       _note.innerHTML = 'Moved up from the ' + secShort(_u.from) + ' because the fish are pushing upstream. '
         + '<a href="#river" class="tp-stay-link" data-stay-section="' + _u.from + '">Stay on the ' + secShort(_u.from) + '</a>';
+    } else if (_snHere && _sn.near) {
+      _note.innerHTML = 'Closer to you: steelhead on the <a href="#river" class="tp-goto-link" data-goto-section="' + _sn.near
+        + '" data-goto-species="Steelhead">' + secShort(_sn.near) + '</a>, about ' + _sn.nearMin + ' min away.';
+    } else if (_snHere) {
+      _note.textContent = _sn.text;
     }
   })();
   (function() {
