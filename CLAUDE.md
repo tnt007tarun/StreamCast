@@ -543,7 +543,7 @@ Merged recently:
   notify bar still save a reach. Welcome email lists the fish and rivers (`weeklyWhat()`).
 
 - **Phase 4, home photo and river-page Today strips** (TJ, 2026-11-03, audit Phase 4): the home hero has TJ's Humber chrome
-  steelhead (`images/hero/home-steelhead.webp`, 1000 px crop, 72 KB) as the background of `.hero-photo`, under a dark wash with white
+  steelhead (`images/hero/home-steelhead.webp`, 1100 px crop around the fish, 61 KB) as the background of `.hero-photo`, under a dark wash with white
   text, so it adds no height (form still starts about 206 px on a 390 x 844 phone). A paper lip behind the form tabs (`.mode-wrap`)
   because the card is pulled 30 px up over the photo edge. The six river pages (credit, humber, bronte, don, ganaraska and bowmanville
   salmon-run) load `conditions-core.js` and `assets/today-strip.js`, which finds the `.now` block, reads the reach and fish from its

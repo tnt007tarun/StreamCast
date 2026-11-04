@@ -3290,7 +3290,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .hero-photo {
     background:
       linear-gradient(rgba(10,22,30,.46), rgba(10,22,30,.66)),
-      url("/images/hero/home-steelhead.webp") center 58% / cover no-repeat;
+      url("/images/hero/home-steelhead.webp") center 50% / cover no-repeat;
   }
   #landing .hero-copy h1,
   #landing .hero-copy p,
