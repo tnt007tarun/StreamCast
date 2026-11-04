@@ -45,9 +45,6 @@ assert.equal(closed.confidence, null);
 }
 
 // Drive verdict
-assert.equal(C.driveVerdict(12, 45, false).cls, 'verdict-yes');
-assert.equal(C.driveVerdict(12, 45, true).cls, 'verdict-no');
-assert.equal(C.driveVerdict(1, 20, false).cls, 'verdict-no');
 
 // Don River (2026-10-21): Lake to Eglinton open all year, Eglinton to Hwy 407 extended (MNR 2026 Zone 16)
 {

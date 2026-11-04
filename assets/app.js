@@ -82,6 +82,8 @@ document.addEventListener('click', function(e) {
     } else if (el.classList.contains('regs-details-toggle')) {
       // The inline handler has already run, so the label shows the new state.
       if (/\u2212/.test(el.textContent)) track('Regs Details Opened', { river: river });
+    } else if (el.hasAttribute('data-alt-reach')) {
+      track('Alternative Reach Clicked', { river: river, alt: el.getAttribute('data-alt-reach') });
     } else if (el.classList.contains('gcard') || el.classList.contains('gmini')) {
       track('Guide Card Clicked', { url: href, slot: el.classList.contains('gmini') ? 'list' : 'card' });
     }
@@ -514,22 +516,15 @@ function renderStagingCard(sectionName, weather) {
         _confEl2.textContent = _cr2.text;
         _confEl2.className = 'tp-confidence ' + _cr2.cls;
         _confEl2.title = _cr2.title;
-        renderRatingBreakdown(_cr2.unknown ? null : { parts: conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
-          null, null, pct, window._stagingInLake), base: null, baseFrom: null, potential: _reRate.potential, total: _newScore, here: '' });
-      }
-
-      var _driveEl2 = document.getElementById('tp-drive-time');
-      if (_driveEl2) {
-        var _verdictEl = _driveEl2.querySelector('.drive-verdict');
-        if (_verdictEl) {
-          // Re-derive drive time from the same element's existing text — parse isn't reliable,
-          // so just recompute the class/label using the known distance already rendered.
-          var _dtMatch = _driveEl2.textContent.match(/(\d+)\s*(min|hr)/);
-          var _dt2 = _dtMatch ? (_dtMatch[2] === 'hr' ? parseInt(_dtMatch[1])*60 : parseInt(_dtMatch[1])) : 999;
-          var _dv2 = driveVerdictShown(_newScore, _dt2, false); // closed sections returned above
-          _verdictEl.textContent = _dv2.text;
-          _verdictEl.className = 'drive-verdict ' + _dv2.cls;
-        }
+        var _partsRe = conditionsParts(null, _cfgRe, _reRate.flow != null ? _reRate.flow : window._pillFlow,
+          null, null, pct, window._stagingInLake);
+        window._tileEffects = _cr2.unknown ? null : ratingEffects(_partsRe);
+        if (window._tileOpts) { try { renderConditionTiles(window._tileOpts); } catch(_tileErr5) {} }
+        var _stRe = Object.assign({}, window._pillState || {}, { conf: _conf2, parts: _partsRe, cfg: _cfgRe, unknown: !!_cr2.unknown, closed: false,
+          flow: _reRate.flow != null ? _reRate.flow : window._pillFlow, flowKind: (_reRate.flow != null && window._pillFlow == null) ? 'estimate' : 'live' });
+        window._pillState = _stRe;
+        renderPillNote(_stRe);
+        scheduleAlternative();
       }
     })();
     // If this card is telling the user the fish are STAGING in the lake, the Technique &
@@ -1489,7 +1484,7 @@ function goToResults(){
   document.getElementById("results").style.display=""; document.getElementById("results").classList.add("active");
   window.scrollTo(0,0);
   initNotifyBar();
-  window._viewSource = 'search';
+  window._viewSource = 'search'; window._pickSource = 'search';
   // Push history state so browser back button returns to dashboard
   history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
   renderResults();
@@ -1514,7 +1509,7 @@ function goToSection(section, speciesName) {
   selectedRiver = section + (loc ? ', ' + loc.replace(/–/g, '-') : '');
   selectedRiverIsAuto = false;
   track('Redirect Followed', { river: section, species: speciesName || '' });
-  window._viewSource = 'redirect';
+  window._viewSource = 'redirect'; window._pickSource = 'redirect';
   setResHeader(selectedRiver);
   history.pushState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
   window.scrollTo(0, 0);
@@ -1702,7 +1697,7 @@ function goBack(){
     var _tdEl = document.getElementById('trip-date');
     if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) _tdEl.value = _dParam;
     initNotifyBar();
-    window._viewSource = 'deep-link';
+    window._viewSource = 'deep-link'; window._pickSource = 'deep-link';
     history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
     renderResults();
     setTimeout(loadBaitImages, 800);
@@ -2427,13 +2422,11 @@ function autoUpstreamSection() {
   var cfg = here ? getRiverConfig(here) : null;
   if (!cfg || stay[here]) return null;
   var trip = getTripDateStr();
-  var mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'];
-  if (isLakeRunBrownSection(here)) mig.push('Brown Trout');
   var names = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',steelhead:'Steelhead',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var picked = (selectedSpecies || []).map(function(k){ return names[k]; }).filter(Boolean);
   var want = picked.length ? picked
     : (cfg.species || []).filter(function(n){ var q = getCurrentSeason(n, trip, here); return q && q.quality !== 'absent'; });
-  want = want.filter(function(n){ return mig.indexOf(n) !== -1; });
+  want = upstreamMigratoryWant(here, want);
   if (!want.length) return null;
   // Same test as the hero's staging headline: a picked run species that is out of season, at a mouth.
   if (picked.length === 1 && STAGING_ZONES[here] && /Chinook|Coho|Steelhead/.test(picked[0])) {
@@ -2545,7 +2538,7 @@ async function renderResults(){
 
   var airTemp=null, cloudPct=null, weatherOk=false, _stagingWeather=null;
   // Per search: a failed fetch must not reuse the last river's cloud forecast or sunrise.
-  window._periodCloud = null; window._sun = null; window._sunNext = null; window._pillMissing = null;
+  window._periodCloud = null; window._sun = null; window._sunNext = null; window._pillMissing = null; hideAlternative();
   try{
     var wx=await fetchWeather(cfg);
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
@@ -3592,11 +3585,9 @@ function rankRivers(rivers, speciesKey, dateStr) {
 
     // Prefer rivers closer by
     var drive = r.driveTime || 60;
-    var _seasonPts = score, _drivePts = 0, _techPts = 0;
-    if (drive < 30) _drivePts = 4;
-    else if (drive < 60) _drivePts = 2;
-    else if (drive > 120) _drivePts = -2;
-    score += _drivePts;
+    if (drive < 30) score += 4;
+    else if (drive < 60) score += 2;
+    else if (drive > 120) score -= 2;
 
     // Regs — flag any catch-and-release / sanctuary
     var regs = RIVER_REGS[r.name];
@@ -3610,7 +3601,6 @@ function rankRivers(rivers, speciesKey, dateStr) {
     var techniques = (window._selectedTechs || []);
     if (techniques.length > 0 && cfg.routine) {
       score += 1; // minor bonus for having routine data
-      _techPts = 1;
     }
 
     return {
@@ -3620,9 +3610,7 @@ function rankRivers(rivers, speciesKey, dateStr) {
       score: score,
       notes: notes,
       warnings: warnings,
-      cfg: cfg,
-      // How the score was built, for the "How this was rated" note under the Conditions pill. Not used to rank.
-      parts: { season: _seasonPts, drive: _drivePts, tech: _techPts }
+      cfg: cfg
     };
   }).sort(function(a,b) { return b.score - a.score; });
 }
@@ -3802,13 +3790,18 @@ function renderConditionTiles(opts) {
   var _sn = document.getElementById('tp-staging-note');
   if (_sn) _sn.style.display = 'none';
 
-  function tile(label, value, meaning, state, smallVal) {
+  // effect: how this reading moved the Conditions rating (ratingEffects in the core), or null for no line.
+  var _fx = window._tileEffects || {};
+  // A reading that is missing is not a bad reading: it says so in neutral words and is not rated.
+  var _missingFx = { dir: 'flat', text: 'No data, not rated' };
+  function tile(label, value, meaning, state, smallVal, effect) {
     return '<div class="tp-tile ' + state + '">' +
       '<div class="tp-tile-bar"></div>' +
       '<div class="tp-tile-body">' +
         '<div class="tp-tile-lbl">' + label + '</div>' +
         '<div class="tp-tile-val' + (smallVal ? ' sm' : '') + '">' + value + '</div>' +
         '<div class="tp-tile-meaning">' + meaning + '</div>' +
+        (effect ? '<div class="tp-tile-effect fx-' + effect.dir + '">' + effect.text + '</div>' : '') +
       '</div></div>';
   }
 
@@ -3833,10 +3826,10 @@ function renderConditionTiles(opts) {
     // normal flow "Low" while the card said "Normal".
     var f = opts.flow, _fr = flowRead(f, opts, { isToday: true });
     var fState = _tileState[_fr.grade], fMeaning = _fr.word;
-    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState);
+    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState, false, _fx.flow);
   } else if (opts.isToday && opts.flow == null) {
     // Today but gauge down
-    flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true);
+    flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true, window._stagingInLake ? _fx.flow : _missingFx);
   } else if (opts.flowEst) {
     // Future date with an estimate (renderFlowEstimate() has the detail): number for days 1 to 2, range after
     var e = opts.flowEst, eb = flowBand(e.q, opts);
@@ -3855,10 +3848,110 @@ function renderConditionTiles(opts) {
   var baitMeaning = bait.length > 9 ? bait.split(' ').slice(-1)[0] : 'Recommended';
 
   host.innerHTML =
-    tile('Water', waterVal, waterMeaning, waterState) +
-    tile('Sky', skyVal, skyMeaning, skyState) +
+    tile('Water', waterVal, waterMeaning, waterState, false, _wr.grade === 'na' ? _missingFx : _fx.temp) +
+    tile('Sky', skyVal, skyMeaning, skyState, false, _sr.grade === 'na' ? _missingFx : _fx.sky) +
     flowTile +
     tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
+}
+
+// ── ALTERNATIVE REACH (TJ, 2026-11-03) ────────────────────────────────────────────────────────────
+// Only today, and only when the reach on screen rates Tough (or is unrated because its gauge is down). One other
+// reach that rates Good or Excellent on its OWN gauge, weather and water, within 20 extra minutes of driving, shown
+// under the pill note. The primary pick, the ranking and the scores are not touched. Rules in conditions-core.js
+// (alternativeMode, alternativeCandidates, rateReachToday, pickAlternative, alternativeText).
+var _altToken = 0, _altShown = {}, _altCache = {};
+function altCached(key, make) {
+  var c = _altCache[key];
+  if (c && Date.now() - c.t < 600000) return c.p;
+  var p = make(); _altCache[key] = { t: Date.now(), p: p }; return p;
+}
+function altTimeout(p, ms) { return Promise.race([p, new Promise(function(res) { setTimeout(function() { res(null); }, ms); })]); }
+function clearAlternative() {
+  var el = document.getElementById('tp-alt');
+  if (el) { el.hidden = true; el.textContent = ''; }
+}
+function hideAlternative() { _altToken++; clearAlternative(); }
+function riverDriveMin(r, locKey) {
+  var dk = driveKeyFor(locKey), cfg = RIVER_CONFIG[r.name];
+  var t = (r.times && (r.times[locKey] || r.times[dk])) || (cfg && cfg.driveTime && (cfg.driveTime[locKey] || cfg.driveTime[dk]));
+  return t === undefined ? null : t;
+}
+// Everything one candidate needs, from its own gauge and coordinates. null on any failure.
+async function altRate(c, dateStr, fish) {
+  var cfg = getRiverConfig(c.section);
+  if (!cfg || !cfg.gauge) return null;
+  var lf = await altCached('f:' + cfg.gauge, function() { return fetchFlow(cfg.gauge); });
+  var wx = await altCached('w:' + cfg.lat + ',' + cfg.lng, function() { return fetchWeather(cfg).catch(function() { return null; }); });
+  if (!lf || lf.flow == null || isNaN(lf.flow) || !wx || wx.airTemp == null || isNaN(wx.airTemp) || wx.cloudPct == null) return null;
+  // A live reading from the last three hours (the age the flow card flags as stale).
+  var at = typeof lf.at === 'string' ? Date.parse(lf.at) : NaN;
+  if (isNaN(at) || Date.now() - at > 180 * 60000) return null;
+  var info = await altCached('t:' + c.section, function() { return waterTempFor(c.section, cfg, dateStr, true, wx.airTemp).catch(function() { return null; }); });
+  var lakes = await fetchLakeTemps();
+  var z = stagingSectionFor(c.section);
+  var r = rateReachToday({ section: c.section, species: fish, date: dateStr, flow: lf.flow,
+    waterTemp: info && info.value != null ? info.value : null, cloudPct: wx.cloudPct, windDir: wx.windDir, windSpd: wx.windSpeed,
+    lakeTemp: z && lakes && lakes[STAGING_ZONES[z].key] != null ? lakes[STAGING_ZONES[z].key] : null });
+  var waterOk = !r.usesWater || (info && (info.kind === 'measured' || info.kind === 'model'));
+  return Object.assign({}, c, { word: r.word, reliable: !!waterOk });   // a seasonal lake estimate is fine: the primary pill uses the same fallback (TJ, 2026-11-03)
+}
+async function updateAlternative(st) {
+  var tok = ++_altToken;   // a newer call (the staging re-rate) cancels this one; a shown card stays until it is replaced or no longer applies
+  var fish = window._readSpecies, dateStr = getTripDateStr();
+  var mode = st ? alternativeMode({ word: st.conf && st.conf.word, unknown: st.unknown, flowMissing: (window._pillMissing || {}).flowMissing,
+    weatherMissing: (window._pillMissing || {}).weatherMissing, closed: st.closed, isToday: dateStr === localTodayStr(), species: fish }) : null;
+  var loc = window._beginnerLocKey, here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+  if (!mode || !loc || !here) return clearAlternative();
+  var ranked = getRivers(loc, 180, Infinity).map(function(r) { return { name: r.name, drive: riverDriveMin(r, loc) }; });
+  var me = ranked.filter(function(r) { return r.name === here; })[0];
+  var cand = alternativeCandidates({ primary: here, primaryDrive: me ? me.drive : null, ranked: ranked, species: fish, date: dateStr }).list;
+  if (!cand.length) return clearAlternative();
+  var rated = await altTimeout(Promise.all(cand.map(function(c) { return altRate(c, dateStr, fish).catch(function() { return null; }); })), 8000);
+  // The page may have moved on while the readings came in.
+  if (tok !== _altToken) return;
+  if (!rated) return clearAlternative();
+  if (!selectedRiver || selectedRiver.split(',')[0].trim() !== here || getTripDateStr() !== dateStr) return;
+  var alt = pickAlternative(rated.filter(Boolean));
+  window._altLast = { mode: mode, candidates: cand, rated: rated, picked: alt };   // for tests
+  if (!alt) return clearAlternative();
+  var el = document.getElementById('tp-alt'); if (!el) return;
+  var t = alternativeText(alt, mode);
+  el.textContent = '';
+  var add = function(tag, cls, text) { var n = document.createElement(tag); n.className = cls; n.textContent = text; el.appendChild(n); return n; };
+  add('div', 'tp-alt-h', t.heading);
+  if (t.unrated) add('p', 'tp-alt-unrated', t.unrated);
+  add('div', 'tp-alt-name', secLabel(alt.section));
+  var meta = add('div', 'tp-alt-meta', ''); 
+  [t.rating, t.drive].forEach(function(x) { var sp = document.createElement('span'); sp.textContent = x; meta.appendChild(sp); });
+  var btn = add('button', 'tp-goto-btn tp-alt-btn', t.button);
+  btn.type = 'button';
+  btn.setAttribute('data-goto-section', alt.section);
+  btn.setAttribute('data-goto-species', fish);
+  btn.setAttribute('data-alt-reach', alt.section);
+  el.hidden = false;
+  var key = here + '|' + alt.section + '|' + fish + '|' + dateStr;
+  if (!_altShown[key]) { _altShown[key] = true; track('Alternative Reach Shown', { river: here, alt: alt.section, rating: alt.word, primary: mode === 'unrated' ? 'unrated' : 'tough' }); }
+}
+function scheduleAlternative() { setTimeout(function() { try { updateAlternative(window._pillState); } catch (e) {} }, 0); }
+
+// The short note under the pill when conditions are Marginal or Tough (TJ, 2026-11-03): why this reach, what holds the
+// rating down, and whether that reading is measured, modelled or estimated. limitRead() in the core words the second
+// half; this adds why the reach is on screen, only when the app picked it from season and distance.
+function renderPillNote(st) {
+  var el = document.getElementById('tp-limit');
+  if (!el) return;
+  el.hidden = true; el.textContent = '';
+  if (!st || st.unknown || st.closed) return;
+  var lim = limitRead({ conf: st.conf, parts: st.parts, cfg: st.cfg, flow: st.flow, flowKind: st.flowKind,
+    waterC: st.waterC, waterKind: st.waterKind, fish: st.fish });
+  if (!lim) return;
+  var why = '';
+  if (window._pickSource === 'search' && !window._upstreamFrom) {
+    why = (document.getElementById('tp-drive-time') && document.getElementById('tp-drive-time').style.display !== 'none')
+      ? 'Picked for season and distance. ' : 'Picked for the season. ';
+  }
+  el.textContent = why + lim.text;
+  el.hidden = false;
 }
 
 // The Conditions pill's text and colour, for the hero and the staging card's re-rate (confidenceRead in the core).
@@ -3866,50 +3959,6 @@ function confidencePill(conf, potential) {
   var m = window._pillMissing || {};
   return confidenceRead(conf, { potential: potential, flowMissing: m.flowMissing, weatherMissing: m.weatherMissing,
     flowIrrelevant: !!window._stagingInLake });
-}
-
-// The drive verdict under the headline. Same driveVerdict() and score; when the pill can't rate the day (no flow reading
-// or no weather) the verdict makes no call either, instead of "Worth the drive" beside "Unknown".
-function driveVerdictShown(score, driveMin, closed) {
-  if (closed) return driveVerdict(score, driveMin, closed);
-  if (confidencePill(scoreToConfidence(score), false).unknown) return { text: '~ Not rated. Check the gauge before you drive', cls: 'verdict-maybe' };
-  return driveVerdict(score, driveMin, closed);
-}
-
-// "How this was rated" under the Conditions pill (Phase 2, 2026-11-02). r: {parts (conditionsParts), base, baseFrom
-// (the ranked river the base came from, with its parts), potential, total, here}; null hides it. Every number here
-// comes from the scoring functions; this only lays them out.
-function renderRatingBreakdown(r) {
-  var pill = document.getElementById('tp-confidence');
-  if (!pill) return;
-  var el = document.getElementById('tp-rating');
-  if (!el) { el = document.createElement('details'); el.id = 'tp-rating'; el.className = 'tp-rating'; pill.parentNode.insertBefore(el, pill.nextSibling); }
-  if (!r) { el.hidden = true; return; }
-  el.hidden = false;
-  var pts = function(n) { return n > 0 ? '+' + n : n < 0 ? '\u2212' + Math.abs(n) : '0'; };
-  var rows = [];
-  var p = r.parts;
-  if (!p.replaced) {
-    var bf = r.baseFrom;
-    if (bf && bf.parts) {
-      var seasonLbl = (bf.notes && bf.notes.length ? bf.notes.join(', ') : 'Season') + (bf.name && bf.name !== r.here ? ' (scored on ' + secShort(bf.name) + ')' : '');
-      rows.push([seasonLbl.charAt(0).toUpperCase() + seasonLbl.slice(1), bf.parts.season]);
-      if (bf.parts.drive) rows.push(['Drive time (' + bf.driveTime + ' min)', bf.parts.drive]);
-      if (bf.parts.tech) rows.push(['Method picked', bf.parts.tech]);
-    } else {
-      rows.push(['Season (estimate from the species calendar)', r.base]);
-    }
-  }
-  p.parts.forEach(function(x) { rows.push([x.label, x.pts]); });
-  var notes = [];
-  if (!p.parts.length && !p.replaced) notes.push('No flow reading for this date, so water and sky aren\u2019t scored.');
-  if (p.cap) notes.push(p.cap.label + '.');
-  if (r.potential) notes.push('Flow is the estimate for this date.');
-  var word = scoreToConfidence(r.total).word;
-  el.innerHTML = '<summary>How this was rated</summary>'
-    + '<ul>' + rows.map(function(x) { return '<li><span>' + x[0] + '</span><span class="tp-rating-pts">' + pts(x[1]) + '</span></li>'; }).join('') + '</ul>'
-    + (notes.length ? '<p>' + notes.join(' ') + '</p>' : '')
-    + '<p>Total ' + r.total + ', rated ' + word + ' (10 or more is Excellent, 6 Good, 2 Marginal, under 2 Tough).</p>';
 }
 
 function localTodayStr() {
@@ -4012,6 +4061,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
 
   // Render the conditions tile grid (hero). Redrawn below once the species is settled (the water tile's wording).
   var _tileOpts = null;
+  window._tileEffects = null; // set below, once the rating is known (ratingEffects in the core)
   (function(){
     var _td = document.getElementById('trip-date');
     var _ds = _td && _td.value ? _td.value : (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
@@ -4024,6 +4074,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         topMethod: topMethod, isToday: _isToday, weatherOk: weatherOk,
         flowEst: _isToday ? null : window._flowEst
       };
+    window._tileOpts = _tileOpts;
     try { renderConditionTiles(_tileOpts); } catch(_tileErr) { console.warn('condition tiles', _tileErr); }
   })();
 
@@ -4593,17 +4644,15 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   var _confEl = document.getElementById('tp-confidence');
   window._pillMissing = { flowMissing: _heroIsToday && flow == null, weatherMissing: !weatherOk };
   if (_confEl) {
-    var _topScore = rankedRivers && rankedRivers[0] ? rankedRivers[0].score : null;
-    var _baseFrom = (_topScore != null && rankedRivers[0].parts) ? rankedRivers[0] : null;
-    // In expert mode, estimate score from season quality
-    if (_topScore == null) {
-      var _cfg2 = getRiverConfig(selectedRiver);
-      var _bka2 = Array.isArray(speciesKey)?speciesKey:(speciesKey?[speciesKey]:[]);
-      var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
-      var _spName = _bka2.length ? _sm2[_bka2[0]] : null;
-      var _seas = _spName ? getCurrentSeason(_spName) : null;
-      _topScore = _seas ? (_seas.quality==='peak'?10:_seas.quality==='good'?6:_seas.quality==='slow'?2:0) : 4;
-    }
+    // The pill rates the reach on screen on its conditions: season and species, then the water. Same inputs as the
+    // weekly email (scoreDay). Drive time and the method bonus rank rivers in rankRivers() but are not part of this
+    // rating (TJ, 2026-11-02), so it no longer depends on which river ranked first.
+    var _hereSec = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+    var _bka2 = Array.isArray(speciesKey) ? speciesKey : (speciesKey ? [speciesKey] : []);
+    var _sm2 = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
+    // The fish the headline names (window._readSpecies, as the temperature rule below), else the picks.
+    var _pillFish = window._readSpecies ? [window._readSpecies] : _bka2.map(function(k){ return _sm2[k]; }).filter(Boolean);
+    var _topScore = sectionSeasonScore(_hereSec, _pillFish, getTripDateStr(), _hereSec).score;
     // Add the water (or the staging strength for fish still in the lake). Same function as the weekly email.
     // A future date has no reading; days 1 to 2 use the flow estimate, which can only pull the rating down.
     var _cfgPill = getRiverConfig(selectedRiver), _baseScore = _topScore;
@@ -4629,14 +4678,18 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _confEl.title = _cr.title || (_rate.potential ? 'Based on the flow estimate for this date. Check the gauge on the day.' : '');
     }
     _confEl.style.display = 'inline-block';
-    // How this was rated: the same steps the score took (conditionsParts in the core), nothing recomputed by hand.
+    // The tiles say how each reading moved the rating (conditionsParts in the core, nothing recomputed by hand).
     var _closedPill = _sectionClosed || _spClosedPill;
     var _crNow = !_closedPill ? confidencePill(_conf, _rate.potential) : null;
-    renderRatingBreakdown(_closedPill || (_crNow && _crNow.unknown) ? null : {
-      parts: conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx),
-      base: _baseScore, baseFrom: _baseFrom, potential: _rate.potential, total: _topScore,
-      here: selectedRiver ? selectedRiver.split(',')[0].trim() : ''
-    });
+    var _partsNow = _closedPill ? null
+      : conditionsParts(_baseScore, _cfgPill, _rate.flow != null ? _rate.flow : flow, wt, cloudPct, window._stagingPct, window._stagingInLake, _tctx);
+    window._tileEffects = (_closedPill || (_crNow && _crNow.unknown)) ? null : ratingEffects(_partsNow);
+    if (_tileOpts) { try { renderConditionTiles(_tileOpts); } catch(_tileErr4) {} }
+    window._pillState = { conf: _conf, parts: _partsNow, cfg: _cfgPill, closed: !!_closedPill, unknown: !!(_crNow && _crNow.unknown),
+      flow: _rate.flow != null ? _rate.flow : flow, flowKind: (_rate.flow != null && flow == null) ? 'estimate' : 'live',
+      waterC: wt, waterKind: (window._waterTempInfo && window._waterTempInfo.kind === 'measured') ? 'measured' : 'modelled',
+      fish: window._readSpecies || null };
+    renderPillNote(window._pillState);
   }
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
@@ -4655,15 +4708,11 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _lk = window._beginnerLocKey || '';
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
 
-    // Drive worthiness verdict: combines score and distance (driveVerdict in conditions-core.js)
-    var _dv = driveVerdictShown(_topScore, _dt, _sectionClosed);
-    var _worthIt = _dv.text, _verdictCls = _dv.cls;
-
-    _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>'
-      + '<span class="drive-verdict ' + _verdictCls + '">' + _worthIt + '</span>'
-      + '<span class="drive-note">est. from city centre</span>';
+    _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>';
     _driveEl.style.display = 'block';
   }
+  // The pill note says "season and distance" only once the drive line is up.
+  if (window._pillState) { renderPillNote(window._pillState); scheduleAlternative(); }
 
   // The legal-season pass can name a different fish (a closed species swapped for an open one). Keep the window, the
   // water wording and the tiles on that fish too.
@@ -4677,6 +4726,8 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _whyEl = document.getElementById('tp-why');
     if (!_whyEl) return;
     _whyEl.innerHTML = '';
+    var _notesEl = document.getElementById('tp-notes');
+    if (_notesEl) _notesEl.hidden = true; // shown below, only when there are lines
     var _trip = getTripDateStr();
     var _here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
     var _sp = window._shownSpeciesName || (_multiTarget ? _multiTarget[0] : null);
@@ -4700,6 +4751,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       water: window._readSpecies === _sp ? window._waterRead : waterTempRead(wt, window._waterTempInfo, { species: _sp, seasonal: _seas, weatherOk: weatherOk })
     });
     _whyEl.innerHTML = _lines.map(function(t) { return '<div class="why-row">' + t + '</div>'; }).join('');
+    if (_notesEl && _lines.length) _notesEl.hidden = false;
   })();
 
   // Species recommendation chips (no species selected)
@@ -4825,7 +4877,7 @@ function renderRiverRanker(locKey, maxMinutes) {
       setResHeader(selectedRiver);
       grid.querySelectorAll('.rrank-card').forEach(function(c){ c.style.outline = ''; });
       this.style.outline = '2px solid var(--fern)';
-      window._viewSource = 'nearby';
+      window._viewSource = 'nearby'; window._pickSource = 'nearby';
       renderResults();
     });
   });
@@ -5892,7 +5944,7 @@ function renderDefaultPreview() {
       document.getElementById('results').style.display = ''; document.getElementById('results').classList.add('active');
       window.scrollTo(0, 0);
       initNotifyBar();
-      window._viewSource = 'home-list';
+      window._viewSource = 'home-list'; window._pickSource = 'home-list';
       renderResults();
       setTimeout(loadBaitImages, 800);
     });
