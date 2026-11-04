@@ -3298,7 +3298,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* The form card is pulled up over the photo edge; a paper lip behind the tabs keeps their text readable. */
   #landing .mode-wrap { background: var(--ed-paper, #fbf9f5); border-radius: 6px 6px 0 0; }
   /* Room between the photo and the mode tabs (TJ): the card is pulled 30px up, so this margin is what is left over. */
-  #landing .hero-photo { margin-bottom: 3rem; }
+  #landing .hero-photo { margin-bottom: .8rem; }
   @media (max-width: 600px) { #landing .hero-photo { margin-bottom: 2.6rem; } }
   /* The outlook link now sits under the main button (TJ, 2026-11-03): a plain teal hyperlink, centred. */
   #landing .form-bottom .hero-outlook { display: flex; justify-content: center; margin: .35rem auto 0; }
