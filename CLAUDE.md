@@ -146,7 +146,7 @@ short-name splits accept either character.
   logo-navy (`#0e2a4a`) circle (TJ's pick 2026-10-19; the earlier teal fish looked too much like Fishbrain's).
   `favicon.ico` (16/32/48), `icon-192.png` and `icon-512.png` are rendered from it; `apple-touch-icon.png` and
   `icon-maskable-512.png` use a full-bleed navy square with the trout inside the safe zone. Every page head carries the
-  same four icon tags with `?v=3` (bump it when the icon changes). The header logo `images/brand/logo.png` is separate.
+  same four icon tags with `?v=3` (bump it when the icon changes). The app headers (landing and results) show `favicon.svg` too (TJ, 2026-11-04: one mark everywhere); `images/brand/logo.png` is no longer used on the site.
 
 ## Workflow
 
