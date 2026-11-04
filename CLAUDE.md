@@ -560,6 +560,10 @@ Merged recently:
   Checked with mocked gauge and weather at 390 and 1280 px (no scroll, no page errors), since cloud sessions can't reach the APIs: look
   at a real preview. New river pages with a `.now` block and an app link get the strip by adding the two script tags.
 
+- **Closed spots line** (TJ, 2026-11-04): access spots closed on the trip date are no longer a red box at the top of the
+  Access Points card. They are one muted line each at the bottom of the card list ("Closed on this date: <spot>." plus the
+  reason), with the regs source line under them (`.closed-notice.cn-line`).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

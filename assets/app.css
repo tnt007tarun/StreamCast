@@ -2906,6 +2906,12 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .closed-notice .cn-lbl { font-size:var(--fs-label); color:var(--bad); }
   #results .closed-notice li { font-size:var(--fs-base); color:var(--text-body); }
   #results .closed-notice .cn-foot { font-size:var(--fs-sm); color:var(--text-muted); opacity:1; }
+  /* One quiet line under the open spots (TJ, 2026-11-04: no red box at the top). */
+  #results .closed-notice.cn-line { background:none; border:0; border-top:1px solid var(--line, #e2ded6); border-radius:0;
+    padding:var(--sp-3) 0 0; margin:var(--sp-4) var(--sp-5) var(--sp-4); }
+  #results .closed-notice.cn-line p { margin:0 0 .25rem; font-size:var(--fs-sm); line-height:1.5; color:var(--text-muted); }
+  #results .closed-notice.cn-line strong { color:var(--text-body); font-weight:600; }
+  #results .closed-notice.cn-line .cn-foot { margin:0; font-size:12px; }
 
   /* map */
   #results .agrid-map { background:var(--surface-sunk); }
