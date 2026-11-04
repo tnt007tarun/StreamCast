@@ -496,7 +496,7 @@ Merged recently:
   removed. Float tip is TJ's wording: "Cast upstream, keep the line off the water, set the hook when the float stops or drops."
   Gear cards: "Fish it anywhere, always", two "Deadly" lines and "When nothing else works" were not TJ's words and are now plain.
   Still to check with TJ, other superlatives on the gear cards (`.bcond` in `index.html`): Roe Bag "most effective float fishing bait
-  in Ontario rivers", Soft Bead "Highly effective", Hard Bead "top producers", Little Cleo "Top producer at harbour mouths",
+  in Ontario rivers", Soft Bead "Highly effective", Little Cleo "Top producer at harbour mouths",
   Vibrax "Best in overcast conditions", Woolly Bugger "Grand River standard". Dead `icon:` fields in `RIVER_REGS` and `RIVER_CONFIG`
   (📋 🚫 💧 🔁) are not rendered; left alone. Audit phases still open: 3 (visual system) and 4 (homepage photo and river-page Today strips).
 
