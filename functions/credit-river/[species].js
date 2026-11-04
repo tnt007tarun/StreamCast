@@ -192,6 +192,10 @@ a{color:var(--fern)}
 .mast .wrap{display:flex;align-items:center;justify-content:space-between;
 padding:1.1rem 1.4rem;max-width:900px}
 .mast .brand{font:italic 700 1.05rem/1 var(--serif);color:var(--ink);text-decoration:none}
+.mast .brand,.mast .wrap>a:first-child{display:inline-flex;align-items:center;gap:.5rem}
+.mast .brand img,.mast .wrap>a:first-child img{width:26px;height:26px;display:block;flex:none}
+@media(max-width:360px){.mast .brand,.mast .wrap>a:first-child{gap:.35rem;font-size:.95rem}.mast .brand img,.mast .wrap>a:first-child img{width:22px;height:22px}.mast nav{gap:.75rem}}
+@media(max-width:340px){.mast nav a[href="/"]{display:none}}
 .mast nav{display:flex;gap:1.3rem}
 .mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 color:var(--muted);text-decoration:none}
@@ -243,7 +247,7 @@ footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
 </head>
 <body>
 <header class="mast"><div class="wrap">
-  <a class="brand" href="/">HereFishyFishy</a>
+  <a class="brand" href="/"><img src="/favicon.svg?v=3" alt="" width="26" height="26">HereFishyFishy</a>
   <nav><a href="/rivers/">Rivers</a><a href="/guides/">Guides</a><a href="/">Conditions</a></nav>
 </div></header>
 
