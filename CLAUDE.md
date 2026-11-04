@@ -161,6 +161,8 @@ short-name splits accept either character.
 4. Open a PR. In cloud sessions `gh pr create` fails (GraphQL is blocked), so use
    `gh api repos/tnt007tarun/StreamCast/pulls -f title=... -f head=... -f base=main -F body=@file`.
 5. The PR description says what changed, why, and what you tested. TJ merges.
+   Avoid stacked PRs (a PR whose base is another `claude/` branch). If one is unavoidable, retarget it to `main` before
+   TJ merges: #129 and #130 merged into their parent branches and never reached the site (fixed in #132, 2026-11-03).
 6. After a merge, remind TJ to request indexing in Search Console for any new URL.
 
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
