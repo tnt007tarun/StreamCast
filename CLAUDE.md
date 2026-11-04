@@ -560,6 +560,11 @@ Merged recently:
   Checked with mocked gauge and weather at 390 and 1280 px (no scroll, no page errors), since cloud sessions can't reach the APIs: look
   at a real preview. New river pages with a `.now` block and an app link get the strip by adding the two script tags.
 
+- **Gear as a rig ladder** (TJ picked option B, 2026-11-04): the Gear card lists the setup rod to hook, one row per part with
+  a small drawing (`gearIcon(label, kind)` in `app.js`; kind is fly, pin for centrepin float, or spin), joined by a thin line.
+  The specs are unchanged; the float setup now lists Float and Weights before Leader (rig order). Styles: `.gear-lad` at the
+  end of `app.css` (unlayered, so it beats the old `.gear-item` boxes). A new gear label needs an icon in `gearIcon()`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
