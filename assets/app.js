@@ -82,6 +82,8 @@ document.addEventListener('click', function(e) {
     } else if (el.classList.contains('regs-details-toggle')) {
       // The inline handler has already run, so the label shows the new state.
       if (/\u2212/.test(el.textContent)) track('Regs Details Opened', { river: river });
+    } else if (el.hasAttribute('data-alt-reach')) {
+      track('Alternative Reach Clicked', { river: river, alt: el.getAttribute('data-alt-reach') });
     } else if (el.classList.contains('gcard') || el.classList.contains('gmini')) {
       track('Guide Card Clicked', { url: href, slot: el.classList.contains('gmini') ? 'list' : 'card' });
     }
@@ -522,6 +524,7 @@ function renderStagingCard(sectionName, weather) {
           flow: _reRate.flow != null ? _reRate.flow : window._pillFlow, flowKind: (_reRate.flow != null && window._pillFlow == null) ? 'estimate' : 'live' });
         window._pillState = _stRe;
         renderPillNote(_stRe);
+        scheduleAlternative();
       }
     })();
     // If this card is telling the user the fish are STAGING in the lake, the Technique &
@@ -2419,13 +2422,11 @@ function autoUpstreamSection() {
   var cfg = here ? getRiverConfig(here) : null;
   if (!cfg || stay[here]) return null;
   var trip = getTripDateStr();
-  var mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'];
-  if (isLakeRunBrownSection(here)) mig.push('Brown Trout');
   var names = {brown:'Brown Trout',rainbow:'Rainbow Trout',brook:'Brook Trout',steelhead:'Steelhead',chinook:'Chinook Salmon',coho:'Coho Salmon'};
   var picked = (selectedSpecies || []).map(function(k){ return names[k]; }).filter(Boolean);
   var want = picked.length ? picked
     : (cfg.species || []).filter(function(n){ var q = getCurrentSeason(n, trip, here); return q && q.quality !== 'absent'; });
-  want = want.filter(function(n){ return mig.indexOf(n) !== -1; });
+  want = upstreamMigratoryWant(here, want);
   if (!want.length) return null;
   // Same test as the hero's staging headline: a picked run species that is out of season, at a mouth.
   if (picked.length === 1 && STAGING_ZONES[here] && /Chinook|Coho|Steelhead/.test(picked[0])) {
@@ -2537,7 +2538,7 @@ async function renderResults(){
 
   var airTemp=null, cloudPct=null, weatherOk=false, _stagingWeather=null;
   // Per search: a failed fetch must not reuse the last river's cloud forecast or sunrise.
-  window._periodCloud = null; window._sun = null; window._sunNext = null; window._pillMissing = null;
+  window._periodCloud = null; window._sun = null; window._sunNext = null; window._pillMissing = null; hideAlternative();
   try{
     var wx=await fetchWeather(cfg);
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
@@ -3853,6 +3854,86 @@ function renderConditionTiles(opts) {
     tile('Top Bait', baitShort, baitMeaning, 'good', baitShort.length > 8);
 }
 
+// ── ALTERNATIVE REACH (TJ, 2026-11-03) ────────────────────────────────────────────────────────────
+// Only today, and only when the reach on screen rates Tough (or is unrated because its gauge is down). One other
+// reach that rates Good or Excellent on its OWN gauge, weather and water, within 20 extra minutes of driving, shown
+// under the pill note. The primary pick, the ranking and the scores are not touched. Rules in conditions-core.js
+// (alternativeMode, alternativeCandidates, rateReachToday, pickAlternative, alternativeText).
+var _altToken = 0, _altShown = {}, _altCache = {};
+function altCached(key, make) {
+  var c = _altCache[key];
+  if (c && Date.now() - c.t < 600000) return c.p;
+  var p = make(); _altCache[key] = { t: Date.now(), p: p }; return p;
+}
+function altTimeout(p, ms) { return Promise.race([p, new Promise(function(res) { setTimeout(function() { res(null); }, ms); })]); }
+function clearAlternative() {
+  var el = document.getElementById('tp-alt');
+  if (el) { el.hidden = true; el.textContent = ''; }
+}
+function hideAlternative() { _altToken++; clearAlternative(); }
+function riverDriveMin(r, locKey) {
+  var dk = driveKeyFor(locKey), cfg = RIVER_CONFIG[r.name];
+  var t = (r.times && (r.times[locKey] || r.times[dk])) || (cfg && cfg.driveTime && (cfg.driveTime[locKey] || cfg.driveTime[dk]));
+  return t === undefined ? null : t;
+}
+// Everything one candidate needs, from its own gauge and coordinates. null on any failure.
+async function altRate(c, dateStr, fish) {
+  var cfg = getRiverConfig(c.section);
+  if (!cfg || !cfg.gauge) return null;
+  var lf = await altCached('f:' + cfg.gauge, function() { return fetchFlow(cfg.gauge); });
+  var wx = await altCached('w:' + cfg.lat + ',' + cfg.lng, function() { return fetchWeather(cfg).catch(function() { return null; }); });
+  if (!lf || lf.flow == null || isNaN(lf.flow) || !wx || wx.airTemp == null || isNaN(wx.airTemp) || wx.cloudPct == null) return null;
+  // A live reading from the last three hours (the age the flow card flags as stale).
+  var at = typeof lf.at === 'string' ? Date.parse(lf.at) : NaN;
+  if (isNaN(at) || Date.now() - at > 180 * 60000) return null;
+  var info = await altCached('t:' + c.section, function() { return waterTempFor(c.section, cfg, dateStr, true, wx.airTemp).catch(function() { return null; }); });
+  var lakes = await fetchLakeTemps();
+  var z = stagingSectionFor(c.section);
+  var r = rateReachToday({ section: c.section, species: fish, date: dateStr, flow: lf.flow,
+    waterTemp: info && info.value != null ? info.value : null, cloudPct: wx.cloudPct, windDir: wx.windDir, windSpd: wx.windSpeed,
+    lakeTemp: z && lakes && lakes[STAGING_ZONES[z].key] != null ? lakes[STAGING_ZONES[z].key] : null });
+  var waterOk = !r.usesWater || (info && (info.kind === 'measured' || info.kind === 'model'));
+  return Object.assign({}, c, { word: r.word, reliable: !!(waterOk && !r.estimatedLake) });
+}
+async function updateAlternative(st) {
+  var tok = ++_altToken;   // a newer call (the staging re-rate) cancels this one; a shown card stays until it is replaced or no longer applies
+  var fish = window._readSpecies, dateStr = getTripDateStr();
+  var mode = st ? alternativeMode({ word: st.conf && st.conf.word, unknown: st.unknown, flowMissing: (window._pillMissing || {}).flowMissing,
+    weatherMissing: (window._pillMissing || {}).weatherMissing, closed: st.closed, isToday: dateStr === localTodayStr(), species: fish }) : null;
+  var loc = window._beginnerLocKey, here = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
+  if (!mode || !loc || !here) return clearAlternative();
+  var ranked = getRivers(loc, 180, Infinity).map(function(r) { return { name: r.name, drive: riverDriveMin(r, loc) }; });
+  var me = ranked.filter(function(r) { return r.name === here; })[0];
+  var cand = alternativeCandidates({ primary: here, primaryDrive: me ? me.drive : null, ranked: ranked, species: fish, date: dateStr }).list;
+  if (!cand.length) return clearAlternative();
+  var rated = await altTimeout(Promise.all(cand.map(function(c) { return altRate(c, dateStr, fish).catch(function() { return null; }); })), 8000);
+  // The page may have moved on while the readings came in.
+  if (tok !== _altToken) return;
+  if (!rated) return clearAlternative();
+  if (!selectedRiver || selectedRiver.split(',')[0].trim() !== here || getTripDateStr() !== dateStr) return;
+  var alt = pickAlternative(rated.filter(Boolean));
+  window._altLast = { mode: mode, candidates: cand, rated: rated, picked: alt };   // for tests
+  if (!alt) return clearAlternative();
+  var el = document.getElementById('tp-alt'); if (!el) return;
+  var t = alternativeText(alt, mode);
+  el.textContent = '';
+  var add = function(tag, cls, text) { var n = document.createElement(tag); n.className = cls; n.textContent = text; el.appendChild(n); return n; };
+  add('div', 'tp-alt-h', t.heading);
+  if (t.unrated) add('p', 'tp-alt-unrated', t.unrated);
+  add('div', 'tp-alt-name', secLabel(alt.section));
+  var meta = add('div', 'tp-alt-meta', ''); 
+  [t.rating, t.drive].forEach(function(x) { var sp = document.createElement('span'); sp.textContent = x; meta.appendChild(sp); });
+  var btn = add('button', 'tp-goto-btn tp-alt-btn', t.button);
+  btn.type = 'button';
+  btn.setAttribute('data-goto-section', alt.section);
+  btn.setAttribute('data-goto-species', fish);
+  btn.setAttribute('data-alt-reach', alt.section);
+  el.hidden = false;
+  var key = here + '|' + alt.section + '|' + fish + '|' + dateStr;
+  if (!_altShown[key]) { _altShown[key] = true; track('Alternative Reach Shown', { river: here, alt: alt.section, rating: alt.word, primary: mode === 'unrated' ? 'unrated' : 'tough' }); }
+}
+function scheduleAlternative() { setTimeout(function() { try { updateAlternative(window._pillState); } catch (e) {} }, 0); }
+
 // The short note under the pill when conditions are Marginal or Tough (TJ, 2026-11-03): why this reach, what holds the
 // rating down, and whether that reading is measured, modelled or estimated. limitRead() in the core words the second
 // half; this adds why the reach is on screen, only when the app picked it from season and distance.
@@ -4631,7 +4712,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     _driveEl.style.display = 'block';
   }
   // The pill note says "season and distance" only once the drive line is up.
-  if (window._pillState) renderPillNote(window._pillState);
+  if (window._pillState) { renderPillNote(window._pillState); scheduleAlternative(); }
 
   // The legal-season pass can name a different fish (a closed species swapped for an open one). Keep the window, the
   // water wording and the tiles on that fish too.

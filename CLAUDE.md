@@ -467,6 +467,19 @@ Merged recently:
   at the mouth" (Flow, fish in the lake); a future date with no flow says "Not scored for this date"; a missing reading says
   "No data, not rated" (neutral, never "Holds it back"). Scoring, ranking, regs and species logic unchanged (8 rendered
   cases match #130 apart from the label).
+- **Phase 3c, alternative reach** (TJ, 2026-11-03, on #130): a compact "Consider another nearby reach" section (`#tp-alt`)
+  under the pill and its note, with the existing "See ... →" button (`goToSection()`). Rules (all TJ): only when today's
+  pill is Tough, or Unknown because the primary gauge is down while weather is fine (the card then says conditions here
+  are unrated because the gauge is not reporting, no comparison); never on future dates; the alternative must be Good or
+  Excellent, at most 20 minutes farther to drive than the primary (20 allowed, 21 not), one only, same fish as the
+  headline. Core (`conditions-core.js`): `alternativeMode()`, `alternativeCandidates()` (resolves each reach to its final
+  upstream reach with `upstreamMigratoryWant()`, dedupes, then `sectionClosedOn()` and `speciesFishableIn()`),
+  `rateReachToday()` (same chain as `scoreDay()`), `pickAlternative()`, `alternativeText()`. App (`updateAlternative()`):
+  each candidate is rated on its own gauge, its own weather and its own water read; reliable means live flow no older than
+  3 h, weather present, a real water read, and no estimated lake temperature on run days; otherwise nothing is shown. No
+  live CVC water for alternatives (modelled). Ranking, pill scoring, regs and fishing windows are unchanged. Umami:
+  `Alternative Reach Shown {river, alt, rating, primary}` (once per river/alt/species/date) and
+  `Alternative Reach Clicked {river, alt}`. Tests: `worker/reads.test.mjs`.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -475,7 +488,7 @@ Merged recently:
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
-  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
@@ -530,8 +543,8 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-16. **Alternative reach when the pick is Tough (analysis only, TJ 2026-11-03):** a "Consider another nearby reach" line was
-   investigated, not built. Findings and the decisions TJ still has to make are in the PR #130 thread. Nothing in ranking changed.
+16. **Alternative reach (built 2026-11-03, Phase 3c):** see Current state. Open: wording "Conditions there" vs "Conditions
+   here"; alternatives use regional weather and modelled water (no live CVC); judge on Shown vs Clicked in Umami.
 
 15. **Pill basis (done 2026-11-02, Phase 3):** the pill now rates the viewed reach on conditions only, like the weekly
    email, and the drive verdict chip is gone (TJ approved).

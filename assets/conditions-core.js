@@ -3291,6 +3291,99 @@ function limitRead(o) {
   return { text: 'The season calendar rates this a slow time' + (o.fish ? ' for ' + o.fish : '') + '.', kind: 'calendar' };
 }
 
+// ── ALTERNATIVE REACH (TJ, 2026-11-03) ──────────────────────────────────────────────────────────
+// When the reach on screen rates Tough today, the app may offer ONE other nearby reach that rates Good or
+// Excellent. It never replaces the pick and never touches the ranking: the app finds candidates here, rates each
+// with its own gauge and weather, and shows the best. All pure, so the cases can be tested without a browser.
+var ALT_MAX_EXTRA_MIN = 20;   // at most this many extra minutes of driving over the reach on screen (20 is allowed, 21 is not)
+
+// Which migratory fish the upstream rule applies to on a reach (lake-run browns count where they run).
+function upstreamMigratoryWant(sectionName, speciesNames) {
+  var here = String(sectionName || '').split(',')[0].trim();
+  var mig = ['Steelhead', 'Chinook Salmon', 'Coho Salmon'];
+  if (isLakeRunBrownSection(here)) mig.push('Brown Trout');
+  return (speciesNames || []).filter(function(n) { return mig.indexOf(n) !== -1; });
+}
+
+// 'tough': the reach on screen rates Tough. 'unrated': its gauge is not reporting (the pill says Unknown) but the
+// weather is fine, so a reach with live readings may still be offered. Anything else, and every other date than today,
+// gets nothing. o: {word, unknown, flowMissing, weatherMissing, closed, isToday, species}
+function alternativeMode(o) {
+  if (!o || !o.isToday || o.closed || !o.species) return null;
+  if (o.unknown) return (o.flowMissing && !o.weatherMissing) ? 'unrated' : null;
+  return o.word === 'Tough' ? 'tough' : null;
+}
+
+// Reaches worth rating, already filtered for everything that can be decided without a network call.
+// o: {primary, primaryDrive, ranked: [{name, drive}] (every reach in range, with its own drive time), species, date}
+// Each ranked reach is first resolved to the reach the app would actually open (the upstream rule), then kept only if
+// it is not the reach on screen, is open and fishable for that fish on the date, has a drive time, and is within
+// ALT_MAX_EXTRA_MIN of the reach on screen. One entry per final reach. Returns {list, skipped: [{name, why}]}.
+function alternativeCandidates(o) {
+  var list = [], skipped = [], seen = {};
+  var primary = String(o.primary || '').split(',')[0].trim();
+  var driveOf = {};
+  (o.ranked || []).forEach(function(r) { driveOf[r.name] = r.drive; });
+  if (o.primaryDrive == null || !o.species || !o.date) return { list: list, skipped: skipped };
+  (o.ranked || []).forEach(function(r) {
+    var final = r.name, want = upstreamMigratoryWant(r.name, [o.species]);
+    if (want.length && upstreamWindowOn(o.date)) { var up = furthestUpstreamOpen(r.name, want, o.date); if (up) final = up.section; }
+    if (final === primary) return skipped.push({ name: r.name, why: 'same as the reach on screen' });
+    if (seen[final]) return;   // two sections of one river that open the same reach
+    seen[final] = true;
+    var cfg = getRiverConfig(final);
+    if (!cfg) return skipped.push({ name: final, why: 'unknown reach' });
+    if (sectionClosedOn(cfg, o.date)) return skipped.push({ name: final, why: 'closed' });
+    if (!speciesFishableIn(final, o.species, o.date)) return skipped.push({ name: final, why: 'not fishable for ' + o.species });
+    var drive = driveOf[final];
+    if (drive == null) return skipped.push({ name: final, why: 'no drive time' });
+    var extra = drive - o.primaryDrive;
+    if (extra > ALT_MAX_EXTRA_MIN) return skipped.push({ name: final, why: 'over the drive cap (+' + extra + ' min)' });
+    list.push({ section: final, via: r.name, drive: drive, extra: extra });
+  });
+  return { list: list, skipped: skipped };
+}
+
+// One reach rated the way the pill rates it, from inputs the app gathers for that reach: its own gauge reading, its
+// own weather and water temperature, and (for migratory fish) the run read. Same chain as scoreWeek() in the weekly
+// email. o: {section, species, date, flow, waterTemp, cloudPct, windDir, windSpd, lakeTemp}
+// Returns {score, word, parts, usesWater, estimatedLake} (estimatedLake: the run read had no live lake temperature).
+function rateReachToday(o) {
+  var section = String(o.section || '').split(',')[0].trim();
+  var cfg = getRiverConfig(section);
+  var base = sectionSeasonScore(section, [o.species], o.date, section).score;
+  var stg = null;
+  if (['Chinook Salmon', 'Coho Salmon', 'Steelhead'].indexOf(o.species) !== -1) {
+    var z = stagingSectionFor(section);
+    if (z) stg = stagingRead(z, o.date, /Chinook|Coho/.test(o.species), o.species === 'Steelhead', o.lakeTemp, o.cloudPct, o.windDir, o.windSpd);
+  }
+  var inLake = !!(stg && stg.phase.mode === 'stage' && STAGING_ZONES[section]);
+  var parts = conditionsParts(base, cfg, o.flow, o.waterTemp, o.cloudPct, stg ? stg.pct : null, inLake, tempContext([o.species], o.date, section));
+  return { score: parts.total, word: scoreToConfidence(parts.total).word, parts: parts, usesWater: !parts.replaced,
+    estimatedLake: !!(stg && stg.tempIsEstimate) };
+}
+
+// The best of the rated candidates: Good or Excellent only, Excellent first, then the shortest extra drive, then name.
+// rated: [{section, extra, word, reliable}] (reliable: live gauge reading, its own weather, a real water or run read).
+function pickAlternative(rated) {
+  var rank = { Excellent: 2, Good: 1 };
+  var ok = (rated || []).filter(function(r) { return r.reliable && rank[r.word]; });
+  ok.sort(function(a, b) { return (rank[b.word] - rank[a.word]) || (a.extra - b.extra) || (a.section < b.section ? -1 : 1); });
+  return ok[0] || null;
+}
+
+// Wording, from the data. "Conditions there" (not "here") because "here" is the reach on screen.
+function alternativeText(alt, mode) {
+  var m = alt.extra;
+  return {
+    heading: 'Consider another nearby reach',
+    unrated: mode === 'unrated' ? 'Conditions here are unrated because the gauge is not reporting.' : '',
+    rating: 'Conditions there: ' + alt.word,
+    drive: m <= 0 ? 'No farther to drive.' : m < 5 ? 'A few minutes farther to drive.' : 'About ' + m + ' minutes farther to drive.',
+    button: 'See alternative reach \u2192'
+  };
+}
+
 // A flow estimate for a future day (worker/flowforecast.js, about {q, lead}) can pull the rating down on days 1
 // to 2, never lift it, and the pill then reads "Potentially ..." (TJ, 2026-10-24). scoreFn(flow) rates the day with
 // that flow (null for no flow). Later days are too uncertain to move the rating.
@@ -3386,6 +3479,8 @@ if (typeof globalThis !== 'undefined') {
     stagingSectionFor: stagingSectionFor, bringPhraseFor: bringPhraseFor, stagingRead: stagingRead, waterTempFromHistory: waterTempFromHistory,
     regsRowMatches: regsRowMatches, upstreamWindowOn: upstreamWindowOn,
     sectionSeasonScore: sectionSeasonScore, conditionsScore: conditionsScore, flowCapScore: flowCapScore, flowBand: flowBand, scoreDay: scoreDay, ratingEffects: ratingEffects, limitRead: limitRead,
+    alternativeMode: alternativeMode, alternativeCandidates: alternativeCandidates, rateReachToday: rateReachToday, pickAlternative: pickAlternative,
+    alternativeText: alternativeText, upstreamMigratoryWant: upstreamMigratoryWant, ALT_MAX_EXTRA_MIN: ALT_MAX_EXTRA_MIN,
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,

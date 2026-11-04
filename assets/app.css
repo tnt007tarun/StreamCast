@@ -3150,6 +3150,14 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* Why this reach and what holds the rating down, only when conditions are Marginal or Tough. */
   #results .tp-limit { margin:-.25rem 0 .9rem; max-width:680px; font:400 .95rem/1.5 var(--font-body); opacity:.92; }
   #results .tp-limit[hidden] { display:none; }
+  /* One alternative reach, under the pill note, only when the pick rates Tough (or is unrated). */
+  #results .tp-alt { margin:0 0 1rem; padding:.75rem .9rem .8rem; max-width:680px; border:1px solid rgba(30,122,110,.35); border-radius:10px; background:rgba(30,122,110,.06); }
+  #results .tp-alt[hidden] { display:none; }
+  #results .tp-alt-h { font:600 var(--fs-label)/1 var(--font-body); letter-spacing:.08em; text-transform:uppercase; color:var(--fern); margin-bottom:.45rem; }
+  #results .tp-alt-unrated { margin:0 0 .45rem; font-size:.95rem; line-height:1.45; opacity:.92; }
+  #results .tp-alt-name { font:600 1.05rem/1.3 var(--font-body); }
+  #results .tp-alt-meta { display:flex; flex-wrap:wrap; gap:.1rem .7rem; margin-top:.15rem; font-size:.95rem; line-height:1.45; opacity:.92; }
+  #results .tp-alt .tp-goto-btn { margin:.55rem 0 0; }
   /* Notes: the why lines, under the tiles. */
   #results .tp-notes { margin:1rem 0 .25rem; }
   #results .tp-notes[hidden] { display:none; }

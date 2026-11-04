@@ -384,4 +384,85 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(C.limitRead(null), null);
 }
 
+
+// ── Alternative reach (TJ, 2026-11-03) ───────────────────────────────────────
+{
+  const base = { isToday: true, closed: false, species: 'Steelhead' };
+  // 1 and 2: only Tough triggers; Excellent, Good and Marginal never do
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base)), 'tough');
+  for (const w of ['Excellent', 'Good', 'Marginal']) assert.equal(C.alternativeMode(Object.assign({ word: w }, base)), null, w + ' gets no alternative');
+  // 4: unrated because the gauge is down, weather fine: allowed. Weather missing: never.
+  assert.equal(C.alternativeMode(Object.assign({ unknown: true, flowMissing: true, weatherMissing: false }, base)), 'unrated');
+  assert.equal(C.alternativeMode(Object.assign({ unknown: true, flowMissing: false, weatherMissing: true }, base)), null);
+  assert.equal(C.alternativeMode(Object.assign({ unknown: true, flowMissing: true, weatherMissing: true }, base)), null);
+  // 5: today only; closed reach and no named fish get nothing
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base, { isToday: false })), null);
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base, { closed: true })), null);
+  assert.equal(C.alternativeMode(Object.assign({ word: 'Tough' }, base, { species: null })), null);
+
+  const D = '2026-11-03';
+  const ranked = (m) => Object.entries(m).map(([name, drive]) => ({ name, drive }));
+  const L16 = 'Sixteen Mile Creek \u2014 Lower Reaches & Oakville Harbour', M16 = 'Sixteen Mile Creek \u2014 Middle Reaches & Main Valley';
+  const BL = 'Bronte Creek \u2014 Lower Estuary & Mouth', BM = 'Bronte Creek \u2014 Mid-Section & Provincial Park';
+  const HL = 'Lower Humber River', HM = 'Lower-Mid Humber (Old Mill to Eglinton)';
+  // 3 and 8: +20 is eligible, +21 is not, and the cap is relative to the reach on screen
+  let r = C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: 'Steelhead', date: D,
+    ranked: ranked({ 'Lower Credit River': 15, [M16]: 35, [BM]: 36, [HM]: 40 }) });
+  assert.deepEqual(r.list.map(x => x.section), [M16], 'exactly +20 stays, +21 and +25 go');
+  assert.equal(r.list[0].extra, 20);
+  assert.ok(r.skipped.some(x => x.name === BM && /over the drive cap \(\+21/.test(x.why)));
+  assert.ok(r.skipped.some(x => x.name === HM && /over the drive cap \(\+25/.test(x.why)), 'the +25 Humber case is not eligible');
+  // 10 and 11: duplicates collapse and the upstream rule decides the final reach
+  r = C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: 'Steelhead', date: D,
+    ranked: ranked({ 'Lower Credit River': 15, [L16]: 20, [M16]: 25, [BL]: 30, [BM]: 30, [HL]: 30, [HM]: 30 }) });
+  assert.deepEqual(r.list.map(x => x.section).sort(), [BM, HM, M16].sort(), 'one entry per final reach, each the reach the app opens');
+  assert.equal(r.list.find(x => x.section === M16).via, L16, 'the lower Sixteen Mile resolves upstream');
+  // the reach on screen is never its own alternative, even through an upstream resolve
+  r = C.alternativeCandidates({ primary: BM, primaryDrive: 30, species: 'Steelhead', date: D, ranked: ranked({ [BL]: 30, [BM]: 30 }) });
+  assert.equal(r.list.length, 0);
+  // 9: closed, out-of-season and unsuitable-species reaches never qualify
+  r = C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: 'Steelhead', date: D, ranked: ranked({
+    'Ganaraska River \u2014 Corbetts Dam (Closed Year-Round)': 20, 'Black Creek \u2014 Lower Watershed & Humber Confluence': 20,
+    'Lower Don River (Lake to Eglinton)': 20, 'Upper Credit River': 20 }) });
+  assert.equal(r.list.length, 0, JSON.stringify(r.skipped));
+  r = C.alternativeCandidates({ primary: BM, primaryDrive: 15, species: 'Brown Trout', date: D, ranked: ranked({ 'Upper Credit River': 20, 'Upper Humber River (Headwaters)': 20 }) });
+  assert.equal(r.list.length, 0, 'trout reaches that close Sept 30 are out on Nov 3');
+  // no drive time on the reach on screen, no named fish: nothing to compare
+  assert.equal(C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: null, species: 'Steelhead', date: D, ranked: ranked({ [M16]: 20 }) }).list.length, 0);
+  assert.equal(C.alternativeCandidates({ primary: 'Lower Credit River', primaryDrive: 15, species: null, date: D, ranked: ranked({ [M16]: 20 }) }).list.length, 0);
+
+  // rateReachToday uses the same chain as scoreDay (and the weekly email)
+  const cfgM = C.getRiverConfig(BM);
+  const ctxIn = { section: BM, species: 'Brown Trout', date: D, flow: cfgM.sweetMin + 0.2, waterTemp: 10, cloudPct: 80 };
+  const viaDay = C.scoreDay({ section: BM, species: ['Brown Trout'], date: D, flow: ctxIn.flow, waterTemp: 10, cloudPct: 80, stagingPct: null, fishInLake: false });
+  assert.equal(C.rateReachToday(ctxIn).score, viaDay.score, 'trout day matches scoreDay');
+  const cfgC = C.getRiverConfig('Lower Credit River');
+  const lt = 11, stg = C.stagingRead('Lower Credit River', D, false, true, lt, 60, 200, 10);
+  if (stg) {
+    const viaDay2 = C.scoreDay({ section: 'Lower Credit River', species: ['Steelhead'], date: D, flow: (cfgC.sweetMin + cfgC.sweetMax) / 2, waterTemp: 10, cloudPct: 60,
+      stagingPct: stg.pct, fishInLake: stg.phase.mode === 'stage' });
+    const mine = C.rateReachToday({ section: 'Lower Credit River', species: 'Steelhead', date: D, flow: (cfgC.sweetMin + cfgC.sweetMax) / 2, waterTemp: 10, cloudPct: 60, windDir: 200, windSpd: 10, lakeTemp: lt });
+    assert.equal(mine.score, viaDay2.score, 'run day matches scoreDay');
+    assert.equal(mine.estimatedLake, false);
+    assert.equal(C.rateReachToday({ section: 'Lower Credit River', species: 'Steelhead', date: D, flow: 8, waterTemp: 10, cloudPct: 60, windDir: 200, windSpd: 10, lakeTemp: null }).estimatedLake, true, 'no live lake temperature is flagged');
+  }
+  assert.equal(C.rateReachToday({ section: 'Lower Credit River', species: 'Steelhead', date: D, flow: cfgC.flowLow - 1, waterTemp: 10, cloudPct: 60, windDir: 200, windSpd: 10, lakeTemp: lt }).word, 'Tough', 'too low is Tough');
+
+  // pickAlternative: Good or Excellent, reliable only; Excellent first, then the shorter drive
+  const rate = (section, extra, word, reliable = true) => ({ section, extra, word, reliable });
+  assert.equal(C.pickAlternative([rate('a', 5, 'Marginal'), rate('b', 1, 'Tough')]), null, 'a Marginal alternative is never shown, even if closer');
+  assert.equal(C.pickAlternative([rate('a', 5, 'Excellent', false)]), null, 'unreliable data is never shown');
+  assert.equal(C.pickAlternative([rate('a', 5, 'Good'), rate('b', 18, 'Excellent')]).section, 'b', 'Excellent beats a closer Good');
+  assert.equal(C.pickAlternative([rate('a', 12, 'Excellent'), rate('b', 4, 'Excellent')]).section, 'b', 'then the shorter drive');
+  assert.equal(C.pickAlternative([]), null);
+  // wording
+  assert.equal(C.alternativeText({ word: 'Excellent', extra: 20 }, 'tough').drive, 'About 20 minutes farther to drive.');
+  assert.equal(C.alternativeText({ word: 'Good', extra: 0 }, 'tough').drive, 'No farther to drive.');
+  assert.equal(C.alternativeText({ word: 'Good', extra: 3 }, 'tough').drive, 'A few minutes farther to drive.');
+  assert.equal(C.alternativeText({ word: 'Good', extra: 3 }, 'tough').unrated, '');
+  assert.match(C.alternativeText({ word: 'Good', extra: 3 }, 'unrated').unrated, /unrated because the gauge is not reporting/);
+  assert.equal(C.alternativeText({ word: 'Excellent', extra: 9 }, 'tough').rating, 'Conditions there: Excellent');
+  assert.equal(C.ALT_MAX_EXTRA_MIN, 20);
+}
+
 console.log('shared reads: all checks passed');
