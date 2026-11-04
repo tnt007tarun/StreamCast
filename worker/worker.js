@@ -1,4 +1,4 @@
-import { runWeekly, weeklyInterests } from "./weekly.js";
+import { runWeekly, weeklyEntries, MAX_WEEKLY_RIVERS } from "./weekly.js";
 import { updateRunConditions, RUNCOND_KEY } from "./runconditions.js";
 import { brandEmail, shareBox } from "./emailshell.js";
 import { fetchFlowForecast, refreshForecasts, servedForecast, FORECAST_KEY, FLOW_MODEL } from "./flowforecast.js";
@@ -808,6 +808,19 @@ function isoDate(s) {
 function prettyDate(iso) {
   return new Date(iso + "T12:00:00Z").toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
 }
+function andList(a) {
+  return a.length <= 1 ? (a[0] || "") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+}
+// "<strong>Steelhead</strong> on the <strong>Credit River</strong> and <strong>Bronte Creek</strong>", grouped by fish.
+function weeklyWhat(list) {
+  const bySp = {};
+  list.forEach((w) => {
+    const where = w.river ? (/River$/.test(w.river) ? "the " : "") + "<strong>" + escapeHtml(w.river) + "</strong>"
+      : "<strong>" + escapeHtml(secDisplay(w.section)) + "</strong>";
+    (bySp[w.species] = bySp[w.species] || []).push(where);
+  });
+  return andList(Object.keys(bySp).map((sp) => "<strong>" + escapeHtml(sp) + "</strong> on " + andList(bySp[sp])));
+}
 function secDisplay(s) {
   return String(s || "").replace(/ — /g, " \xB7 ");
 }
@@ -860,16 +873,16 @@ async function handleSubscribe(request, env) {
       await env.SUBSCRIBERS.put(key, JSON.stringify(trip), { expirationTtl: (days + 3) * 86400 });
     }
     // Weekly conditions email: its own offer on trout rivers, a checkbox under run alerts elsewhere.
+    // body.weekly: one {section|river, species} or a list of them (the river and fish chips, 2026-11-03).
     let weeklyAdded = null;
     if (kind === "weekly" || (body.weekly && typeof body.weekly === "object")) {
-      const w = weeklyInterests({ weekly: [body.weekly || {}] })[0];
-      if (!w) {
+      const added = weeklyEntries(Array.isArray(body.weekly) ? body.weekly.slice(0, 40) : [body.weekly || {}], MAX_WEEKLY_RIVERS);
+      if (!added.length) {
         if (kind === "weekly") return jsonResponse({ error: "Unknown river or species" }, 400);
       } else {
-        record.weekly = (record.weekly || []).filter((x) => !(x.section === w.section && x.species === w.species));
-        record.weekly.unshift(w);
-        record.weekly = record.weekly.slice(0, 5);
-        weeklyAdded = w;
+        // Newest first; the river cap then drops the oldest rivers.
+        record.weekly = weeklyEntries(added.concat(record.weekly || []), MAX_WEEKLY_RIVERS);
+        weeklyAdded = added;
       }
     }
     if (kind === "legacy") {
@@ -888,14 +901,13 @@ async function handleSubscribe(request, env) {
       subject = "Run alerts for the " + body.river;
       lead = `<p>We'll email you when salmon or steelhead are running on the <strong>${escapeHtml(body.river)}</strong>.
             Each alert is checked by an angler before it goes out, so expect a few a season, not a stream.</p>` +
-        (weeklyAdded ? `<p>You'll also get a Thursday email when the coming days look good for ${escapeHtml(weeklyAdded.species)} on
-            ${escapeHtml(secDisplay(weeklyAdded.section))}. No good days, no email.</p>` : "") +
+        (weeklyAdded ? `<p>You'll also get a Thursday email when the coming days look good for ${weeklyWhat(weeklyAdded)}.
+            No good days, no email.</p>` : "") +
         (record.outlook ? `<p>You'll also get the monthly outlook.</p>` : "");
     } else if (kind === "weekly") {
-      subject = "Thursday heads-up for " + weeklyAdded.species;
-      lead = `<p>On Thursdays we check the next six days for <strong>${escapeHtml(weeklyAdded.species)}</strong> on
-            <strong>${escapeHtml(secDisplay(weeklyAdded.section))}</strong>. When at least one looks good, we email you which days,
-            where to stand and what to bring. No good days, no email.</p>`;
+      subject = "Thursday heads-up for " + andList([...new Set(weeklyAdded.map((w) => w.species))]);
+      lead = `<p>On Thursdays we check the next six days for ${weeklyWhat(weeklyAdded)}. When at least one looks good,
+            we email you which days, where to stand and what to bring. No good days, no email.</p>`;
     } else if (kind === "outlook") {
       subject = "You're on the monthly outlook";
       lead = `<p>Once a month we'll send what the forecast means for Ontario's trout and salmon rivers, plus the season

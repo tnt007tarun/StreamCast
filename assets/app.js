@@ -198,34 +198,8 @@ function bestSectionForSpecies(riverName, speciesKey) {
                steelhead:'Steelhead', chinook:'Chinook Salmon', coho:'Coho Salmon'};
   var want = spMap[speciesKey];
   if (!want) return sections[0];
-
-  // Only consider sections that actually list the species and have a real config.
-  var candidates = sections.filter(function(s){
-    var cfg = RIVER_CONFIG[s];
-    return cfg && cfg.species && cfg.species.indexOf(want) !== -1;
-  });
-  if (!candidates.length) return null;   // species not present anywhere on this river
-  // Never pick a reach where the species can't be fished on the trip date when another reach
-  // can (the Upper Credit for browns in October). If none can, keep them all and let the
-  // hero explain the closure.
-  var _trip = getTripDateStr();
-  var _open = candidates.filter(function(s){ return speciesFishableIn(s, want, _trip); });
-  if (_open.length) candidates = _open;
-
-  // Rank by position in the system. Lower numbers are further downstream.
-  function reach(s) {
-    if (/mouth|harbour|estuary|marsh|pier/i.test(s)) return 0;
-    if (/lower-mid/i.test(s)) return 2;
-    if (/lower/i.test(s))     return 1;
-    if (/middle|mid-section|mid-/i.test(s)) return 3;
-    if (/upper|headwater/i.test(s)) return 4;
-    return 2;
-  }
-  var isMigratory = _MIGRATORY_SPECIES.indexOf(want) !== -1;
-  candidates.sort(function(a,b){
-    return isMigratory ? reach(a) - reach(b) : reach(b) - reach(a);
-  });
-  return candidates[0];
+  // Shared with the weekly email (conditions-core.js).
+  return bestReachForSpecies(riverName, want, getTripDateStr());
 }
 
 // ── EXPERT MODE ───────────────────────────────────────────────────────────────

@@ -533,6 +533,15 @@ Merged recently:
   the line offers the steelhead reach with a See link. Checked 224 city/species/date cases against main: 19 differ, all
   rainbow (now steelhead water) or coho (main picked reaches that don't list coho).
 
+- **Weekly email by river, several picks** (TJ, 2026-11-03): the homepage weekly box and `/weekly/` pick whole rivers
+  (up to 3, `MAX_WEEKLY_RIVERS`) and any fish on them, as tappable chips (`weeklyPicker()` in `assets/signup.js`, also
+  `window.HFF_weeklyPicker` for `/weekly/`). `/subscribe` takes `weekly` as one entry or a list; entries are
+  `{river, species}` or the old `{section, species}` (`weeklyEntries()` in `worker/weekly.js`; newest first, oldest
+  rivers dropped past 3 at signup only). The Thursday run scores a river on the reach the app would open for that fish
+  on Friday: `reachForRiver()` in the core (`bestReachForSpecies()`, moved from `app.js` `bestSectionForSpecies()`
+  unchanged, 2,448 river/species/date cases match, plus the upstream rule). The steelhead boxes on river pages and the
+  notify bar still save a reach. Welcome email lists the fish and rivers (`weeklyWhat()`).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

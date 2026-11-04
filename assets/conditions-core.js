@@ -382,6 +382,41 @@ function furthestUpstreamOpen(sectionName, speciesNames, dateStr) {
   return best;
 }
 
+// The reach of a river to fish for one species on a date. Moved from app.js bestSectionForSpecies() so the
+// weekly email picks the same reach as "Best for species" (TJ, 2026-11-03: people follow a river, not a reach).
+// Only reaches that list the species; reaches where it can't be fished on the date are skipped when another can
+// be. Migratory fish start low in the system, resident fish high. null when no reach lists the species.
+function bestReachForSpecies(riverName, speciesName, dateStr) {
+  var sections = RIVER_SECTIONS[riverName];
+  if (!sections || !sections.length || !speciesName) return null;
+  var candidates = sections.filter(function(s){
+    var cfg = RIVER_CONFIG[s];
+    return cfg && cfg.species && cfg.species.indexOf(speciesName) !== -1;
+  });
+  if (!candidates.length) return null;
+  var open = dateStr ? candidates.filter(function(s){ return speciesFishableIn(s, speciesName, dateStr); }) : [];
+  if (open.length) candidates = open;
+  function reach(s) {
+    if (/mouth|harbour|estuary|marsh|pier/i.test(s)) return 0;
+    if (/lower-mid/i.test(s)) return 2;
+    if (/lower/i.test(s))     return 1;
+    if (/middle|mid-section|mid-/i.test(s)) return 3;
+    if (/upper|headwater/i.test(s)) return 4;
+    return 2;
+  }
+  var isMigratory = ['Chinook Salmon','Coho Salmon','Steelhead'].indexOf(speciesName) !== -1;
+  candidates.sort(function(a,b){ return isMigratory ? reach(a) - reach(b) : reach(b) - reach(a); });
+  return candidates[0];
+}
+// bestReachForSpecies() plus TJ's upstream rule for run fish (lake-run browns included), as the app opens it.
+function reachForRiver(riverName, speciesName, dateStr) {
+  var best = bestReachForSpecies(riverName, speciesName, dateStr);
+  if (!best) return null;
+  var want = upstreamMigratoryWant(best, [speciesName]);
+  if (want.length && dateStr) { var up = furthestUpstreamOpen(best, want, dateStr); if (up) return up.section; }
+  return best;
+}
+
 // ── SEASONAL CLOSURES ─────────────────────────────────────────────────────────
 // Fish sanctuaries from the MNR 2026 summary. Recommending a spot inside a closed
 // sanctuary is the worst error this app can make, so closed spots are removed from
@@ -3489,7 +3524,7 @@ if (typeof globalThis !== 'undefined') {
     seasonClosureFor: seasonClosureFor, accessClosureOn: accessClosureOn, isAccessOpen: isAccessOpen,
     allAccessClosed: allAccessClosed, sectionClosedOn: sectionClosedOn, speciesFishableIn: speciesFishableIn, legalSpeciesFor: legalSpeciesFor,
     speciesSeasonClosureFor: speciesSeasonClosureFor, SPECIES_SEASON_BAND: SPECIES_SEASON_BAND,
-    furthestUpstreamOpen: furthestUpstreamOpen, bestAccessSpot: bestAccessSpot, isLakeRunBrownSection: isLakeRunBrownSection,
+    furthestUpstreamOpen: furthestUpstreamOpen, bestReachForSpecies: bestReachForSpecies, reachForRiver: reachForRiver, bestAccessSpot: bestAccessSpot, isLakeRunBrownSection: isLakeRunBrownSection,
     stagingZoneForSection: stagingZoneForSection, computeStagingScore: computeStagingScore, seasonalLakeTempEst: seasonalLakeTempEst,
     getSalmonPhase: getSalmonPhase, getSteelheadPhase: getSteelheadPhase, mouthPreferenceFor: mouthPreferenceFor,
     clsFlow: clsFlow, clsTemp: clsTemp, clsSky: clsSky, waterModelParams: waterModelParams, modelWaterTemp: modelWaterTemp,
