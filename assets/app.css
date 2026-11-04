@@ -3168,4 +3168,100 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   @media (max-width:900px) { #results .cgrid { grid-template-columns:1fr; } }
   /* Mono is for numbers only: words in a tile value use the body sans */
   #results .tp-tile-val .tp-word { font-family:var(--font-body); font-weight:600; }
+
+  /* ---- Type system for the results page (TJ, 2026-11-03: too many fonts, sizes and colours) ----
+     Serif: display 24, heading 20, title 17. Sans (Outfit): body 15, note 13, label/chip 12.
+     Mono: the number itself only. Colours: ink, body, muted, teal, amber, plus white on the dark tile strip. */
+  #results { --t-ink:#1a2e3a; --t-body:#31414c; --t-muted:#6b7d86; }
+  /* Headings: serif 20 */
+  #results .sec-label h3,
+  #results .p-tech h4,
+  #results .p-gearname,
+  #results .p-bait h5,
+  #results .mn,
+  #results #m1n,
+  #results .dam h3,
+  #results .sshdr h3 {
+    font:700 1.25rem/1.25 var(--font-serif); color:var(--t-ink); letter-spacing:0; }
+  /* Titles: serif 17 */
+  #results .sp-banner-name,
+  #results .aname,
+  #results .gear-item-val,
+  #results .p-alt-name,
+  #results .more-river-label,
+  #results .tg-name,
+  #results .gear-title,
+  #results .rrank-name {
+    font:700 1.0625rem/1.25 var(--font-serif); color:var(--t-ink); letter-spacing:0; font-style:normal; }
+  #results .tp-line { font-size:1.0625rem; }
+  /* Body: sans 15 */
+  #results .adesc,
+  #results .why-row,
+  #results .tp-upnote,
+  #results .regs-bullets li,
+  #results .m1d,
+  #results #m1d,
+  #results .best-window,
+  #results .p-tech p {
+    font:400 .9375rem/1.5 var(--font-body); color:var(--t-body); letter-spacing:0; }
+  /* Note: sans 13, muted */
+  #results .best-window-note,
+  #results .gear-item-note,
+  #results .p-baitfoot,
+  #results .p-alt-sub,
+  #results .drive-time,
+  #results .aloc,
+  #results .afnote,
+  #results #cond-subtitle,
+  #results #tg-subtitle,
+  #results .sec-label p,
+  #results .bnum-u,
+  #results .bnum-l,
+  #results .regs-foot,
+  #results .tp-eyebrow,
+  #results .p-bspec,
+  #results .gv,
+  #results .spc-label {
+    font:400 .8125rem/1.45 var(--font-body); color:var(--t-muted); letter-spacing:0; text-transform:none; }
+  #results .gv { color:var(--t-body); }
+  /* Label: sans 12, 600, muted */
+  #results .regs-title,
+  #results .col-lbl,
+  #results .sp-banner-lbl,
+  #results .gn,
+  #results #sweet-range-lbl,
+  #results .spc-time,
+  #results .tp-tile-lbl {
+    font:600 .75rem/1.3 var(--font-body); letter-spacing:0; text-transform:none; }
+  /* Accent label: same style, teal */
+  #results .tp-line-lbl,
+  #results .tp-notes-h,
+  #results .tp-alt-h { font:600 .75rem/1 var(--font-body); color:var(--fern); letter-spacing:0; text-transform:none; }
+  /* Chips and states: sans 12, 600 (colour carries the state) */
+  #results .sp-banner-badge,
+  #results .gs,
+  #results .ci,
+  #results .acard-rec-badge,
+  #results .p-badge,
+  #results .acrowd,
+  #results .tp-confidence,
+  #results .tp-tile-effect,
+  #results .gauge-link,
+  #results .regs-link,
+  #results .regs-details-toggle {
+    font:600 .75rem/1.3 var(--font-body); letter-spacing:0; text-transform:none; }
+  /* Numbers: mono, 500. Axis and spec numbers sit at 12. */
+  #results .bnum,
+  #results .tp-tile-val { font-family:var(--font-mono); font-weight:500; }
+  #results #sweet-range-axis,
+  #results #flow-axis-max,
+  #results .trd { font:500 .75rem/1.3 var(--font-mono); color:var(--t-muted); letter-spacing:0; }
+  #results .tp-tile-val .tp-word { font-family:var(--font-body); font-weight:600; }
+  #results { font-weight:400; }
+  #results dd { font:400 .9375rem/1.5 var(--font-body); color:var(--t-body); }
+  #results dt, #results .gear-item-lbl, #results .regs-zone { font:600 .75rem/1.3 var(--font-body); letter-spacing:0; text-transform:none; }
+  #results .p-gearsec { font:400 .8125rem/1.45 var(--font-body); color:var(--t-muted); }
+  #results .ac-chevron, #results .p-alt-chev, #results .more-river-chev { font:400 .75rem/1 var(--font-body); }
+  #results .rb-open, #results .regs-bullets strong { font-weight:600; }
+  #results .p-lbl { font:600 .9375rem/1.2 var(--font-body); letter-spacing:0; text-transform:none; color:var(--t-ink); }
 }
