@@ -182,46 +182,9 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
       <span style="font-family:'JetBrains Mono', monospace;font-size:0.62rem;letter-spacing:0.08em;color:#4a7a52">Enter your location to see nearby rivers</span>
     </div>
 
-    <!-- Techniques -->
-    <div class="tech-section">
-      <!-- Beginner mode: technique family buttons -->
-      <div class="beginner-only">
-        <div class="field-lbl" style="margin-top:1.1rem;margin-bottom:.65rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
-        <div class="method-row">
-          <button class="tech-family-btn active" data-family=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
-          <button class="tech-family-btn" data-family="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
-          <button class="tech-family-btn" data-family="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
-          <button class="tech-family-btn" data-family="fly"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/></svg></div>Fly Fishing</button>
-        </div>
-      </div>
-      <!-- Expert mode: granular chips -->
-      <div class="expert-only" style="margin-top:1.1rem">
-      <div class="field-lbl" style="margin-bottom:0.5rem">METHOD <span style="opacity:.45;font-size:.55rem">(optional)</span></div>
-      <div class="method-row" id="expert-method-tiles">
-        <button class="tech-family-btn active" data-value=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
-        <button class="tech-family-btn" data-value="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
-        <button class="tech-family-btn" data-value="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
-        <button class="tech-family-btn" data-value="fly"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/></svg></div>Fly Fishing</button>
-      </div>
-
-    <!-- Travel time slider (beginner mode only) -->
-    <div class="beginner-only travel-row">
-      <div class="field-lbl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
-        <label for="travel-range">TRAVEL TIME</label>
-        <span id="travel-lbl" style="font-family:'JetBrains Mono', monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
-      </div>
-      <input type="range" id="travel-range" min="20" max="180" step="10" value="60"
-             style="width:100%;accent-color:var(--fern);cursor:pointer">
-      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono', monospace;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
-        <span>20 min</span><span>1 hr</span><span>2 hr</span><span>3 hr</span>
-      </div>
-      </div><!-- /expert-only -->
-    </div>
-
-    <!-- Species + CTA -->
-    <div class="form-bottom">
-      <div class="field-group" style="flex:1">
-        <label class="field-lbl" style="text-transform:uppercase;letter-spacing:.08em;">TARGET SPECIES <span style="opacity:.5;font-size:.5rem;text-transform:none;letter-spacing:0">(optional)</span></label>
+    <!-- Species comes before method: what you want to catch, then how -->
+      <div class="field-group form-species" id="form-species">
+        <label class="field-lbl">TARGET SPECIES <span class="opt">(optional)</span></label>
         <input type="hidden" id="species-sel" value="">
         <div class="species-btn-grid">
           
@@ -252,6 +215,44 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         </div>
       </div>
 
+    <!-- Techniques -->
+    <div class="tech-section">
+      <!-- Beginner mode: technique family buttons -->
+      <div class="beginner-only">
+        <div class="field-lbl">METHOD <span class="opt">(optional)</span></div>
+        <div class="method-row">
+          <button class="tech-family-btn active" data-family=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
+          <button class="tech-family-btn" data-family="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
+          <button class="tech-family-btn" data-family="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
+          <button class="tech-family-btn" data-family="fly"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/></svg></div>Fly Fishing</button>
+        </div>
+      </div>
+      <!-- Expert mode: granular chips -->
+      <div class="expert-only">
+      <div class="field-lbl">METHOD <span class="opt">(optional)</span></div>
+      <div class="method-row" id="expert-method-tiles">
+        <button class="tech-family-btn active" data-value=""><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12 C10 8 14 8 16 12"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg></div>Any style</button>
+        <button class="tech-family-btn" data-value="spin"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="5" ry="3" transform="rotate(-35 9 12)"/><line x1="14" y1="10" x2="20" y2="6"/><circle cx="20" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg></div>Spin Fishing</button>
+        <button class="tech-family-btn" data-value="float"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="8"/><ellipse cx="12" cy="13" rx="3.5" ry="5" fill="currentColor" stroke="currentColor"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>Float Fishing</button>
+        <button class="tech-family-btn" data-value="fly"><div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18 C12 14 15 11 18 11"/><path d="M18 11 C19 9 19 7 17 7 C15 7 14 9 14 11"/><path d="M14 11 C13 9 11 8 9 9 C7 10 7 12 9 13 C11 14 14 14 14 11"/></svg></div>Fly Fishing</button>
+      </div>
+
+    <!-- Travel time slider (beginner mode only) -->
+    <div class="beginner-only travel-row">
+      <div class="field-lbl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+        <label for="travel-range">TRAVEL TIME</label>
+        <span id="travel-lbl" style="font-family:'JetBrains Mono', monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
+      </div>
+      <input type="range" id="travel-range" min="20" max="180" step="10" value="60"
+             style="width:100%;accent-color:var(--fern);cursor:pointer">
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono', monospace;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
+        <span>20 min</span><span>1 hr</span><span>2 hr</span><span>3 hr</span>
+      </div>
+      </div><!-- /expert-only -->
+    </div>
+
+    <!-- Species + CTA -->
+    <div class="form-bottom">
       <button class="forecast-btn" id="forecast-btn-el" aria-label="Find my best fishing spot" >
         <span id="cta-label">Find my best spot</span>
         <svg viewBox="0 0 16 16"><path d="M3 8 L13 8"/><path d="M9 4 L13 8 L9 12"/></svg>

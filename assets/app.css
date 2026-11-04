@@ -3271,3 +3271,15 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #sky-col .gh { justify-content:flex-start; }
   #sky-col .gv { font:600 .9375rem/1.4 var(--font-body); color:var(--t-ink); }
 }
+
+/* Home form order is date and place, species, method, then the button (TJ, 2026-11-03). One rhythm between groups. */
+@layer overrides {
+  #landing .field-lbl .opt { font-weight:400; opacity:.6; text-transform:none; letter-spacing:0; font-size:.75rem; margin-left:.25rem; }
+  #landing .form-species { margin:-1px 0 0; padding:1.1rem 1.25rem 0; background:var(--white); border:1px solid var(--ed-rule); border-top:0; border-bottom:0; }
+  @media (max-width:600px) { #landing .form-species { padding:1.1rem .95rem 0; } }
+  #landing .form-species .field-lbl { display:block; margin:0 0 .65rem; }
+  #landing .tech-section { padding-top:1.1rem; gap:1.1rem; }
+  #landing .tech-section .beginner-only > .field-lbl:first-child { margin-top:0 !important; }
+  #landing .tech-section .field-lbl { margin:0 0 .65rem; }
+  #landing .tech-section .expert-only { margin-top:0; }
+}

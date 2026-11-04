@@ -291,6 +291,25 @@ function speciesFishableIn(sectionName, speciesName, dateStr) {
   return !!s && (s.quality === 'peak' || s.quality === 'good');
 }
 
+// The fish a reach legally offers for a species the angler asked for on a date, or '' when it offers none. A reach that lists
+// the species and is open for it gives that species. For Rainbow Trout, steelhead water counts too (the regs treat them as one
+// species, TJ 2026-10-30, the same rule as formSpeciesStatus()): a reach that lists Steelhead and is open for it gives 'Steelhead'.
+// With needSeason, a reach is not offered when the fish are absent that time of year (a slow day still counts); ranking decides
+// how good it is. Without it, only listing and legality are checked.
+function legalSpeciesFor(sectionName, speciesName, dateStr, needSeason) {
+  var c = getRiverConfig(sectionName);
+  if (!c || !c.species) return '';
+  function open(n) {
+    if (c.species.indexOf(n) === -1 || speciesSeasonClosureFor(c, n, dateStr) || allAccessClosed(c, dateStr)) return false;
+    if (!needSeason) return true;
+    var s = getCurrentSeason(n, dateStr, sectionName);
+    return !!s && s.quality !== 'absent';
+  }
+  if (open(speciesName)) return speciesName;
+  if (speciesName === 'Rainbow Trout' && open('Steelhead')) return 'Steelhead';
+  return '';
+}
+
 // Other sections of the same river system, in RIVER_SECTIONS order.
 function sectionSiblings(sectionName) {
   var base = String(sectionName || '').split(',')[0].trim();
@@ -3503,7 +3522,7 @@ if (typeof globalThis !== 'undefined') {
     secDisplay: secDisplay, secLabel: secLabel, secShort: secShort,
     getRiverConfig: getRiverConfig, getRiverRegs: getRiverRegs, getCurrentSeason: getCurrentSeason,
     seasonClosureFor: seasonClosureFor, accessClosureOn: accessClosureOn, isAccessOpen: isAccessOpen,
-    allAccessClosed: allAccessClosed, sectionClosedOn: sectionClosedOn, speciesFishableIn: speciesFishableIn,
+    allAccessClosed: allAccessClosed, sectionClosedOn: sectionClosedOn, speciesFishableIn: speciesFishableIn, legalSpeciesFor: legalSpeciesFor,
     speciesSeasonClosureFor: speciesSeasonClosureFor, SPECIES_SEASON_BAND: SPECIES_SEASON_BAND,
     furthestUpstreamOpen: furthestUpstreamOpen, bestReachForSpecies: bestReachForSpecies, reachForRiver: reachForRiver, bestAccessSpot: bestAccessSpot, isLakeRunBrownSection: isLakeRunBrownSection,
     stagingZoneForSection: stagingZoneForSection, computeStagingScore: computeStagingScore, seasonalLakeTempEst: seasonalLakeTempEst,

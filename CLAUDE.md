@@ -522,6 +522,17 @@ Merged recently:
   (`#sky-dot`; cloud cover, the 8 AM / 12 PM / 6 PM strip, Best Window). The old combined dot averaged both, so each card now takes
   its own `clsTemp()` / `clsSky()` class. Three cards across on desktop (`#results .cgrid`), one column under 900 px.
 
+- **Home form order and search routing** (TJ, 2026-11-03): Target species is now the second block of the form, then Method, then the
+  button; spacing is one 1.1rem rhythm (`.form-species` in `app.css`). Search used to land on a reach closed or unlisted for the
+  fish asked for (Vaughan + Rainbow Trout opened the Upper Credit, closed after Sept 30, and the hero read as if TJ had chosen
+  a river). Now `goToResults()` checks the pick with `legalSpeciesFor(section, species, date, needSeason)` (core: listed,
+  season band, access not all closed, fish not "absent" that time of year). If it fails, `pickLegalReach()` takes the best reach
+  that is open for the fish: in the travel range first, then every reach we cover (TJ: "irrespective of distance"). Steelhead
+  water counts as Rainbow Trout water (TJ, 2026-10-30); when only steelhead is open the search runs as Steelhead and a line under
+  the headline says why (`window._speciesNote`). If resident rainbows are open only far away and steelhead is 20+ min closer,
+  the line offers the steelhead reach with a See link. Checked 224 city/species/date cases against main: 19 differ, all
+  rainbow (now steelhead water) or coho (main picked reaches that don't list coho).
+
 - **Weekly email by river, several picks** (TJ, 2026-11-03): the homepage weekly box and `/weekly/` pick whole rivers
   (up to 3, `MAX_WEEKLY_RIVERS`) and any fish on them, as tappable chips (`weeklyPicker()` in `assets/signup.js`, also
   `window.HFF_weeklyPicker` for `/weekly/`). `/subscribe` takes `weekly` as one entry or a list; entries are
