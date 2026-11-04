@@ -802,7 +802,7 @@ function renderRiverUI(cfg) {
     var _pcfg = RIVER_CONFIG[_parent];
     _routine = (_pcfg && _pcfg.routine) || (RIVER_CONFIG['default'] && RIVER_CONFIG['default'].routine) || [];
   }
-  steps.innerHTML = (_routine||[]).map(function(s, i) {
+  if (steps) steps.innerHTML = (_routine||[]).map(function(s, i) {
     return '<div class="rs"><div class="rn">' + (i+1) + '</div>' +
            '<div><div class="rt">' + s.t + '</div><div class="rd">' + _linkify(s.d) + '</div></div></div>';
   }).join("");
@@ -2221,7 +2221,7 @@ function updateMethods(fc,tc,sc,flow,wt){
       // Salmon: float fishing with roe/beads is the standard Ontario approach
       m1={n:'Float Fishing · Roe & Beads',
           d:'For salmon in the river, drift roe bags or beads under a float through holding water. This is the most productive salmon method on Ontario rivers.',
-          tip:'Set your float so the bait drifts just above the bottom. Cast upstream, keep the line tight and watch for the float to dip. That’s your bite.',
+          tip:'Set your float so the bait drifts just above the bottom. Cast upstream, keep the line off the water, set the hook when the float stops or drops.',
           c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>Fish: Deep pools, tailouts, current seams</span>'};
       m2={n:'Bottom Bouncing',
           d:'Drift roe or beads along the bottom without a float in faster runs. Effective when fish hold deep.',
@@ -2331,7 +2331,7 @@ function updateMethods(fc,tc,sc,flow,wt){
     var _onSpin = _salmonMode === 'spin-float';
     m1 = {n:_onSpin ? 'Float Fishing on a Spinning Rod · Roe & Beads' : SALMON_MODE_METHOD.float,
           d:(_onSpin ? 'Your spinning rod works for this. ' : '') + 'For ' + _fishWord + ' in the river, drift roe bags or beads under a float through holding water. This is the most productive ' + _fishWord + ' method on Ontario rivers.',
-          tip:_fDepth + ' Cast upstream, keep the line tight and watch for the float to dip. That’s your bite.',
+          tip:_fDepth + ' Cast upstream, keep the line off the water, set the hook when the float stops or drops.',
           c:'<span>Bait: Roe bags, soft beads</span><span>Float: Match depth to pool</span><span>' + _fWhere + '</span>'};
     m2 = {n:'Bottom Bouncing',
           d:'Drift roe or beads along the bottom without a float in faster runs. Effective when fish hold deep.',
@@ -2732,7 +2732,7 @@ async function renderResults(){
     });
     var parts = [];
     if (offRiverSpecies.length > 0) {
-      parts.push("🚫 " + offRiverSpecies.join(" and ") + " not found on the " +
+      parts.push(offRiverSpecies.join(" and ") + " not found on the " +
         (selectedRiver ? selectedRiver.split(",")[0] : "river") + ".");
       speciesOverride = true;
     }
@@ -2740,21 +2740,21 @@ async function renderResults(){
       absentSpecies.forEach(function(s) {
         var up = getUpcomingPeak(s.name);
         var ps = up ? " Peak in " + MONTH_FULL[(new Date().getMonth()+up.monthsAway)%12] + " (" + up.monthsAway + " mo)." : "";
-        parts.push("🟠 " + s.name + " not in river now. " + (s.w ? s.w.note : "out of season") + ps);
+        parts.push(s.name + " not in river now. " + (s.w ? s.w.note : "out of season") + ps);
       });
       speciesOverride = true;
     }
     if ((offRiverSpecies.length > 0 || absentSpecies.length > 0) && (goodSpecies.length > 0 || peakSpecies.length > 0)) {
       var inSeas = peakSpecies.concat(goodSpecies).map(function(s){return s.name;});
-      parts.push("✅ " + inSeas.join(" and ") + " are in season now.");
+      parts.push(inSeas.join(" and ") + " are in season now.");
     }
     if (offRiverSpecies.length === 0 && absentSpecies.length === 0) {
       if (peakSpecies.length > 0) {
-        parts.push("🎯 " + peakSpecies.map(function(s){return s.name;}).join(" and ") + " at peak. " + (peakSpecies[0].w ? peakSpecies[0].w.note : ""));
+        parts.push(peakSpecies.map(function(s){return s.name;}).join(" and ") + " at peak. " + (peakSpecies[0].w ? peakSpecies[0].w.note : ""));
       } else if (goodSpecies.length > 0) {
-        parts.push("✅ " + goodSpecies.map(function(s){return s.name;}).join(" and ") + " in season. " + (goodSpecies[0].w ? goodSpecies[0].w.note : ""));
+        parts.push(goodSpecies.map(function(s){return s.name;}).join(" and ") + " in season. " + (goodSpecies[0].w ? goodSpecies[0].w.note : ""));
       } else if (slowSpecies.length > 0) {
-        parts.push("⚠️ " + slowSpecies.map(function(s){return s.name;}).join(" and ") + " slow. " + (slowSpecies[0].w ? slowSpecies[0].w.note : ""));
+        parts.push(slowSpecies.map(function(s){return s.name;}).join(" and ") + " slow. " + (slowSpecies[0].w ? slowSpecies[0].w.note : ""));
       }
     }
     speciesPrefix = parts.join(" ");
@@ -2784,7 +2784,7 @@ async function renderResults(){
         : "Forecast conditions look challenging. Monitor closer to the date.";
     } else if (flow == null) {
       plainSummary = tc==="good"&&sc!=="bad"
-        ? "\u2705 Temperature and sky look good. Check the "+cfg.gaugeName+" gauge for current flow before heading out."
+        ? "Temperature and sky look good. Check the "+cfg.gaugeName+" gauge for current flow before heading out."
         : "\u26a0\ufe0f Temperature or sky are marginal. Check the "+cfg.gaugeName+" gauge for flow before deciding.";
     } else if (vl === "good") {
       var _noSpecRec = '';
@@ -2796,14 +2796,14 @@ async function renderResults(){
           }).join(', ') + '.';
         }
       }
-      plainSummary = "\u2705 Great conditions right now on the "+(selectedRiver?selectedRiver.split(",")[0]:"river")+". "+(flowBand(flow,cfg)==="prime"?"Flow is prime":"Flow is normal")+", and temperature and sky are working in your favour." + _noSpecRec;
+      plainSummary = "Great conditions right now on the "+(selectedRiver?selectedRiver.split(",")[0]:"river")+". "+(flowBand(flow,cfg)==="prime"?"Flow is prime":"Flow is normal")+", and temperature and sky are working in your favour." + _noSpecRec;
     } else if (vl === "bad") {
       var reason = fc==="bad"&&flow<cfg.flowLow
         ? "water is too low at "+flow+" m³/s, so fish are scattered and very wary"
         : wt>=TEMP_STRESS ? "water is above 18°C. Please stop fishing, as heat stress kills fish"
         : tc==="bad" ? "water temp is outside the feeding range at "+wt+"\u00B0C"
         : "multiple conditions are off today";
-      plainSummary = "❌ Not ideal: "+reason+". Consider another day or stretch of water.";
+      plainSummary = "Not ideal: "+reason+". Consider another day or stretch of water.";
     } else {
       var issues = [];
       if (fc!=="good") issues.push(flow<cfg.sweetMin?"flow is low at "+flow+" m\u00B3/s":"flow is elevated at "+flow+" m\u00B3/s");
@@ -2814,7 +2814,7 @@ async function renderResults(){
         var _recs3 = recommendSpecies(cfg);
         if (_recs3.length > 0) _noSpecRec2 = ' Best bet today: ' + _recs3[0].name + '.';
       }
-      plainSummary = "⚠️ Marginal: "+issues.join(", ")+". Fish "+_win.phrase+" and focus on prime lies." + _noSpecRec2;
+      plainSummary = "Marginal: "+issues.join(", ")+". Fish "+_win.phrase+" and focus on prime lies." + _noSpecRec2;
     }
     // Append species note if we have one
     if (speciesPrefix) plainSummary += " " + speciesPrefix;
@@ -3083,7 +3083,7 @@ function updateMapPin(spotIdx) {
       '<iframe class="map-frame" src="' + osmUrl + '" loading="lazy"></iframe>'
       + '<div id="map-gm-cta" class="map-cta-wrap">'
       + '<a id="map-gm-link" class="map-cta" href="' + gmUrl + '" target="_blank" rel="noopener">'
-      + '\uD83D\uDCCD Navigate to ' + spotName + '</a>'
+      + 'Navigate to ' + spotName + '</a>'
       + '</div>'
       + '<div class="map-pin-list" id="map-legend">'
       + '<div class="map-legend-lbl">Other spots \u2192 tap to move pin</div>'
@@ -3114,7 +3114,7 @@ function updateMapPin(spotIdx) {
   var gmLink = document.getElementById('map-gm-link');
   if (gmLink) {
     gmLink.href = gmUrl;
-    gmLink.innerHTML = '\uD83D\uDCCD Navigate to ' + spotName;
+    gmLink.innerHTML = 'Navigate to ' + spotName;
   }
 }
 
@@ -4708,7 +4708,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     var _lk = window._beginnerLocKey || '';
     var _lkLabel = _lk ? _lk.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) : 'your location';
 
-    _driveEl.innerHTML = '<span class="drive-time">\uD83D\uDE97 ' + _dtStr + ' from ' + _lkLabel + '</span>';
+    _driveEl.innerHTML = '<span class="drive-time">' + _dtStr + ' from ' + _lkLabel + '</span>';
     _driveEl.style.display = 'block';
   }
   // The pill note says "season and distance" only once the drive line is up.
@@ -4759,27 +4759,26 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   if (_bka.length === 0) {
     var _chipRecs = recommendSpecies(cfg);
     _chipRecs.slice(0, 3).forEach(function(r, i) {
-      var icon = r.name.indexOf('Trout') !== -1 ? '🟤' : '🔵';
       var qualIcon = r.seasonal.quality === 'peak' ? '★ ' : r.seasonal.quality === 'good' ? '● ' : '';
       chips.push({
-        text: icon + ' ' + qualIcon + r.name + (r.reasons[0] ? ' — ' + r.reasons[0] : ''),
+        text: qualIcon + r.name + (r.reasons[0] ? ' \u00b7 ' + r.reasons[0] : ''),
         cls: r.seasonal.quality === 'peak' ? 'good' : r.seasonal.quality === 'good' ? '' : 'warn'
       });
     });
   }
-  if (bestSpot) chips.push({ text: '📍 ' + bestSpot.loc, cls: '' });
+  if (bestSpot) chips.push({ text: bestSpot.loc, cls: '' });
   chips.push({ text: '\u23f0 ' + window._fishWindow.text, cls: window._fishWindow.grade });
-  chips.push({ text: '🪱 ' + topMethod, cls: 'good' });
+  chips.push({ text: topMethod, cls: 'good' });
   if (flow == null) chips.push({ text: '\u26a0\ufe0f Check gauge first', cls: 'warn' });
-  if (bestSpot && bestSpot.crowd === 'low') chips.push({ text: '🧘 Low pressure spot', cls: 'good' });
-  else if (bestSpot && bestSpot.crowd === 'high') chips.push({ text: '👥 Popular spot, go early', cls: 'warn' });
+  if (bestSpot && bestSpot.crowd === 'low') chips.push({ text: 'Low pressure spot', cls: 'good' });
+  else if (bestSpot && bestSpot.crowd === 'high') chips.push({ text: 'Popular spot, go early', cls: 'warn' });
 
   // Add reg warnings (date-filtered)
   var _tpRegs = RIVER_REGS[riverShort];
   if (_tpRegs) {
     var _tripDate = document.getElementById('trip-date') ? document.getElementById('trip-date').value : '';
     var _regSum = filterAndSummariseRegs(_tpRegs, _tripDate, Array.isArray(selectedSpecies)?selectedSpecies:[], selectedRiver);
-    if (_regSum) chips.push({ text: '📋 ' + _regSum.slice(0,80) + (_regSum.length>80?'\u2026':''), cls: 'warn' });
+    if (_regSum) chips.push({ text: _regSum.slice(0,80) + (_regSum.length>80?'\u2026':''), cls: 'warn' });
   }
 
   // When salmon/steelhead: swap chips to match actual situation
@@ -4789,24 +4788,24 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
                 : 'prestaging';
     if (_stMode === 'stage') {
       chips = [
-        { text: '📍 Pier, beach & rivermouth', cls: '' },
-        { text: '🎣 Spoons & lures · spinning rod', cls: '' },
-        { text: '🌊 Best on overcast days + onshore wind', cls: '' }
+        { text: 'Pier, beach & rivermouth', cls: '' },
+        { text: 'Spoons & lures · spinning rod', cls: '' },
+        { text: 'Best on overcast days + onshore wind', cls: '' }
       ];
     } else if (_stMode === 'run') {
       chips = [
-        { text: '📍 Lower river', cls: '' },
-        { text: '🌊 Fresh fish come in on rain. Fish the lower river as it clears.', cls: '' }
+        { text: 'Lower river', cls: '' },
+        { text: 'Fresh fish come in on rain. Fish the lower river as it clears.', cls: '' }
       ];
     } else {
       // Pre-staging: opportunistic early Chinook at harbour mouth only.
       var _dawnDusk = cloudPct >= 70 ? 'Overcast, fish through the day' : 'Dawn or dusk only';
       chips = [
-        { text: '📍 Harbour mouth, spinning rod', cls: '' },
-        { text: '🎣 Little Cleo · Kastmaster · Rapala Jointed', cls: '' },
+        { text: 'Harbour mouth, spinning rod', cls: '' },
+        { text: 'Little Cleo · Kastmaster · Rapala Jointed', cls: '' },
         { text: '⏰ ' + _dawnDusk, cls: cloudPct >= 70 ? 'good' : 'warn' },
-        { text: '🌡️ Only worth it if lake temps are cold', cls: 'warn' },
-        { text: '⚠️ Low odds, opportunistic only', cls: 'bad' }
+        { text: 'Only worth it if lake temps are cold', cls: 'warn' },
+        { text: 'Low odds, opportunistic only', cls: 'bad' }
       ];
     }
   }
@@ -4854,7 +4853,7 @@ function renderRiverRanker(locKey, maxMinutes) {
   grid.innerHTML = ranked.map(function(r, i) {
     var isTop = i === 0;
     var scoreLabel = r.score >= 8 ? 'good' : r.score >= 3 ? 'warn' : 'bad';
-    var scoreText  = r.score >= 8 ? '\u2705 Good today' : r.score >= 3 ? '\u26a0\ufe0f Marginal' : '\u274c Tough today';
+    var scoreText  = r.score >= 8 ? 'Good today' : r.score >= 3 ? 'Marginal' : 'Tough today';
     var notesHtml  = r.notes.map(function(n){ return '<span style="color:var(--sage);font-size:.68rem">'+n+'</span>'; }).join(' \u00b7 ');
     var warnHtml   = r.warnings.slice(0,1).map(function(w){ return '<span style="color:#c07040;font-size:.65rem">\u26a0\ufe0f '+w+'</span>'; }).join('');
 

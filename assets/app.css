@@ -3163,4 +3163,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .tp-notes[hidden] { display:none; }
   #results .tp-notes-h { font:600 var(--fs-label)/1 var(--font-body); letter-spacing:.08em; text-transform:uppercase; color:var(--fern); margin-bottom:.4rem; }
   #results .tp-notes #tp-why { margin:0; }
+  /* Two condition columns now that the Pre-Trip Routine card is gone (flow, then temperature and light) */
+  #results .cgrid { grid-template-columns:1fr 1fr; }
+  @media (max-width:900px) { #results .cgrid { grid-template-columns:1fr; } }
 }
