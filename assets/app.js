@@ -3893,7 +3893,7 @@ async function altRate(c, dateStr, fish) {
     waterTemp: info && info.value != null ? info.value : null, cloudPct: wx.cloudPct, windDir: wx.windDir, windSpd: wx.windSpeed,
     lakeTemp: z && lakes && lakes[STAGING_ZONES[z].key] != null ? lakes[STAGING_ZONES[z].key] : null });
   var waterOk = !r.usesWater || (info && (info.kind === 'measured' || info.kind === 'model'));
-  return Object.assign({}, c, { word: r.word, reliable: !!(waterOk && !r.estimatedLake) });
+  return Object.assign({}, c, { word: r.word, reliable: !!waterOk });   // a seasonal lake estimate is fine: the primary pill uses the same fallback (TJ, 2026-11-03)
 }
 async function updateAlternative(st) {
   var tok = ++_altToken;   // a newer call (the staging re-rate) cancels this one; a shown card stays until it is replaced or no longer applies

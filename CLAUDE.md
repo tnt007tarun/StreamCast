@@ -476,7 +476,7 @@ Merged recently:
   upstream reach with `upstreamMigratoryWant()`, dedupes, then `sectionClosedOn()` and `speciesFishableIn()`),
   `rateReachToday()` (same chain as `scoreDay()`), `pickAlternative()`, `alternativeText()`. App (`updateAlternative()`):
   each candidate is rated on its own gauge, its own weather and its own water read; reliable means live flow no older than
-  3 h, weather present, a real water read, and no estimated lake temperature on run days; otherwise nothing is shown. No
+  3 h, weather present, and a real water read; otherwise nothing is shown. A missing live lake temperature does not block it (the seasonal estimate is used, as in the primary pill; TJ 2026-11-03). No
   live CVC water for alternatives (modelled). Ranking, pill scoring, regs and fishing windows are unchanged. Umami:
   `Alternative Reach Shown {river, alt, rating, primary}` (once per river/alt/species/date) and
   `Alternative Reach Clicked {river, alt}`. Tests: `worker/reads.test.mjs`.
