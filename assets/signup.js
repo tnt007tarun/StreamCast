@@ -29,6 +29,90 @@
     'Wilmot Creek': 'Wilmot Creek \u2014 Lower River (to CN Rail Tracks)'
   };
   var STEELHEAD_MONTHS = [9, 10, 11, 0, 1, 2, 3];   // October to April
+  // River and fish chips (TJ, 2026-11-03): a whole river, up to 3, and any fish on them. Also used by /weekly/.
+  var PICKER_CSS = '.hff-pick{margin:0 0 .75rem}.hff-pick .plbl{display:block;font:600 .68rem/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;' +
+    'letter-spacing:.12em;text-transform:uppercase;color:#1e7a6e;margin:0 0 .45rem}' +
+    '.hff-pick .plbl span{text-transform:none;letter-spacing:0;font-weight:400;color:#6b7d86}' +
+    '.hff-chips{display:flex;flex-wrap:wrap;gap:.4rem}' +
+    '.hff-chip{min-height:38px;padding:.4rem .8rem;border:1px solid #c9d6d2;border-radius:999px;background:#fff;color:#1a2e3a;' +
+    'font:500 .9rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.hff-chip[aria-pressed=true]{background:#1e7a6e;border-color:#1e7a6e;color:#fff}' +
+    '.hff-chip[aria-pressed=true]::before{content:"\\2713\\00a0"}' +
+    '.hff-pick .pnote{font-size:.8rem;color:#a63d2f;margin:.35rem 0 0;min-height:0}';
+  var MAX_RIVERS = 3;
+  var FISH_ORDER = ['Steelhead', 'Chinook Salmon', 'Coho Salmon', 'Brown Trout', 'Rainbow Trout', 'Brook Trout'];
+  function chipName(r) { return r.replace(/ River$/, ''); }
+  function riverFish(r) {
+    var seen = {};
+    ((window.RIVER_SECTIONS || {})[r] || []).forEach(function (s) {
+      var c = window.RIVER_CONFIG && RIVER_CONFIG[s];
+      if (c && c.active !== false) (c.species || []).forEach(function (n) { seen[n] = 1; });
+    });
+    return FISH_ORDER.filter(function (n) { return seen[n]; });
+  }
+  // Builds the two chip groups into `el`. opts: {rivers: [...], species: [...]} to preselect.
+  // Returns {pairs(): [{river, species}], rivers(), species(), error()} where error() is '' when the picks are usable.
+  function weeklyPicker(el, opts) {
+    opts = opts || {};
+    var all = Object.keys(window.RIVER_SECTIONS || {}).filter(function (r) { return riverFish(r).length; }).sort();
+    var selR = (opts.rivers || []).filter(function (r) { return all.indexOf(r) !== -1; }).slice(0, MAX_RIVERS);
+    var selF = (opts.species || []).filter(function (n) { return FISH_ORDER.indexOf(n) !== -1; });
+    el.innerHTML = '<div class="hff-pick"><span class="plbl">Rivers <span>(up to ' + MAX_RIVERS + ')</span></span>' +
+      '<div class="hff-chips r" role="group" aria-label="Rivers"></div><p class="pnote rn" hidden></p></div>' +
+      '<div class="hff-pick"><span class="plbl">Fish</span><div class="hff-chips f" role="group" aria-label="Fish"></div></div>';
+    var rBox = el.querySelector('.hff-chips.r'), fBox = el.querySelector('.hff-chips.f'), note = el.querySelector('.rn');
+    function chip(label, value, on) {
+      return '<button type="button" class="hff-chip" data-v="' + esc(value) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + esc(label) + '</button>';
+    }
+    function fishOffered() {
+      var src = selR.length ? selR : all, seen = {};
+      src.forEach(function (r) { riverFish(r).forEach(function (n) { seen[n] = 1; }); });
+      return FISH_ORDER.filter(function (n) { return seen[n]; });
+    }
+    function draw() {
+      rBox.innerHTML = all.map(function (r) { return chip(chipName(r), r, selR.indexOf(r) !== -1); }).join('');
+      var offered = fishOffered();
+      selF = selF.filter(function (n) { return offered.indexOf(n) !== -1; });
+      fBox.innerHTML = offered.map(function (n) { return chip(n, n, selF.indexOf(n) !== -1); }).join('');
+    }
+    rBox.addEventListener('click', function (e) {
+      var b = e.target.closest('.hff-chip'); if (!b) return;
+      var v = b.getAttribute('data-v'), i = selR.indexOf(v);
+      note.hidden = true;
+      if (i !== -1) selR.splice(i, 1);
+      else if (selR.length >= MAX_RIVERS) { note.textContent = 'Up to ' + MAX_RIVERS + ' rivers. Tap one to remove it first.'; note.hidden = false; return; }
+      else selR.push(v);
+      draw();
+    });
+    fBox.addEventListener('click', function (e) {
+      var b = e.target.closest('.hff-chip'); if (!b) return;
+      var v = b.getAttribute('data-v'), i = selF.indexOf(v);
+      if (i !== -1) selF.splice(i, 1); else selF.push(v);
+      b.setAttribute('aria-pressed', i === -1 ? 'true' : 'false');
+    });
+    draw();
+    function pairs() {
+      var out = [];
+      selR.forEach(function (r) { var fish = riverFish(r); selF.forEach(function (n) { if (fish.indexOf(n) !== -1) out.push({ river: r, species: n }); }); });
+      return out;
+    }
+    return {
+      pairs: pairs,
+      rivers: function () { return selR.slice(); },
+      species: function () { return selF.slice(); },
+      error: function () {
+        if (!selR.length) return 'Pick at least one river.';
+        if (!selF.length) return 'Pick at least one fish.';
+        if (!pairs().length) return 'None of those fish are on the rivers you picked.';
+        return '';
+      }
+    };
+  }
+  window.HFF_weeklyPicker = function (el, opts) {
+    if (!document.getElementById('hff-pick-css')) { var st = document.createElement('style'); st.id = 'hff-pick-css'; st.textContent = PICKER_CSS; document.head.appendChild(st); }
+    return weeklyPicker(el, opts);
+  };
+
   var HOW = 'Picked from live river flow and the week\u2019s rain, temperature and cloud forecast.';
   var FINE = 'Only sent when there\u2019s a good day. Free, no account, unsubscribe anytime.';
   var CSS = '.hff-signup{margin:2.2rem 0 1rem;padding:1.1rem 1.15rem 1.15rem;background:#eef5f3;border-radius:10px;' +
@@ -38,13 +122,14 @@
     '.hff-signup form{display:flex;flex-wrap:wrap;gap:.5rem}' +
     '.hff-signup input[type=email],.hff-signup select{flex:1 1 200px;min-width:0;min-height:44px;padding:.5rem .75rem;border:1px solid #c9d6d2;' +
     'border-radius:8px;background:#fff;font:inherit;color:#1a2e3a}' +
-    '.hff-signup button{min-height:44px;padding:.5rem 1.1rem;border:0;border-radius:8px;background:#1e7a6e;color:#fff;font:600 .95rem/1 inherit;cursor:pointer}' +
-    '.hff-signup button:disabled{opacity:.6;cursor:default}' +
+    '.hff-signup button[type=submit]{min-height:44px;padding:.5rem 1.1rem;border:0;border-radius:8px;background:#1e7a6e;color:#fff;font:600 .95rem/1 inherit;cursor:pointer}' +
+    '.hff-signup button[type=submit]:disabled{opacity:.6;cursor:default}' +
     '.hff-signup .opt{display:flex;align-items:center;gap:.45rem;margin-top:.6rem;font-size:.85rem;cursor:pointer}' +
     '.hff-signup .opt input{width:16px;height:16px;margin:0;accent-color:#1e7a6e}' +
     '.hff-signup .small{font-size:.78rem;color:#6b7d86;margin:.6rem 0 0}' +
     '.hff-signup .how{font-size:.8rem;color:#6b7d86;margin:-.35rem 0 .8rem}' +
-    '.hff-signup .msg{margin:.6rem 0 0;font-size:.9rem}.hff-signup .msg.err{color:#a63d2f}';
+    '.hff-signup .msg{margin:.6rem 0 0;font-size:.9rem}.hff-signup .msg.err{color:#a63d2f}' +
+    PICKER_CSS;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -70,32 +155,12 @@
     io.observe(box);
   }
 
-  // Homepage picker: the river's reach that lists the fish, preferring one open today, then the longest season.
-  function pickSection(parent, sp) {
-    var secs = ((window.RIVER_SECTIONS || {})[parent] || []).filter(function (s) {
-      var c = window.RIVER_CONFIG && RIVER_CONFIG[s];
-      return c && c.active !== false && c.species && c.species.indexOf(sp) !== -1;
-    });
-    var today = new Date(); today = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
-    var rank = { 'all-year': 0, extended: 1, standard: 2 };
-    secs.sort(function (a, b) {
-      var oa = typeof speciesFishableIn === 'function' && speciesFishableIn(a, sp, today) ? 0 : 1;
-      var ob = typeof speciesFishableIn === 'function' && speciesFishableIn(b, sp, today) ? 0 : 1;
-      return oa - ob || (rank[RIVER_CONFIG[a].season] || 3) - (rank[RIVER_CONFIG[b].season] || 3);
-    });
-    return secs[0] || '';
-  }
-
   // The weekly conditions email. mode "steelhead": run pages from October to April (river fixed, or a river picker);
-  // mode "any": the homepage, with river and fish pickers built from conditions-core.js.
+  // mode "any": the homepage, with river and fish chips (weeklyPicker, whole rivers, up to 3).
   function buildWeekly(box, mode, river) {
     var page = location.pathname;
     var placement = box.getAttribute('data-placement') || 'end';
-    var parents = mode === 'steelhead'
-      ? RIVERS.filter(function (r) { return STEELHEAD_REACH[r]; })
-      : Object.keys(window.RIVER_SECTIONS).filter(function (p) {
-          return RIVER_SECTIONS[p].some(function (s) { var c = RIVER_CONFIG[s]; return c && c.active !== false && c.species && c.species.length; });
-        }).sort();
+    var parents = RIVERS.filter(function (r) { return STEELHEAD_REACH[r]; });
     var what = mode === 'steelhead'
       ? 'Each week, get the best steelhead days ' + (river ? 'on ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'on your river')
       : 'Each week, get the best days to fish your river';
@@ -104,10 +169,10 @@
     box.innerHTML = '<div class="lbl">Stop guessing</div>' +
       '<p>' + what + ', with where to stand and what to bring.</p>' +
       '<p class="how">' + HOW + '</p>' +
+      (mode === 'any' ? '<div class="pk"></div>' : '') +
       '<form novalidate>' +
-      (river ? '' : '<select aria-label="River" class="r" required><option value="">Choose your river</option>' +
+      (river || mode === 'any' ? '' : '<select aria-label="River" class="r" required><option value="">Choose your river</option>' +
         parents.map(function (r) { return '<option>' + esc(r) + '</option>'; }).join('') + '</select>') +
-      (mode === 'any' ? '<select aria-label="Fish" class="f" required><option value="">Fish</option></select>' : '') +
       '<input type="email" placeholder="your@email.com" autocomplete="email" aria-label="Email" required>' +
       '<button type="submit">Send me the best days</button></form>' +
       (showRun ? '<label class="opt"><input type="checkbox"> Also send run alerts</label>' : '') +
@@ -115,24 +180,24 @@
       '<p class="small">' + FINE + '</p><p class="msg" role="status"></p>';
     observeSeen(box, page, 'weekly', placement);
     var form = box.querySelector('form'), email = box.querySelector('input[type=email]');
-    var rSel = box.querySelector('select.r'), fSel = box.querySelector('select.f');
-    var cb = box.querySelector('.opt input'), btn = box.querySelector('button'), msg = box.querySelector('.msg');
-    if (rSel && fSel) rSel.addEventListener('change', function () {
-      var seen = {}, list = [];
-      (RIVER_SECTIONS[rSel.value] || []).forEach(function (s) {
-        var c = RIVER_CONFIG[s];
-        if (c && c.active !== false) (c.species || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; list.push(n); } });
-      });
-      fSel.innerHTML = '<option value="">Fish</option>' + list.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('');
-    });
+    var rSel = box.querySelector('select.r');
+    var cb = box.querySelector('.opt input'), btn = box.querySelector('button[type=submit]'), msg = box.querySelector('.msg');
+    var picker = mode === 'any' ? weeklyPicker(box.querySelector('.pk')) : null;
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       msg.className = 'msg'; msg.textContent = '';
-      var r = rSel ? rSel.value : river;
-      if (!r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; rSel.focus(); return; }
-      var sp = mode === 'steelhead' ? 'Steelhead' : (fSel && fSel.value);
-      if (!sp) { msg.className = 'msg err'; msg.textContent = 'Pick a fish.'; fSel.focus(); return; }
-      var section = mode === 'steelhead' ? STEELHEAD_REACH[r] : pickSection(r, sp);
+      var r, sp, weekly;
+      if (picker) {
+        var perr = picker.error();
+        if (perr) { msg.className = 'msg err'; msg.textContent = perr; return; }
+        weekly = picker.pairs();
+        r = picker.rivers().join(', '); sp = picker.species().join(', ');
+      } else {
+        r = rSel ? rSel.value : river;
+        if (!r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; rSel.focus(); return; }
+        sp = 'Steelhead';
+        weekly = { section: STEELHEAD_REACH[r], species: sp };
+      }
       var v = email.value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.className = 'msg err'; msg.textContent = 'Check the email address.'; email.focus(); return; }
       var run = !!(showRun && cb && cb.checked), outlook = !!(showOutlook && cb && cb.checked);
@@ -140,7 +205,7 @@
       btn.disabled = true; var label = btn.textContent; btn.textContent = 'Saving\u2026';
       // Ticking run alerts sends kind "run" with the weekly reach attached; the Worker saves both.
       var body = { email: v, kind: run ? 'run' : 'weekly', source: 'page:' + page, outlook: outlook,
-        weekly: { section: section, species: sp } };
+        weekly: weekly };
       if (run) body.river = r;
       fetch(PROXY + '/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (res) {
@@ -149,12 +214,13 @@
           });
         })
         .then(function () {
-          lsSet('hff_sub_weekly:' + section + ':' + sp, '1');
+          (Array.isArray(weekly) ? weekly : [weekly]).forEach(function (w) { lsSet('hff_sub_weekly:' + (w.river || w.section) + ':' + w.species, '1'); });
           if (run) lsSet('hff_sub_run:' + r, '1');
           if (outlook) lsSet('hff_sub_outlook', '1');
           track('Email Signup', { page: page, offer: offer, river: r, species: sp, placement: placement });
           form.style.display = 'none';
           var opt = box.querySelector('.opt'); if (opt) opt.style.display = 'none';
+          var pk = box.querySelector('.pk'); if (pk) pk.style.display = 'none';
           msg.textContent = 'Done. Check your inbox for a confirmation.';
         })
         .catch(function (err) {
@@ -239,7 +305,7 @@
   // How far people scroll (TJ, 2026-11-03): one Umami "Scroll Depth {page, depth}" at 25, 50, 75 and 100 percent of the
   // page, once each per page view. Not on the homepage (the app). Read with Signup Box Seen to see where readers stop.
   function trackScrollDepth() {
-    if (location.pathname === '/' || !('addEventListener' in window)) return;
+    if (location.pathname === '/' || location.pathname === '/weekly/' || !('addEventListener' in window)) return;
     var marks = [25, 50, 75, 100], sent = {}, ticking = false;
     function check() {
       ticking = false;
