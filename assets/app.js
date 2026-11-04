@@ -5361,6 +5361,31 @@ function loadBaitImages() {
 }
 
 // ── GEAR SETUP RECOMMENDATIONS ────────────────────────────────────────────────
+// Small drawings for the gear ladder, 36 x 36. kind: 'fly', 'pin' (centrepin float) or 'spin'.
+var GEAR_INK = '#3a4a52';
+function gearIcon(label, kind) {
+  var I = GEAR_INK, svg = function(b){ return '<svg viewBox="0 0 36 36" width="36" height="36">' + b + '</svg>'; };
+  var l = String(label || '').toLowerCase();
+  if (l === 'rod') return svg(kind === 'fly'
+    ? '<line x1="6" y1="30" x2="30" y2="6" stroke="' + I + '" stroke-width="2.5" stroke-linecap="round"/><line x1="6" y1="30" x2="12" y2="24" stroke="#7a5a3a" stroke-width="5" stroke-linecap="round"/>'
+    : '<line x1="6" y1="28" x2="30" y2="8" stroke="' + I + '" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="28" x2="13" y2="22" stroke="#7a5a3a" stroke-width="5" stroke-linecap="round"/>');
+  if (l === 'reel') {
+    if (kind === 'spin') return svg('<rect x="11" y="9" width="14" height="14" rx="4" fill="#fff" stroke="' + I + '" stroke-width="2.5"/><line x1="18" y1="23" x2="18" y2="31" stroke="' + I + '" stroke-width="2.5"/>');
+    if (kind === 'fly') return svg('<circle cx="18" cy="18" r="11" fill="#fff" stroke="' + I + '" stroke-width="2.5"/><circle cx="18" cy="18" r="5" fill="none" stroke="' + I + '" stroke-width="1.5"/>');
+    return svg('<circle cx="18" cy="18" r="10" fill="#fff" stroke="' + I + '" stroke-width="2.5"/><circle cx="18" cy="18" r="3" fill="' + I + '"/>');
+  }
+  if (l === 'main line') return svg('<path d="M18 5 C27 12 9 22 18 31" fill="none" stroke="#2c6e8f" stroke-width="2"/>');
+  if (l === 'line') return svg('<path d="M18 5 C30 12 6 22 18 31" fill="none" stroke="#d98a2b" stroke-width="3"/>');
+  if (l === 'leader') return svg('<line x1="18" y1="4" x2="18" y2="32" stroke="#5fa391" stroke-width="2.5" stroke-dasharray="4 3"/>');
+  if (l === 'tippet') return svg('<line x1="18" y1="4" x2="18" y2="32" stroke="#5fa391" stroke-width="1.5" stroke-dasharray="2 3"/>');
+  if (l === 'float') return svg('<rect x="16" y="3" width="4" height="7" rx="1.5" fill="#e8562a"/><ellipse cx="18" cy="18" rx="5.5" ry="9" fill="#f2efe6" stroke="' + I + '" stroke-width="1.5"/><line x1="18" y1="27" x2="18" y2="33" stroke="' + I + '" stroke-width="1.5"/>');
+  if (l === 'weights') return svg('<circle cx="18" cy="9" r="3.5" fill="#56656c"/><circle cx="18" cy="19" r="3" fill="#56656c"/><circle cx="18" cy="28" r="2.5" fill="#56656c"/>');
+  if (l === 'hook') return svg('<path d="M21 5 v15 a7 7 0 0 1 -14 0 v-4" fill="none" stroke="' + I + '" stroke-width="2.5"/><path d="M7 16 l3 3" stroke="' + I + '" stroke-width="2"/>');
+  if (l === 'fly size') return svg('<circle cx="18" cy="11" r="3.5" fill="#c9a33a"/><path d="M18 14 q-6 6 -2 14 q5 2 7 -3 q-1 -6 -5 -11z" fill="#8a6a3a"/>');
+  if (l === 'lure weight') return svg('<line x1="18" y1="3" x2="18" y2="9" stroke="' + I + '" stroke-width="1.5"/><ellipse cx="18" cy="20" rx="6" ry="10" fill="#c9a33a" stroke="' + I + '" stroke-width="1.5"/>');
+  return svg('<circle cx="18" cy="18" r="4" fill="' + I + '"/>');
+}
+
 function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var cold = conditions.cold, high = conditions.high, low = conditions.low;
   var sm = {brown:'Brown Trout',rainbow:'Rainbow Trout',steelhead:'Steelhead',brook:'Brook Trout',chinook:'Chinook Salmon',coho:'Coho Salmon'};
@@ -5370,6 +5395,7 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var isSalmon = !!primarySpecies && primarySpecies.indexOf('Salmon') !== -1;
   var spinFloat = fam === 'spin-float';
   if (spinFloat) fam = 'float';
+  var _kitKind = 'spin';   // which drawings the rig ladder uses (fly, centrepin, spin)
   var isBrook  = primarySpecies === 'Brook Trout';
 
   // Ordered list, not an object. Order is the packing order, and `secondary:true` demotes
@@ -5386,6 +5412,7 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
 
   // ── FLY ────────────────────────────────────────────────────────────────
   if (fam === 'fly' || (!fam && /nymph|dry|streamer|midge/i.test(topMethod))) {
+    _kitKind = 'fly';
     if (/streamer/i.test(topMethod)) {
       kitName = 'Fly setup · ' + (isSalmon ? '7\u20138 wt' : '5\u20136 wt');
       g('Rod', isSalmon ? '7\u20138 wt, 9\u201310 ft' : '5\u20136 wt, 9 ft', 'Fast action for casting big flies');
@@ -5426,6 +5453,7 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
 
   // ── FLOAT ──────────────────────────────────────────────────────────────
   } else if (fam === 'float' || (!fam && /float|drift|bait|roe|bead|centrepin|bottom bounc/i.test(topMethod))) {
+    _kitKind = spinFloat ? 'spin' : 'pin';
     var _bigFish = isSalmon || /steelhead|chinook|coho/.test(_gk) || (_gk === 'brown' && isLakeRunBrownSection(selectedRiver));
     kitName = spinFloat ? 'Float setup on a spinning rod' : 'Float setup';
     kitNote = high ? 'Water is up, so use a heavier float and more shot than usual.'
@@ -5441,9 +5469,9 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
     g('Reel', _bigFish ? 'Centrepin or 3000 spinning' : 'Centrepin or light spinning, 2500');
     }
     g('Main line', _bigFish ? '8\u201312 lb mono' : '4\u20136 lb mono', 'Mono floats');
-    g('Leader', _bigFish ? '6\u20138 lb fluoro, 18\u201324 in' : '3\u20134 lb fluoro, 18\u201324 in', null, {wide:true});
     g('Float', high ? 'Large balsa, 4\u20136 g' : 'Small balsa or pencil, 1\u20133 g');
     g('Weights', high ? 'Shot pattern to hold depth' : 'Light shot, strung out');
+    g('Leader', _bigFish ? '6\u20138 lb fluoro, 18\u201324 in' : '3\u20134 lb fluoro, 18\u201324 in', null, {wide:true});
     g('Hook', _bigFish ? '#8\u201312 single octopus' : '#12\u201316 single', 'Barbless where required');
     g('Also bring', 'Split shot, bait needles, pliers', null, {secondary:true});
 
@@ -5469,13 +5497,15 @@ function buildGearSetup(topMethod, fam, conditions, gridId, labelId) {
   var _lbl = document.getElementById(labelId || 'tg-gear-lbl');
   if (_lbl) _lbl.textContent = kitName;
 
-  grid.innerHTML = core.map(function(item) {
-    return '<div class="gear-item' + (item.wide ? ' wide' : '') + '">' +
-      '<div class="gear-item-lbl">' + item.label + '</div>' +
-      '<div class="gear-item-val">' + item.val + '</div>' +
-      (item.note ? '<div class="gear-item-note">' + item.note + '</div>' : '') +
-    '</div>';
-  }).join('');
+  // The rig from rod to hook, one row per part with a small drawing (TJ picked option B, 2026-11-04).
+  grid.classList.add('gear-lad');
+  grid.innerHTML = '<ul class="gl">' + core.map(function(item) {
+    return '<li><span class="gl-ic" aria-hidden="true">' + gearIcon(item.label, _kitKind) + '</span><span class="gl-tx">' +
+      '<span class="gear-item-lbl">' + item.label + '</span>' +
+      '<span class="gear-item-val">' + item.val + '</span>' +
+      (item.note ? '<span class="gear-item-note">' + item.note + '</span>' : '') +
+    '</span></li>';
+  }).join('') + '</ul>';
 
   var noteEl = document.getElementById('tg-gear-note');
   if (noteEl) {

@@ -563,6 +563,12 @@ Merged recently:
 - **Closed spots line** (TJ, 2026-11-04): access spots closed on the trip date are no longer a red box at the top of the
   Access Points card. They are one muted line each at the bottom of the card list ("Closed on this date: <spot>." plus the
   reason), with the regs source line under them (`.closed-notice.cn-line`).
+- **Gear as a rig ladder** (TJ picked option B, 2026-11-04): the Gear card lists the setup rod to hook, one row per part with
+  a small drawing (`gearIcon(label, kind)` in `app.js`; kind is fly, pin for centrepin float, or spin), joined by a thin line.
+  The specs are unchanged; the float setup now lists Float and Weights before Leader (rig order). Styles: `.gear-lad` at the
+  end of `app.css` (unlayered, so it beats the old `.gear-item` boxes). A new gear label needs an icon in `gearIcon()`.
+  From 900 px up the same rows read left to right (rod to hook, line across, text centred under each icon); phones keep the
+  vertical ladder (TJ, 2026-11-04).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
