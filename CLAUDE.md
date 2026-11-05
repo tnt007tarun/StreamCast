@@ -629,7 +629,8 @@ Merged recently:
   360 x 640, so the smallest phones scroll a little to reach it.
 
 - **One form, no tabs** (TJ, 2026-11-05, layout B from mockups): "Find my spot" and "Check by river" are one form. Every width:
-  Date on its own row, then "Your city" and "River (optional)" side by side (TJ wanted the same on desktop).
+  Date on its own row, then "Your city" and "River (optional)" side by side (TJ wanted the same on desktop). iPads and windows of 601 to 1199 px get smaller
+  species tiles (36 px photo, 12 px name; button bottom about 730 px on 1024 x 768).
   River defaults to "Best near me" (the city search). A picked river runs the river search (`goToResults()` sets `appMode`
   from `#expert-river-select`: `'expert'` with a river, `'beginner'` without) and the city is then optional; with both, the
   drive time to the picked river shows (RIVERS_DB, then `RIVER_CONFIG.driveTime`, via `driveKeyFor()`). Neither picked:

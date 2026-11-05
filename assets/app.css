@@ -3458,3 +3458,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #landing #river-field-group > .field-lbl { display: block; }
 @media (min-width: 601px) { #landing .form-top > .field-group > .field-lbl { line-height: 20px; height: 20px; } }
 @media (min-width: 601px) { #landing .form-top { row-gap: .8rem; } }
+/* iPad and narrow windows: smaller species tiles (36 px photo, 12 px name) so the button clears the screen (TJ, 2026-11-05). */
+@media (min-width: 601px) and (max-width: 1199px), (min-width: 601px) and (hover: none) and (pointer: coarse) {
+  #landing .species-btn { padding: .45rem .3rem .4rem; gap: .25rem; min-height: 0; }
+  #landing .species-btn-img { width: 36px !important; height: 36px !important; }
+  #landing .species-btn-name { font-size: 12px; line-height: 1.2; }
+}
