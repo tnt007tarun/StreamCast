@@ -3334,3 +3334,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .gear-lad .gl li:last-child .gl-ic::before { bottom:auto; height:1.5px; right:50%; }
   #results .gear-lad .gl-tx { padding:8px 0 0; text-align:center; align-items:center; }
 }
+
+/* "Pick a city first" message under the location field (TJ, 2026-11-04). */
+@layer overrides {
+  #landing .loc-msg { margin: .4rem 0 0; font: 600 13px/1.3 'Outfit', -apple-system, sans-serif; color: #9a5a1c; }
+  #landing .loc-msg[hidden] { display: none; }
+}

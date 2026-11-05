@@ -570,6 +570,15 @@ Merged recently:
   From 900 px up the same rows read left to right (rod to hook, line across, text centred under each icon); phones keep the
   vertical ladder (TJ, 2026-11-04).
 
+- **City feedback and memory** (TJ, 2026-11-04, from the MS Clarity week: the city select was the top tap, 44 of 246, and "Find my best
+  spot" with no city only flashed a 2 s outline, so on phones, where the field is off screen, the button looked dead): tapping the
+  button with no city now scrolls the city field into view, focuses it and shows "Pick a city first, then tap Find my best spot."
+  (`#loc-msg`, cleared when a city is picked; Umami `City Required Shown`). The picked city is remembered in `localStorage`
+  (`hff_city`) and restored on the next visit with a `change` event (`City Remembered`); it never overrides a deep link. "Use my
+  location" is not built (TJ is still deciding). Clarity (7 days, 76 page views, old layout): average fold at the Target species
+  label, 46% scroll less than halfway; next up is saving vertical space so the button clears the fold on a 664 px phone window
+  (button bottom is about 736 px now).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
