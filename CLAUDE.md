@@ -628,8 +628,8 @@ Merged recently:
   under 380 px). Button bottom about 644 px on 390 x 664 (collapsed was 599, open with the old tall buttons 671); 694 on
   360 x 640, so the smallest phones scroll a little to reach it.
 
-- **One form, no tabs** (TJ, 2026-11-05, layout B from mockups): "Find my spot" and "Check by river" are one form. Phones:
-  Date on its own row, then "Your city" and "River (optional)" side by side; 601 px and up: Date, City and River on one row.
+- **One form, no tabs** (TJ, 2026-11-05, layout B from mockups): "Find my spot" and "Check by river" are one form. Every width:
+  Date on its own row, then "Your city" and "River (optional)" side by side (TJ wanted the same on desktop).
   River defaults to "Best near me" (the city search). A picked river runs the river search (`goToResults()` sets `appMode`
   from `#expert-river-select`: `'expert'` with a river, `'beginner'` without) and the city is then optional; with both, the
   drive time to the picked river shows (RIVERS_DB, then `RIVER_CONFIG.driveTime`, via `driveKeyFor()`). Neither picked:

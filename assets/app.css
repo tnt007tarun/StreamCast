@@ -3447,17 +3447,14 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 }
 @media (max-width: 379px) { #landing .method-row .tech-family-btn { white-space: normal; } }
 
-/* One form (TJ picked layout B, 2026-11-05): no tabs. Phones: Date on its own row, then City and River side by side.
-   601 px and up: Date, City and River on one row. City is needed only when no river is picked. */
+/* One form (TJ picked layout B, 2026-11-05): no tabs. Every width: Date on its own row, then City and River side by side
+   (TJ preferred this on desktop too). City is needed only when no river is picked. */
 #landing .mode-toggle { display: none !important; }
 #landing .form-top { margin-top: 0; }
 #landing .form-top { display: grid; grid-template-columns: 1fr 1fr; }
 #landing .form-top > .field-group:first-child { grid-column: 1 / -1; }
 #landing #river-field-group { display: flex; flex-direction: column; min-width: 0; }
 #landing #river-field-group .field-input { width: 100%; }
-@media (min-width: 601px) {
-  #landing .form-top { grid-template-columns: 1fr 1fr 1fr; }
-  #landing .form-top > .field-group:first-child { grid-column: auto; }
-}
 #landing #river-field-group > .field-lbl { display: block; }
 @media (min-width: 601px) { #landing .form-top > .field-group > .field-lbl { line-height: 20px; height: 20px; } }
+@media (min-width: 601px) { #landing .form-top { row-gap: .8rem; } }
