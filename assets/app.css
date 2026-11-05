@@ -3365,11 +3365,6 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
     #landing .species-btn-img img { width: 30px; height: 30px; object-fit: cover; }
     #landing .species-btn-name { text-align: left; font-size: 12px; line-height: 1.15; letter-spacing: 0; word-break: normal; overflow-wrap: normal; hyphens: none; }
     #landing .species-btn .sp-badge { top: -6px; right: 4px; }
-    /* A */
-    #landing .beginner-only.m-collapsible > .field-lbl { display: flex; align-items: center; justify-content: flex-start; gap: .3rem; cursor: pointer; min-height: 44px; margin: 0; }
-    #landing .beginner-only.m-collapsible > .field-lbl::after { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin: -3px .3rem 0 auto; transition: transform .15s; }
-    #landing .beginner-only.m-collapsible.m-open > .field-lbl::after { transform: rotate(-135deg); margin-top: 3px; }
-    #landing .beginner-only.m-collapsible:not(.m-open) > .method-row { display: none; }
     #landing .tech-section { padding-top: .2rem; gap: .5rem; }
     #landing .form-species { padding-bottom: 0; }
   }
@@ -3443,3 +3438,11 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #results .res-center-val { font-size: 15px; font-weight: 600; }
 #results #fcl li, #results #fcl li span:not(.ci) { font-size: 13px; }
 .notify-bar label, .notify-bar label span { font-size: 13px; }
+
+/* Phones: Method is always open again (TJ, 2026-11-05: with the roomier tiles the button still clears the fold), as one
+   compact row: small icon over a one-line 12 px word, so the four buttons add about 50 px instead of 72. */
+@media (max-width: 600px) {
+  #landing .method-row .tech-family-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; min-height: 50px; padding: .4rem .2rem; font-size: 12px; line-height: 1.1; text-align: center; white-space: nowrap; }
+  #landing .method-row .tc-icon { margin: 0; position: static; display: flex; flex: none; }
+}
+@media (max-width: 379px) { #landing .method-row .tech-family-btn { white-space: normal; } }
