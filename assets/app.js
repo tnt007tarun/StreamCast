@@ -5934,6 +5934,30 @@ function updateSpeciesGrid() {
   } catch (e) {}
 })();
 
+// Phones: the Method choice sits behind one row that shows the current pick (TJ, 2026-11-04). The buttons stay in the page,
+// so everything that reads them keeps working; the row just opens and closes them.
+(function () {
+  var box = document.querySelector('#landing .beginner-only');
+  if (!box || !window.matchMedia || !window.matchMedia('(max-width: 600px)').matches) return;
+  var lbl = box.querySelector('.field-lbl');
+  var opt = lbl && lbl.querySelector('.opt');
+  if (!lbl || !opt) return;
+  box.classList.add('m-collapsible');
+  lbl.setAttribute('role', 'button'); lbl.setAttribute('tabindex', '0'); lbl.setAttribute('aria-expanded', 'false');
+  function sync() {
+    var on = box.querySelector('.tech-family-btn.active');
+    var name = on && on.getAttribute('data-family') ? on.textContent.trim() : '';
+    opt.textContent = name ? name : '(optional)';
+    opt.style.opacity = name ? '1' : '';
+    lbl.setAttribute('aria-expanded', box.classList.contains('m-open') ? 'true' : 'false');
+  }
+  function toggle() { box.classList.toggle('m-open'); sync(); }
+  lbl.addEventListener('click', toggle);
+  lbl.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  box.addEventListener('click', function (e) { if (e.target.closest('.tech-family-btn')) setTimeout(sync, 0); });
+  sync();
+})();
+
 
 function rrankBadge(score) {
   var c = scoreToConfidence(score);
