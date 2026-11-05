@@ -4253,7 +4253,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
         }
       }
     }
-  } else {
+  } else if (!_multiTarget) {
+    // No fish picked (or none of the picked fish on this reach). Several picked fish on the reach are the target as a
+    // group (_multiTargetLabel), never swapped for the river's default fish: that fallback named Coho on the Duffins for
+    // a Steelhead + Chinook search, and the regs panel followed it (TJ, 2026-11-05).
     // Same pick as the gear: see defaultTargetSpecies. It can name a staging salmon whose
     // season window is still 'slow', so it is not always in recs.
     var _def = defaultTargetSpecies(cfg, wt) || (recs.length > 0 ? recs[0].name : null);
@@ -4311,7 +4314,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   try { (function() {
     var _sp = window._effectiveRecommendedSpecies;
     if (!_sp) return;
-    var _lbl = _sp.replace(' Trout','').replace(' Salmon','');
+    var _lbl = _sp.replace(/ Trout| Salmon/g, '');
     document.querySelectorAll('.regs-title').forEach(function(el) {
       if (/2026 Regs/i.test(el.textContent)) {
         el.textContent = '2026 Regs · ' + _lbl;

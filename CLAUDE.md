@@ -610,6 +610,11 @@ Merged recently:
   `RIVER_SECTIONS`, "(closed)" from `sectionClosedOn()`). Tapping one opens that reach and marks it in `_upstreamStay`, so the
   upstream rule doesn't move the reader back up. Umami `Other Reach Clicked {river}`.
 
+- **Regs follow the picked fish** (TJ, 2026-11-05: a Steelhead + Chinook search on the Duffins showed "2026 Regs · Coho"): with
+  two or more picked fish on the reach, `buildTopPick()` still ran its no-species fallback (`defaultTargetSpecies()`), so
+  `window._effectiveRecommendedSpecies` and the regs panel named the river's default fish. That branch now runs only when no
+  picked fish is on the reach (`else if (!_multiTarget)`); the regs title reads "Steelhead + Chinook" and lists each picked
+  fish's limit. Checked 140 river/fish/date cases against main: only the regs title and bullets changed.
 - **Results hierarchy** (TJ, 2026-11-04: "sub-text larger than its heading"): one scale, display 24 (28 from 901 px) > heading 20
   > title 17 > body 15 > note 13 > label 12. Headings (600) are section heads only (`.sec-label h3`, `.dam h3`, `.sshdr h3`);
   card titles (method, "Float setup", bait name, access spot) are titles at 17/600, so they no longer match or beat the section
