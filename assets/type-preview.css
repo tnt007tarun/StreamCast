@@ -1,0 +1,69 @@
+/* TYPE PREVIEW ONLY (never merge). Two candidate stacks for the whole site, switched by html[data-type]:
+   inter = Inter everywhere. serif = Source Serif 4 for headings and article text, Inter for UI, labels and numbers.
+   Self-hosted variable fonts. Generated from app.css's serif selectors plus generic heading selectors. */
+@font-face{font-family:'TP Inter';src:url(/assets/fonts/inter-latin-wght.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'TP Serif';src:url(/assets/fonts/source-serif-4-latin-wght.woff2) format('woff2');font-weight:200 900;font-display:swap}
+html[data-type] body,html[data-type] body *:not(svg):not(svg *){font-family:'TP Inter',system-ui,sans-serif!important;font-style:normal!important;font-synthesis:none}
+html[data-type] body{font-weight:400}
+html[data-type] .bnum,html[data-type] .tp-tile-val,html[data-type] .gv,html[data-type] .gr,html[data-type] td,html[data-type] .hff-today-tile .val{font-variant-numeric:tabular-nums}
+/* static pages (guides, rivers, about) */
+html[data-type] body:not(:has(#landing)){font-size:17px;line-height:1.7}
+html[data-type] .wrap h1{font-weight:600!important;font-size:clamp(2rem,6.4vw,2.9rem)!important;line-height:1.1!important;letter-spacing:-.03em!important}
+html[data-type] .wrap h2{font-weight:600!important;font-size:1.5rem!important;line-height:1.25!important;letter-spacing:-.02em!important}
+html[data-type] .wrap h3{font-weight:600!important;letter-spacing:-.01em!important}
+html[data-type] .standfirst{font-size:1.18rem!important;line-height:1.6!important}
+html[data-type] .mast a.brand{font-weight:700!important;letter-spacing:-.01em}
+/* app */
+html[data-type] #landing h1{font-weight:500!important;letter-spacing:-.035em!important}
+html[data-type] #results .tp-headline{font-weight:500!important;letter-spacing:-.02em!important}
+html[data-type] #results .sec-label h3,html[data-type] #results .sname{font-weight:600!important;letter-spacing:-.015em!important}
+/* serif variant: restore the serif where a serif belongs */
+html[data-type=serif] body:not(:has(#landing)) :is(h1,h2,h3,h4,p,li,.standfirst,blockquote,figcaption,.mast a.brand){font-family:'TP Serif',Georgia,serif!important}
+html[data-type=serif] body:not(:has(#landing)) :is(table,th,td) :is(p,li){font-family:'TP Inter',sans-serif!important}
+html[data-type=serif] .wrap h1{font-weight:650!important;letter-spacing:-.02em!important}
+html[data-type=serif] .wrap h2,html[data-type=serif] .wrap h3{letter-spacing:-.01em!important}
+html[data-type=serif] body:not(:has(#landing)){font-size:18px;line-height:1.72}
+html[data-type=serif] #landing .field-input,
+html[data-type=serif] #landing .guides-title,
+html[data-type=serif] #results #m1n,
+html[data-type=serif] #results .aname,
+html[data-type=serif] #results .dam h3,
+html[data-type=serif] #results .gear-item-val,
+html[data-type=serif] #results .gear-title,
+html[data-type=serif] #results .mn,
+html[data-type=serif] #results .more-river-label,
+html[data-type=serif] #results .more-river-toggle,
+html[data-type=serif] #results .p-alt-name,
+html[data-type=serif] #results .p-bait h5,
+html[data-type=serif] #results .p-gearname,
+html[data-type=serif] #results .p-lbl,
+html[data-type=serif] #results .p-step,
+html[data-type=serif] #results .p-tech h4,
+html[data-type=serif] #results .res-center-val,
+html[data-type=serif] #results .res-logo-name,
+html[data-type=serif] #results .rn,
+html[data-type=serif] #results .rrank-name,
+html[data-type=serif] #results .sec-label h3,
+html[data-type=serif] #results .sec-num,
+html[data-type=serif] #results .sname,
+html[data-type=serif] #results .sp-banner-name,
+html[data-type=serif] #results .sshdr h3,
+html[data-type=serif] #results .stocking-species,
+html[data-type=serif] #results .tg-name,
+html[data-type=serif] #results .tp-headline,
+html[data-type=serif] #results .tp-line,
+html[data-type=serif] #landing .site-footer-brand, #results .site-footer-brand,
+html[data-type=serif] #landing .sp-banner-name, #results .sp-banner-name,
+html[data-type=serif] #landing h1{font-family:'TP Serif',Georgia,serif!important}
+html[data-type=serif] #landing h1{font-weight:600!important;letter-spacing:-.02em!important}
+html[data-type=serif] #results .tp-headline{font-weight:600!important;letter-spacing:-.01em!important}
+/* switch */
+#tp-switch{position:fixed;left:8px;bottom:8px;z-index:99999;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(14,42,74,.92);box-shadow:0 2px 10px rgba(0,0,0,.3)}
+#tp-switch button{all:unset;font:600 12px/1 system-ui,sans-serif;color:#cfe0ea;padding:8px 11px;border-radius:999px;cursor:pointer}
+#tp-switch button[aria-pressed=true]{background:#fff;color:#0e2a4a}
+/* Inter is wider: keep the brand and nav from colliding on phones */
+@media (max-width:600px){
+  html[data-type] .logo-name,html[data-type] .mast a.brand{font-size:.98rem!important;letter-spacing:-.02em}
+  html[data-type] .land-nav a,html[data-type] .mast nav a{letter-spacing:0}
+  html[data-type] .mast nav{gap:.9rem}
+}
