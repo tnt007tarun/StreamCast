@@ -1,0 +1,16 @@
+/* Type for the hand-written pages (guides, rivers, about, outlook, weekly, unsubscribe, Credit SSR pages).
+   Inter only, like the app (TJ, 2026-11-04). Each page keeps its own <style>; these rules sit on top of it
+   (the html prefix outranks the pages' plain element selectors), so sizes live in one place. */
+@font-face{font-family:Inter;src:url(/assets/fonts/inter-latin-wght.woff2) format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+html body{font-size:17px;line-height:1.7}
+html :is(button,input,select,textarea){font-family:inherit}
+html .wrap h1{font-weight:600;font-size:clamp(2rem,6.4vw,2.9rem);line-height:1.1;letter-spacing:-.03em}
+html .wrap h2{font-weight:600;font-size:1.5rem;line-height:1.25;letter-spacing:-.02em}
+html .wrap h3{font-weight:600;letter-spacing:-.01em}
+html .standfirst{font-size:1.18rem;line-height:1.6}
+html .mast a.brand{letter-spacing:-.01em}
+html table{font-variant-numeric:tabular-nums}
+@media (max-width:600px){
+  html .mast a.brand{font-size:.98rem;letter-spacing:-.02em}
+  html .mast nav{gap:.9rem}
+}

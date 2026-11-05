@@ -183,7 +183,7 @@ function renderPage(route, cond, speciesSlug) {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;--paper:#fbf9f5;
 --fern:#1e7a6e;--amber:#b8620f;
---serif:Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif}
+--serif:Inter,system-ui,-apple-system,sans-serif}
 body{background:var(--paper);color:var(--text);
 font:400 19px/1.72 var(--serif);-webkit-font-smoothing:antialiased}
 a{color:var(--fern)}
@@ -191,41 +191,41 @@ a{color:var(--fern)}
 .mast{border-bottom:1px solid var(--rule)}
 .mast .wrap{display:flex;align-items:center;justify-content:space-between;
 padding:1.1rem 1.4rem;max-width:900px}
-.mast .brand{font:italic 700 1.05rem/1 var(--serif);color:var(--ink);text-decoration:none}
+.mast .brand{font:700 1.05rem/1 var(--serif);color:var(--ink);text-decoration:none}
 .mast .brand,.mast .wrap>a:first-child{display:inline-flex;align-items:center;gap:.5rem}
 .mast .brand img,.mast .wrap>a:first-child img{width:26px;height:26px;display:block;flex:none}
 @media(max-width:360px){.mast .brand,.mast .wrap>a:first-child{gap:.35rem;font-size:.95rem}.mast .brand img,.mast .wrap>a:first-child img{width:22px;height:22px}.mast nav{gap:.75rem}}
 @media(max-width:340px){.mast nav a[href="/"]{display:none}}
 .mast nav{display:flex;gap:1.3rem}
-.mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.mast nav a{font:500 .78rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none}
 article{padding:3rem 0 4rem}
-.eyebrow{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.eyebrow{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
 h1{font:700 2.3rem/1.15 var(--serif);color:var(--ink);letter-spacing:-.015em;margin-bottom:.9rem}
 .standfirst{font-size:1.18rem;line-height:1.6}
-.byline{font:500 .76rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.byline{font:500 .76rem/1.5 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin:1.4rem 0 0;padding-top:1rem;border-top:1px solid var(--rule)}
 p{margin:0 0 1.3rem}
 h2{font:700 1.5rem/1.28 var(--serif);color:var(--ink);margin:2.8rem 0 1rem}
 strong{font-weight:600;color:var(--ink)}
 .now{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
 padding:1.2rem 0 1.3rem;margin:2.2rem 0}
-.now-lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.now-lbl{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.9rem}
 .tiles{display:flex;gap:1.6rem;flex-wrap:wrap}
-.tile-lbl{font:600 .62rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.tile-lbl{font:600 .62rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .tile-val{font:700 1.5rem/1 var(--serif);color:var(--ink)}
-.tile-meaning{font:600 .62rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.tile-meaning{font:600 .62rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.08em;text-transform:uppercase;margin-top:.35rem}
-.verdict{font:600 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.verdict{font:600 .8rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.06em;margin-top:1.1rem}
 .cta-line{margin-top:1.1rem}
-.cta-line a{font:600 .88rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.cta-line a{font:600 .88rem/1 Inter,system-ui,-apple-system,sans-serif;
 text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:2px}
 .regs{border-left:3px solid var(--amber);padding:.2rem 0 .2rem 1.3rem;margin:2rem 0}
-.regs-lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.regs-lbl{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.6rem}
 .regs p{font-size:1rem;margin:0}
 ul{margin:0 0 1.3rem 1.2rem}li{margin-bottom:.45rem}
@@ -235,15 +235,17 @@ ul{margin:0 0 1.3rem 1.2rem}li{margin-bottom:.45rem}
 font:700 1rem/1.3 var(--serif)}
 .other a:hover{color:var(--fern)}
 .endnote{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
-font:400 .84rem/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--muted)}
+font:400 .84rem/1.65 Inter,system-ui,-apple-system,sans-serif;color:var(--muted)}
 footer.site{border-top:1px solid var(--rule);margin-top:2.5rem}
 footer.site .wrap{display:flex;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
 padding-top:1.5rem;padding-bottom:2.2rem;max-width:900px;align-items:center}
-footer.site a{font:500 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+footer.site a{font:500 .8rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none}
-footer.site .b{font:italic 700 .95rem/1 var(--serif);color:var(--ink)}
+footer.site .b{font:700 .95rem/1 var(--serif);color:var(--ink)}
 @media(max-width:640px){body{font-size:18px}h1{font-size:1.85rem}.tiles{gap:1.2rem}}
 </style>
+<link rel="preload" href="/assets/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site-type.css">
 </head>
 <body>
 <header class="mast"><div class="wrap">

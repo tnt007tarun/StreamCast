@@ -26,7 +26,7 @@
 :root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;
 --paper:#fbf9f5;--fern:#1e7a6e;--amber:#b8620f;--deep:#0d1f2d}
 body{background:var(--paper);color:var(--text);
-font:400 19px/1.72 Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+font:400 19px/1.72 Inter,system-ui,-apple-system,sans-serif;
 -webkit-font-smoothing:antialiased}
 a{color:var(--fern)}
 .wrap{max-width:660px;margin:0 auto;padding:0 1.4rem}
@@ -36,45 +36,45 @@ a{color:var(--fern)}
 .mast{border-bottom:1px solid var(--rule)}
 .mast .wrap{display:flex;align-items:center;justify-content:space-between;
 padding-top:1.1rem;padding-bottom:1.1rem;max-width:900px}
-.mast a.brand{font:italic 700 1.05rem/1 Charter,Georgia,serif;color:var(--ink);text-decoration:none}
+.mast a.brand{font:700 1.05rem/1 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);text-decoration:none}
 .mast .brand,.mast .wrap>a:first-child{display:inline-flex;align-items:center;gap:.5rem}
 .mast .brand img,.mast .wrap>a:first-child img{width:26px;height:26px;display:block;flex:none}
 @media(max-width:360px){.mast .brand,.mast .wrap>a:first-child{gap:.35rem;font-size:.95rem}.mast .brand img,.mast .wrap>a:first-child img{width:22px;height:22px}.mast nav{gap:.75rem}}
 @media(max-width:340px){.mast nav a[href="/"]{display:none}}
 .mast nav{display:flex;gap:1.3rem}
-.mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.mast nav a{font:500 .78rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none}
 .mast nav a:hover,.mast nav a[aria-current]{color:var(--ink)}
 
 article,.page{padding:3.2rem 0 4rem}
-.eyebrow{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.eyebrow{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
-h1{font:700 2.45rem/1.14 Charter,'Iowan Old Style',Georgia,serif;color:var(--ink);
+h1{font:700 2.45rem/1.14 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);
 letter-spacing:-.015em;margin-bottom:1.2rem}
 .standfirst{font-size:1.24rem;line-height:1.62;margin-bottom:0}
 .standfirst strong{color:var(--ink);font-weight:600}
-.meta{font:500 .78rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.meta{font:500 .78rem/1.5 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin:1.5rem 0 0;padding-top:1.1rem;border-top:1px solid var(--rule);
 display:flex;gap:.5rem;flex-wrap:wrap}
 .meta span:not(:last-child)::after{content:' ·';opacity:.6}
 
 p{margin:0 0 1.35rem}
-h2{font:700 1.55rem/1.28 Charter,Georgia,serif;color:var(--ink);
+h2{font:700 1.55rem/1.28 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);
 letter-spacing:-.01em;margin:3rem 0 1rem}
-h3{font:700 1.1rem/1.35 Charter,Georgia,serif;color:var(--ink);margin:2rem 0 .6rem}
+h3{font:700 1.1rem/1.35 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);margin:2rem 0 .6rem}
 strong{font-weight:600;color:var(--ink)}
 ul,ol{margin:0 0 1.35rem 1.2rem}li{margin-bottom:.5rem}
 
 /* the direct answer — a rule-bounded aside, not a card */
 .answer{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
 padding:1.2rem 0 1.3rem;margin:2.2rem 0}
-.answer .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.answer .lbl{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.7rem}
 .answer p{font-size:1.06rem;margin-bottom:0}
 
 /* regulations — unmissable, but an inset rule rather than a box */
 .regs,.callout{border-left:3px solid var(--amber);padding:.2rem 0 .2rem 1.3rem;margin:2.2rem 0}
-.regs .lbl,.callout-label{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.regs .lbl,.callout-label{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem;display:block}
 .regs p,.callout p{font-size:1rem;margin-bottom:.7rem}
 .regs p:last-child,.callout p:last-child{margin-bottom:0}
@@ -82,12 +82,12 @@ letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.
 .regs li{font-size:1rem}
 
 blockquote{margin:2.4rem 0;padding-left:1.4rem;border-left:3px solid var(--rule)}
-blockquote p{font-style:italic;font-size:1.1rem;color:var(--ink)}
+blockquote p{font-style:normal;font-size:1.1rem;color:var(--ink)}
 blockquote p:last-child{margin-bottom:0}
 
 figure,.guide-img{margin:2.6rem 0}
 figure img,.guide-img img{display:block;width:100%;height:auto;border-radius:3px}
-figcaption{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+figcaption{font:400 .84rem/1.6 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin-top:.7rem}
 .guide-img.portrait img{max-width:420px;margin:0 auto}
 @media(min-width:900px){figure.wide{width:calc(100% + 180px);margin-left:-90px}}
@@ -104,29 +104,29 @@ background:linear-gradient(180deg,rgba(13,31,45,.1),rgba(13,31,45,.45));cursor:p
 display:flex;align-items:center;justify-content:center;transition:transform .18s ease}
 .vid-play:hover i{transform:scale(1.08)}
 .vid-play svg{width:18px;height:18px;fill:#fff;margin-left:3px}
-.vid-cap{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.vid-cap{font:400 .84rem/1.6 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin-top:.7rem}
 .chapters{list-style:none;margin:.7rem 0 0!important;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
 .chapters li{margin:0}
-.chapters a{font:500 .72rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.chapters a{font:500 .72rem/1 Inter,system-ui,-apple-system,sans-serif;
 text-decoration:none;border:1px solid var(--rule);border-radius:3px;padding:.32rem .55rem;
 display:inline-block;color:var(--muted);background:#fff}
 .chapters a:hover{border-color:var(--fern);color:var(--fern)}
 
 table{width:100%;border-collapse:collapse;margin:1.6rem 0 2.2rem;
-font:400 .93rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+font:400 .93rem/1.5 Inter,system-ui,-apple-system,sans-serif}
 .timing-table-wrap{overflow-x:auto}
 th{text-align:left;font-weight:600;color:var(--ink);font-size:.72rem;letter-spacing:.09em;
 text-transform:uppercase;padding:0 1rem .6rem 0;border-bottom:1px solid var(--ink);white-space:nowrap}
 td{padding:.75rem 1rem .75rem 0;border-bottom:1px solid var(--rule);vertical-align:top}
 td:first-child{color:var(--ink);font-weight:600}
-tr.group-row td{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+tr.group-row td{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.11em;text-transform:uppercase;color:var(--amber);padding-top:1.4rem;border-bottom:none}
 table a{font-size:.86rem;white-space:nowrap}
 
 /* FAQ — headings and prose, not cards */
 .faq-item{margin:0 0 1.6rem}
-.faq-q{font:700 1.1rem/1.35 Charter,Georgia,serif;color:var(--ink);margin-bottom:.5rem}
+.faq-q{font:700 1.1rem/1.35 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);margin-bottom:.5rem}
 .faq-a{font-size:1rem}
 
 /* call to action — a single line, not a slab */
@@ -135,12 +135,12 @@ padding:1.3rem 0;margin:2.6rem 0;background:none;text-align:left;border-radius:0
 .cta h3{margin:0 0 .4rem}
 .cta p,.live-cta p{font-size:1rem;margin-bottom:.8rem;color:var(--text)}
 .cta a,.live-cta a,.cta a.btn,.live-cta a.btn{display:inline-block;background:none;color:var(--fern);
-font:600 .92rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:0 0 3px;
+font:600 .92rem/1 Inter,system-ui,-apple-system,sans-serif;padding:0 0 3px;
 border-radius:0;border-bottom:2px solid rgba(30,122,110,.3);text-decoration:none}
 .cta a:hover,.live-cta a:hover{border-bottom-color:var(--fern);background:none}
 
 .sources,.endnote{margin-top:3.2rem;padding-top:1.4rem;border-top:1px solid var(--rule);
-font:400 .85rem/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--muted)}
+font:400 .85rem/1.65 Inter,system-ui,-apple-system,sans-serif;color:var(--muted)}
 .sources h2{font-size:.95rem;margin:0 0 .5rem;font-family:inherit;letter-spacing:.06em;
 text-transform:uppercase;color:var(--text)}
 .sources strong,.endnote strong{color:var(--text)}
@@ -155,18 +155,18 @@ padding:1.5rem 0}
 .gitem .thumb{width:104px;height:70px;flex:none;border-radius:3px;background:#e8eeec;
 background-size:cover;background-position:center}
 .gitem .txt{flex:1;min-width:0}
-.gseason{font:600 .66rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.gseason{font:600 .66rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .gseason.now{color:var(--amber)}
-.gitem h2,.gitem-h{font:700 1.22rem/1.3 Charter,Georgia,serif;color:var(--ink);margin:.35rem 0 .3rem}
+.gitem h2,.gitem-h{font:700 1.22rem/1.3 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);margin:.35rem 0 .3rem}
 .gitem p{font-size:.95rem;margin:0;color:var(--text)}
 
 footer.site{border-top:1px solid var(--rule);margin-top:3rem}
 footer.site .wrap{display:flex;gap:1.4rem;align-items:center;justify-content:space-between;
 padding-top:1.6rem;padding-bottom:2.4rem;flex-wrap:wrap;max-width:900px}
-footer.site a{font:500 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+footer.site a{font:500 .8rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none}
-footer.site .brand,footer.site .ft-brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--ink)}
+footer.site .brand,footer.site .ft-brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;color:var(--ink)}
 footer.site .ft-copy{display:none}
 
 @media(max-width:640px){
@@ -182,31 +182,31 @@ footer.site .ft-copy{display:none}
 
 /* rivers index */
 .rgroup{margin:2.6rem 0 0}
-.rgroup-h{font:600 .66rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.rgroup-h{font:600 .66rem/1 Inter,system-ui,-apple-system,sans-serif;
   letter-spacing:.14em;text-transform:uppercase;color:var(--amber);
   padding-bottom:.6rem;border-bottom:1px solid var(--ink);margin-bottom:.2rem}
 .rlist{list-style:none;margin:0}
 .ritem{border-bottom:1px solid var(--rule);padding:1.4rem 0}
-.ritem h3{font:700 1.22rem/1.28 Charter,Georgia,serif;color:var(--ink);margin:0 0 .2rem}
+.ritem h3{font:700 1.22rem/1.28 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);margin:0 0 .2rem}
 .ritem h3 a{color:inherit;text-decoration:none}
 .ritem h3 a:hover{color:var(--fern)}
-.rregion{font:500 .62rem/1 'JetBrains Mono',monospace;letter-spacing:.11em;
+.rregion{font:500 .62rem/1 Inter,system-ui,-apple-system,sans-serif;letter-spacing:.11em;
   text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
 .ritem p{font-size:.97rem;line-height:1.62;margin:0 0 .7rem}
-.rspecies{font:400 .82rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.rspecies{font:400 .82rem/1.5 Inter,system-ui,-apple-system,sans-serif;
   color:var(--muted);margin-bottom:.7rem;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
 .rspecies img{width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle}
 .rspecies .sp{display:inline-flex;align-items:center;gap:.32rem}
 .rlinks{display:flex;gap:1.1rem;flex-wrap:wrap;align-items:baseline}
-.rlinks a{font:600 .84rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.rlinks a{font:600 .84rem/1 Inter,system-ui,-apple-system,sans-serif;
   color:var(--fern);text-decoration:none;border-bottom:2px solid rgba(30,122,110,.28);padding-bottom:2px}
 .rlinks a:hover{border-bottom-color:var(--fern)}
 .rlinks a.guide{color:var(--amber);border-bottom-color:rgba(184,98,15,.3)}
-.rnote{font:400 .86rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.rnote{font:400 .86rem/1.6 Inter,system-ui,-apple-system,sans-serif;
   color:var(--muted);margin-top:.55rem}
 @media(max-width:480px){.tableofrun{display:block;overflow-x:auto}}
 .tableofrun{width:100%;border-collapse:collapse;margin:1.4rem 0 2rem;
-  font:400 .9rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  font:400 .9rem/1.5 Inter,system-ui,-apple-system,sans-serif}
 .tableofrun th{text-align:left;font-weight:600;color:var(--ink);font-size:.68rem;
   letter-spacing:.1em;text-transform:uppercase;padding:0 1rem .55rem 0;border-bottom:1px solid var(--ink)}
 .tableofrun td{padding:.7rem 1rem .7rem 0;border-bottom:1px solid var(--rule);vertical-align:top}
@@ -214,6 +214,8 @@ footer.site .ft-copy{display:none}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "name": "Ontario River Fishing Conditions", "description": "Live flow, water temperature and run timing for trout and salmon rivers across Southern Ontario.", "url": "https://herefishyfishy.ca/rivers/", "publisher": {"@type": "Organization", "name": "HereFishyFishy", "url": "https://herefishyfishy.ca"}, "hasPart": [{"@type": "Article", "headline": "When do salmon run in the Ganaraska?", "url": "https://herefishyfishy.ca/rivers/ganaraska/salmon-run/"}, {"@type": "Article", "headline": "When do salmon run in Bowmanville Creek?", "url": "https://herefishyfishy.ca/rivers/bowmanville/salmon-run/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which Ontario river should I fish today?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on the season and the water. Eastern Lake Ontario rivers such as the Ganaraska, Bowmanville and Wilmot run salmon earliest, from mid-to-late August. Central rivers like the Credit, Humber and Rouge follow two to three weeks later, and Bronte Creek runs last, into late October and November. For resident trout, the Grand River tailwater below Shand Dam stays cool through the summer and the upper Credit is best from the April opener to the end of September."}}, {"@type": "Question", "name": "When is the best time to fish for salmon in Ontario?", "acceptedAnswer": {"@type": "Answer", "text": "Chinook stage off river mouths from July, enter rivers from mid-to-late August, and peak from mid-September to mid-October. Coho follow slightly later, into late October. The best single condition is falling water 24 to 48 hours after rain."}}, {"@type": "Question", "name": "Which Ontario rivers have steelhead?", "acceptedAnswer": {"@type": "Answer", "text": "Most Lake Ontario tributaries hold steelhead, including the Credit, Humber, Ganaraska, Bowmanville, Duffins and Wilmot. The Saugeen on Lake Huron and the Nottawasaga on Georgian Bay are the largest steelhead systems, peaking in April and May."}}]}</script>
+<link rel="preload" href="/assets/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site-type.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to main content</a>

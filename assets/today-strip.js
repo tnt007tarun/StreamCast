@@ -112,10 +112,10 @@
     var css = document.createElement('style');
     css.textContent = '.hff-today{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:.6rem;margin:.2rem 0 .5rem}' +
       '.hff-today-tile{border:1px solid var(--rule,#e2ded6);border-radius:8px;padding:.6rem .7rem;background:#fff;display:flex;flex-direction:column;gap:.2rem;min-width:0}' +
-      '.hff-today-tile .lbl{font:600 12px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--muted,#6b7d86)}' +
-      '.hff-today-tile .val{font:600 1.1rem/1.15 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink,#1a2e3a);overflow-wrap:anywhere}' +
-      '.hff-today-tile .sub{font:400 13px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--muted,#6b7d86);overflow-wrap:anywhere}' +
-      '.now p.hff-today-src{font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--muted,#6b7d86);margin:0 0 .9rem}';
+      '.hff-today-tile .lbl{font:600 12px/1 Inter,system-ui,-apple-system,sans-serif;color:var(--muted,#6b7d86)}' +
+      '.hff-today-tile .val{font:600 1.1rem/1.15 Inter,system-ui,-apple-system,sans-serif;color:var(--ink,#1a2e3a);overflow-wrap:anywhere}' +
+      '.hff-today-tile .sub{font:400 13px/1.3 Inter,system-ui,-apple-system,sans-serif;color:var(--muted,#6b7d86);overflow-wrap:anywhere}' +
+      '.now p.hff-today-src{font:400 13px/1.4 Inter,system-ui,-apple-system,sans-serif;color:var(--muted,#6b7d86);margin:0 0 .9rem}';
     document.head.appendChild(css);
     var after = now.querySelector('p') || now.querySelector('.lbl');
     after.parentNode.insertBefore(box, after.nextSibling);
