@@ -213,9 +213,8 @@ function initExpertMode() {
     sel._wired = true;
     sel.addEventListener('change', function() {
       var river = this.value;
-      // Remember the river between visits, and clear the "pick a river" message (TJ, 2026-11-05).
-      if (river) { var _rm = document.getElementById('river-msg'); if (_rm) _rm.hidden = true; }
-      try { if (river) localStorage.setItem('hff_river', river); else localStorage.removeItem('hff_river'); } catch (e) {}
+      // A picked river answers the "pick a city or a river" message too.
+      if (river) { var _lm0 = document.getElementById('loc-msg'); if (_lm0) _lm0.hidden = true; }
       var secPicker = document.getElementById('river-section-picker');
       var chips = document.getElementById('river-chips');
       if (!river || !RIVER_SECTIONS[river]) { secPicker.style.display='none'; selectedRiver=null; return; }
@@ -268,17 +267,6 @@ function initExpertMode() {
       tiles.forEach(function(t){t.classList.remove('active');}); this.classList.add('active');
     });
   });
-  // First time river mode opens: bring back the last river picked on this browser (never over a deep link's pick).
-  if (_firstWire && !sel.value && !selectedRiver) {
-    try {
-      var _saved = localStorage.getItem('hff_river');
-      if (_saved && RIVER_SECTIONS[_saved]) {
-        sel.value = _saved;
-        sel.dispatchEvent(new Event('change'));
-        track('River Remembered', {});
-      }
-    } catch (e) {}
-  }
 }
 function getExpertMethod() {
   var a = document.querySelector('#expert-method-tiles .tech-family-btn.active');
@@ -1320,6 +1308,14 @@ function pickLegalReach(rivers, keys, dateStr, maxMin) {
 
 function goToResults(){
   try { hideInstallHint(); } catch (e) {}
+  // One form: a picked river means "check this river", no river means "find the best spot near my city".
+  var _riverPick = (document.getElementById('expert-river-select') || {}).value || '';
+  appMode = _riverPick ? 'expert' : 'beginner';
+  if (_riverPick && (!selectedRiver || selectedRiverParent !== _riverPick)) {
+    selectedRiverIsAuto = true;
+    selectedRiverParent = _riverPick;
+    selectedRiver = RIVER_SECTIONS[_riverPick] && RIVER_SECTIONS[_riverPick].length === 1 ? RIVER_SECTIONS[_riverPick][0] : resolveAutoSection(_riverPick);
+  }
   // Track search
   (function(){
     var _loc = (document.getElementById('loc-input-field')||{}).value || 'unknown';
@@ -1338,7 +1334,7 @@ function goToResults(){
     if (appMode === 'expert') selectedRiver = _keepRiver;
   }
   var locKey = resolveLocation(locInp ? locInp.value : '');
-  if (locKey) window._beginnerLocKey = locKey;
+  window._beginnerLocKey = locKey || null;   // with a river picked the city is optional and only gives the drive time
   if (!locKey && appMode !== 'expert') {
     // No city yet: the field is above the button and often off screen on a phone, so bring it into view and say why
     // nothing happened (Clarity showed repeated taps on the button with no feedback, TJ 2026-11-04).
@@ -1352,23 +1348,9 @@ function goToResults(){
     return;
   }
 
-  // In expert mode, validate a river is selected
-  if (appMode === 'expert' && !selectedRiver) {
-    // Same treatment as the city field (TJ, 2026-11-05): bring the river field into view and say why nothing happened.
-    var rsel = document.getElementById('expert-river-select');
-    if (rsel) {
-      rsel.style.outline='2px solid #b87333'; setTimeout(function(){ rsel.style.outline=''; }, 2000);
-      var _rm = document.getElementById('river-msg');
-      if (_rm) _rm.hidden = false;
-      try { rsel.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { rsel.scrollIntoView(); }
-      try { rsel.focus({ preventScroll: true }); } catch (e) {}
-    }
-    track('River Required Shown', {});
-    return;
-  }
   // Capture technique family — beginner uses tech-family-btn, expert uses tech-chip
-  if (appMode === 'beginner') {
-    selectedTechFamily = Array.from(document.querySelectorAll('.tech-family-btn.active'))
+  if (true) { // one Method row for both searches (the river tab's own copy is gone)
+    selectedTechFamily = Array.from(document.querySelectorAll('.beginner-only .tech-family-btn.active'))
       .map(function(b){ return b.getAttribute('data-family')||''; })
       .filter(function(v){ return v !== ''; });
   } else {
@@ -1618,9 +1600,11 @@ function goBack(){
   function wireAll(sel, evt, fn){ document.querySelectorAll(sel).forEach(function(el){ el.addEventListener(evt,fn); }); }
 
   // Mode toggle buttons
-  wire("mode-btn-beginner", "click", function(){ if (appMode !== 'beginner') track('Mode Switched', { to: 'spot' }); setMode('beginner'); });
-  wire("mode-btn-expert",   "click", function(){ if (appMode !== 'expert') track('Mode Switched', { to: 'river' }); setMode('expert'); });
-  setMode('beginner'); // default
+  // One form (TJ, 2026-11-05): the two tabs are gone. City and an optional River sit in the same form; a picked river
+  // runs the river search (appMode 'expert' inside goToResults), otherwise the city search. initExpertMode() fills
+  // and wires the river list.
+  setMode('beginner');
+  initExpertMode();
 
   // Travel time slider
   var travelRange = document.getElementById("travel-range");
@@ -4724,7 +4708,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   if (band) band.style.display = 'block';
   // Hide drive time in expert/check-by-river mode — no city context available
   var _driveElHide = document.getElementById('tp-drive-time');
-  if (_driveElHide && appMode === 'expert') _driveElHide.style.display = 'none';
+  if (_driveElHide && appMode === 'expert' && !window._beginnerLocKey) _driveElHide.style.display = 'none';
 
   // Confidence badge
   var _sectionClosed = sectionClosedOn(getRiverConfig(selectedRiver), getTripDateStr());
@@ -4786,16 +4770,20 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   }
   // Drive time — show prominently below the headline
   var _topRiver = rankedRivers && rankedRivers[0];
+  // A picked river wasn't ranked, so its drive time comes from the tables below (same lookup as the city search).
+  if (appMode === 'expert') _topRiver = null;
   // Always try RIVERS_DB for drive time (covers expert mode and when nearbyRivers misses)
   if ((!_topRiver || !_topRiver.driveTime) && window._beginnerLocKey) {
-    var _locKey2 = window._beginnerLocKey;
+    var _locKey2 = window._beginnerLocKey, _dk2 = driveKeyFor(_locKey2);
     var _riverName2 = selectedRiver ? selectedRiver.split(',')[0].trim() : '';
     var _dbEntry = RIVERS_DB.find(function(r){ return r.name === _riverName2; });
-    var _dt2 = _dbEntry && _dbEntry.times ? _dbEntry.times[_locKey2] : null;
+    var _cfg2 = RIVER_CONFIG[_riverName2];
+    var _dt2 = (_dbEntry && _dbEntry.times ? (_dbEntry.times[_locKey2] || _dbEntry.times[_dk2]) : null)
+      || (_cfg2 && _cfg2.driveTime ? (_cfg2.driveTime[_locKey2] || _cfg2.driveTime[_dk2]) : null);
     if (_dt2) _topRiver = { driveTime: _dt2 };
   }
   var _driveEl = document.getElementById('tp-drive-time');
-  if (_driveEl && appMode !== 'expert' && _topRiver && _topRiver.driveTime) {
+  if (_driveEl && (appMode !== 'expert' || window._beginnerLocKey) && _topRiver && _topRiver.driveTime) {
     var _dt = _topRiver.driveTime || (RIVER_CONFIG[_topRiver.name] && RIVER_CONFIG[_topRiver.name].driveTime && RIVER_CONFIG[_topRiver.name].driveTime[window._beginnerLocKey || '']) || null;
     var _dtStr = _dt < 60 ? _dt + ' min' : (_dt === 60 ? '1 hr' : Math.floor(_dt/60) + ' hr ' + (_dt%60 ? _dt%60 + ' min' : ''));
     var _lk = window._beginnerLocKey || '';
