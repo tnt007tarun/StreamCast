@@ -3494,3 +3494,5 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .species-btn .sp-badge { top: 4px; left: calc(50% + 7px); right: auto; }
 }
 @media (max-width: 600px) { #landing .form-top .field-lbl .opt { font-size: 11px; } }
+/* "(a city, a river, or both)" after "When and where": same look as the "(optional)" after Target species and Method */
+#landing .form-sec-lbl .opt { font-size: 13px; font-weight: 400; color: var(--t-muted, #6b7d86); margin-left: .3rem; }
