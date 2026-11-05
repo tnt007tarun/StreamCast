@@ -597,6 +597,7 @@ Merged recently:
   17 px (was 19 px Charter), headings 600 with tighter tracking, the home h1 and results headline 500. The "Results type system"
   roles above still hold, with Inter in every role. Next (TJ): a size and hierarchy pass (gear ladder values bigger than their
   labels, too many sizes on the home form) and home spacing on iPad (no gap under the hero, the button sitting at the bottom).
+  The home subtitle is hidden on iPads and other touch screens, and on any window under 1200 px (TJ, 2026-11-04).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

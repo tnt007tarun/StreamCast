@@ -3385,3 +3385,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 600px) {
   #landing .logo-name, #results .res-logo-name { font-size: .98rem; letter-spacing: -.02em; }
 }
+/* Home subtitle: phones and iPads skip it to win back height (TJ, 2026-11-04). Touch screens of any width, plus any window
+   narrower than a laptop. */
+@media (max-width: 1199px), (hover: none) and (pointer: coarse) {
+  #landing .hero-sub { display: none; }
+}
