@@ -3452,7 +3452,13 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #landing .mode-toggle { display: none !important; }
 #landing .form-top { margin-top: 0; }
 #landing .form-top { display: grid; grid-template-columns: 1fr 1fr; }
-#landing .form-top > .field-group:first-child { grid-column: 1 / -1; }
+#landing .form-top > #date-field-group, #landing .form-top > .form-sec-lbl { grid-column: 1 / -1; }
+/* Android Chrome keeps a native date input at its intrinsic width; force it to the row */
+#landing #date-field-group { min-width: 0; }
+#landing #date-field-group .field-input { display: block; width: 100%; min-width: 100%; max-width: none; box-sizing: border-box; text-align: left; }
+#landing #date-field-group input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+/* "When and where": same look as the Target species and Method headings */
+#landing .form-top > .form-sec-lbl { margin: 0; font: 600 13px/1.2 Inter,system-ui,-apple-system,sans-serif; color: var(--t-ink, #1a2e3a); letter-spacing: 0; text-transform: none; }
 #landing #river-field-group { display: flex; flex-direction: column; min-width: 0; }
 #landing #river-field-group .field-input { width: 100%; }
 #landing #river-field-group > .field-lbl { display: block; }
@@ -3463,4 +3469,19 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .species-btn { padding: .45rem .3rem .4rem; gap: .25rem; min-height: 0; }
   #landing .species-btn-img { width: 36px !important; height: 36px !important; }
   #landing .species-btn-name { font-size: 12px; line-height: 1.2; }
+}
+
+/* Phones: pay back the ~25 px the "When and where" heading costs, so the button stays on a 390 x 664 screen */
+@media (max-width: 600px) {
+  #landing .form-card { margin-top: 12px; }
+  #landing .form-top { padding-top: 12px; }
+  #landing .form-species { padding-top: 14px; }
+  #landing .form-species > .field-lbl { margin-bottom: 8px; }
+  #landing .sp-legend { margin-top: 8px; }
+  #landing .beginner-only .tech-family-btn { padding-top: 4px; padding-bottom: 4px; }
+}
+/* Wider screens: Date, Your city and River are sub-labels under "When and where", so they sit a step below it */
+@media (min-width: 601px) {
+  #landing .form-top > .field-group > .field-lbl { font-size: 12px; font-weight: 500; color: var(--t-muted, #6b7d86); }
+  #landing .form-top > .form-sec-lbl { margin-bottom: -.35rem; }
 }
