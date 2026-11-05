@@ -4,9 +4,15 @@
 // Mail leave dark backgrounds alone and only invert light ones). Tables and inline styles, because
 // Outlook and Gmail ignore most CSS. Every subscriber email goes through brandEmail(); previews sent
 // only to TJ don't need it.
+// Type matches the site (Inter only, TJ 2026-11-04): Apple Mail and iOS Mail load Inter from the site;
+// Gmail and Outlook ignore web fonts and fall back to the system sans (San Francisco, Segoe UI, Roboto).
+// The wordmark is Inter 600 like the site masthead, no serif and no italic (2026-11-05).
 export const BRAND_NAVY = '#0e2a4a';
 export const BRAND_TEAL = '#1e7a6e';
 const ICON = 'https://herefishyfishy.ca/icon-192.png?v=3';
+export const BRAND_FONT = "Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+const FONT_FACE = "<style>@font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:swap;" +
+  "src:url(https://herefishyfishy.ca/assets/fonts/inter-latin-wght.woff2) format('woff2')}</style>";
 
 function escAttr(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -20,7 +26,7 @@ export function brandEmail(inner, opts = {}) {
     : '';
   const site = opts.site || 'https://herefishyfishy.ca';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><title>HereFishyFishy</title></head>
+<meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><title>HereFishyFishy</title>${FONT_FACE}</head>
 <body style="margin:0;padding:0;background:#f3f0ea">${pre}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f0ea">
 <tr><td align="center" style="padding:16px 8px">
@@ -29,11 +35,11 @@ export function brandEmail(inner, opts = {}) {
   <a href="${escAttr(site)}" style="text-decoration:none;color:#ffffff">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
       <td style="vertical-align:middle;padding-right:10px"><img src="${ICON}" width="36" height="36" alt="" style="display:block;border:0;border-radius:18px"></td>
-      <td style="vertical-align:middle;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;font-size:22px;color:#ffffff;letter-spacing:.2px">HereFishyFishy</td>
+      <td style="vertical-align:middle;font-family:${BRAND_FONT};font-weight:600;font-size:21px;color:#ffffff;letter-spacing:-.2px">HereFishyFishy</td>
     </tr></table>
   </a>
 </td></tr>
-<tr><td style="background:#ffffff;border-radius:0 0 10px 10px;padding:20px 22px 8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#1a2e3a">
+<tr><td style="background:#ffffff;border-radius:0 0 10px 10px;padding:20px 22px 8px;font-family:${BRAND_FONT};font-size:16px;line-height:1.55;color:#1a2e3a">
 ${inner}
 </td></tr>
 </table>
@@ -45,7 +51,7 @@ ${inner}
 export function shareBox(site) {
   const url = (site || 'https://herefishyfishy.ca') + '/weekly/';
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 4px"><tr>
-<td style="background:#eef5f3;border-radius:8px;padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#1a2e3a">
+<td style="background:#eef5f3;border-radius:8px;padding:12px 14px;font-family:${BRAND_FONT};font-size:15px;line-height:1.45;color:#1a2e3a">
 <strong>Fish with a buddy?</strong> Forward this, or send them <a href="${escAttr(url)}" style="color:${BRAND_TEAL};font-weight:bold">herefishyfishy.ca/weekly</a>.
 </td></tr></table>`;
 }

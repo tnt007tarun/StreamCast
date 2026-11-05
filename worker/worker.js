@@ -1100,6 +1100,7 @@ async function handleAlertApprove(request, env, url) {
       const links = await unsubLinks(env, e);
       batch.push({ from: FROM, to: [e], subject: d.subject, headers: listHeaders(links), topic_id: TOPIC_RUN,
         html: brandEmail(`<div>${d.html}
+          ${shareBox(SITE)}
           ${emailFooter(links, "You're getting this because you asked for run alerts for the " + d.river + " at herefishyfishy.ca.")}</div>`, { preheader: d.subject, site: SITE }) });
     }
     const r = await resend(env, "/emails/batch", "POST", batch);
