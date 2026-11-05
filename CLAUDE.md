@@ -629,9 +629,9 @@ Merged recently:
   360 x 640, so the smallest phones scroll a little to reach it.
 
 - **One form, no tabs** (TJ, 2026-11-05, layout B from mockups): "Find my spot" and "Check by river" are one form. Every width:
-  Date on its own row, then "Your city" and "River (optional)" side by side (TJ wanted the same on desktop). iPads and windows of 601 to 1199 px get smaller
-  species tiles (36 px photo, 12 px name). A "When and where" heading (`.form-sec-lbl`, same look as Target species and Method)
-  sits above Date; from 601 px up the Date, Your city and River labels are 12 px muted sub-labels under it. The date input is
+  Date on its own row, then "Your city" and "River" side by side (TJ wanted the same on desktop). iPads and windows of 601 to 1199 px get smaller
+  species tiles (36 px photo, 12 px name). A "When and where (a city, a river, or both)" heading (`.form-sec-lbl`, same look as Target species and
+  Method; the River label has no "(optional)", since either field will do, TJ 2026-11-05) sits above Date; from 601 px up the Date, Your city and River labels are 12 px muted sub-labels under it. The date input is
   forced to full width (`#date-field-group`; TJ's Android showed it narrow) and the city select has the same paper background as
   the others. Phones trim card and section padding to pay for the heading. Button bottom: 660 on 390 x 664, 711 on 360 x 640,
   753 on 1024 x 768, 873 on 1280 x 900. Phones show the species photo (28 px) above the name

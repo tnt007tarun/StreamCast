@@ -106,7 +106,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
     <!-- Date + Location -->
     <div class="form-top">
-      <div class="form-sec-lbl" id="when-where-lbl">When and where</div>
+      <div class="form-sec-lbl" id="when-where-lbl">When and where <span class="opt">(a city, a river, or both)</span></div>
       <div class="field-group" id="date-field-group">
         <label class="field-lbl" for="trip-date">Date</label>
         <input type="date" id="trip-date" class="field-input" aria-label="Trip date" style="-webkit-appearance:none;appearance:none;height:48px;box-sizing:border-box;">
@@ -161,7 +161,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         <p class="loc-msg" id="loc-msg" role="alert" hidden>Pick a city or a river first, then tap Find my best spot.</p>
       </div>
       <div class="field-group" id="river-field-group">
-        <label class="field-lbl" for="expert-river-select">River <span class="opt">(optional)</span></label>
+        <label class="field-lbl" for="expert-river-select">River</label>
         <select id="expert-river-select" class="field-input">
           <option value="">Best near me</option>
         </select>
