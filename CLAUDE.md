@@ -615,6 +615,13 @@ Merged recently:
   `window._effectiveRecommendedSpecies` and the regs panel named the river's default fish. That branch now runs only when no
   picked fish is on the reach (`else if (!_multiTarget)`); the regs title reads "Steelhead + Chinook" and lists each picked
   fish's limit. Checked 140 river/fish/date cases against main: only the regs title and bullets changed.
+- **Results hierarchy** (TJ, 2026-11-04: "sub-text larger than its heading"): one scale, display 24 (28 from 901 px) > heading 20
+  > title 17 > body 15 > note 13 > label 12. Headings (600) are section heads only (`.sec-label h3`, `.dam h3`, `.sshdr h3`);
+  card titles (method, "Float setup", bait name, access spot) are titles at 17/600, so they no longer match or beat the section
+  they sit in. "Technique / Gear / Bait" (`.p-lbl`) are 13/600 muted group labels. Gear ladder values 15/600 under 12 px teal
+  labels. Tile meaning lines were 8 px on desktop (now 12), tile values 17/600, notify bar 15 / 13 / 15, stray 11.5 to 14.4 px
+  text moved onto the scale. Distinct size/weight pairs on the results page: 22 to 15 on phones, 32 to 18 on desktop (map
+  labels aside). Rules live in the type-system block of `@layer overrides` plus a short unlayered block at the end of `app.css`.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

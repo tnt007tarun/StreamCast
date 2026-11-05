@@ -3182,26 +3182,25 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
      Inter only (2026-11-04): display 24, heading 20, title 17, body 15, note 13, label/chip 12.
      Mono: the number itself only. Colours: ink, body, muted, teal, amber, plus white on the dark tile strip. */
   #results { --t-ink:#1a2e3a; --t-body:#31414c; --t-muted:#6b7d86; }
-  /* Headings: serif 20 */
+  /* Headings: 20, 600. Section heads only, so a card title never matches or beats the section it sits in (TJ, 2026-11-04). */
   #results .sec-label h3,
+  #results .dam h3,
+  #results .sshdr h3 {
+    font:600 1.25rem/1.25 var(--font-serif); color:var(--t-ink); letter-spacing:-.015em; }
+  /* Titles: 17, 600. Card titles (method, gear setup, bait, access spot) and the key names inside them. */
   #results .p-tech h4,
   #results .p-gearname,
   #results .p-bait h5,
   #results .mn,
   #results #m1n,
-  #results .dam h3,
-  #results .sshdr h3 {
-    font:700 1.25rem/1.25 var(--font-serif); color:var(--t-ink); letter-spacing:0; }
-  /* Titles: serif 17 */
   #results .sp-banner-name,
   #results .aname,
-  #results .gear-item-val,
   #results .p-alt-name,
   #results .more-river-label,
   #results .tg-name,
   #results .gear-title,
   #results .rrank-name {
-    font:700 1.0625rem/1.25 var(--font-serif); color:var(--t-ink); letter-spacing:0; font-style:normal; }
+    font:600 1.0625rem/1.3 var(--font-serif); color:var(--t-ink); letter-spacing:-.01em; font-style:normal; }
   #results .tp-line { font-size:1.0625rem; }
   /* Body: sans 15 */
   #results .adesc,
@@ -3272,7 +3271,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .p-gearsec { font:400 .8125rem/1.45 var(--font-body); color:var(--t-muted); }
   #results .ac-chevron, #results .p-alt-chev, #results .more-river-chev { font:400 .75rem/1 var(--font-body); }
   #results .rb-open, #results .regs-bullets strong { font-weight:600; }
-  #results .p-lbl { font:600 .9375rem/1.2 var(--font-body); letter-spacing:0; text-transform:none; color:var(--t-ink); }
+  /* Technique / Gear / Bait: group labels under the section head, so label size (13, 600, muted), not a heading. */
+  #results .p-lbl { font:600 .8125rem/1.2 var(--font-body); letter-spacing:0; text-transform:none; color:var(--t-muted); }
   /* Cards: no rule under the card title; the Sky card has no inner rules and its first line is the reading itself */
   #results .cgrid .col-lbl { border-bottom:0; padding-bottom:0; margin-bottom:.9rem; }
   #sky-col .gw { margin-bottom:.9rem; }
@@ -3429,3 +3429,17 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .method-row .tc-icon { margin: 0; position: static; display: flex; }
   #landing .method-row .tech-family-btn { white-space: nowrap; }
 }
+
+/* Results hierarchy fixes (TJ, 2026-11-04). Tile meaning lines were 8 px on desktop; one size for the notify bar; access
+   card descriptions at body size. Roles: display 24 (28 desktop) > heading 20 > title 17 > body 15 > note 13 > label 12. */
+#results .tp-tile-meaning { font-size: 12px; line-height: 1.3; white-space: normal; }
+#results .tp-tile-val, #results .tp-tile-val .tp-word { font-size: 17px; font-weight: 600; }
+#results dd { font-size: 15px; line-height: 1.5; }
+@media (min-width: 901px) { #results .tp-headline { font-size: 28px; line-height: 1.25; } }
+.notify-bar .notify-bar-title { font-size: 15px; font-weight: 600; }
+.notify-bar .notify-bar-sub { font-size: 13px; }
+.notify-bar .notify-bar-submit { font-size: 15px; font-weight: 600; }
+#results .back-btn, #results .map-cta { font-size: 13px; }
+#results .res-center-val { font-size: 15px; font-weight: 600; }
+#results #fcl li, #results #fcl li span:not(.ci) { font-size: 13px; }
+.notify-bar label, .notify-bar label span { font-size: 13px; }
