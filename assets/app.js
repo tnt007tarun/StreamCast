@@ -4314,7 +4314,7 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   try { (function() {
     var _sp = window._effectiveRecommendedSpecies;
     if (!_sp) return;
-    var _lbl = _sp.replace(' Trout','').replace(' Salmon','');
+    var _lbl = _sp.replace(/ Trout| Salmon/g, '');
     document.querySelectorAll('.regs-title').forEach(function(el) {
       if (/2026 Regs/i.test(el.textContent)) {
         el.textContent = '2026 Regs · ' + _lbl;
