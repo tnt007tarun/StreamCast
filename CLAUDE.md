@@ -623,6 +623,13 @@ Merged recently:
   text moved onto the scale. Distinct size/weight pairs on the results page: 22 to 15 on phones, 32 to 18 on desktop (map
   labels aside). Rules live in the type-system block of `@layer overrides` plus a short unlayered block at the end of `app.css`.
 
+- **River field feedback and memory** (TJ, 2026-11-05, same treatment as the city field): in "Check by river", tapping Get
+  Forecast with no river scrolls the river select into view, focuses it and shows "Pick a river first, then tap Get Forecast."
+  (`#river-msg`, Umami `River Required Shown`). The picked river is saved in `localStorage` (`hff_river`) and restored the first
+  time river mode opens (`River Remembered`), never over a deep link. Mode data: Umami `Search {location, species, mode}` has
+  carried `mode` (`beginner` = Find my spot, `expert` = Check by river) since before Umami started (2026-09-11); it fires
+  before the city/river check, so it also counts empty taps. New: `Mode Switched {to: spot|river}` and `mode` on `River Viewed`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -630,7 +637,8 @@ Merged recently:
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
-  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`, `River Required Shown`, `River Remembered`,
+  `Mode Switched {to}`, `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
