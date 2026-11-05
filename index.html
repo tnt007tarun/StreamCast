@@ -106,13 +106,14 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
     <!-- Date + Location -->
     <div class="form-top">
-      <div class="field-group">
+      <div class="form-sec-lbl" id="when-where-lbl">When and where</div>
+      <div class="field-group" id="date-field-group">
         <label class="field-lbl" for="trip-date">Date</label>
         <input type="date" id="trip-date" class="field-input" aria-label="Trip date" style="-webkit-appearance:none;appearance:none;height:48px;box-sizing:border-box;">
       </div>
       <div class="field-group">
         <label class="field-lbl" for="loc-input-field">Your city</label>
-        <select id="loc-input-field" class="field-input" style="cursor:pointer;background:var(--white)">
+        <select id="loc-input-field" class="field-input" style="cursor:pointer">
           <option value="">Select your city</option>
           <optgroup label="Greater Toronto Area">
             <option value="toronto">Toronto</option>
