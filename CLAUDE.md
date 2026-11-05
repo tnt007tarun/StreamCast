@@ -610,6 +610,14 @@ Merged recently:
   `RIVER_SECTIONS`, "(closed)" from `sectionClosedOn()`). Tapping one opens that reach and marks it in `_upstreamStay`, so the
   upstream rule doesn't move the reader back up. Umami `Other Reach Clicked {river}`.
 
+- **Results hierarchy** (TJ, 2026-11-04: "sub-text larger than its heading"): one scale, display 24 (28 from 901 px) > heading 20
+  > title 17 > body 15 > note 13 > label 12. Headings (600) are section heads only (`.sec-label h3`, `.dam h3`, `.sshdr h3`);
+  card titles (method, "Float setup", bait name, access spot) are titles at 17/600, so they no longer match or beat the section
+  they sit in. "Technique / Gear / Bait" (`.p-lbl`) are 13/600 muted group labels. Gear ladder values 15/600 under 12 px teal
+  labels. Tile meaning lines were 8 px on desktop (now 12), tile values 17/600, notify bar 15 / 13 / 15, stray 11.5 to 14.4 px
+  text moved onto the scale. Distinct size/weight pairs on the results page: 22 to 15 on phones, 32 to 18 on desktop (map
+  labels aside). Rules live in the type-system block of `@layer overrides` plus a short unlayered block at the end of `app.css`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
