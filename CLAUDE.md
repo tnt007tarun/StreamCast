@@ -576,8 +576,15 @@ Merged recently:
   (`#loc-msg`, cleared when a city is picked; Umami `City Required Shown`). The picked city is remembered in `localStorage`
   (`hff_city`) and restored on the next visit with a `change` event (`City Remembered`); it never overrides a deep link. "Use my
   location" is not built (TJ is still deciding). Clarity (7 days, 76 page views, old layout): average fold at the Target species
-  label, 46% scroll less than halfway; next up is saving vertical space so the button clears the fold on a 664 px phone window
-  (button bottom is about 736 px now).
+  label, 46% scroll less than halfway; the button bottom was about 736 px on a 664 px phone window (see the compact form below).
+
+- **Compact home form on phones** (TJ picked A+B+C+D, 2026-11-04; phones only, under 600 px, desktop unchanged): (A) Method is
+  collapsed behind its label (`.m-collapsible`, `m-open` toggles; the label's `.opt` span shows the chosen method or "(optional)";
+  the buttons stay in the DOM so other code still finds them); (B) species tiles are rows with a 30 px round image and 12 px name;
+  (C) the hero subtitle is hidden; (D) the date and city labels sit inside their fields. Button bottom went from about 736 to about
+  549 px on a 390 x 664 window. Checked at 390 x 664 and 390 x 844: no horizontal scroll, no page errors, Method open and close, summary
+  text. Not checked: the date field with a label inside on a real iPhone (iOS date inputs are quirky). Judge with a Clarity re-check
+  in about a week plus Umami `City Required Shown` and `City Remembered`.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
