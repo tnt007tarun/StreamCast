@@ -634,7 +634,9 @@ Merged recently:
   sits above Date; from 601 px up the Date, Your city and River labels are 12 px muted sub-labels under it. The date input is
   forced to full width (`#date-field-group`; TJ's Android showed it narrow) and the city select has the same paper background as
   the others. Phones trim card and section padding to pay for the heading. Button bottom: 660 on 390 x 664, 711 on 360 x 640,
-  753 on 1024 x 768, 873 on 1280 x 900.
+  753 on 1024 x 768, 873 on 1280 x 900. Phones show the species photo (28 px) above the name
+  (TJ, 2026-11-05: "Steelhead" ran past its tile; hyphenating was the other option), dot on the photo's corner; that moves the
+  button to about 685 on 390 x 664 and 736 on 360 x 640.
   River defaults to "Best near me" (the city search). A picked river runs the river search (`goToResults()` sets `appMode`
   from `#expert-river-select`: `'expert'` with a river, `'beginner'` without) and the city is then optional; with both, the
   drive time to the picked river shows (RIVERS_DB, then `RIVER_CONFIG.driveTime`, via `driveKeyFor()`). Neither picked:
