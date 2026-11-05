@@ -3340,3 +3340,34 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .loc-msg { margin: .4rem 0 0; font: 600 13px/1.3 'Outfit', -apple-system, sans-serif; color: #9a5a1c; }
   #landing .loc-msg[hidden] { display: none; }
 }
+
+/* Compact home form on phones (TJ, 2026-11-04, from Clarity: the button sat below the fold on a 664 px window).
+   A method collapsed to one row, B species tiles with the photo beside the name, C no hero subtitle,
+   D date and city labels inside their fields. Phones only; desktop is unchanged. */
+@layer overrides {
+  @media (max-width: 600px) {
+    /* C */
+    #landing .hero-sub { display: none; }
+    /* D */
+    #landing .form-top .field-group { position: relative; }
+    #landing .form-top .field-lbl {
+      position: absolute; top: 6px; left: 12px; z-index: 1; margin: 0; pointer-events: none;
+      font: 600 11px/1 'Outfit', -apple-system, sans-serif; color: var(--t-muted, #6b7d86); text-transform: none; letter-spacing: 0;
+    }
+    #landing .form-top .field-input { padding-top: 17px; padding-bottom: 3px; height: 48px; box-sizing: border-box; }
+    #landing .form-top input[type="date"] { line-height: 28px; }
+    /* B */
+    #landing .species-btn { flex-direction: row; align-items: center; justify-content: flex-start; gap: .4rem; min-height: 46px; padding: .3rem .4rem; text-align: left; }
+    #landing .species-btn-img { width: 30px; height: 30px; border-radius: 50%; }
+    #landing .species-btn-img img { width: 30px; height: 30px; object-fit: cover; }
+    #landing .species-btn-name { text-align: left; font-size: 12px; line-height: 1.15; letter-spacing: 0; word-break: normal; overflow-wrap: normal; hyphens: none; }
+    #landing .species-btn .sp-badge { top: -6px; right: 4px; }
+    /* A */
+    #landing .beginner-only.m-collapsible > .field-lbl { display: flex; align-items: center; justify-content: flex-start; gap: .3rem; cursor: pointer; min-height: 44px; margin: 0; }
+    #landing .beginner-only.m-collapsible > .field-lbl::after { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin: -3px .3rem 0 auto; transition: transform .15s; }
+    #landing .beginner-only.m-collapsible.m-open > .field-lbl::after { transform: rotate(-135deg); margin-top: 3px; }
+    #landing .beginner-only.m-collapsible:not(.m-open) > .method-row { display: none; }
+    #landing .tech-section { padding-top: .2rem; gap: .5rem; }
+    #landing .form-species { padding-bottom: 0; }
+  }
+}
