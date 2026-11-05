@@ -61,7 +61,8 @@ function trackRiverViewed() {
     var key = river + '|' + species + '|' + ds;
     if (key === _lastViewKey) return;          // a re-render of the same view, not a new view
     _lastViewKey = key;
-    track('River Viewed', { river: river, species: species, source: window._viewSource || 'search', day: day });
+    track('River Viewed', { river: river, species: species, source: window._viewSource || 'search', day: day,
+      mode: appMode === 'expert' ? 'river' : 'spot' });  // which form tab the view came from (TJ, 2026-11-05)
     window._viewSource = null;
   } catch (e) {}
 }
@@ -205,12 +206,16 @@ function bestSectionForSpecies(riverName, speciesKey) {
 // ── EXPERT MODE ───────────────────────────────────────────────────────────────
 function initExpertMode() {
   var sel = document.getElementById('expert-river-select');
+  var _firstWire = sel && !sel._wired;
   if (sel && !sel._wired) {
     // Populate options
     if (sel.options.length <= 1) { sel.add(new Option('Beaver River','Beaver River'));sel.add(new Option('Black Creek','Black Creek'));sel.add(new Option('Bowmanville Creek','Bowmanville Creek'));sel.add(new Option('Bronte Creek','Bronte Creek'));sel.add(new Option('Credit River','Credit River'));sel.add(new Option('Don River','Don River'));sel.add(new Option('Duffins Creek','Duffins Creek'));sel.add(new Option('Eramosa River','Eramosa River'));sel.add(new Option('Ganaraska River','Ganaraska River'));sel.add(new Option('Grand River','Grand River'));sel.add(new Option('Humber River','Humber River'));sel.add(new Option('Nottawasaga River','Nottawasaga River'));sel.add(new Option('Rouge River','Rouge River'));sel.add(new Option('Saugeen River','Saugeen River'));sel.add(new Option('Sixteen Mile Creek','Sixteen Mile Creek'));sel.add(new Option('Speed River','Speed River'));sel.add(new Option('Wilmot Creek','Wilmot Creek')); }
     sel._wired = true;
     sel.addEventListener('change', function() {
       var river = this.value;
+      // Remember the river between visits, and clear the "pick a river" message (TJ, 2026-11-05).
+      if (river) { var _rm = document.getElementById('river-msg'); if (_rm) _rm.hidden = true; }
+      try { if (river) localStorage.setItem('hff_river', river); else localStorage.removeItem('hff_river'); } catch (e) {}
       var secPicker = document.getElementById('river-section-picker');
       var chips = document.getElementById('river-chips');
       if (!river || !RIVER_SECTIONS[river]) { secPicker.style.display='none'; selectedRiver=null; return; }
@@ -263,6 +268,17 @@ function initExpertMode() {
       tiles.forEach(function(t){t.classList.remove('active');}); this.classList.add('active');
     });
   });
+  // First time river mode opens: bring back the last river picked on this browser (never over a deep link's pick).
+  if (_firstWire && !sel.value && !selectedRiver) {
+    try {
+      var _saved = localStorage.getItem('hff_river');
+      if (_saved && RIVER_SECTIONS[_saved]) {
+        sel.value = _saved;
+        sel.dispatchEvent(new Event('change'));
+        track('River Remembered', {});
+      }
+    } catch (e) {}
+  }
 }
 function getExpertMethod() {
   var a = document.querySelector('#expert-method-tiles .tech-family-btn.active');
@@ -1338,8 +1354,16 @@ function goToResults(){
 
   // In expert mode, validate a river is selected
   if (appMode === 'expert' && !selectedRiver) {
+    // Same treatment as the city field (TJ, 2026-11-05): bring the river field into view and say why nothing happened.
     var rsel = document.getElementById('expert-river-select');
-    if (rsel) { rsel.style.outline='2px solid #b87333'; setTimeout(function(){ rsel.style.outline=''; }, 2000); }
+    if (rsel) {
+      rsel.style.outline='2px solid #b87333'; setTimeout(function(){ rsel.style.outline=''; }, 2000);
+      var _rm = document.getElementById('river-msg');
+      if (_rm) _rm.hidden = false;
+      try { rsel.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { rsel.scrollIntoView(); }
+      try { rsel.focus({ preventScroll: true }); } catch (e) {}
+    }
+    track('River Required Shown', {});
     return;
   }
   // Capture technique family — beginner uses tech-family-btn, expert uses tech-chip
@@ -1594,8 +1618,8 @@ function goBack(){
   function wireAll(sel, evt, fn){ document.querySelectorAll(sel).forEach(function(el){ el.addEventListener(evt,fn); }); }
 
   // Mode toggle buttons
-  wire("mode-btn-beginner", "click", function(){ setMode('beginner'); });
-  wire("mode-btn-expert",   "click", function(){ setMode('expert'); });
+  wire("mode-btn-beginner", "click", function(){ if (appMode !== 'beginner') track('Mode Switched', { to: 'spot' }); setMode('beginner'); });
+  wire("mode-btn-expert",   "click", function(){ if (appMode !== 'expert') track('Mode Switched', { to: 'river' }); setMode('expert'); });
   setMode('beginner'); // default
 
   // Travel time slider
