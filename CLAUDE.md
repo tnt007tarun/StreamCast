@@ -142,6 +142,11 @@ short-name splits accept either character.
   `data-umami-event-video`. #72 swapped one for the other and every video showed "An error occurred" until #115.
 - Photos: WebP, max 1200 px wide, quality 72. Keep the JPG for og:image and JSON-LD.
 - Videos: compress (720p, CRF 28, `+faststart`), `preload="none"`, with a poster frame.
+- Type (TJ, 2026-11-04): **Inter only**, everywhere, self-hosted (`assets/fonts/inter-latin-wght.woff2`, one variable file, 100 to
+  900). No serif, no mono, no italic styling (`em` in prose may still slant). The app gets `@font-face` from `app.css`; every
+  other page links `assets/site-type.css` (font plus the shared heading and body sizes, `html`-prefixed so it beats each page's
+  own `<style>`). Numbers use `font-variant-numeric: tabular-nums` instead of the mono. No Google Fonts. New pages: add the
+  preload and the `site-type.css` link before `</head>`, and use `Inter,system-ui,-apple-system,sans-serif` in any page style.
 - Site icon: `favicon.svg` is the source: the leaping trout traced from TJ's logo, white with its pink stripe, on a
   logo-navy (`#0e2a4a`) circle (TJ's pick 2026-10-19; the earlier teal fish looked too much like Fishbrain's).
   `favicon.ico` (16/32/48), `icon-192.png` and `icon-512.png` are rendered from it; `apple-touch-icon.png` and
@@ -585,6 +590,13 @@ Merged recently:
   549 px on a 390 x 664 window. Checked at 390 x 664 and 390 x 844: no horizontal scroll, no page errors, Method open and close, summary
   text. Not checked: the date field with a label inside on a real iPhone (iOS date inputs are quirky). Judge with a Clarity re-check
   in about a week plus Umami `City Required Shown` and `City Remembered`.
+
+- **Inter everywhere** (TJ, 2026-11-04, after comparing Current / Inter / Serif on preview #146 against a reference site with one
+  type family): Source Serif 4, Outfit, JetBrains Mono, Charter and the system stacks are gone from the app, the hand-written
+  pages, the Credit SSR function, `signup.js` and `today-strip.js` (emails untouched). Body text on the hand-written pages is
+  17 px (was 19 px Charter), headings 600 with tighter tracking, the home h1 and results headline 500. The "Results type system"
+  roles above still hold, with Inter in every role. Next (TJ): a size and hierarchy pass (gear ladder values bigger than their
+  labels, too many sizes on the home form) and home spacing on iPad (no gap under the hero, the button sitting at the bottom).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

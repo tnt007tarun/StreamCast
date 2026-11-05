@@ -34,8 +34,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="canonical" href="https://herefishyfishy.ca/">
 <title>HereFishyFishy: Find where the fish are today</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,600;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/app.css">
   <!-- Microsoft Clarity -->
   <!-- Microsoft Clarity -->
@@ -179,7 +178,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
     <!-- Placeholder shown before location is entered -->
     <div id="river-placeholder" class="expert-only" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0;opacity:0.45">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a7a52" stroke-width="1.5" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-      <span style="font-family:'JetBrains Mono', monospace;font-size:0.62rem;letter-spacing:0.08em;color:#4a7a52">Enter your location to see nearby rivers</span>
+      <span style="font-family:Inter,system-ui,-apple-system,sans-serif;font-size:0.62rem;letter-spacing:0.08em;color:#4a7a52">Enter your location to see nearby rivers</span>
     </div>
 
     <!-- Species comes before method: what you want to catch, then how -->
@@ -241,11 +240,11 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
     <div class="beginner-only travel-row">
       <div class="field-lbl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
         <label for="travel-range">TRAVEL TIME</label>
-        <span id="travel-lbl" style="font-family:'JetBrains Mono', monospace;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
+        <span id="travel-lbl" style="font-family:Inter,system-ui,-apple-system,sans-serif;font-size:.7rem;color:var(--fern);font-weight:600">Up to 1 hr away</span>
       </div>
       <input type="range" id="travel-range" min="20" max="180" step="10" value="60"
              style="width:100%;accent-color:var(--fern);cursor:pointer">
-      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono', monospace;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
+      <div style="display:flex;justify-content:space-between;font-family:Inter,system-ui,-apple-system,sans-serif;font-size:.52rem;color:var(--sage);opacity:.6;margin-top:.3rem">
         <span>20 min</span><span>1 hr</span><span>2 hr</span><span>3 hr</span>
       </div>
       </div><!-- /expert-only -->

@@ -30,12 +30,12 @@
   };
   var STEELHEAD_MONTHS = [9, 10, 11, 0, 1, 2, 3];   // October to April
   // River and fish chips (TJ, 2026-11-03): a whole river, up to 3, and any fish on them. Also used by /weekly/.
-  var PICKER_CSS = '.hff-pick{margin:0 0 .75rem}.hff-pick .plbl{display:block;font:600 .68rem/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;' +
+  var PICKER_CSS = '.hff-pick{margin:0 0 .75rem}.hff-pick .plbl{display:block;font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;' +
     'letter-spacing:.12em;text-transform:uppercase;color:#1e7a6e;margin:0 0 .45rem}' +
     '.hff-pick .plbl span{text-transform:none;letter-spacing:0;font-weight:400;color:#6b7d86}' +
     '.hff-chips{display:flex;flex-wrap:wrap;gap:.4rem}' +
     '.hff-chip{min-height:38px;padding:.4rem .8rem;border:1px solid #c9d6d2;border-radius:999px;background:#fff;color:#1a2e3a;' +
-    'font:500 .9rem/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    'font:500 .9rem/1.2 Inter,system-ui,-apple-system,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
     '.hff-chip[aria-pressed=true]{background:#1e7a6e;border-color:#1e7a6e;color:#fff}' +
     '.hff-chip[aria-pressed=true]::before{content:"\\2713\\00a0"}' +
     '.hff-chip.more{border-style:dashed;color:#1e7a6e;font-weight:600}' +
@@ -127,7 +127,7 @@
   var HOW = 'Picked from live river flow and the week\u2019s rain, temperature and cloud forecast.';
   var FINE = 'Only sent when there\u2019s a good day. Free, no account, unsubscribe anytime.';
   var CSS = '.hff-signup{margin:2.2rem 0 1rem;padding:1.1rem 1.15rem 1.15rem;background:#eef5f3;border-radius:10px;' +
-    'font:400 .95rem/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#31414c}' +
+    'font:400 .95rem/1.45 Inter,system-ui,-apple-system,sans-serif;color:#31414c}' +
     '.hff-signup .lbl{font-weight:600;font-size:.68rem;line-height:1;letter-spacing:.13em;text-transform:uppercase;color:#1e7a6e;margin-bottom:.55rem}' +
     '.hff-signup p{margin:0 0 .8rem}' +
     '.hff-signup form{display:flex;flex-wrap:wrap;gap:.5rem}' +

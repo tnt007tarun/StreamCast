@@ -29,7 +29,7 @@
 :root{--ink:#1a2e3a;--text:#31414c;--muted:#6b7d86;--rule:#e2ded6;
 --paper:#fbf9f5;--fern:#1e7a6e;--amber:#b8620f;--deep:#0d1f2d}
 body{background:var(--paper);color:var(--text);
-font:400 19px/1.72 Charter,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+font:400 19px/1.72 Inter,system-ui,-apple-system,sans-serif;
 -webkit-font-smoothing:antialiased}
 a{color:var(--fern)}
 .wrap{max-width:660px;margin:0 auto;padding:0 1.4rem}
@@ -38,37 +38,37 @@ a{color:var(--fern)}
 .mast{border-bottom:1px solid var(--rule);background:var(--paper)}
 .mast .wrap{display:flex;align-items:center;justify-content:space-between;
 padding-top:1.1rem;padding-bottom:1.1rem;max-width:900px}
-.mast a.brand{font:italic 700 1.05rem/1 Charter,Georgia,serif;color:var(--ink);text-decoration:none}
+.mast a.brand{font:700 1.05rem/1 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);text-decoration:none}
 .mast .brand,.mast .wrap>a:first-child{display:inline-flex;align-items:center;gap:.5rem}
 .mast .brand img,.mast .wrap>a:first-child img{width:26px;height:26px;display:block;flex:none}
 @media(max-width:360px){.mast .brand,.mast .wrap>a:first-child{gap:.35rem;font-size:.95rem}.mast .brand img,.mast .wrap>a:first-child img{width:22px;height:22px}.mast nav{gap:.75rem}}
 @media(max-width:340px){.mast nav a[href="/"]{display:none}}
 .mast nav{display:flex;gap:1.3rem}
-.mast nav a{font:500 .78rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.mast nav a{font:500 .78rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none;letter-spacing:.01em}
 .mast nav a:hover{color:var(--ink)}
 
 article{padding:3.2rem 0 4rem}
-.kicker{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.kicker{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
-h1{font:700 2.45rem/1.14 Charter,'Iowan Old Style',Georgia,serif;color:var(--ink);
+h1{font:700 2.45rem/1.14 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);
 letter-spacing:-.015em;margin-bottom:1.2rem}
 .standfirst{font-size:1.24rem;line-height:1.62;color:var(--text)}
 .standfirst strong{color:var(--ink);font-weight:600}
-.byline{font:500 .78rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.byline{font:500 .78rem/1.5 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin:1.5rem 0 0;padding-top:1.1rem;border-top:1px solid var(--rule)}
 
 p{margin:0 0 1.35rem}
-h2{font:700 1.55rem/1.28 Charter,Georgia,serif;color:var(--ink);
+h2{font:700 1.55rem/1.28 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);
 letter-spacing:-.01em;margin:3rem 0 1rem}
-h3{font:700 1.1rem/1.35 Charter,Georgia,serif;color:var(--ink);margin:2rem 0 .6rem}
+h3{font:700 1.1rem/1.35 Inter,system-ui,-apple-system,sans-serif;color:var(--ink);margin:2rem 0 .6rem}
 strong{font-weight:600;color:var(--ink)}
-em{font-style:italic}
+em{font-style:normal}
 
 /* figures break the measure — the main visual rhythm */
 figure{margin:2.6rem 0}
 figure img{display:block;width:100%;height:auto;border-radius:3px}
-figcaption{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+figcaption{font:400 .84rem/1.6 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin-top:.7rem;padding-left:.1rem}
 @media(min-width:900px){
   figure.wide{width:calc(100% + 180px);margin-left:-90px}
@@ -77,26 +77,26 @@ color:var(--muted);margin-top:.7rem;padding-left:.1rem}
 /* the one live element — a rule-bounded aside, not a card */
 .now{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);
 padding:1.3rem 0 1.4rem;margin:2.4rem 0}
-.now .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.now .lbl{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.13em;text-transform:uppercase;color:var(--ink);margin-bottom:.75rem}
 .now p{font-size:1.02rem;margin-bottom:.9rem}
-.now a{font:600 .88rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.now a{font:600 .88rem/1 Inter,system-ui,-apple-system,sans-serif;
 text-decoration:none;border-bottom:2px solid rgba(30,122,110,.3);padding-bottom:2px}
 .now a:hover{border-bottom-color:var(--fern)}
 
 /* regs — must be unmissable, but as an inset rule not a box */
 .regs{border-left:3px solid var(--amber);padding:.2rem 0 .2rem 1.3rem;margin:2.2rem 0}
-.regs .lbl{font:600 .68rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.regs .lbl{font:600 .68rem/1 Inter,system-ui,-apple-system,sans-serif;
 letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem}
 .regs p{font-size:1rem;margin-bottom:.7rem}
 .regs p:last-child{margin-bottom:0}
 
 blockquote{margin:2.4rem 0;padding-left:1.4rem;border-left:3px solid var(--rule)}
-blockquote p{font-style:italic;font-size:1.1rem;color:var(--ink)}
+blockquote p{font-style:normal;font-size:1.1rem;color:var(--ink)}
 blockquote p:last-child{margin-bottom:0}
 
 table{width:100%;border-collapse:collapse;margin:1.6rem 0 2.2rem;
-font:400 .93rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+font:400 .93rem/1.5 Inter,system-ui,-apple-system,sans-serif}
 th{text-align:left;font-weight:600;color:var(--ink);font-size:.72rem;letter-spacing:.09em;
 text-transform:uppercase;padding:0 1rem .6rem 0;border-bottom:1px solid var(--ink)}
 td{padding:.75rem 1rem .75rem 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--text)}
@@ -105,15 +105,15 @@ tr:last-child td{border-bottom:none}
 ul{margin:0 0 1.35rem 1.2rem}li{margin-bottom:.5rem}
 
 .endnote{margin-top:3.2rem;padding-top:1.4rem;border-top:1px solid var(--rule);
-font:400 .85rem/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--muted)}
+font:400 .85rem/1.65 Inter,system-ui,-apple-system,sans-serif;color:var(--muted)}
 .endnote strong{color:var(--text)}
 
 footer.site{border-top:1px solid var(--rule);margin-top:3rem}
 footer.site .wrap{display:flex;gap:1.4rem;align-items:center;justify-content:space-between;
 padding-top:1.6rem;padding-bottom:2.4rem;flex-wrap:wrap;max-width:900px}
-footer.site a{font:500 .8rem/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+footer.site a{font:500 .8rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none}
-footer.site .brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--ink)}
+footer.site .brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;color:var(--ink)}
 
 @media(max-width:640px){
   body{font-size:18px}
@@ -124,7 +124,7 @@ footer.site .brand{font:italic 700 .95rem/1 Charter,Georgia,serif;color:var(--in
 }
 
 .credit{display:block;margin-top:.3rem;font-size:.78rem;opacity:.8}
-.stamp{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.62rem;
+.stamp{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:.62rem;
 letter-spacing:.04em;color:var(--muted);margin-top:.7rem}
 .vid{margin:2.6rem 0}
 .vid-frame{position:relative;aspect-ratio:16/9;border-radius:3px;overflow:hidden;background:var(--deep)}
@@ -135,19 +135,19 @@ background:linear-gradient(180deg,rgba(13,31,45,.1),rgba(13,31,45,.45));cursor:p
 .vid-play i{width:56px;height:56px;border-radius:50%;background:rgba(13,31,45,.8);
 display:flex;align-items:center;justify-content:center}
 .vid-play svg{width:18px;height:18px;fill:#fff;margin-left:3px}
-.vid-cap{font:400 .84rem/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.vid-cap{font:400 .84rem/1.6 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin-top:.7rem}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2.6rem 0}
 .pair figure{margin:0}
 .pair img{width:100%;height:auto;border-radius:3px;display:block}
-.pair figcaption{font:400 .8rem/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+.pair figcaption{font:400 .8rem/1.55 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);margin-top:.6rem}
 .sectbl td:first-child{white-space:normal}
 .speclist{list-style:none;margin:1.4rem 0 2rem}
 .speclist li{border-bottom:1px solid var(--rule);padding:.9rem 0;display:flex;
 justify-content:space-between;gap:1rem;align-items:baseline}
 .speclist .s{font-weight:600;color:var(--ink)}
-.speclist .w{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.68rem;
+.speclist .w{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:.68rem;
 letter-spacing:.06em;color:var(--muted);white-space:nowrap;text-align:right}
 @media(max-width:360px){.speclist .w{white-space:normal}}
 .speclist a{text-decoration:none;border-bottom:1px solid rgba(30,122,110,.3)}
@@ -155,6 +155,8 @@ letter-spacing:.06em;color:var(--muted);white-space:nowrap;text-align:right}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Credit River Fishing: Three Rivers in One", "description": "The Credit is three fisheries in one: wild trout above Norval, a mixed middle river, and a migratory lower river. Sections, species, seasons, regulations and live conditions.", "author": {"@type": "Person", "name": "TJ"}, "publisher": {"@type": "Organization", "name": "HereFishyFishy", "url": "https://herefishyfishy.ca"}, "datePublished": "2026-09-11", "dateModified": "2026-09-11", "mainEntityOfPage": "https://herefishyfishy.ca/rivers/credit/", "image": "https://herefishyfishy.ca/images/rivers/credit-chinook-spinner.jpg", "about": {"@type": "Place", "name": "Credit River, Ontario"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What fish are in the Credit River?", "acceptedAnswer": {"@type": "Answer", "text": "Wild brown, brook and resident rainbow trout above Norval; brown trout and steelhead through the middle; and Chinook, Coho and steelhead below Streetsville. Smallmouth bass in the lower river through July and August."}}, {"@type": "Question", "name": "How far upstream do salmon go in the Credit River?", "acceptedAnswer": {"@type": "Answer", "text": "The Streetsville dam is the limit for Chinook and Coho. Pacific salmon do not pass it, and the fishway is closed during the Chinook run for egg collection. Steelhead, Atlantic salmon and brown trout get above it only because CRAA volunteers lift them through and truck them 30 km north past Norval."}}, {"@type": "Question", "name": "When is the best time to fish the Credit River?", "acceptedAnswer": {"@type": "Answer", "text": "Trout from the late-April opener through June and again in September. Chinook late August through October. Steelhead from late September into April, best in March and April. Smallmouth in July and August."}}]}</script>
+<link rel="preload" href="/assets/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site-type.css">
 </head>
 <body>
 
