@@ -253,7 +253,7 @@ function initExpertMode() {
       selectedRiver = resolveAutoSection(river);
       setResHeader(selectedRiver);
       updateAutoChipSub();
-      secPicker.style.display = 'block';
+      secPicker.style.display = 'none'; // reach chips retired (TJ, 2026-11-04): the app picks the reach
     });
   }
   var tiles = document.querySelectorAll('#expert-method-tiles .tech-family-btn');
@@ -1550,6 +1550,15 @@ document.addEventListener('click', function(e) {
     (window._upstreamStay || (window._upstreamStay = {}))[from] = true;
     track('Upstream Stay Clicked', { river: from });
     goToSection(from, null);
+    return;
+  }
+  var rc = e.target.closest && e.target.closest('[data-reach-section]');
+  if (rc) {
+    e.preventDefault();
+    var to = rc.getAttribute('data-reach-section');
+    (window._upstreamStay || (window._upstreamStay = {}))[to] = true;
+    track('Other Reach Clicked', { river: to });
+    goToSection(to, null);
     return;
   }
   var t = e.target.closest && e.target.closest('[data-goto-section]');
@@ -4603,6 +4612,32 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       _note.textContent = _sn.text;
     }
   })();
+  // Other reaches on the same river, one quiet line (TJ, 2026-11-04: the form no longer offers reach chips; the app
+  // picks the reach, and this is how to choose a different stretch). Clicking one stays there (no upstream move).
+  (function() {
+    var _hd = document.getElementById('tp-headline');
+    var _r = document.getElementById('tp-reaches');
+    if (!_r) {
+      _r = document.createElement('p');
+      _r.id = 'tp-reaches';
+      _r.className = 'tp-reaches';
+      var _after = document.getElementById('tp-upnote') || _hd;
+      _after.parentNode.insertBefore(_r, _after.nextSibling);
+    }
+    var _here = selectedRiver ? String(selectedRiver).split(',')[0].trim() : '';
+    var _sibs = [];
+    Object.keys(RIVER_SECTIONS).forEach(function(rv) {
+      if (RIVER_SECTIONS[rv].indexOf(_here) !== -1) _sibs = RIVER_SECTIONS[rv].filter(function(x) { return x !== _here; });
+    });
+    var _d = getTripDateStr();
+    _r.hidden = !_sibs.length;
+    _r.innerHTML = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
+      var _c = getRiverConfig(x);
+      var _closed = _c && sectionClosedOn(_c, _d);
+      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>'
+        + (_closed ? ' <span class="tp-reach-closed">(closed)</span>' : '');
+    }).join(' \u00b7 ') : '';
+  })();
   (function() {
     var _btn = document.getElementById('tp-goto');
     if (!_btn) {
@@ -5895,7 +5930,8 @@ function updateSpeciesGrid() {
     var badge = btn.querySelector('.sp-badge');
     if (!badge) { badge = document.createElement('span'); badge.className = 'sp-badge'; badge.setAttribute('aria-hidden', 'true'); btn.appendChild(badge); }
     badge.setAttribute('data-s', state);
-    badge.textContent = SP_STATE_WORD[state];
+    badge.textContent = '';
+    badge.title = SP_STATE_WORD[state];
     var sr = btn.querySelector('.sp-sr');
     if (!sr) { sr = document.createElement('span'); sr.className = 'sr-only sp-sr'; btn.appendChild(sr); }
     sr.textContent = ', ' + SP_STATE_WORD[state] + (st.reopens ? ', opens ' + longDate(st.reopens) : '');
