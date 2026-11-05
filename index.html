@@ -111,7 +111,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         <input type="date" id="trip-date" class="field-input" aria-label="Trip date" style="-webkit-appearance:none;appearance:none;height:48px;box-sizing:border-box;">
       </div>
       <div class="field-group">
-        <label class="field-lbl" for="loc-input-field">Your Location</label>
+        <label class="field-lbl" for="loc-input-field">Your city</label>
         <select id="loc-input-field" class="field-input" style="cursor:pointer;background:var(--white)">
           <option value="">Select your city</option>
           <optgroup label="Greater Toronto Area">
@@ -157,12 +157,12 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
             <option value="owen sound">Owen Sound</option>
           </optgroup>
         </select>
-        <p class="loc-msg" id="loc-msg" role="alert" hidden>Pick a city first, then tap Find my best spot.</p>
+        <p class="loc-msg" id="loc-msg" role="alert" hidden>Pick a city or a river first, then tap Find my best spot.</p>
       </div>
-      <div class="field-group" id="river-field-group" style="display:none">
-        <label class="field-lbl" for="expert-river-select">River</label>
+      <div class="field-group" id="river-field-group">
+        <label class="field-lbl" for="expert-river-select">River <span class="opt">(optional)</span></label>
         <select id="expert-river-select" class="field-input">
-          <option value="">Select a river</option>
+          <option value="">Best near me</option>
         </select>
       </div>
     </div>

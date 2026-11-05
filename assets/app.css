@@ -3446,3 +3446,21 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .method-row .tc-icon { margin: 0; position: static; display: flex; flex: none; }
 }
 @media (max-width: 379px) { #landing .method-row .tech-family-btn { white-space: normal; } }
+
+/* One form (TJ picked layout B, 2026-11-05): no tabs. Every width: Date on its own row, then City and River side by side
+   (TJ preferred this on desktop too). City is needed only when no river is picked. */
+#landing .mode-toggle { display: none !important; }
+#landing .form-top { margin-top: 0; }
+#landing .form-top { display: grid; grid-template-columns: 1fr 1fr; }
+#landing .form-top > .field-group:first-child { grid-column: 1 / -1; }
+#landing #river-field-group { display: flex; flex-direction: column; min-width: 0; }
+#landing #river-field-group .field-input { width: 100%; }
+#landing #river-field-group > .field-lbl { display: block; }
+@media (min-width: 601px) { #landing .form-top > .field-group > .field-lbl { line-height: 20px; height: 20px; } }
+@media (min-width: 601px) { #landing .form-top { row-gap: .8rem; } }
+/* iPad and narrow windows: smaller species tiles (36 px photo, 12 px name) so the button clears the screen (TJ, 2026-11-05). */
+@media (min-width: 601px) and (max-width: 1199px), (min-width: 601px) and (hover: none) and (pointer: coarse) {
+  #landing .species-btn { padding: .45rem .3rem .4rem; gap: .25rem; min-height: 0; }
+  #landing .species-btn-img { width: 36px !important; height: 36px !important; }
+  #landing .species-btn-name { font-size: 12px; line-height: 1.2; }
+}
