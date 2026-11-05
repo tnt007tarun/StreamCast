@@ -623,6 +623,12 @@ Merged recently:
   text moved onto the scale. Distinct size/weight pairs on the results page: 22 to 15 on phones, 32 to 18 on desktop (map
   labels aside). Rules live in the type-system block of `@layer overrides` plus a short unlayered block at the end of `app.css`.
 
+- **Email type and run alert layout** (TJ, 2026-11-05): `brandEmail()` (`worker/emailshell.js`) uses Inter like the site
+  (`BRAND_FONT` stack; `@font-face` from the site's woff2 for Apple Mail, system sans in Gmail and Outlook). The wordmark is
+  Inter 600, no serif or italic. `tools/outlook-template.html` the same (no italics, no tracked capitals). Run alerts get the
+  "Fish with a buddy?" box. Run alert drafts carry their own layout: a teal label ("Run alert · <reach>"), a 22 px navy
+  headline, short paragraphs with no font-family (they inherit the shell), and a teal button into the app. Tone: upbeat and
+  a little playful (TJ: "bring anglers some excitement, no need to go overboard"); still factual numbers, no em dashes, no emoji.
 - **Method open on phones again** (TJ, 2026-11-05): the phone-only Method collapse (option A of the compact form) is removed
   from `app.js` and `app.css`. The four buttons are a compact row instead (small icon over a one-line 12 px word, words wrap
   under 380 px). Button bottom about 644 px on 390 x 664 (collapsed was 599, open with the old tall buttons 671); 694 on
