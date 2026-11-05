@@ -625,7 +625,7 @@ Merged recently:
 
 - **Method open on phones again** (TJ, 2026-11-05): the phone-only Method collapse (option A of the compact form) is removed
   from `app.js` and `app.css`. The four buttons are a compact row instead (small icon over a one-line 12 px word, words wrap
-  under 380 px). Button bottom about 644 px on 390 x 664 (collapsed was 599, open with the old tall buttons 671); 681 on
+  under 380 px). Button bottom about 644 px on 390 x 664 (collapsed was 599, open with the old tall buttons 671); 694 on
   360 x 640, so the smallest phones scroll a little to reach it.
 
 ### Analytics events (Umami)
