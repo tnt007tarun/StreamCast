@@ -628,12 +628,17 @@ Merged recently:
   under 380 px). Button bottom about 644 px on 390 x 664 (collapsed was 599, open with the old tall buttons 671); 694 on
   360 x 640, so the smallest phones scroll a little to reach it.
 
-- **River field feedback and memory** (TJ, 2026-11-05, same treatment as the city field): in "Check by river", tapping Get
-  Forecast with no river scrolls the river select into view, focuses it and shows "Pick a river first, then tap Get Forecast."
-  (`#river-msg`, Umami `River Required Shown`). The picked river is saved in `localStorage` (`hff_river`) and restored the first
-  time river mode opens (`River Remembered`), never over a deep link. Mode data: Umami `Search {location, species, mode}` has
-  carried `mode` (`beginner` = Find my spot, `expert` = Check by river) since before Umami started (2026-09-11); it fires
-  before the city/river check, so it also counts empty taps. New: `Mode Switched {to: spot|river}` and `mode` on `River Viewed`.
+- **One form, no tabs** (TJ, 2026-11-05, layout B from mockups): "Find my spot" and "Check by river" are one form. Phones:
+  Date on its own row, then "Your city" and "River (optional)" side by side; 601 px and up: Date, City and River on one row.
+  River defaults to "Best near me" (the city search). A picked river runs the river search (`goToResults()` sets `appMode`
+  from `#expert-river-select`: `'expert'` with a river, `'beginner'` without) and the city is then optional; with both, the
+  drive time to the picked river shows (RIVERS_DB, then `RIVER_CONFIG.driveTime`, via `driveKeyFor()`). Neither picked:
+  "Pick a city or a river first, then tap Find my best spot." (`#loc-msg`, `City Required Shown`). If `updateRivers()` (city
+  change) moved `selectedRiver` off the picked river, the search re-resolves it with `resolveAutoSection()`. One Method row
+  (`.beginner-only`); the river tab's copy, the tabs (`.mode-toggle`, hidden) and the reach chips stay in the markup but are
+  never shown. The picked river is not remembered between visits (only the city is). Umami: `Search {mode}` is `beginner`
+  without a river, `expert` with one; `River Viewed` carries `mode: spot|river`. Supersedes #152 (river-required message,
+  remembered river, `Mode Switched`).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -642,8 +647,8 @@ Merged recently:
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
-  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`, `River Required Shown`, `River Remembered`,
-  `Mode Switched {to}`, `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
+  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.

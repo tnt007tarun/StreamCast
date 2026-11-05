@@ -1311,7 +1311,9 @@ function goToResults(){
   // One form: a picked river means "check this river", no river means "find the best spot near my city".
   var _riverPick = (document.getElementById('expert-river-select') || {}).value || '';
   appMode = _riverPick ? 'expert' : 'beginner';
-  if (_riverPick && (!selectedRiver || selectedRiverParent !== _riverPick)) {
+  // Re-resolve unless the current reach belongs to the picked river: picking a city afterwards runs updateRivers(),
+  // which can set selectedRiver to the nearest reach of another river.
+  if (_riverPick && (!selectedRiver || (RIVER_SECTIONS[_riverPick] || []).indexOf(selectedRiver) === -1)) {
     selectedRiverIsAuto = true;
     selectedRiverParent = _riverPick;
     selectedRiver = RIVER_SECTIONS[_riverPick] && RIVER_SECTIONS[_riverPick].length === 1 ? RIVER_SECTIONS[_riverPick][0] : resolveAutoSection(_riverPick);
@@ -3574,8 +3576,6 @@ function setMode(mode) {
     // Restore location field and travel slider
     var locCellB = document.getElementById('loc-input-field') ? document.getElementById('loc-input-field').closest('.field-group') : null;
     if (locCellB) locCellB.style.display = '';
-    var riverFGB = document.getElementById('river-field-group');
-    if (riverFGB) riverFGB.style.display = 'none';
     var travelSecB = document.getElementById('travel-range');
     if (travelSecB && travelSecB.parentElement) travelSecB.parentElement.style.display = '';
     var rsecB = document.getElementById('river-section');
