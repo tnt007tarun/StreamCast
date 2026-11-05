@@ -3485,3 +3485,12 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .form-top > .field-group > .field-lbl { font-size: 12px; font-weight: 500; color: var(--t-muted, #6b7d86); }
   #landing .form-top > .form-sec-lbl { margin-bottom: -.35rem; }
 }
+
+/* Phones: photo above the name, so every species name fits its tile (TJ, 2026-11-05: "Steelhead" ran past its box) */
+@media (max-width: 600px) {
+  #landing .species-btn { flex-direction: column; justify-content: center; align-items: center; gap: 3px; padding: 6px 4px 5px; min-height: 0; text-align: center; }
+  #landing .species-btn-img, #landing .species-btn-img img { width: 28px; height: 28px; }
+  #landing .species-btn-name { text-align: center; line-height: 1.15; }
+  #landing .species-btn .sp-badge { top: 4px; left: calc(50% + 7px); right: auto; }
+}
+@media (max-width: 600px) { #landing .form-top .field-lbl .opt { font-size: 11px; } }
