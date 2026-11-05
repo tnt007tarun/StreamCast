@@ -1324,8 +1324,15 @@ function goToResults(){
   var locKey = resolveLocation(locInp ? locInp.value : '');
   if (locKey) window._beginnerLocKey = locKey;
   if (!locKey && appMode !== 'expert') {
+    // No city yet: the field is above the button and often off screen on a phone, so bring it into view and say why
+    // nothing happened (Clarity showed repeated taps on the button with no feedback, TJ 2026-11-04).
     locInp.style.outline="2px solid #b87333";
     setTimeout(function(){locInp.style.outline="";},2000);
+    var _lm = document.getElementById('loc-msg');
+    if (_lm) { _lm.hidden = false; }
+    try { locInp.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { locInp.scrollIntoView(); }
+    try { locInp.focus({ preventScroll: true }); } catch (e) {}
+    track('City Required Shown', {});
     return;
   }
 
@@ -5905,6 +5912,27 @@ function updateSpeciesGrid() {
   el.addEventListener('change', function(){ try { updateSpeciesGrid(); } catch (e) { console.error('updateSpeciesGrid', e); } });
   if (id === 'travel-range') el.addEventListener('input', function(){ try { updateSpeciesGrid(); } catch (e) {} });
 });
+
+// Remember the city between visits, and clear the "pick a city" message once one is chosen (TJ, 2026-11-04).
+(function () {
+  var sel = document.getElementById('loc-input-field');
+  if (!sel) return;
+  var KEY = 'hff_city';
+  function msg(show) { var m = document.getElementById('loc-msg'); if (m) m.hidden = !show; }
+  sel.addEventListener('change', function () {
+    if (sel.value) msg(false);
+    try { if (sel.value) localStorage.setItem(KEY, sel.value); else localStorage.removeItem(KEY); } catch (e) {}
+  });
+  try {
+    var saved = localStorage.getItem(KEY);
+    var ok = saved && Array.prototype.some.call(sel.options, function (o) { return o.value === saved; });
+    if (ok && !sel.value) {
+      sel.value = saved;
+      sel.dispatchEvent(new Event('change'));
+      track('City Remembered', {});
+    }
+  } catch (e) {}
+})();
 
 
 function rrankBadge(score) {
