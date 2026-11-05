@@ -599,6 +599,17 @@ Merged recently:
   labels, too many sizes on the home form) and home spacing on iPad (no gap under the hero, the button sitting at the bottom).
   The home subtitle is hidden on iPads and other touch screens, and on any window under 1200 px (TJ, 2026-11-04).
 
+- **Home form air, season dots, reach chips retired** (TJ, 2026-11-04, from iPhone: "too dense and busy"): form labels are
+  sentence case 13 px ("Target species", "Method"; the in-field Date and Location labels on phones stay 11 px). The species
+  tile chips are coloured dots on the photo's corner (green Prime/Good, amber Slow/In lake, red Closed; the word stays in the
+  tile's title and screen-reader text) with a legend under the tiles (`.sp-legend`). Phones keep 3 columns with 10 px gaps and
+  54 px tiles; button bottom is about 599 px on a 390 x 664 window (was 549 with the tighter tiles). iPads and narrow windows
+  (601 to 1199 px, or any touch screen over 600 px): shorter hero, a gap under it, one-line method buttons; button bottom about
+  697 px on 1024 x 768 (was 739). "Check by river" no longer shows reach chips: the app always picks the reach
+  (`resolveAutoSection()`), and results show one line under the headline, "Other reaches: …" (`#tp-reaches`, siblings from
+  `RIVER_SECTIONS`, "(closed)" from `sectionClosedOn()`). Tapping one opens that reach and marks it in `_upstreamStay`, so the
+  upstream rule doesn't move the reader back up. Umami `Other Reach Clicked {river}`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -606,7 +617,7 @@ Merged recently:
   `Email Signup Failed {river, reason}`, `Navigate Clicked {river, spot}`, `Gauge Link Clicked`,
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
-  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`, `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
