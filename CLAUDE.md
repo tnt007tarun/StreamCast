@@ -657,6 +657,12 @@ Merged recently:
   nothing says what is below). Plan: a sticky jump bar (Summary, Conditions, Spots, Gear; TJ picked B over tabs) after a week
   of baseline from `Results Section Seen` and `Results Engaged` on the current page. Compare phone views, layout scroll vs
   jumpbar: share of River Viewed reaching each section, and 30/60/120 s.
+- **Results jump bar** (TJ, 2026-11-05, option B over tabs; merge after the baseline week): phones under 600 px get a sticky bar
+  under the results header, Summary / Conditions / Spots / Gear with a second line (Go or not; Flow, water, sky; Access, regs;
+  Rig and bait), second lines hidden under 375 px. Tapping scrolls to the section heading (`#sec-conditions`, `#sec-spots`,
+  `#sec-gear`); the underline follows the scroll (`jumpSync()`); `jumpPlace()` sets its `top` and the scroll margins from the
+  header's height. Everything stays on one page (no hidden content). Umami `Jump Bar Clicked {tab, river}`; views with the bar
+  send `layout: jumpbar`. Sections a tap scrolls past don't count as seen until the reader scrolls to them.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -666,7 +672,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `jumpbar` once the jump bar ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}`, `Jump Bar Clicked {tab, river}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `jumpbar` once the jump bar ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.

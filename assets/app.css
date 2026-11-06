@@ -3496,3 +3496,20 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 600px) { #landing .form-top .field-lbl .opt { font-size: 11px; } }
 /* "(a city, a river, or both)" after "When and where": same look as the "(optional)" after Target species and Method */
 #landing .form-sec-lbl .opt { font-size: 13px; font-weight: 400; color: var(--t-muted, #6b7d86); margin-left: .3rem; }
+
+/* Results jump bar, phones only (TJ, 2026-11-05). Sticky just under the results header, which is sticky too;
+   app.js sets `top` (and the sections' scroll margin) from the header's real height. */
+.res-jump { display: none; }
+@media (max-width: 599px) {
+  #results .res-jump { display: flex; position: sticky; top: 59px; z-index: 99; margin: 0; padding: 0 var(--gutter, 16px);
+    background: var(--surface-page, #f7f5ef); border-bottom: 1px solid var(--rule, #e2ddd0); box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+  #results .res-jump button { flex: 1 1 0; min-width: 0; appearance: none; -webkit-appearance: none; border: 0; border-radius: 0; background: none;
+    font: 600 14px/1.1 Inter, system-ui, -apple-system, sans-serif; color: var(--t-muted, #6b7d86); padding: 11px 2px 9px;
+    border-bottom: 3px solid transparent; cursor: pointer; text-align: center; }
+  #results .res-jump button small { display: block; margin-top: 3px; font-size: 11px; font-weight: 400; color: #8a979e;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #results .res-jump button.on { color: var(--t-ink, #1a2e3a); border-bottom-color: var(--fern, #1e7a6e); }
+  #results .res-jump button:focus-visible { outline: 2px solid var(--fern, #1e7a6e); outline-offset: -2px; }
+  #results #sec-conditions, #results #sec-spots, #results #sec-gear { scroll-margin-top: 124px; }
+}
+@media (max-width: 374px) { #results .res-jump button small { display: none; } #results .res-jump button { padding: 13px 2px 11px; } }

@@ -77,7 +77,60 @@ function trackRiverViewed() {
 var RESULTS_SECTIONS = [['sec-conditions', 'conditions'], ['sec-spots', 'spots'], ['sec-gear', 'gear']];
 var RESULTS_ENGAGED_STEPS = [30, 60, 120];
 var _depth = { obs: null, timer: null, secs: 0, steps: [], river: '' };
-function resultsLayout() { return window._resultsLayout || 'scroll'; }
+function resultsLayout() {
+  var j = document.getElementById('res-jump');
+  return j && j.offsetParent !== null ? 'jumpbar' : 'scroll';
+}
+
+// Jump bar (phones): tap to jump to a section; the underline follows the scroll (TJ, 2026-11-05).
+var JUMP_TARGETS = { summary: null, conditions: 'sec-conditions', spots: 'sec-spots', gear: 'sec-gear' };
+function jumpSetActive(name) {
+  var bar = document.getElementById('res-jump'); if (!bar) return;
+  bar.querySelectorAll('button').forEach(function(b) { b.classList.toggle('on', b.getAttribute('data-jump') === name); });
+}
+var _jumpLockUntil = 0, _jumpTarget = '';   // while a tap's scroll runs: keep the tapped tab underlined, and
+                                             // don't count the sections it scrolls past as seen
+// Pin the bar right under the results header and make section jumps clear both.
+function jumpPlace() {
+  var bar = document.getElementById('res-jump'), hdr = document.querySelector('#results .res-header');
+  if (!bar || !hdr || bar.offsetParent === null) return;
+  var hh = hdr.offsetHeight || 59;
+  bar.style.top = hh + 'px';
+  var m = (hh + bar.offsetHeight + 8) + 'px';
+  ['sec-conditions', 'sec-spots', 'sec-gear'].forEach(function(id) { var el = document.getElementById(id); if (el) el.style.scrollMarginTop = m; });
+}
+function jumpSync() {
+  if (Date.now() < _jumpLockUntil) return;
+  var bar = document.getElementById('res-jump');
+  if (!bar || bar.offsetParent === null || !resultsShown()) return;
+  var edge = bar.getBoundingClientRect().bottom + 24, active = 'summary';
+  ['conditions', 'spots', 'gear'].forEach(function(n) {
+    var el = document.getElementById(JUMP_TARGETS[n]);
+    if (el && el.offsetParent !== null && el.getBoundingClientRect().top <= edge) active = n;
+  });
+  // At the very bottom the last section may never reach the bar; call it Gear then.
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) active = 'gear';
+  jumpSetActive(active);
+}
+(function() {
+  var bar = document.getElementById('res-jump'); if (!bar) return;
+  bar.addEventListener('click', function(e) {
+    var b = e.target.closest && e.target.closest('button[data-jump]'); if (!b) return;
+    var name = b.getAttribute('data-jump'), id = JUMP_TARGETS[name];
+    var smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (!id) window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    else { var el = document.getElementById(id); if (el) el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' }); }
+    jumpSetActive(name); _jumpTarget = name; _jumpLockUntil = Date.now() + 1500;
+    if ('onscrollend' in window) window.addEventListener('scrollend', function() { _jumpLockUntil = 0; jumpSync(); }, { once: true });
+    track('Jump Bar Clicked', { tab: name, river: (typeof selectedRiver !== 'undefined' && selectedRiver) ? selectedRiver.split(',')[0].trim() : 'unknown' });
+  });
+  window.addEventListener('resize', jumpPlace);
+  var queued = false;
+  window.addEventListener('scroll', function() {
+    if (queued) return; queued = true;
+    requestAnimationFrame(function() { queued = false; jumpSync(); });
+  }, { passive: true });
+})();
 function resultsScreen() { return (window.innerWidth || 1024) < 600 ? 'phone' : 'wide'; }
 function resultsShown() {
   var r = document.getElementById('results');
@@ -91,6 +144,7 @@ function resultsDepthStart(river) {
   try {
     resultsDepthStop();
     _depth.secs = 0; _depth.steps = RESULTS_ENGAGED_STEPS.slice(); _depth.river = river;
+    jumpSetActive('summary'); setTimeout(jumpPlace, 0);
     var base = function() { return { river: _depth.river, layout: resultsLayout(), screen: resultsScreen() }; };
     if ('IntersectionObserver' in window) {
       var seen = {};
@@ -99,6 +153,7 @@ function resultsDepthStart(river) {
           if (!en.isIntersecting || !resultsShown()) return;
           var name = en.target.getAttribute('data-depth');
           if (!name || seen[name]) return;
+          if (Date.now() < _jumpLockUntil && name !== _jumpTarget) return;  // scrolled past by a jump-bar tap
           seen[name] = true;
           var d = base(); d.section = name;
           track('Results Section Seen', d);

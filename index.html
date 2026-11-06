@@ -335,6 +335,14 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   </div>
   <!-- END NOTIFY BAR -->
 
+  <!-- Jump bar (phones): says what is further down and jumps to it (TJ, 2026-11-05) -->
+  <nav id="res-jump" class="res-jump" aria-label="Sections on this page">
+    <button type="button" data-jump="summary" class="on">Summary<small>Go or not</small></button>
+    <button type="button" data-jump="conditions">Conditions<small>Flow, water, sky</small></button>
+    <button type="button" data-jump="spots">Spots<small>Access, regs</small></button>
+    <button type="button" data-jump="gear">Gear<small>Rig and bait</small></button>
+  </nav>
+
   <!-- one-glance summary strip -->
   <!-- Species + Summary Banner -->
   <div id="species-banner" class="sp-banner fi">
