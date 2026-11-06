@@ -666,6 +666,20 @@ Merged recently:
   thin border, a coloured dot by the label, coloured line under the value. The Sky value says "80% cloud" (was "80%"), and
   "Top Bait" is now "Technique": the method ("Float") over the bait ("Roe & beads"), with no dot, since it isn't a condition.
 
+- **Home: borrowed from TJ's Figma Make concept** (TJ, 2026-11-06; ideas only, the phone form unchanged): TJ's own fall lake photo
+  (`images/hero/home-fall-lake.webp` 1600 px, `-800.webp` on phones) replaces the steelhead as the home hero at every width
+  (TJ may send a fall photo with a fish later). Warmer paper behind the home page (`#f4f0e6`). From 1000 px up (iPad landscape,
+  desktop) the form card sits beside the photo on the right (540 px, rounded, shadow) so the whole form and its button fit on the
+  first screen (button bottom 710 on 1280 x 900, 673 on 1024 x 768; was 873 and 753); the headline, subtitle and three short points
+  (`.hero-points`: live flow from Water Survey of Canada gauges; 2026 Ontario regulations, reach by reach; where to stand and what
+  to bring for your fish) sit on the left, and the header matches the same 1180 px width. Thin rules separate the three form steps
+  there, with no step numbers. Under 1000 px the stacked layout is unchanged (button 685 on 390 x 664). Not taken from the Make
+  file: its serif and second font, step numbers, line-art fish, rust button and invented field-note copy.
+  Results page (TJ, 2026-11-06): the same photo sits behind the target-species strip (`#species-banner`, white text, light
+  season-badge colours). Under 1000 px it is one line, 64 px tall: photo circle, name, badge; the "Target species" label is
+  dropped (it cut "Steelhead" off at 360 px) and two fish wrap. From 1000 px up the strip is taller and the summary
+  (`#tpband .tpband-inner`) is a white rounded card overlapping its bottom edge, like the home form card (TJ picked B).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
