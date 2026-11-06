@@ -654,9 +654,17 @@ Merged recently:
   remembered river, `Mode Switched`).
 
 - **Results depth baseline** (TJ, 2026-11-05): phones don't scroll far on results (the top card fills the first screen and
-  nothing says what is below). Plan: a sticky jump bar (Summary, Conditions, Spots, Gear; TJ picked B over tabs) after a week
-  of baseline from `Results Section Seen` and `Results Engaged` on the current page. Compare phone views, layout scroll vs
-  jumpbar: share of River Viewed reaching each section, and 30/60/120 s.
+  nothing says what is below). `Results Section Seen` and `Results Engaged` measure it (#156, merge first for a baseline week).
+  Compare phone views, layout `scroll` vs `pill`: share of River Viewed reaching each section, and 30/60/120 s.
+- **"Next" pill and light tiles** (TJ, 2026-11-05; merge about a week after #156): a sticky jump bar was built (#157) and dropped
+  for screen space (header 59 + bar 54 + email bar 126 px pinned on a 664 px phone). Instead, phones under 600 px get a teal pill
+  bottom right (`#res-next`, `nextPillUpdate()`): "Next: Conditions / Spots / Gear ↓" names the first section heading still below
+  the header, tapping scrolls it up under the header, and near the end it reads "Back to top ↑". It sits above the email bar
+  when that shows, and hides while the results load and while someone types in the email bar. Umami `Next Pill Clicked
+  {to, river}`; views with the pill send `layout: pill`; sections a tap scrolls past don't count as seen. The condition tiles
+  under the summary are light cards (TJ picked option 1; the dark block drew more attention than the headline): white,
+  thin border, a coloured dot by the label, coloured line under the value. The Sky value says "80% cloud" (was "80%"), and
+  "Top Bait" is now "Technique": the method ("Float") over the bait ("Roe & beads"), with no dot, since it isn't a condition.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -666,7 +674,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `jumpbar` once the jump bar ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.

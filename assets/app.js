@@ -72,12 +72,74 @@ function trackRiverViewed() {
 // home form (both are "/"; results only adds #river), so bounce rate and time on page don't apply.
 // Per results view: 'Results Section Seen {section}' the first time each section heading comes into
 // view, and 'Results Engaged {seconds}' at 30, 60 and 120 s of the results page being on screen.
-// `layout` says which page design the view had ('scroll' now; the jump bar sets 'jumpbar'), and
+// `layout` says which page design the view had ('scroll', or 'pill' when the Next pill shows), and
 // `screen` is phone (under 600 px) or wide, so the before/after compare like with like.
 var RESULTS_SECTIONS = [['sec-conditions', 'conditions'], ['sec-spots', 'spots'], ['sec-gear', 'gear']];
 var RESULTS_ENGAGED_STEPS = [30, 60, 120];
 var _depth = { obs: null, timer: null, secs: 0, steps: [], river: '' };
-function resultsLayout() { return window._resultsLayout || 'scroll'; }
+function resultsLayout() {
+  var n = document.getElementById('res-next');
+  // offsetParent is always null for a fixed element, so check the computed display instead
+  return n && n.classList.contains('on') && getComputedStyle(n).display !== 'none' ? 'pill' : 'scroll';
+}
+
+// "Next" pill on results (phones; TJ, 2026-11-05). Names the next section below the header ("Next: Conditions"),
+// scrolls it up under the header when tapped, and turns into "Back to top" at the end of the page. It sits above
+// the email bar when that shows, and hides while someone types in it.
+var NEXT_SECTIONS = [['sec-conditions', 'conditions', 'Conditions'], ['sec-spots', 'spots', 'Spots'], ['sec-gear', 'gear', 'Gear']];
+var _jumpLockUntil = 0, _jumpTarget = '';   // during a tap's scroll: don't count the sections it passes as seen
+function nextPillUpdate() {
+  var btn = document.getElementById('res-next'); if (!btn) return;
+  var on = resultsShown() && (window.innerWidth || 1024) < 600;
+  var hl = document.getElementById('tp-headline');
+  if (on && hl && /Loading/.test(hl.textContent || '')) on = false;
+  var nb = document.getElementById('notify-bar');
+  var nbUp = nb && nb.classList.contains('visible') && nb.offsetHeight > 0;
+  if (on && nbUp && nb.contains(document.activeElement)) on = false;      // typing an email: keep out of the way
+  btn.classList.toggle('on', on);
+  if (!on) return;
+  btn.style.bottom = ((nbUp ? nb.offsetHeight : 0) + 14) + 'px';
+  var hdr = document.querySelector('#results .res-header');
+  var edge = (hdr ? hdr.getBoundingClientRect().bottom : 0) + 40, next = null;
+  for (var i = 0; i < NEXT_SECTIONS.length; i++) {
+    var el = document.getElementById(NEXT_SECTIONS[i][0]);
+    if (el && el.offsetParent !== null && el.getBoundingClientRect().top > edge) { next = NEXT_SECTIONS[i]; break; }
+  }
+  var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 160;
+  var to = next && !atEnd ? next[1] : 'top';
+  if (btn.getAttribute('data-to') === to) return;
+  btn.setAttribute('data-to', to);
+  if (to === 'top') { btn.innerHTML = 'Back to top \u2191'; btn.setAttribute('aria-label', 'Back to top'); }
+  else { btn.innerHTML = '<span class="rn-pre">Next:</span> ' + next[2] + ' \u2193'; btn.setAttribute('aria-label', 'Next section: ' + next[2]); }
+}
+(function() {
+  var btn = document.getElementById('res-next'); if (!btn) return;
+  btn.addEventListener('click', function() {
+    var to = btn.getAttribute('data-to') || 'top';
+    var smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var hdr = document.querySelector('#results .res-header'), hh = hdr ? hdr.offsetHeight : 0;
+    var y = 0;
+    if (to !== 'top') {
+      var id = NEXT_SECTIONS.filter(function(s) { return s[1] === to; })[0][0];
+      y = document.getElementById(id).getBoundingClientRect().top + window.scrollY - hh - 8;
+    }
+    _jumpTarget = to; _jumpLockUntil = Date.now() + 1500;
+    if ('onscrollend' in window) window.addEventListener('scrollend', function() { _jumpLockUntil = 0; nextPillUpdate(); }, { once: true });
+    window.scrollTo({ top: Math.max(0, y), behavior: smooth ? 'smooth' : 'auto' });
+    track('Next Pill Clicked', { to: to, river: (typeof selectedRiver !== 'undefined' && selectedRiver) ? selectedRiver.split(',')[0].trim() : 'unknown' });
+  });
+  var queued = false, kick = function() {
+    if (queued) return; queued = true;
+    requestAnimationFrame(function() { queued = false; nextPillUpdate(); });
+  };
+  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', kick);
+  document.addEventListener('focusin', kick); document.addEventListener('focusout', function() { setTimeout(kick, 50); });
+  var nb = document.getElementById('notify-bar');
+  if (nb && 'MutationObserver' in window) new MutationObserver(kick).observe(nb, { attributes: true, attributeFilter: ['class', 'style'] });
+  var hl = document.getElementById('tp-headline');
+  if (hl && 'MutationObserver' in window) new MutationObserver(kick).observe(hl, { childList: true, characterData: true, subtree: true });
+})();
 function resultsScreen() { return (window.innerWidth || 1024) < 600 ? 'phone' : 'wide'; }
 function resultsShown() {
   var r = document.getElementById('results');
@@ -91,6 +153,7 @@ function resultsDepthStart(river) {
   try {
     resultsDepthStop();
     _depth.secs = 0; _depth.steps = RESULTS_ENGAGED_STEPS.slice(); _depth.river = river;
+    setTimeout(nextPillUpdate, 0);
     var base = function() { return { river: _depth.river, layout: resultsLayout(), screen: resultsScreen() }; };
     if ('IntersectionObserver' in window) {
       var seen = {};
@@ -99,6 +162,7 @@ function resultsDepthStart(river) {
           if (!en.isIntersecting || !resultsShown()) return;
           var name = en.target.getAttribute('data-depth');
           if (!name || seen[name]) return;
+          if (Date.now() < _jumpLockUntil && name !== _jumpTarget) return;  // scrolled past by a Next pill tap
           seen[name] = true;
           var d = base(); d.section = name;
           track('Results Section Seen', d);
@@ -1645,6 +1709,7 @@ document.addEventListener('click', function(e) {
 function goBack(){
   track('Back to Search', {});
   resultsDepthStop();
+  setTimeout(nextPillUpdate, 0);
   document.getElementById("results").style.display=""; document.getElementById("results").classList.remove("active");
   var _bar = document.getElementById("notify-bar"); if (_bar) { _bar.classList.remove("visible"); }
   document.getElementById("landing").style.display="block";
@@ -3838,7 +3903,7 @@ function renderStagingHero(st) {
   else if (cp >= 50) { skyState = 'good'; skyMeaning = 'Holding higher'; }
   else if (cp >= 25) { skyState = 'ok';   skyMeaning = 'Some cover'; }
   else { skyState = 'poor'; skyMeaning = 'Bright, fish dawn and dusk'; }
-  var skyVal = (cp == null) ? '\u2014' : cp + '%';
+  var skyVal = (cp == null) ? '\u2014' : cp + '% cloud';   // say what the % is (TJ, 2026-11-05)
 
   // 3) WIND / UPWELLING — on the north shore, westerlies drive cold water to the surface
   var windVal, windMeaning, windState;
@@ -3926,7 +3991,7 @@ function renderConditionTiles(opts) {
   var skyState = _tileState[_sr.grade];
   // Today the number is the cloud right now (the column says so too); the window follows the day's forecast.
   var skyMeaning = _sr.cover + (opts.isToday && window._periodCloud && _sr.grade !== 'na' ? ' now' : '');
-  var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '%';
+  var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '% cloud';   // say what the % is (TJ, 2026-11-05)
 
   // 3) FLOW — today: live value + state; future: target range, muted
   var flowTile;
@@ -3949,18 +4014,19 @@ function renderConditionTiles(opts) {
     flowTile = tile('Flow aim', opts.sweetMin + '\u2013' + opts.sweetMax, 'Check day-of', 'na');
   }
 
-  // 4) TOP BAIT — based on chosen method; always "good" (it's the recommended bait)
-  var bait = opts.topMethod || 'Varies';
-  // Shorten long bait names for the tile
-  var baitShort = bait.replace(/ fishing/i, '').replace(/Slow /,'').trim();
-  if (baitShort.length > 9) baitShort = baitShort.split(' ')[0];
-  var baitMeaning = bait.length > 9 ? bait.split(' ').slice(-1)[0] : 'Recommended';
+  // 4) TECHNIQUE (TJ, 2026-11-05: it was "Top Bait" but showed the method, e.g. "Float" over "Beads").
+  // topMethod is "Method · Bait" ("Float Fishing · Roe & Beads") or a method alone ("Slow Nymphing").
+  // Value: the method without "Fishing"; under it the bait, else "Recommended". Not a condition, so no colour
+  // (state 'tech', no dot).
+  var _tm = String(opts.topMethod || 'Varies').split(' \u00b7 ');
+  var baitShort = _tm[0].replace(/ fishing/i, '').trim();
+  var baitMeaning = _tm[1] ? _tm[1].charAt(0) + _tm[1].slice(1).toLowerCase() : 'Recommended';
 
   host.innerHTML =
     tile('Water', waterVal, waterMeaning, waterState, false, _wr.grade === 'na' ? _missingFx : _fx.temp) +
     tile('Sky', skyVal, skyMeaning, skyState, false, _sr.grade === 'na' ? _missingFx : _fx.sky) +
     flowTile +
-    tile('Top Bait', '<span class="tp-word">' + baitShort + '</span>', baitMeaning, 'good', baitShort.length > 8);
+    tile('Technique', '<span class="tp-word">' + baitShort + '</span>', baitMeaning, 'tech', baitShort.length > 11);
 }
 
 // ── ALTERNATIVE REACH (TJ, 2026-11-03) ────────────────────────────────────────────────────────────
