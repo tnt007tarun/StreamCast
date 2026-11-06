@@ -3577,3 +3577,40 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .form-card > .default-preview-wrap, #landing .form-card > .guides-wrap { max-width: 660px; margin-left: auto; margin-right: auto; }
   #landing .form-card > .default-preview-wrap { margin-top: 48px; }
 }
+
+/* Results: the same fall lake photo behind the target-species strip (TJ, 2026-11-06). The strip was already there, so
+   it adds no height on phones. Phones and iPad portrait (under 1000 px): one line, photo circle, name, season badge; the
+   "Target species" label is dropped (it cut "Steelhead" off at 360 px) and two fish wrap instead of being cut off.
+   From 1000 px up the strip is taller and the summary (#tpband) is a white card that overlaps its bottom edge, like the
+   form card on the home page (TJ picked B). */
+#results #species-banner {
+  background:
+    linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.45) 55%, rgba(8,26,24,.25) 100%),
+    url("/images/hero/home-fall-lake-800.webp") center 42% / cover no-repeat;
+  padding-top: 12px; padding-bottom: 12px;
+}
+#results #species-banner .sp-banner-fish { border: 0; box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+#results #species-banner .sp-banner-lbl { color: rgba(255,255,255,.78); }
+#results #species-banner .sp-banner-name { color: #fff; }
+#results #species-banner .sp-banner-badge { color: rgba(255,255,255,.8); }
+#results #species-banner .sp-banner-badge[data-state="good"] { color: #9fe0c4; }
+#results #species-banner .sp-banner-badge[data-state="warn"] { color: #f5cd77; }
+#results #species-banner .sp-banner-badge[data-state="bad"] { color: #f4a397; }
+@media (max-width: 999px) {
+  #results #species-banner { gap: 10px; min-height: 64px; box-sizing: border-box; }
+  #results #species-banner .sp-banner-fish { width: 40px; height: 40px; }
+  #results #species-banner > div:nth-child(2) { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; min-width: 0; }
+  #results #species-banner .sp-banner-lbl { display: none; }
+  #results #species-banner .sp-banner-name { margin: 0; font-size: 17px; line-height: 1.2; min-width: 0; }
+  #results #species-banner .sp-banner-badge { margin: 0; flex: none; font-size: 13px; line-height: 1.2; white-space: nowrap; }
+}
+@media (min-width: 1000px) {
+  #results #species-banner {
+    padding-top: 22px; padding-bottom: 110px;
+    background:
+      linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.40) 50%, rgba(8,26,24,.10) 85%),
+      url("/images/hero/home-fall-lake.webp") center 45% / cover no-repeat;
+  }
+  #results #tpband { background: transparent; padding-top: 0; margin-top: -96px; position: relative; z-index: 2; }
+  #results #tpband .tpband-inner { background: #fffdf8; border-radius: 22px; box-shadow: 0 24px 70px rgba(8,35,45,.18); padding: 26px 30px 24px; }
+}
