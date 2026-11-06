@@ -3496,3 +3496,36 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 600px) { #landing .form-top .field-lbl .opt { font-size: 11px; } }
 /* "(a city, a river, or both)" after "When and where": same look as the "(optional)" after Target species and Method */
 #landing .form-sec-lbl .opt { font-size: 13px; font-weight: 400; color: var(--t-muted, #6b7d86); margin-left: .3rem; }
+
+/* Condition tiles as light cards (TJ picked option 1, 2026-11-05: the dark tile block drew more attention than the
+   headline). White card, thin border, the reading's colour as a dot by the label and on the line under the value.
+   Technique (`tech`) is not a condition, so it has no dot. */
+#results #tp-tiles { background: none; padding: 0; gap: 8px; border-radius: 0; box-shadow: none; }
+#results #tp-tiles .tp-tile { background: #fff; border: 1px solid var(--rule, #e2ddd0); border-radius: 12px; box-shadow: none; }
+#results #tp-tiles .tp-tile-bar { display: none; }
+#results #tp-tiles .tp-tile-lbl { display: flex; align-items: center; gap: 6px; color: var(--t-muted, #6b7d86); }
+#results #tp-tiles .tp-tile-lbl::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #a9b4ba; }
+#results #tp-tiles .tp-tile.good .tp-tile-lbl::before { background: #2f9e6f; }
+#results #tp-tiles .tp-tile.ok .tp-tile-lbl::before { background: #d39a1c; }
+#results #tp-tiles .tp-tile.poor .tp-tile-lbl::before { background: #c8463c; }
+#results #tp-tiles .tp-tile.tech .tp-tile-lbl::before { display: none; }
+#results #tp-tiles .tp-tile-val, #results #tp-tiles .tp-tile-val .tp-word { color: var(--t-ink, #1a2e3a); }
+#results #tp-tiles .tp-tile-meaning { color: var(--t-muted, #6b7d86); }
+#results #tp-tiles .tp-tile.good .tp-tile-meaning { color: #1e7a6e; }
+#results #tp-tiles .tp-tile.ok .tp-tile-meaning { color: #9a6a0c; }
+#results #tp-tiles .tp-tile.poor .tp-tile-meaning { color: #b23b31; }
+#results #tp-tiles .tp-tile-effect { color: var(--t-muted, #6b7d86); opacity: 1; }
+#results #tp-tiles .tp-tile-effect.fx-up { color: #1e7a6e; }
+#results #tp-tiles .tp-tile-effect.fx-down { color: #9a6a0c; }
+
+/* "Next" pill on results, phones only (TJ picked A, 2026-11-05, over the jump bar: no screen space lost).
+   Bottom right, above the email bar when it shows (app.js sets `bottom`). */
+.res-next { display: none; }
+@media (max-width: 599px) {
+  .res-next.on { display: inline-flex; position: fixed; right: 14px; bottom: 14px; z-index: 300; align-items: center; gap: 6px;
+    border: 0; border-radius: 999px; background: #1e7a6e; color: #fff; cursor: pointer;
+    font: 600 14px/1 Inter, system-ui, -apple-system, sans-serif; padding: 11px 15px 11px 16px;
+    box-shadow: 0 4px 14px rgba(30, 122, 110, .32); -webkit-tap-highlight-color: transparent; }
+  .res-next .rn-pre { font-weight: 400; opacity: .8; }
+  .res-next:focus-visible { outline: 2px solid #0e2a4a; outline-offset: 2px; }
+}
