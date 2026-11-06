@@ -382,7 +382,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
   <!-- SECTION 1 -->
   <div id="section-access">
-  <div class="sec-label fi"><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions.</p></div></div>
+  <div class="sec-label fi" id="sec-spots"><div><h3>Access Points &amp; Regulations</h3><p>Best spots ranked by current conditions.</p></div></div>
 
     <div class="asec fi">
     <div class="agrid" id="access-grid-wrap">
@@ -399,7 +399,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   </div><!-- /section-access -->
 
   <div id="section-conditions">
-  <div class="sec-label fi"><div><h3>River Conditions</h3><p id="cond-subtitle">Flow, water temperature and sky. These three decide whether fish are feeding.</p></div></div>
+  <div class="sec-label fi" id="sec-conditions"><div><h3>River Conditions</h3><p id="cond-subtitle">Flow, water temperature and sky. These three decide whether fish are feeding.</p></div></div>
 
   <div class="cond-card">
   <div class="cgrid">
@@ -468,7 +468,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   </div>  </div><!-- /section-conditions -->
 
   <!-- SECTION 2: Technique & Gear (accordion) -->
-  <div class="sec-label fi"><div><h3>Technique &amp; Gear</h3><p id="tg-subtitle">Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
+  <div class="sec-label fi" id="sec-gear"><div><h3>Technique &amp; Gear</h3><p id="tg-subtitle">Primary method with recommended setup and baits. Tap alternatives to expand.</p></div></div>
 
   <!-- Hidden bait data. renderBaitPillar() in app.js reads these cards to build the Bait pillar. Not dead code: keep it. -->
   <div id="bait-source" style="display:none">

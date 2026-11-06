@@ -64,6 +64,73 @@ function trackRiverViewed() {
     track('River Viewed', { river: river, species: species, source: window._viewSource || 'search', day: day,
       mode: appMode === 'expert' ? 'river' : 'spot' });  // which form tab the view came from (TJ, 2026-11-05)
     window._viewSource = null;
+    resultsDepthStart(river);
+  } catch (e) {}
+}
+
+// How far people get on the results page (TJ, 2026-11-05). Umami can't separate results from the
+// home form (both are "/"; results only adds #river), so bounce rate and time on page don't apply.
+// Per results view: 'Results Section Seen {section}' the first time each section heading comes into
+// view, and 'Results Engaged {seconds}' at 30, 60 and 120 s of the results page being on screen.
+// `layout` says which page design the view had ('scroll' now; the jump bar sets 'jumpbar'), and
+// `screen` is phone (under 600 px) or wide, so the before/after compare like with like.
+var RESULTS_SECTIONS = [['sec-conditions', 'conditions'], ['sec-spots', 'spots'], ['sec-gear', 'gear']];
+var RESULTS_ENGAGED_STEPS = [30, 60, 120];
+var _depth = { obs: null, timer: null, secs: 0, steps: [], river: '' };
+function resultsLayout() { return window._resultsLayout || 'scroll'; }
+function resultsScreen() { return (window.innerWidth || 1024) < 600 ? 'phone' : 'wide'; }
+function resultsShown() {
+  var r = document.getElementById('results');
+  return !!(r && r.style.display !== 'none' && r.offsetParent !== null);
+}
+function resultsDepthStop() {
+  if (_depth.obs) { try { _depth.obs.disconnect(); } catch (e) {} _depth.obs = null; }
+  if (_depth.timer) { clearInterval(_depth.timer); _depth.timer = null; }
+}
+function resultsDepthStart(river) {
+  try {
+    resultsDepthStop();
+    _depth.secs = 0; _depth.steps = RESULTS_ENGAGED_STEPS.slice(); _depth.river = river;
+    var base = function() { return { river: _depth.river, layout: resultsLayout(), screen: resultsScreen() }; };
+    if ('IntersectionObserver' in window) {
+      var seen = {};
+      _depth.obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(en) {
+          if (!en.isIntersecting || !resultsShown()) return;
+          var name = en.target.getAttribute('data-depth');
+          if (!name || seen[name]) return;
+          seen[name] = true;
+          var d = base(); d.section = name;
+          track('Results Section Seen', d);
+          _depth.obs && _depth.obs.unobserve(en.target);
+        });
+      }, { threshold: 0.6 });
+      // While the data loads the top card is empty, so the sections sit at the top of the screen.
+      // Watch only once the headline is in, so they don't count as seen then.
+      var obs = _depth.obs, waited = 0;
+      var watch = function() {
+        if (_depth.obs !== obs) return;                      // a newer view or Back took over
+        var hero = document.getElementById('tpband'), hl = document.getElementById('tp-headline');
+        var ready = hero && hero.offsetHeight >= 50 && !(hl && /Loading/.test(hl.textContent || ''));
+        if (!ready) { if (waited < 20000) { waited += 250; setTimeout(watch, 250); } return; }  // still loading at 20 s: skip, rather than log wrong data
+        RESULTS_SECTIONS.forEach(function(p) {
+          var el = document.getElementById(p[0]);
+          if (el) { el.setAttribute('data-depth', p[1]); obs.observe(el); }
+        });
+      };
+      setTimeout(watch, 250);
+    }
+    // Count only time the results page is on screen in a visible tab.
+    _depth.timer = setInterval(function() {
+      if (!resultsShown()) { resultsDepthStop(); return; }
+      if (document.visibilityState !== 'visible') return;
+      _depth.secs += 5;
+      while (_depth.steps.length && _depth.secs >= _depth.steps[0]) {
+        var d = base(); d.seconds = _depth.steps.shift();
+        track('Results Engaged', d);
+      }
+      if (!_depth.steps.length) { clearInterval(_depth.timer); _depth.timer = null; }
+    }, 5000);
   } catch (e) {}
 }
 
@@ -1577,6 +1644,7 @@ document.addEventListener('click', function(e) {
 
 function goBack(){
   track('Back to Search', {});
+  resultsDepthStop();
   document.getElementById("results").style.display=""; document.getElementById("results").classList.remove("active");
   var _bar = document.getElementById("notify-bar"); if (_bar) { _bar.classList.remove("visible"); }
   document.getElementById("landing").style.display="block";
