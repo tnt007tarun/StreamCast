@@ -72,7 +72,7 @@ function trackRiverViewed() {
 // home form (both are "/"; results only adds #river), so bounce rate and time on page don't apply.
 // Per results view: 'Results Section Seen {section}' the first time each section heading comes into
 // view, and 'Results Engaged {seconds}' at 30, 60 and 120 s of the results page being on screen.
-// `layout` says which page design the view had ('scroll' now; the jump bar sets 'jumpbar'), and
+// `layout` says which page design the view had ('scroll', or 'pill' when the Next pill shows), and
 // `screen` is phone (under 600 px) or wide, so the before/after compare like with like.
 var RESULTS_SECTIONS = [['sec-conditions', 'conditions'], ['sec-spots', 'spots'], ['sec-gear', 'gear']];
 var RESULTS_ENGAGED_STEPS = [30, 60, 120];
