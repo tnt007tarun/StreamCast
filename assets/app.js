@@ -2853,10 +2853,12 @@ async function renderResults(){
       // close Sept 30). Same checks as the pill and the hero: speciesSeasonClosureFor() and allAccessClosed().
       var _d = getTripDateStr(), _accessShut = allAccessClosed(cfg, _d);
       var _on = targetNames.filter(function(n){ return riverSpeciesList.indexOf(n) !== -1; });
-      var _shut = _on.filter(function(n){ return _accessShut || !!speciesSeasonClosureFor(cfg, n, _d); });
+      var _seasonShut = _on.filter(function(n){ return !!speciesSeasonClosureFor(cfg, n, _d); });
+      var _shut = _accessShut ? _on : _seasonShut;
       if (!_shut.length) return false;
       if (_shut.length === _on.length) {
-        badge.textContent = _accessShut ? 'Closed on this date' : 'Season closed';
+        // The season is the usual reason; name the access closure only when the season itself is open.
+        badge.textContent = _seasonShut.length === _on.length ? 'Season closed' : 'Closed on this date';
         badge.dataset.state = 'bad';
       } else {
         badge.textContent = _shut.map(function(n){ return n.replace(' Salmon','').replace(' Trout',''); }).join('+') + ' season closed';

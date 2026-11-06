@@ -666,6 +666,12 @@ Merged recently:
   thin border, a coloured dot by the label, coloured line under the value. The Sky value says "80% cloud" (was "80%"), and
   "Top Bait" is now "Technique": the method ("Float") over the bait ("Roe & beads"), with no dot, since it isn't a condition.
 
+- **Species badge checks legality** (TJ, 2026-11-06: an Upper Credit brook trout search on Nov 6 read "★ Peak season now"): the
+  badge under the fish name (`#species-season-badge`) read only the season calendar. It now checks `speciesSeasonClosureFor()`
+  and `allAccessClosed()` first: "Season closed" when the season is shut for every picked fish on the reach, "Closed on this
+  date" when the season is open but every access spot is closed, "<fish> season closed" (amber) when only some picked fish are.
+  Checked 168 reach/fish/date cases against main: only closed water changed (Upper Credit, Middle Credit, Upper Humber).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
