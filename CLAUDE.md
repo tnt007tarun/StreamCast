@@ -698,7 +698,11 @@ Merged recently:
   (`renderFlowFishNote()`, called from the flow column and `speciesReads()`), only when that fish is fishable on the reach on
   the date (`speciesFishableIn()`), never while fish are in the lake. The summary tile's value is the band word with the
   number under it. Dropped as repeats: the bar's status word, the "Flow X m³/s (band)" and "Fish lies" bullets, two of the
-  three estimate bullets. Water and sky cards unchanged for now. The home-screen hint now closes when results open
+  three estimate bullets. Water temperature card the same way (same PR): "Cold water / Cool water / Prime temperature / Warm
+  water / Too warm" (`waterTempRead().band`, `TEMP_HEAD`), the reading and its source under it, then `TEMP_FISH_TEXT` for the
+  fish (`waterPlainRead()`; trout at 18 °C+ always get the advisory, lake-run browns included); without a fishable fish the old
+  feeding-range sentence stands in. Temperature lines are a first draft for TJ to edit. Water tile value is the band word.
+  Sky card unchanged for now. The home-screen hint now closes when results open
   (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
 
 ### Analytics events (Umami)

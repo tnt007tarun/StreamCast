@@ -2665,13 +2665,22 @@ function speciesReads(sp) {
   var cls = water.grade === 'na' ? 'warn' : water.grade;
   var el = function(id){ return document.getElementById(id); };
   if (el("tval")) {
-    el("tval").textContent = water.grade === 'na' ? "\u2014" : water.value;
+    // Plain English first (TJ, 2026-11-06), like the flow card: "Cool water", then the reading and its source, then what
+    // the fish do at that temperature (#tfish, waterPlainRead() in the core). Without a fish note (no fish named, or not
+    // fishable here on the date) the old feeding-range sentence stands in.
+    var _wp = water.grade === 'na' ? null : waterPlainRead(water, sp, _here);
+    var _fishOk = sp && _here && speciesFishableIn(_here, sp, getTripDateStr()) && !window._stagingInLake;
+    el("tval").textContent = water.grade === 'na' ? "No water temperature" : _wp.head;
     el("tlbl").textContent = water.grade === 'na' ? water.sentence
-      : water.display + " \u00b7 " + water.tag + ". " + waterTempSourceText(i.wtInfo, i.airTemp) + water.sentence;
+      : water.display + ". " + waterTempSourceText(i.wtInfo, i.airTemp).replace(/\s+$/, "");
+    var _tf = el("tfish");
+    if (_tf) {
+      var _txt = water.grade === 'na' ? '' : (_fishOk && _wp.fish) ? _wp.fish : water.sentence;
+      _tf.textContent = _txt; _tf.hidden = !_txt;
+    }
     el("tgv").textContent = water.grade === 'na' ? "\u2014" : water.display;
     el("tbar").style.width = (water.grade === 'na' ? 0 : barW(i.wt, 0, 22)) + "%"; el("tbar").className = "gf " + cls;
-    el("tstat").innerHTML = '<span class="status-dot dot-' + (cls === "good" ? "good" : cls === "warn" ? "warn" : "bad") + '"></span>'
-      + (water.grade === 'na' ? 'No data' : water.word);
+    el("tstat").innerHTML = "";
     el("tstat").className = "gs " + cls;
   }
   return { win: win, next: next, water: water, species: sp };
@@ -4015,8 +4024,9 @@ function renderConditionTiles(opts) {
   var _wr = window._waterRead || waterTempRead(opts.wt, window._waterTempInfo, { weatherOk: opts.weatherOk });
   var _tileState = { good: 'good', warn: 'ok', bad: 'poor', na: 'na' };
   var waterState = _tileState[_wr.grade];
-  var waterMeaning = _wr.grade === 'na' ? 'No data' : _wr.word + ' \u00b7 ' + _wr.tag.toLowerCase();
-  var waterVal = _wr.grade === 'na' ? '\u2014' : (_wr.measured ? '' : '~') + _wr.value + '\u00b0';
+  // Band word as the value, the reading under it (TJ, 2026-11-06), like the Flow tile.
+  var waterMeaning = _wr.grade === 'na' ? 'No data' : (_wr.measured ? '' : '~') + _wr.value + '\u00b0C \u00b7 ' + _wr.tag.toLowerCase();
+  var waterVal = _wr.grade === 'na' ? '\u2014' : '<span class="tp-word">' + _wr.word + '</span>';
 
   // 2) SKY / CLOUD: skyRead() in the core (70% overcast, under 30% bright)
   var _sr = skyRead(opts.weatherOk === false ? null : opts.cloudPct);

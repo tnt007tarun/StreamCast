@@ -2484,6 +2484,7 @@ function waterTempRead(wt, info, o) {
   }
   return {
     grade: g, word: word, kind: kind, value: v, measured: measured,
+    band: { 'Cold': 'cold', 'Cool': 'cool', 'Prime': 'prime', 'Warm': 'warm', 'Too warm': 'hot' }[word],
     display: (measured ? '' : 'About ') + v + '°C',
     tag: measured ? 'Live' : kind === 'model' ? 'Modelled' : 'Rough estimate',
     source: measured ? 'measured' + (info.place ? ' at ' + info.place : '') + ' (Credit Valley Conservation, live)'
@@ -2581,6 +2582,41 @@ function flowPlainRead(band, species, section, estimate) {
     word: { low: 'Low', normal: 'Normal', prime: 'Prime', high: 'High', blown: 'Blown out' }[band],
     fish: g ? FLOW_FISH_TEXT[g][band] : null
   };
+}
+
+// Water temperature in plain English (TJ, 2026-11-06), like the flow card: "Cool water" leads, the reading under it,
+// then what the fish do at that temperature. Bands from waterTempRead().band (Cold under 6, Cool 6 to 8, Prime 8 to 14,
+// Warm 14 to 18, Too warm 18+). Same fish groups as FLOW_FISH_TEXT. Draft lines for TJ to edit (2026-11-06).
+var TEMP_HEAD = { cold: 'Cold water', cool: 'Cool water', prime: 'Prime temperature', warm: 'Warm water', hot: 'Too warm' };
+var TEMP_FISH_TEXT = {
+  run: {
+    cold: 'Winter fish still bite, but slowly. They sit in slow, deep water. Drift small baits slowly near the bottom; midday is often best.',
+    cool: 'Fish are active but won\u2019t move far for a bait. Work the slower runs and tailouts, low and slow.',
+    prime: 'Fish are active and will move for a bait. They spread through runs and seams. Cover water.',
+    warm: 'Fish sit in faster, better-oxygenated water at the heads of pools and in riffles. Best early and late.',
+    hot: 'Hard on the fish. They hold in the coolest water they can find. Land and release fish quickly, or wait for a cooler day.'
+  },
+  salmon: {
+    cold: 'Late in the run. The salmon left sit in deep pools and move little.',
+    cool: 'Salmon hold in deep pools and slow runs and move little. Drift right in front of them.',
+    prime: 'Good running temperature. Fish move upstream and rest at the heads of pools.',
+    warm: 'Fish hold at the mouth or in the deepest, shaded pools and wait for cooler water. Early morning is best.',
+    hot: 'Too warm for fish to run. Most hold at the mouth until rain or a cold front cools the river.'
+  },
+  trout: {
+    cold: 'Trout feed little and sit in slow, deep water. Fish small nymphs or baits slowly near the bottom, in the warmest hours.',
+    cool: 'Trout start to feed more. Look in slower runs and pools; midday is often best.',
+    prime: 'Trout feed through the day. Riffles, runs and the heads of pools all hold fish.',
+    warm: 'Trout move to riffles and spring seeps, where the water is cooler and holds more oxygen. Fish the first hours of light.',
+    hot: 'Stop fishing for trout above 18\u00b0C. Trout caught in water this warm often die after release.'
+  }
+};
+// read = waterTempRead(). fish: null when no fish is named or the reading is missing.
+function waterPlainRead(read, species, section) {
+  if (!read || !read.band) return null;
+  var g = flowFishGroup(species, section);
+  if (read.band === 'hot' && TROUT_SPECIES.indexOf(species) !== -1) g = 'trout';   // the 18 °C advisory covers every trout
+  return { band: read.band, head: TEMP_HEAD[read.band], word: read.word, fish: g ? TEMP_FISH_TEXT[g][read.band] : null };
 }
 
 // Flow trend wording (TJ, 2026-11-02): direction read against where the flow sits. The prime range is the flow a few
@@ -3586,7 +3622,7 @@ if (typeof globalThis !== 'undefined') {
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
-    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
+    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, waterPlainRead: waterPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
     fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
     TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS
   };

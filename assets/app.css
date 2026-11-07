@@ -3623,4 +3623,4 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #results .fhead-wrap .trd { font-size: 1rem; }
 #results .fnote { margin: 0 0 .9rem; font: 400 .9375rem/1.5 Inter, system-ui, -apple-system, sans-serif; color: var(--t-body, #2c3a44); }
 #results .fnote[hidden] { display: none; }
-#results #fstat:empty { display: none; }
+#results :is(#fstat, #tstat):empty { display: none; }
