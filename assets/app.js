@@ -781,7 +781,7 @@ function getAccessFlowNote(riverName, spotIndex, flow) {
   var notes = {
     "Grand River": [
       flow<6?"Low release. Tailwater still fishable, cold water persists.":flow<=12?"Ideal. Current seam below outflow active.":"High release. Prime time here.",
-      flow<6?"Too low. Fish scattered and ultra-wary.":flow<=12?"Ideal. Pools defined, fish predictable.":flow<=18?"Elevated. Fish slower edges.":"Too high. Gorge unsafe.",
+      flow<6?"Too low. Fish hold deep and spook easily.":flow<=12?"Ideal. Pools defined, fish predictable.":flow<=18?"Elevated. Fish slower edges.":"Too high. Gorge unsafe.",
       flow<6?"Reduced mixing. Fish may spread.":flow<=15?"Confluence concentrated and productive.":"High flow. Harder to read.",
       flow<6?"Too low. Pool loses definition.":flow<=10?"Ideal. Pool well-defined.":flow<=14?"Slightly high. Focus on back half.":"Too high. Try elsewhere.",
       flow<6?"Low release. Less current near outflow.":flow<=12?"Good. Fish stacked in transition zone.":"High release. Prime time here.",
@@ -3127,8 +3127,11 @@ async function renderResults(){
     document.getElementById("fstat").innerHTML="";document.getElementById("fstat").className="gs "+fc;
     var _fd=document.getElementById("flow-dot");
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
+    var _wr0 = window._waterRead, _res = flowTrendNoFresh(window._readSpecies || window._defaultTargetSpecies,
+      selectedRiver ? selectedRiver.split(",")[0].trim() : "", _wr0 && _wr0.grade !== 'na' ? _wr0.value : null);
+    var _tr = flowTrendRead(trend, flowBand(flow,cfg), fc, _res);
     document.getElementById("fcl").innerHTML=[
-      {t:"Trend: "+flowTrendRead(trend, flowBand(flow,cfg), fc).text,c:flowTrendRead(trend, flowBand(flow,cfg), fc).grade},
+      {t:"Trend: "+_tr.text,c:_tr.grade},
       {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"}
     ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
     renderFlowFishNote(window._readSpecies);

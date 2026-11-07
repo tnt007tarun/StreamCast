@@ -705,7 +705,15 @@ Merged recently:
   Very cold water (under `VERY_COLD_WATER` 3 °C, TJ 2026-11-06: "real winter days, Dec to
   February mostly"): steelhead, lake-run browns and resident trout sit near the bottom of deep, slow pools and barely move,
   so the temperature card says so (`TEMP_DEEP_TEXT`) and the flow note switches to `FLOW_COLD_TEXT` (clarity and approach,
-  no holding water); salmon unchanged. Sky card unchanged for now. The home-screen hint now closes when results open
+  no holding water); salmon unchanged. Consistency pass over all 90 flow x temperature x fish combinations
+  (TJ, 2026-11-06): cold 3 to 6 °C prime flow says fish move a little in slower water (`FLOW_CHILLY_TEXT`); salmon under
+  6 °C get "the salmon left" lines (`FLOW_SALMON_COLD_TEXT`); 18 °C+ trout flow note is "Let them be until the water cools",
+  salmon hold at the mouth, steelhead prime flow warns about heat (`FLOW_HOT_TEXT`); low flow says "fish hold deep and spook
+  easily" everywhere (trend, why line, `flowRead` sentence, a Grand access note; was "spread out"/"scattered"); the trend's
+  "Fresh fish can move on it" is dropped for resident trout and for salmon in cold or too-warm water (`flowTrendNoFresh()`).
+  Not changed: in 1 to 3 °C water the score still gives steelhead +1 (TJ's winter rule), so the Water tile can say "Helps the
+  rating" while the card says fish barely move. Open: per-spot access notes (`getAccessFlowNote()` in `app.js`) use their own
+  hardcoded flow thresholds, not the reach's bands. Sky card unchanged for now. The home-screen hint now closes when results open
   (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
 
 ### Analytics events (Umami)

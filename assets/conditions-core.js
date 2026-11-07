@@ -2527,7 +2527,7 @@ function flowRead(flow, cfg, o) {
     word: { low: 'Too low', normal: 'Normal', prime: 'Prime', high: 'High', blown: 'Blown out' }[band],
     // Same wording as the flow card before 2026-11-02.
     sentence: {
-      low: 'Below the fishable range for this stretch. Fish scattered.',
+      low: 'Below the fishable range for this stretch. Fish hold deep and spook easily.',
       normal: 'Normal flow. Fishable; prime is ' + range + ', a few days after rain.',
       prime: 'Prime flow (' + range + ').',
       high: 'Elevated. Target the slower edges.',
@@ -2588,6 +2588,25 @@ var TEMP_DEEP_TEXT = {
   run: 'Fish sit near the bottom of deep, slow pools and barely move. Drift your bait slowly, right on the bottom. Safe for catch and release.',
   trout: 'Trout sit near the bottom of deep, slow pools and barely move. Fish small baits or nymphs slowly, right on the bottom. Safe for catch and release.'
 };
+// Cold but not very cold (3 to 6 °C, TJ 2026-11-06): fish move a little, mostly in slower water, so prime flow doesn't
+// promise fish spread through the runs. Salmon under 6 °C: late in the run, so no fresh-fish lines. Too warm (18 °C+):
+// trout get the advisory and salmon hold at the mouth, whatever the flow.
+var FLOW_CHILLY_TEXT = {
+  run: { prime: 'Good flow. Fish move a little, mostly in the slower water of the runs and pools. Work it slowly.' },
+  trout: { prime: 'Good flow. Trout move a little, mostly in the slower water. Drift nymphs or bait (where allowed) slowly.' }
+};
+var FLOW_SALMON_COLD_TEXT = {
+  low: 'Low, clear water. The salmon left sit in the deepest pools.',
+  normal: 'The salmon left rest in pools and deep runs. Few fresh fish come in this late.',
+  prime: 'Good flow. The salmon left hold at the heads of pools.',
+  high: 'Coloured water. The salmon left rest in soft water near the edges.',
+  blown: 'Too high to fish. Wait for it to drop.'
+};
+var FLOW_HOT_TEXT = {
+  run: { prime: 'Good flow, but the heat stresses fish. Keep fights short and release them quickly.' },
+  trout: 'Let them be until the water cools.',
+  salmon: 'Too warm for salmon to run. They hold at the mouth until the river cools, whatever the flow.'
+};
 function veryColdWater(wt) { return wt != null && !isNaN(wt) && wt < VERY_COLD_WATER; }
 function flowFishGroup(species, section) {
   if (!species) return null;
@@ -2604,11 +2623,24 @@ function flowPlainRead(band, species, section, estimate, waterTemp) {
   var head = FLOW_HEAD[band];
   var g = flowFishGroup(species, section);
   var cold = g && FLOW_COLD_TEXT[g] && veryColdWater(waterTemp);
+  var hasT = waterTemp != null && !isNaN(waterTemp);
+  var chilly = hasT && !cold && waterTemp < TEMP_MIN - 2;   // same line as waterTempRead()'s "Cold"
+  var hot = hasT && waterTemp >= TEMP_STRESS;
+  var fish = null;
+  if (g) {
+    if (hot && TROUT_SPECIES.indexOf(species) !== -1) fish = FLOW_HOT_TEXT.trout;   // the 18 °C advisory, lake-run browns too
+    else if (hot && g === 'salmon') fish = FLOW_HOT_TEXT.salmon;
+    else if (hot && g === 'run' && FLOW_HOT_TEXT.run[band]) fish = FLOW_HOT_TEXT.run[band];
+    else if (cold) fish = FLOW_COLD_TEXT[g][band];
+    else if (g === 'salmon' && hasT && waterTemp < TEMP_MIN - 2) fish = FLOW_SALMON_COLD_TEXT[band];
+    else if (chilly && FLOW_CHILLY_TEXT[g] && FLOW_CHILLY_TEXT[g][band]) fish = FLOW_CHILLY_TEXT[g][band];
+    else fish = FLOW_FISH_TEXT[g][band];
+  }
   return {
     band: band,
     head: estimate ? 'Likely ' + head.charAt(0).toLowerCase() + head.slice(1) : head,
     word: { low: 'Low', normal: 'Normal', prime: 'Prime', high: 'High', blown: 'Blown out' }[band],
-    fish: g ? (cold ? FLOW_COLD_TEXT[g][band] : FLOW_FISH_TEXT[g][band]) : null
+    fish: fish
   };
 }
 
@@ -2655,14 +2687,23 @@ function waterPlainRead(read, species, section) {
 // bring fresh fish in. Before, every rise was "a good sign" and every drop "keep an eye on it". band = flowBand(); the
 // icon follows the band (clsFlow), not the direction. Wording only: trend is not in any score.
 var FLOW_TREND_TEXT = {
-  low:    { up: 'Rising off low water. Worth watching after the rain.', down: 'Low and dropping. Fish will be spread out and wary.', stable: 'Low and steady. Fish will be spread out and wary.' },
+  low:    { up: 'Rising off low water. Worth watching after the rain.', down: 'Low and dropping. Fish hold deep and spook easily.', stable: 'Low and steady. Fish hold deep and spook easily.' },
   normal: { up: 'Rising toward the prime range.', down: 'Dropping below the prime range. Lower, clearer water.', stable: 'Steady, below the prime range.' },
   prime:  { up: 'Rising inside the prime range. Fresh fish can move on it; if it keeps climbing it may colour up.',
             down: 'Dropping through the prime range, the few days after rain this river usually fishes well.', stable: 'Steady in the prime range.' },
   high:   { up: 'Rising and already high. Expect coloured water.', down: 'Coming down after rain. Prime usually follows in a few days.', stable: 'High and steady. Target the slower edges.' },
   blown:  { up: 'Rising and blown out. Give it a few days.', down: 'Blown out but dropping. Watch it come back into range.', stable: 'Blown out. Give it a few days.' }
 };
-function flowTrendRead(trend, band, grade) {
+// noFresh: true when no fresh fish come in on a rise: resident trout, and salmon in cold (under 6 °C) or too-warm
+// (18 °C+) water (TJ, 2026-11-06). flowTrendNoFresh() decides it, so the trend line agrees with the cards.
+function flowTrendNoFresh(species, section, waterTemp) {
+  var g = flowFishGroup(species, section);
+  if (g === 'trout') return true;
+  var hasT = waterTemp != null && !isNaN(waterTemp);
+  return g === 'salmon' && hasT && (waterTemp < TEMP_MIN - 2 || waterTemp >= TEMP_STRESS);
+}
+function flowTrendRead(trend, band, grade, resident) {
+  if (resident && band === 'prime' && trend === 'up') return { grade: grade || 'warn', text: '\u2191 Rising inside the prime range. If it keeps climbing it may colour up.' };
   var dir = trend === 'up' ? 'up' : trend === 'down' ? 'down' : 'stable';
   var arrow = dir === 'up' ? '\u2191' : dir === 'down' ? '\u2193' : '\u2192';
   var row = FLOW_TREND_TEXT[band];
@@ -2867,7 +2908,7 @@ function heroReasons(o) {
     else if (f.band === 'prime') out.push('Flow is ' + v + ' m³/s, inside this stretch’s prime range of ' + f.range + '.');
     else if (f.band === 'normal') out.push('Flow is normal at ' + v + ' m³/s, fishable but under the ' + f.range + ' prime range.');
     else if (f.band === 'high') out.push('Flow is up at ' + v + ' m³/s, above the ' + f.range + ' prime range, so fish the slower edges.');
-    else if (f.band === 'low') out.push('Flow is low at ' + v + ' m³/s, so fish will be scattered.');
+    else if (f.band === 'low') out.push('Flow is low at ' + v + ' m³/s, so fish hold deep and spook easily.');
     else if (f.band === 'blown') out.push('Flow is ' + v + ' m³/s, too high to wade safely.');
     else if (o.isToday === false && o.flowEst && o.flowEst.q != null) {
       var eb = o.flowEstBand;
@@ -3653,7 +3694,7 @@ if (typeof globalThis !== 'undefined') {
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
-    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, veryColdWater: veryColdWater, waterPlainRead: waterPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
+    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, veryColdWater: veryColdWater, waterPlainRead: waterPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, flowTrendNoFresh: flowTrendNoFresh, confidenceRead: confidenceRead,
     fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
     TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS
   };
