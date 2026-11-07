@@ -685,6 +685,12 @@ Merged recently:
   date" when the season is open but every access spot is closed, "<fish> season closed" (amber) when only some picked fish are.
   Checked 168 reach/fish/date cases against main: only closed water changed (Upper Credit, Middle Credit, Upper Humber).
 
+- **Install hint close fix** (TJ, 2026-11-06, iPhone Chrome): the X on the add-to-home-screen hint set `hidden`, but
+  `.a2hs { display:flex }` beats the browser's `[hidden]` rule, so the banner stayed on screen (every browser; the dismissal
+  was saved, so it didn't come back on later visits). `hideInstallHint()` now removes the element, `.a2hs[hidden]` is
+  `display:none` as a backstop, and the X is a 44 px target. Watch for the same trap: an element with its own `display`
+  needs a `[hidden]` rule.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

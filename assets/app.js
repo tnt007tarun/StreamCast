@@ -6575,9 +6575,12 @@ function a2hsDayCount() {
 }
 function hideInstallHint(reason) {
   var el = document.getElementById('a2hs');
-  if (!el || el.hidden) return;
-  el.hidden = true;
-  if (reason === 'dismiss') { lsSet('hff_a2hs_done', '1'); track('Install Hint Dismissed', { platform: el.getAttribute('data-platform') }); }
+  if (!el) return;
+  // Remove it rather than set `hidden`: `.a2hs { display:flex }` beats the browser's [hidden] rule,
+  // so a hidden banner stayed on screen (TJ, 2026-11-06, iPhone Chrome).
+  var platform = el.getAttribute('data-platform');
+  if (el.parentNode) el.parentNode.removeChild(el);
+  if (reason === 'dismiss') { lsSet('hff_a2hs_done', '1'); track('Install Hint Dismissed', { platform: platform }); }
 }
 function showInstallHint(platform) {
   if (document.getElementById('a2hs')) return;
