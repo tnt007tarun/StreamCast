@@ -2535,6 +2535,54 @@ function flowRead(flow, cfg, o) {
   };
 }
 
+// Flow in plain English (TJ, 2026-11-06): the flow card and summary tile lead with the band ("Normal flow"), the number
+// sits under it, then what the fish do in that flow. Lines are TJ's (approved 2026-11-06). Groups: 'run' = steelhead and
+// lake-run browns (same lines, TJ), 'salmon' in the river, 'trout' = resident trout. band = flowBand().
+var FLOW_HEAD = { low: 'Low flow', normal: 'Normal flow', prime: 'Prime flow', high: 'High flow', blown: 'Blown out' };
+var FLOW_FISH_TEXT = {
+  run: {
+    low: 'Low and clear. Fish sit in the deepest pools and under cover, and spook easily. Go light on leader and bait size, and stay back from the water.',
+    normal: 'Fish hold in pools, tailouts and the slower edges of runs. They’ll take, but fish lighter and work the water slowly.',
+    prime: 'The best water. Fish spread into runs and pocket water and move to bait. Cover ground and fish the seams.',
+    high: 'Coloured and pushy. Fish move to soft water near the bank, inside bends and behind rocks. Use bigger, brighter baits.',
+    blown: 'Too high and dirty to fish well. Fish hug the banks out of the current. Better to wait a day or two while it drops.'
+  },
+  salmon: {
+    low: 'Salmon stack in the deepest pools and hold tight. Fresh fish wait at the mouth for rain.',
+    normal: 'Fish rest in pools and deep runs between pushes. Rain will bring in more fresh fish.',
+    prime: 'Fresh fish run on the drop after rain. They move through runs and stop at the heads of pools. The best time to be out.',
+    high: 'Fish are moving fast and don’t hold long. Fish the edges and soft water where they stop to rest.',
+    blown: 'Fish are running, but the water is too high to fish. Expect a fresh push when it drops.'
+  },
+  trout: {
+    low: 'Trout tuck under cover and into deeper water, and feed mostly early and late. Use light line, small flies or lures, and wade carefully.',
+    normal: 'Good water. Trout hold at the heads of pools, in riffles and along banks with cover.',
+    prime: 'Rain washes food in, so trout feed and move more. Drift nymphs or bait (where allowed) through the seams.',
+    high: 'Trout move to slow water along the banks and behind rocks. Add weight or use bigger lures to get down.',
+    blown: 'Hard to fish. Trout hunker down. Wait for it to drop and clear.'
+  }
+};
+function flowFishGroup(species, section) {
+  if (!species) return null;
+  if (species === 'Steelhead') return 'run';
+  if (/Salmon/.test(species)) return 'salmon';
+  if (species === 'Brown Trout' && section && isLakeRunBrownSection(section)) return 'run';
+  if (/Trout/.test(species)) return 'trout';
+  return null;
+}
+// estimate: true words it as a likely band ("Likely normal flow"). fish: null when no fish is named or the band is unknown.
+function flowPlainRead(band, species, section, estimate) {
+  if (!band || !FLOW_HEAD[band]) return null;
+  var head = FLOW_HEAD[band];
+  var g = flowFishGroup(species, section);
+  return {
+    band: band,
+    head: estimate ? 'Likely ' + head.charAt(0).toLowerCase() + head.slice(1) : head,
+    word: { low: 'Low', normal: 'Normal', prime: 'Prime', high: 'High', blown: 'Blown out' }[band],
+    fish: g ? FLOW_FISH_TEXT[g][band] : null
+  };
+}
+
 // Flow trend wording (TJ, 2026-11-02): direction read against where the flow sits. The prime range is the flow a few
 // days after a rain bump, so a river dropping through it is the usual good day; a rise is coloured water, though it can
 // bring fresh fish in. Before, every rise was "a good sign" and every drop "keep an eye on it". band = flowBand(); the
@@ -3538,7 +3586,7 @@ if (typeof globalThis !== 'undefined') {
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
-    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
+    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
     fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
     TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS
   };

@@ -691,6 +691,16 @@ Merged recently:
   `display:none` as a backstop, and the X is a 44 px target. Watch for the same trap: an element with its own `display`
   needs a `[hidden]` rule.
 
+- **Flow in plain English** (TJ, 2026-11-06): the flow card leads with the band ("Normal flow", "Likely low flow" on an
+  estimate, "Gauge not reporting", "No estimate"), the reading and gauge under it, then what the fish do in that flow
+  (`#fnote`). Lines are TJ's (`FLOW_FISH_TEXT` in the core, groups run = steelhead and lake-run browns, salmon, resident
+  trout; `flowPlainRead(band, species, section, estimate)`, `flowFishGroup()`). The note follows the fish the headline names
+  (`renderFlowFishNote()`, called from the flow column and `speciesReads()`), only when that fish is fishable on the reach on
+  the date (`speciesFishableIn()`), never while fish are in the lake. The summary tile's value is the band word with the
+  number under it. Dropped as repeats: the bar's status word, the "Flow X m³/s (band)" and "Fish lies" bullets, two of the
+  three estimate bullets. Water and sky cards unchanged for now. The home-screen hint now closes when results open
+  (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
