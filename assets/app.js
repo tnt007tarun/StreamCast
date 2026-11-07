@@ -1920,7 +1920,11 @@ async function fetchWeather(cfg){
       _next = { date: d.daily.time ? d.daily.time[1] : null, sunrise: d.daily.sunrise[1], sunset: d.daily.sunset[1],
         periodCloud: (_hc && _hc.length >= 45) ? { morning: avg6(_hc,29,33), midday: avg6(_hc,34,38), evening: avg6(_hc,39,44) } : null };
     }
-    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,periodCloud:_pc,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m,
+    // The cloud for the hours still left today (TJ, 2026-11-07): the mean of the strip's periods that haven't ended yet. A
+    // future date uses the whole day's mean. The card, strip, note, Sky tile and rating all read this one number.
+    var _left = skyPeriodsLeft(new Date());
+    var _dayCloud = _pc ? skyCloudFor(_pc, _left) : d.current.cloudcover;
+    return{airTemp:d.current.temperature_2m,cloudPct:_dayCloud,cloudNow:d.current.cloudcover,periodCloud:_pc,periodsLeft:_left,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m,
       sunrise:(d.daily&&d.daily.sunrise?d.daily.sunrise[0]:null),sunset:(d.daily&&d.daily.sunset?d.daily.sunset[0]:null),next:_next};
   } else {
     var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max,sunrise,sunset&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
@@ -2710,13 +2714,14 @@ async function renderResults(){
 
   var airTemp=null, cloudPct=null, weatherOk=false, _stagingWeather=null;
   // Per search: a failed fetch must not reuse the last river's cloud forecast or sunrise.
-  window._periodCloud = null; window._sun = null; window._sunNext = null; window._pillMissing = null; hideAlternative();
+  window._periodCloud = null; window._periodsLeft = null; window._sun = null; window._sunNext = null; window._pillMissing = null; hideAlternative();
   try{
     var wx=await fetchWeather(cfg);
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
       airTemp=wx.airTemp; cloudPct=wx.cloudPct; weatherOk=true;
       _stagingWeather = {cloudPct:wx.cloudPct, windDir:wx.windDir, windSpeed:wx.windSpeed};
       window._periodCloud = wx.periodCloud || null;
+      window._periodsLeft = wx.periodsLeft || null;   // today only; null (whole day) on future dates
       window._sun = (wx.sunrise && wx.sunset) ? { sunrise: wx.sunrise, sunset: wx.sunset } : null;
       window._sunNext = wx.next || null;
     }
@@ -3121,14 +3126,15 @@ async function renderResults(){
   if(_sd){_sd.className="col-status-dot visible dot-"+sc;}
 
   // Sky column
-  // Today the headline number is the cloud right now; say so, since the strip below is the day's forecast.
-  document.getElementById("skyv").textContent=weatherOk ? skyl+(isToday&&window._periodCloud?" now":"")+" ("+cloudPct+"%)" : "No weather data";
-  renderSkyPeriodStrip(window._periodCloud || null);
+  // The headline is the cloud for the periods still ahead today (the whole day on a future date), like the strip and note.
+  var _restOfDay = window._periodsLeft && window._periodsLeft.length < 3;
+  document.getElementById("skyv").textContent=weatherOk ? skyl+" ("+cloudPct+(_restOfDay ? "% for the rest of the day)" : "% through the day)") : "No weather data";
+  renderSkyPeriodStrip(window._periodCloud || null, window._periodsLeft);
   // the sky card has its own dot (sky-dot)
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
   // The note follows the same 8 AM / 12 PM / 6 PM forecast as the strip and the Best Window card, so the three never
   // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
-  document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc, window._fishWindow && window._fishWindow.mode === 'winter') : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
+  document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc, window._fishWindow && window._fishWindow.mode === 'winter', window._periodsLeft) : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
   document.getElementById("skystat").className="gs "+sc;
   // The temperature column and the Best Window card were painted by speciesReads() above.
 
@@ -3802,9 +3808,26 @@ function rankRivers(rivers, speciesKey, dateStr) {
 
 // ── BUILD TOP PICK BAND ───────────────────────────────────────────────────────
 // ── SKY PERIOD STRIP ─────────────────────────────────────────────────────────
+// Which of the strip's periods are still ahead (TJ, 2026-11-07: during the day, the sky read covers the hours left; a
+// future date covers the whole day). Periods end at 10 AM, 3 PM and 9 PM (hours 5-9, 10-14, 15-20 of the forecast).
+// After sunset the date has already rolled to tomorrow (rollPastSunset), so the evening is never dropped on today.
+var SKY_PERIODS = [{ id: 'morning', end: 10 }, { id: 'midday', end: 15 }, { id: 'evening', end: 24 }];
+function skyPeriodsLeft(now) {
+  if (!now) return SKY_PERIODS.map(function (p) { return p.id; });
+  var h = now.getHours();
+  var left = SKY_PERIODS.filter(function (p) { return h < p.end; }).map(function (p) { return p.id; });
+  return left.length ? left : ['evening'];
+}
+function skyCloudFor(pc, left) {
+  var ids = left && left.length ? left : ['morning', 'midday', 'evening'];
+  return Math.round(ids.reduce(function (a, id) { return a + pc[id]; }, 0) / ids.length);
+}
+
 // One line on the day's sky for the Sky & light card. With the period forecast it describes the day; without
 // it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
-function skyDayNote(pc, sc, winter) {
+function skyDayNote(pc, sc, winter, left) {
+  // Today, part way through: describe only the periods still ahead (TJ, 2026-11-07).
+  if (pc && left && left.length && left.length < 3) return skyRestNote(pc, left, winter);
   // Peak winter (TJ, 2026-11-02): sun helps, so the usual "bright slows the bite" lines would contradict the Best Window
   // card. Describe the sky only.
   if (winter) {
@@ -3829,7 +3852,24 @@ function skyDayNote(pc, sc, winter) {
   return "Mixed sky. Fish the cloudier spells.";
 }
 
-function renderSkyPeriodStrip(periodCloud) {
+function skyRestNote(pc, left, winter) {
+  var W = function (id) { return skyRead(pc[id]).word; }, G = function (id) { return clsSky(pc[id]); };
+  if (left.length === 1) {
+    var w = W(left[0]), g = G(left[0]);
+    if (winter) return w + ' for the rest of the day.';
+    return g === 'good' ? 'Overcast for the rest of the day. Fish feed through the whole water column.'
+      : g === 'bad' ? 'Bright for the rest of the day, so the bite stays slow.'
+      : w + ' for the rest of the day.';
+  }
+  var a = left[0], b = left[1], ga = G(a), gb = G(b), r = { bad: 0, warn: 1, good: 2 };
+  if (winter) return W(a) === W(b) ? W(a) + ' for the rest of the day.' : W(a) + ' now, ' + W(b).toLowerCase() + ' later.';
+  if (ga === gb) return ga === 'good' ? 'Overcast for the rest of the day. Fish feed through the whole water column.'
+    : ga === 'bad' ? 'Clear for the rest of the day, so the bite stays slow.' : 'Partly cloudy for the rest of the day.';
+  return r[ga] < r[gb] ? 'Brighter now, cloudier later. The bite should pick up as the cloud comes in.'
+    : 'Cloudier now, brighter later. Fish while the cloud holds.';
+}
+
+function renderSkyPeriodStrip(periodCloud, left) {
   var strip = document.getElementById('sky-period-strip');
   if (!strip) return;
   if (!periodCloud) { strip.style.display = 'none'; return; }
@@ -3869,7 +3909,10 @@ function renderSkyPeriodStrip(periodCloud) {
     var lblEl  = document.getElementById('spc-lbl-'+p.id);
     if (!cell || !iconEl || !lblEl) return;
     var g = skyGrade(p.val);
-    cell.className = 'spc spc-'+g;
+    // Periods already over today are dimmed, so the strip shows what's left (TJ, 2026-11-07).
+    var past = left && left.indexOf(p.id) === -1;
+    cell.className = 'spc spc-'+g + (past ? ' spc-past' : '');
+    cell.title = past ? 'Already past' : '';
     iconEl.innerHTML = getIcon(p.val);
     lblEl.textContent = skyLabel(p.val);
   });
@@ -4001,8 +4044,8 @@ function renderConditionTiles(opts) {
   // 2) SKY / CLOUD: skyRead() in the core (70% overcast, under 30% bright)
   var _sr = skyRead(opts.weatherOk === false ? null : opts.cloudPct);
   var skyState = _tileState[_sr.grade];
-  // Today the number is the cloud right now (the column says so too); the window follows the day's forecast.
-  var skyMeaning = _sr.cover + (opts.isToday && window._periodCloud && _sr.grade !== 'na' ? ' now' : '');
+  // The day's cloud, the same number as the Sky card and the rating.
+  var skyMeaning = _sr.cover;   // the day's cloud, same as the card (TJ, 2026-11-06)
   var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '% cloud';   // say what the % is (TJ, 2026-11-05)
 
   // 3) FLOW — today: live value + state; future: target range, muted
