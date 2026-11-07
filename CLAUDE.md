@@ -750,6 +750,17 @@ Merged recently:
   results, regs and analytics are unchanged. 390 x 664: species grid 143 to 128 px, button bottom 685 to 670. At 375 and 360 px
   "Rainbow Trout" still wraps, so those widths are unchanged (694, 736).
 
+- **Day chips replace the date picker** (TJ, 2026-11-07: the native picker needed an extra OK tap): the home form shows five day
+  buttons ("Today / Nov 7" ... "Wed / Nov 11") and a dashed "More dates" button; one tap picks a day. "More" opens a second row
+  out to 11 days (`DAY_CHIP_DAYS`; two full rows of six with "Less", and inside Open-Meteo's 16-day forecast after the sunset
+  roll). The old picker allowed 6 days. 3 px corners like every other form control (TJ). Closed with a later day picked, the More button shows that day, highlighted.
+  `#trip-date` stays as the hidden source of truth (its `min` and `max` bound the days); `renderDayChips()` in `app.js` builds
+  `#day-chips` from `min`, and runs on init, from `rollPastSunset()` (after sunset the row starts at tomorrow) and from the
+  `?date=` deep link. A tap sets the value and fires `change`, so everything that listened to the date field still runs. The
+  "Date" label is hidden on phones. Closed, the row is the old field's height, so button bottoms are unchanged (670 on
+  390 x 664, 694 at 375, 736 at 360, 673 on 1024 x 768, 710 on 1280 x 900); open adds about 54 px. Umami `Day Chips Toggled {open}`.
+  Days 8 to 11 have no flow estimate (the model stops at 7), so the pill there rests on weather and season.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
