@@ -745,6 +745,11 @@ Merged recently:
   `app.js` ignores its `effect` argument; `ratingEffects()` and `window._tileEffects` are still computed, and the note under
   the pill (`limitRead()`) still says what holds a Marginal or Tough day down. Supersedes the Phase 3b tile tags.
 
+- **"Chinook" on the form tile** (TJ, 2026-11-07): the species tile shows "Chinook" instead of "Chinook Salmon" (it was the one
+  name wrapping to two lines at 390 px). Only the visible `.species-btn-name` changed; `data-label` stays "Chinook Salmon", so
+  results, regs and analytics are unchanged. 390 x 664: species grid 143 to 128 px, button bottom 685 to 670. At 375 and 360 px
+  "Rainbow Trout" still wraps, so those widths are unchanged (694, 736).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -807,6 +812,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
+   Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"
+   still wraps at 375 and 360 px; TJ kept it as is for now.
 
 16. **Alternative reach (built 2026-11-03, Phase 3c):** see Current state. Open: wording "Conditions there" vs "Conditions
    here"; alternatives use regional weather and modelled water (no live CVC); judge on Shown vs Clicked in Umami.
