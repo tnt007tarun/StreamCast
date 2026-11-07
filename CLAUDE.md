@@ -753,7 +753,7 @@ Merged recently:
 - **Day chips replace the date picker** (TJ, 2026-11-07: the native picker needed an extra OK tap): the home form shows five day
   buttons ("Today / Nov 7" ... "Wed / Nov 11") and a dashed "More dates" button; one tap picks a day. "More" opens a second row
   out to 11 days (`DAY_CHIP_DAYS`; two full rows of six with "Less", and inside Open-Meteo's 16-day forecast after the sunset
-  roll). The old picker allowed 6 days. Closed with a later day picked, the More button shows that day, highlighted.
+  roll). The old picker allowed 6 days. 3 px corners like every other form control (TJ). Closed with a later day picked, the More button shows that day, highlighted.
   `#trip-date` stays as the hidden source of truth (its `min` and `max` bound the days); `renderDayChips()` in `app.js` builds
   `#day-chips` from `min`, and runs on init, from `rollPastSunset()` (after sunset the row starts at tomorrow) and from the
   `?date=` deep link. A tap sets the value and fires `change`, so everything that listened to the date field still runs. The
