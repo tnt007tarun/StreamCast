@@ -1644,6 +1644,46 @@ function goBack(){
   }
 }
 
+// ── AFTER SUNSET: SHOW TOMORROW (TJ, 2026-11-06) ─────────────────────────────
+// After sunset there is nothing left to fish today, and a page that mixed "now" readings with tomorrow's forecast
+// contradicted itself (the sky card graded tonight's cloud and showed tomorrow's strip). So once the sun is down, a
+// trip date of today becomes tomorrow before anything renders: flow, weather, water, hero and tiles all read one day.
+// Sunset from the standard solar formula for the reach (no weather call needed); lat/lng default to Toronto.
+function sunsetMinutesLocal(date, lat, lng) {
+  var rad = Math.PI / 180;
+  var N = Math.round((new Date(date.getFullYear(), date.getMonth(), date.getDate()) - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  var lngHour = lng / 15, t = N + ((18 - lngHour) / 24);
+  var M = 0.9856 * t - 3.289;
+  var L = (M + 1.916 * Math.sin(M * rad) + 0.020 * Math.sin(2 * M * rad) + 282.634 + 360) % 360;
+  var RA = (Math.atan(0.91764 * Math.tan(L * rad)) / rad + 360) % 360;
+  RA = (RA + (Math.floor(L / 90) * 90 - Math.floor(RA / 90) * 90)) / 15;
+  var sinDec = 0.39782 * Math.sin(L * rad), cosDec = Math.cos(Math.asin(sinDec));
+  var cosH = (Math.cos(90.833 * rad) - sinDec * Math.sin(lat * rad)) / (cosDec * Math.cos(lat * rad));
+  if (cosH < -1 || cosH > 1) return null;
+  var T = Math.acos(cosH) / rad / 15 + RA - 0.06571 * t - 6.622;
+  var UT = ((T - lngHour) % 24 + 24) % 24;
+  return (((UT * 60 - date.getTimezoneOffset()) % 1440) + 1440) % 1440;
+}
+function localDateStr(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function isAfterSunset(lat, lng, now) {
+  now = now || new Date();
+  var ss = sunsetMinutesLocal(now, lat != null ? lat : 43.7, lng != null ? lng : -79.4);
+  return ss != null && (now.getHours() * 60 + now.getMinutes()) >= ss;
+}
+// Moves the trip date from today to tomorrow after sunset. Returns true when it moved.
+function rollPastSunset(lat, lng) {
+  var di = document.getElementById('trip-date');
+  if (!di) return false;
+  var now = new Date(), today = localDateStr(now);
+  if (!isAfterSunset(lat, lng, now)) return false;
+  var tm = new Date(now); tm.setDate(tm.getDate() + 1);
+  var tomorrow = localDateStr(tm);
+  if (!di.min || di.min < tomorrow) di.min = tomorrow;   // today can't be picked once the sun is down
+  if (di.value && di.value !== today) return false;
+  di.value = tomorrow;
+  return true;
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function(){
   var d=document.getElementById("trip-date");
@@ -1651,6 +1691,7 @@ function goBack(){
   var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   d.value=today; d.min=today;
   var max=new Date(); max.setDate(max.getDate()+5); d.max=(function(){var n=max;return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  rollPastSunset();   // after sunset the form opens on tomorrow
   var ld=document.getElementById("land-date");
   if(ld) ld.textContent=new Date().toLocaleDateString("en-CA",{weekday:"short",month:"short",day:"numeric"}).toUpperCase();
 
@@ -2635,6 +2676,8 @@ function renderHeroLines(go, win, next, bringPhrase) {
 }
 
 async function renderResults(){
+  // After sunset, today becomes tomorrow before anything reads the date (deep links, a page left open into the evening).
+  try { var _rc = getRiverConfig(selectedRiver) || {}; rollPastSunset(_rc.lat, _rc.lng); } catch (e) {}
   hideInstallHint();   // the home-screen hint is for the home page; it followed people into results (TJ, 2026-11-06)
   window._upstreamFrom = null;
   var _au = autoUpstreamSection();
