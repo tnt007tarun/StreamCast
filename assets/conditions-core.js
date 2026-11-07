@@ -2413,7 +2413,7 @@ var TROUT_SPECIES = ['Brown Trout', 'Rainbow Trout', 'Brook Trout'];
 function troutRule(species) { return !species || TROUT_SPECIES.indexOf(species) !== -1; }
 
 // Winter run fish (TJ, 2026-11-02): steelhead, and brown trout on a lake-run reach, while their season is open. Cold
-// water is their season, so 1 to 4 °C isn't "too cold" for them. Below COLD_RUN_MIN (about freezing, anchor-ice days)
+// water is their season, so 1 to 4 °C isn't "too cold" for them (1 to 3 °C scores 0, 3 to 4 °C +1; TJ 2026-11-06). Below COLD_RUN_MIN (about freezing, anchor-ice days)
 // the old step stays.
 var COLD_RUN_MIN = 1;
 function coldTolerantFish(species, dateStr, section) {
@@ -3103,7 +3103,10 @@ function liveConditionsParts(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC,
     if (tempC >= 8  && tempC <= 14)  t = { pts: 3, label: 'Water in the 8 to 14\u00b0C feeding range' };
     else if (tempC >= 4  && tempC < 8)  t = { pts: 1, label: 'Water cool (4 to 8\u00b0C)' };
     else if (tempC > 14 && tempC <= 18) t = { pts: 1, label: 'Water warm (14 to 18\u00b0C)' };
-    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < 4) t = { pts: 1, label: 'Cold winter run water' };
+    // Under VERY_COLD_WATER (3 °C) winter fish sit deep and barely move: no bonus (TJ, 2026-11-06), so the Water tile says
+    // "No effect" while the card says they barely move. 3 to 4 °C keeps +1; under COLD_RUN_MIN the old -3 stays.
+    else if (ctx && ctx.coldTolerant && tempC >= VERY_COLD_WATER && tempC < 4) t = { pts: 1, label: 'Cold winter run water' };
+    else if (ctx && ctx.coldTolerant && tempC >= COLD_RUN_MIN && tempC < VERY_COLD_WATER) t = { pts: 0, label: 'Very cold: winter fish sit deep and barely move' };
     else if (ctx && !ctx.troutHeat && tempC > 18) t = { pts: 1, label: 'Water over 18\u00b0C (no trout rule for this fish)' };
     else t = { pts: -3, label: tempC < 4 ? 'Water too cold' : 'Water too warm' };
     t.key = 'temp'; out.push(t);

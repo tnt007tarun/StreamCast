@@ -273,21 +273,22 @@ const mins = (s) => C.localMinutes(s);
   // No fish named: the old steps exactly.
   for (const wt of [0, 0.5, 2, 3.9, 4, 7, 10, 15, 18, 19, 25]) assert.equal(t(wt), t(wt, null), 'no context ' + wt);
   assert.equal(t(2), -3); assert.equal(t(5), 1); assert.equal(t(10), 3); assert.equal(t(19), -3);
-  // Winter steelhead (and lake-run browns) in season: 1 to 4 °C scores like 4 to 8; below 1 °C stays -3.
+  // Winter steelhead (and lake-run browns) in season: 3 to 4 °C scores like 4 to 8 (+1); 1 to 3 °C scores 0 (very cold,
+  // TJ 2026-11-06); below 1 °C stays -3.
   const shJan = C.tempContext(['Steelhead'], '2027-01-15', 'Lower Humber River');
   assert.deepEqual(shJan, { coldTolerant: true, troutHeat: false });
-  assert.equal(t(2, shJan), 1, 'winter steelhead at 2 °C'); assert.equal(t(1, shJan), 1); assert.equal(t(0.5, shJan), -3, 'about freezing');
+  assert.equal(t(3.5, shJan), 1, 'winter steelhead at 3.5 °C'); assert.equal(t(2, shJan), 0, 'very cold: no bonus'); assert.equal(t(1, shJan), 0); assert.equal(t(0.5, shJan), -3, 'about freezing');
   assert.equal(t(10, shJan), 3, 'prime unchanged');
   assert.equal(C.coldTolerantFish('Steelhead', '2026-07-01', 'Lower Humber River'), false, 'steelhead out of season');
   assert.equal(C.coldTolerantFish('Brown Trout', '2027-01-15', 'Upper Grand River (Tailwater)'), false, 'resident browns: old steps');
   const brownRun = C.isLakeRunBrownSection('Lower Credit River');
   if (brownRun) assert.equal(C.coldTolerantFish('Brown Trout', '2027-01-15', 'Lower Credit River'), C.getCurrentSeason('Brown Trout', '2027-01-15', 'Lower Credit River').quality !== 'slow');
   assert.equal(C.tempContext(['Steelhead', 'Rainbow Trout'], '2027-01-15', 'Lower Humber River').coldTolerant, false, 'a trout in the mix: old cold step');
-  // Winter steelhead day: the score no longer loses 4 points to 2 °C water.
+  // Winter steelhead day at 2 °C: 0 instead of the plain -3 (very cold, no bonus; TJ 2026-11-06).
   const cfgH = C.getRiverConfig('Lower Humber River');
   const before = C.conditionsScore(6, cfgH, (cfgH.sweetMin + cfgH.sweetMax) / 2, 2, 80, null, false);
   const after = C.conditionsScore(6, cfgH, (cfgH.sweetMin + cfgH.sweetMax) / 2, 2, 80, null, false, shJan);
-  assert.equal(after - before, 4);
+  assert.equal(after - before, 3);
   const d = C.scoreDay({ section: 'Lower Humber River', species: ['Steelhead'], date: '2027-01-15', flow: (cfgH.sweetMin + cfgH.sweetMax) / 2, waterTemp: 2, cloudPct: 80 });
   assert.equal(d.score, C.conditionsScore(C.sectionSeasonScore('Lower Humber River', ['Steelhead'], '2027-01-15', 'Lower Humber River').score,
     cfgH, (cfgH.sweetMin + cfgH.sweetMax) / 2, 2, 80, null, false, shJan), 'the weekly email uses the same steps');

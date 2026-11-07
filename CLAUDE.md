@@ -430,7 +430,7 @@ Merged recently:
   Decided by TJ the same evening: (1) flow trend copy reads direction against the band (`flowTrendRead(trend, band)`,
   `FLOW_TREND_TEXT`): a river dropping through prime is the usual good day, a rise is coloured water; same idea in the
   default routine step, the staging run chip and headline, and the streamer card. (2) Winter run fish: steelhead and
-  lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C (+1), below 1 °C stays -3 (`tempContext()`,
+  lake-run browns in their open season score 3 to 4 °C like 4 to 8 °C (+1), 1 to 3 °C 0 (very cold, TJ 2026-11-06), below 1 °C stays -3 (`tempContext()`,
   `coldTolerantFish()`, `COLD_RUN_MIN`); the water reads "Cold" in amber. (3) The 18 °C advisory and its -3 are for
   trout only (`troutHeat`); salmon get "well above the feeding range". Both go through `liveConditionsScore(..., ctx)`
   and `conditionsScore(..., ctx)`: the app's pill (fish the headline names) and the weekly email (`scoreDay()`); with no
@@ -711,8 +711,10 @@ Merged recently:
   salmon hold at the mouth, steelhead prime flow warns about heat (`FLOW_HOT_TEXT`); low flow says "fish hold deep and spook
   easily" everywhere (trend, why line, `flowRead` sentence, a Grand access note; was "spread out"/"scattered"); the trend's
   "Fresh fish can move on it" is dropped for resident trout and for salmon in cold or too-warm water (`flowTrendNoFresh()`).
-  Not changed: in 1 to 3 °C water the score still gives steelhead +1 (TJ's winter rule), so the Water tile can say "Helps the
-  rating" while the card says fish barely move. Open: per-spot access notes (`getAccessFlowNote()` in `app.js`) use their own
+  Scoring change (TJ, 2026-11-06): winter run fish in 1 to 3 °C water score 0 for temperature (was +1), so the Water tile
+  says "No effect" while the card says fish barely move; 3 to 4 °C keeps +1. Moves the pill and the weekly email down one
+  point on those days (Excellent to Good or Marginal to Tough in about 40 of 96 sample cases); rankings with no fish named
+  are unchanged. The Worker redeploys on merge (core change). Open: per-spot access notes (`getAccessFlowNote()` in `app.js`) use their own
   hardcoded flow thresholds, not the reach's bands. Sky card unchanged for now. The home-screen hint now closes when results open
   (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
 
