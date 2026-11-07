@@ -813,6 +813,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
+17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
+   Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"
+   still wraps at 375 and 360 px; TJ kept it as is for now.
+
 16. **Alternative reach (built 2026-11-03, Phase 3c):** see Current state. Open: wording "Conditions there" vs "Conditions
    here"; alternatives use regional weather and modelled water (no live CVC); judge on Shown vs Clicked in Umami.
 
