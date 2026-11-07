@@ -3646,3 +3646,8 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* The in-field "Date" label sat inside the old input; the heading above the field group says what this row is. */
   #landing #date-field-group > .field-lbl { display: none; }
 }
+
+/* Rounded form controls (TJ, 2026-11-07): match the river and guide pages, where the signup and Today boxes use 10 px and
+   their fields and buttons 8 px. Unlayered so it beats the 3 px rules above. */
+#landing .field-input, #landing select.field-input, #landing .species-btn, #landing .tech-family-btn,
+#landing .forecast-btn, #landing .day-chip { border-radius: 8px; }
