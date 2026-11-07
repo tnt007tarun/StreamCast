@@ -725,6 +725,13 @@ Merged recently:
   `renderDefaultPreview()`, `DEFAULT_RIVERS`, `fetchLandingWeather()`, `#default-preview`) is gone too (TJ: unused); guides
   now follow the form. `.dp-*` and `.afnote` CSS left as dead rules. Umami `River Viewed` source `home-list` stops.
 
+- **After sunset, show tomorrow** (TJ, 2026-11-06, Duffins at 11 pm: the sky card graded tonight's cloud while its strip and
+  the hero showed tomorrow): once the sun is down, a trip date of today becomes tomorrow before anything renders
+  (`rollPastSunset()` at the top of `renderResults()` and in the date-field init; sunset from `sunsetMinutesLocal()`, the
+  standard solar formula, for the reach's lat/lng, Toronto on the form). The date field's min moves to tomorrow too. Flow then
+  comes from the day-1 estimate, like any future date. Replaces "the picked date never changes" (Phase 1); the hero's
+  "Today's window is over" path is now rarely reached. Dates further out are untouched.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
