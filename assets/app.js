@@ -1679,10 +1679,43 @@ function rollPastSunset(lat, lng) {
   var tm = new Date(now); tm.setDate(tm.getDate() + 1);
   var tomorrow = localDateStr(tm);
   if (!di.min || di.min < tomorrow) di.min = tomorrow;   // today can't be picked once the sun is down
-  if (di.value && di.value !== today) return false;
+  if (di.value && di.value !== today) { renderDayChips(); return false; }
   di.value = tomorrow;
+  renderDayChips();
   return true;
 }
+
+// ── DAY CHIPS (TJ, 2026-11-07) ───────────────────────────────────────────────
+// The native date picker needs an OK tap after picking a day, and the app only covers six days, so the form shows one
+// button per day instead. #trip-date stays the single source of the date (hidden): a tap sets its value and fires
+// 'change', so search, deep links, the sunset roll and the species dots work as before.
+function renderDayChips() {
+  var box = document.getElementById('day-chips'), di = document.getElementById('trip-date');
+  if (!box || !di || !di.min) return;
+  var todayStr = localDateStr(new Date());
+  var start = new Date(di.min + 'T12:00:00'), html = '';
+  for (var i = 0; i < 6; i++) {
+    var d = new Date(start); d.setDate(start.getDate() + i);
+    var ds = localDateStr(d);
+    var top = ds === todayStr ? 'Today' : d.toLocaleDateString('en-CA', { weekday: 'short' }).replace('.', '');
+    var bot = d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).replace('.', '');
+    var on = ds === di.value;
+    html += '<button type="button" class="day-chip' + (on ? ' active' : '') + '" role="radio" aria-checked="' + on + '" data-date="' + ds + '">' +
+      '<span class="dc-day">' + top + '</span><span class="dc-date">' + bot + '</span></button>';
+  }
+  box.innerHTML = html;
+  di.max = localDateStr(new Date(start.getTime() + 5 * 86400000));   // six days from the first one shown
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest && e.target.closest('.day-chip');
+  if (!b) return;
+  var di = document.getElementById('trip-date');
+  if (!di || di.value === b.getAttribute('data-date')) return;
+  di.value = b.getAttribute('data-date');
+  di.dispatchEvent(new Event('change', { bubbles: true }));
+  renderDayChips();
+});
+document.addEventListener('change', function (e) { if (e.target && e.target.id === 'trip-date') renderDayChips(); });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function(){
@@ -1692,6 +1725,7 @@ function rollPastSunset(lat, lng) {
   d.value=today; d.min=today;
   var max=new Date(); max.setDate(max.getDate()+5); d.max=(function(){var n=max;return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   rollPastSunset();   // after sunset the form opens on tomorrow
+  renderDayChips();
   var ld=document.getElementById("land-date");
   if(ld) ld.textContent=new Date().toLocaleDateString("en-CA",{weekday:"short",month:"short",day:"numeric"}).toUpperCase();
 
@@ -1839,7 +1873,7 @@ function rollPastSunset(lat, lng) {
     // ?date=YYYY-MM-DD (the weekly email links straight to a day)
     var _dParam = _params.get('date');
     var _tdEl = document.getElementById('trip-date');
-    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) _tdEl.value = _dParam;
+    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) { _tdEl.value = _dParam; renderDayChips(); }
     initNotifyBar();
     window._viewSource = 'deep-link'; window._pickSource = 'deep-link';
     history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
