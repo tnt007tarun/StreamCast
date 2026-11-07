@@ -4029,7 +4029,8 @@ function renderConditionTiles(opts) {
         '<div class="tp-tile-lbl">' + label + '</div>' +
         '<div class="tp-tile-val' + (smallVal ? ' sm' : '') + '">' + value + '</div>' +
         '<div class="tp-tile-meaning">' + meaning + '</div>' +
-        (effect ? '<div class="tp-tile-effect fx-' + effect.dir + '">' + effect.text + '</div>' : '') +
+        // The "Helps the rating / No effect / Holds it back" line is gone (TJ, 2026-11-07: noise for a first-time reader,
+        // and it took a line on every tile). ratingEffects() still feeds the note under the pill (limitRead()).
       '</div></div>';
   }
 
