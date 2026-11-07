@@ -1920,7 +1920,10 @@ async function fetchWeather(cfg){
       _next = { date: d.daily.time ? d.daily.time[1] : null, sunrise: d.daily.sunrise[1], sunset: d.daily.sunset[1],
         periodCloud: (_hc && _hc.length >= 45) ? { morning: avg6(_hc,29,33), midday: avg6(_hc,34,38), evening: avg6(_hc,39,44) } : null };
     }
-    return{airTemp:d.current.temperature_2m,cloudPct:d.current.cloudcover,periodCloud:_pc,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m,
+    // The day's cloud, not this minute's (TJ, 2026-11-06): the mean of the 8 AM / 12 PM / 6 PM periods the strip shows, like
+    // the daily mean a future date uses. The card, the Sky tile and the rating all read this one number.
+    var _dayCloud = _pc ? Math.round((_pc.morning + _pc.midday + _pc.evening) / 3) : d.current.cloudcover;
+    return{airTemp:d.current.temperature_2m,cloudPct:_dayCloud,cloudNow:d.current.cloudcover,periodCloud:_pc,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m,
       sunrise:(d.daily&&d.daily.sunrise?d.daily.sunrise[0]:null),sunset:(d.daily&&d.daily.sunset?d.daily.sunset[0]:null),next:_next};
   } else {
     var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max,sunrise,sunset&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
@@ -3121,8 +3124,8 @@ async function renderResults(){
   if(_sd){_sd.className="col-status-dot visible dot-"+sc;}
 
   // Sky column
-  // Today the headline number is the cloud right now; say so, since the strip below is the day's forecast.
-  document.getElementById("skyv").textContent=weatherOk ? skyl+(isToday&&window._periodCloud?" now":"")+" ("+cloudPct+"%)" : "No weather data";
+  // The headline is the day's cloud (mean of the three periods in the strip below), so card, strip and note agree.
+  document.getElementById("skyv").textContent=weatherOk ? skyl+" ("+cloudPct+"% through the day)" : "No weather data";
   renderSkyPeriodStrip(window._periodCloud || null);
   // the sky card has its own dot (sky-dot)
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
@@ -4001,8 +4004,8 @@ function renderConditionTiles(opts) {
   // 2) SKY / CLOUD: skyRead() in the core (70% overcast, under 30% bright)
   var _sr = skyRead(opts.weatherOk === false ? null : opts.cloudPct);
   var skyState = _tileState[_sr.grade];
-  // Today the number is the cloud right now (the column says so too); the window follows the day's forecast.
-  var skyMeaning = _sr.cover + (opts.isToday && window._periodCloud && _sr.grade !== 'na' ? ' now' : '');
+  // The day's cloud, the same number as the Sky card and the rating.
+  var skyMeaning = _sr.cover;   // the day's cloud, same as the card (TJ, 2026-11-06)
   var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '% cloud';   // say what the % is (TJ, 2026-11-05)
 
   // 3) FLOW — today: live value + state; future: target range, muted
