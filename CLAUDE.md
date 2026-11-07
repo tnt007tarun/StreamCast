@@ -430,7 +430,7 @@ Merged recently:
   Decided by TJ the same evening: (1) flow trend copy reads direction against the band (`flowTrendRead(trend, band)`,
   `FLOW_TREND_TEXT`): a river dropping through prime is the usual good day, a rise is coloured water; same idea in the
   default routine step, the staging run chip and headline, and the streamer card. (2) Winter run fish: steelhead and
-  lake-run browns in their open season score 1 to 4 °C like 4 to 8 °C (+1), below 1 °C stays -3 (`tempContext()`,
+  lake-run browns in their open season score 3 to 4 °C like 4 to 8 °C (+1), 1 to 3 °C 0 (very cold, TJ 2026-11-06), below 1 °C stays -3 (`tempContext()`,
   `coldTolerantFish()`, `COLD_RUN_MIN`); the water reads "Cold" in amber. (3) The 18 °C advisory and its -3 are for
   trout only (`troutHeat`); salmon get "well above the feeding range". Both go through `liveConditionsScore(..., ctx)`
   and `conditionsScore(..., ctx)`: the app's pill (fish the headline names) and the weekly email (`scoreDay()`); with no
@@ -690,6 +690,33 @@ Merged recently:
   was saved, so it didn't come back on later visits). `hideInstallHint()` now removes the element, `.a2hs[hidden]` is
   `display:none` as a backstop, and the X is a 44 px target. Watch for the same trap: an element with its own `display`
   needs a `[hidden]` rule.
+
+- **Flow in plain English** (TJ, 2026-11-06): the flow card leads with the band ("Normal flow", "Likely low flow" on an
+  estimate, "Gauge not reporting", "No estimate"), the reading and gauge under it, then what the fish do in that flow
+  (`#fnote`). Lines are TJ's (`FLOW_FISH_TEXT` in the core, groups run = steelhead and lake-run browns, salmon, resident
+  trout; `flowPlainRead(band, species, section, estimate)`, `flowFishGroup()`). The note follows the fish the headline names
+  (`renderFlowFishNote()`, called from the flow column and `speciesReads()`), only when that fish is fishable on the reach on
+  the date (`speciesFishableIn()`), never while fish are in the lake. The summary tile's value is the band word with the
+  number under it. Dropped as repeats: the bar's status word, the "Flow X m³/s (band)" and "Fish lies" bullets, two of the
+  three estimate bullets. Water temperature card the same way (same PR): "Cold water / Cool water / Prime temperature / Warm
+  water / Too warm" (`waterTempRead().band`, `TEMP_HEAD`), the reading and its source under it, then `TEMP_FISH_TEXT` for the
+  fish, activity and catch-and-release safety only (where fish hold is the flow card's job, TJ 2026-11-06) (`waterPlainRead()`; trout at 18 °C+ always get the advisory, lake-run browns included); without a fishable fish the old
+  feeding-range sentence stands in. Temperature lines are a first draft for TJ to edit. Water tile value is the band word.
+  Very cold water (under `VERY_COLD_WATER` 3 °C, TJ 2026-11-06: "real winter days, Dec to
+  February mostly"): steelhead, lake-run browns and resident trout sit near the bottom of deep, slow pools and barely move,
+  so the temperature card says so (`TEMP_DEEP_TEXT`) and the flow note switches to `FLOW_COLD_TEXT` (clarity and approach,
+  no holding water); salmon unchanged. Consistency pass over all 90 flow x temperature x fish combinations
+  (TJ, 2026-11-06): cold 3 to 6 °C prime flow says fish move a little in slower water (`FLOW_CHILLY_TEXT`); salmon under
+  6 °C get "the salmon left" lines (`FLOW_SALMON_COLD_TEXT`); 18 °C+ trout flow note is "Let them be until the water cools",
+  salmon hold at the mouth, steelhead prime flow warns about heat (`FLOW_HOT_TEXT`); low flow says "fish hold deep and spook
+  easily" everywhere (trend, why line, `flowRead` sentence, a Grand access note; was "spread out"/"scattered"); the trend's
+  "Fresh fish can move on it" is dropped for resident trout and for salmon in cold or too-warm water (`flowTrendNoFresh()`).
+  Scoring change (TJ, 2026-11-06): winter run fish in 1 to 3 °C water score 0 for temperature (was +1), so the Water tile
+  says "No effect" while the card says fish barely move; 3 to 4 °C keeps +1. Moves the pill and the weekly email down one
+  point on those days (Excellent to Good or Marginal to Tough in about 40 of 96 sample cases); rankings with no fish named
+  are unchanged. The Worker redeploys on merge (core change). Open: per-spot access notes (`getAccessFlowNote()` in `app.js`) use their own
+  hardcoded flow thresholds, not the reach's bands. Sky card unchanged for now. The home-screen hint now closes when results open
+  (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

@@ -781,7 +781,7 @@ function getAccessFlowNote(riverName, spotIndex, flow) {
   var notes = {
     "Grand River": [
       flow<6?"Low release. Tailwater still fishable, cold water persists.":flow<=12?"Ideal. Current seam below outflow active.":"High release. Prime time here.",
-      flow<6?"Too low. Fish scattered and ultra-wary.":flow<=12?"Ideal. Pools defined, fish predictable.":flow<=18?"Elevated. Fish slower edges.":"Too high. Gorge unsafe.",
+      flow<6?"Too low. Fish hold deep and spook easily.":flow<=12?"Ideal. Pools defined, fish predictable.":flow<=18?"Elevated. Fish slower edges.":"Too high. Gorge unsafe.",
       flow<6?"Reduced mixing. Fish may spread.":flow<=15?"Confluence concentrated and productive.":"High flow. Harder to read.",
       flow<6?"Too low. Pool loses definition.":flow<=10?"Ideal. Pool well-defined.":flow<=14?"Slightly high. Focus on back half.":"Too high. Try elsewhere.",
       flow<6?"Low release. Less current near outflow.":flow<=12?"Good. Fish stacked in transition zone.":"High release. Prime time here.",
@@ -1900,21 +1900,36 @@ function renderFlowEstimate(est, cfg, dateStr){
   var day = new Date(dateStr+"T12:00:00").toLocaleDateString("en-CA",{weekday:"long",month:"short",day:"numeric"});
   var range = est.lo+" to "+est.hi+" m\u00b3/s";
   var rain = est.rainMm==null ? "" : est.rainMm>=1 ? " Rain forecast that day: "+Math.round(est.rainMm)+" mm." : " Little or no rain forecast that day.";
-  document.getElementById("fval").textContent = est.showNumber ? "~"+est.q : est.lo+"\u2013"+est.hi;
+  // Plain English first (TJ, 2026-11-06): "Likely normal flow", then the number, then what the fish do.
+  window._flowBandShown = { band: band, estimate: true };
+  document.getElementById("fval").textContent = flowPlainRead(band, null, null, true).head;
   document.getElementById("ftrend").textContent = "";
   document.getElementById("ftrend").className = "trd";
   document.getElementById("flbl").textContent = est.showNumber
-    ? "Estimate for "+day+": about "+est.q+" m\u00b3/s, likely "+range+". That's "+FLOW_BAND_WORD[band]+" for this river (prime is "+cfg.sweetMin+"\u2013"+cfg.sweetMax+")."+rain
-    : "Estimate for "+day+": likely "+range+", most likely "+FLOW_BAND_WORD[band]+" (prime is "+cfg.sweetMin+"\u2013"+cfg.sweetMax+"). A storm the forecast hasn't picked up can still change it."+rain;
+    ? "About "+est.q+" m\u00b3/s on "+day+" (likely "+est.lo+" to "+est.hi+")."+rain
+    : "Likely "+range+" on "+day+". A storm the forecast hasn't picked up can still change it."+rain;
   document.getElementById("fgv").textContent = (est.showNumber ? "~"+est.q : est.lo+"\u2013"+est.hi)+" m\u00b3/s";
   var fb=document.getElementById("fbar"); fb.style.width=barW(est.q,0,cfg.flowHigh)+"%"; fb.className="gf "+c;
-  var fs=document.getElementById("fstat"); fs.innerHTML='<span class="status-dot dot-'+c+'"></span>EST. '+FLOW_BAND_WORD[band].toUpperCase(); fs.className="gs "+c;
+  var fs=document.getElementById("fstat"); fs.innerHTML=""; fs.className="gs "+c;
   var _fd=document.getElementById("flow-dot"); if(_fd){_fd.className="col-status-dot visible dot-"+c;}
-  document.getElementById("fcl").innerHTML=[
-    {t:"Estimate, not a gauge reading. Built from today's flow and the rain forecast.",c:"warn"},
-    {t:"Likely range: "+range+" ("+(est.lead===1?"tomorrow":est.lead+" days out")+")",c:c},
-    {t:"Check the gauge on the morning you go.",c:"warn"}
-  ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
+  document.getElementById("fcl").innerHTML=
+    "<li><span class=\"ci warn\">"+clsIcon("warn")+"</span><span>Estimate, not a gauge reading. Check the gauge the morning you go.</span></li>";
+  renderFlowFishNote(window._readSpecies);
+}
+// What the fish do in this flow, for the fish the headline names (flowPlainRead() in the core). Called when the flow
+// column is painted and again from speciesReads() once the hero settles the fish. No note while the fish are still in
+// the lake (the staging card covers that) or with no fish named.
+function renderFlowFishNote(sp) {
+  var el = document.getElementById("fnote");
+  if (!el) return;
+  var b = window._flowBandShown;
+  var here = selectedRiver ? selectedRiver.split(",")[0].trim() : "";
+  // Only for a fish that is legal and listed on this reach on the trip date (no steelhead advice for a closed reach).
+  var ok = sp && here && speciesFishableIn(here, sp, getTripDateStr());
+  var wr = window._waterRead, wtv = wr && wr.grade !== 'na' ? wr.value : null;   // very cold water changes the note
+  var r = b && ok && !window._stagingInLake ? flowPlainRead(b.band, sp, here, b.estimate, wtv) : null;
+  if (r && r.fish) { el.textContent = r.fish; el.hidden = false; }
+  else { el.textContent = ""; el.hidden = true; }
 }
 function barW(v,mn,mx){return Math.min(100,Math.max(2,((v-mn)/(mx-mn))*100));}
 
@@ -2634,6 +2649,7 @@ function speciesReads(sp) {
   var water = waterTempRead(i.wt, i.wtInfo, { species: sp, seasonal: sp ? getCurrentSeason(sp, getTripDateStr()) : null, weatherOk: i.weatherOk,
     coldTolerant: sp ? coldTolerantFish(sp, getTripDateStr(), _here) : false });
   window._fishWindow = win; window._fishWindowNext = next; window._waterRead = water; window._readSpecies = sp;
+  renderFlowFishNote(sp);
 
   // Best Window card
   var twin = document.getElementById("twin"), tnote = document.getElementById("tnote");
@@ -2650,13 +2666,22 @@ function speciesReads(sp) {
   var cls = water.grade === 'na' ? 'warn' : water.grade;
   var el = function(id){ return document.getElementById(id); };
   if (el("tval")) {
-    el("tval").textContent = water.grade === 'na' ? "\u2014" : water.value;
+    // Plain English first (TJ, 2026-11-06), like the flow card: "Cool water", then the reading and its source, then what
+    // the fish do at that temperature (#tfish, waterPlainRead() in the core). Without a fish note (no fish named, or not
+    // fishable here on the date) the old feeding-range sentence stands in.
+    var _wp = water.grade === 'na' ? null : waterPlainRead(water, sp, _here);
+    var _fishOk = sp && _here && speciesFishableIn(_here, sp, getTripDateStr()) && !window._stagingInLake;
+    el("tval").textContent = water.grade === 'na' ? "No water temperature" : _wp.head;
     el("tlbl").textContent = water.grade === 'na' ? water.sentence
-      : water.display + " \u00b7 " + water.tag + ". " + waterTempSourceText(i.wtInfo, i.airTemp) + water.sentence;
+      : water.display + ". " + waterTempSourceText(i.wtInfo, i.airTemp).replace(/\s+$/, "");
+    var _tf = el("tfish");
+    if (_tf) {
+      var _txt = water.grade === 'na' ? '' : (_fishOk && _wp.fish) ? _wp.fish : water.sentence;
+      _tf.textContent = _txt; _tf.hidden = !_txt;
+    }
     el("tgv").textContent = water.grade === 'na' ? "\u2014" : water.display;
     el("tbar").style.width = (water.grade === 'na' ? 0 : barW(i.wt, 0, 22)) + "%"; el("tbar").className = "gf " + cls;
-    el("tstat").innerHTML = '<span class="status-dot dot-' + (cls === "good" ? "good" : cls === "warn" ? "warn" : "bad") + '"></span>'
-      + (water.grade === 'na' ? 'No data' : water.word);
+    el("tstat").innerHTML = "";
     el("tstat").className = "gs " + cls;
   }
   return { win: win, next: next, water: water, species: sp };
@@ -2686,6 +2711,7 @@ function renderHeroLines(go, win, next, bringPhrase) {
 }
 
 async function renderResults(){
+  hideInstallHint();   // the home-screen hint is for the home page; it followed people into results (TJ, 2026-11-06)
   window._upstreamFrom = null;
   var _au = autoUpstreamSection();
   if (_au) {
@@ -3089,31 +3115,31 @@ async function renderResults(){
   window._flowRead = _flowRead;
   if(flow!=null){
     var ta=trend==="up"?"up":trend==="down"?"down":"stable";
-    document.getElementById("fval").textContent=flow;
+    // Plain English first (TJ, 2026-11-06): "Normal flow", then the reading, then what the fish do (#fnote).
+    window._flowBandShown = { band: _flowRead.band, estimate: false };
+    document.getElementById("fval").textContent=flowPlainRead(_flowRead.band).head;
     document.getElementById("ftrend").textContent=trend==="up"?"\u2191":trend==="down"?"\u2193":"\u2192";
     document.getElementById("ftrend").className="trd "+ta;
-    var fd=flow<cfg.flowLow?flow+" m³/s, below the ideal range. Fish scattered."
-      :flow<cfg.sweetMin?flow+" m³/s, normal flow. Fishable; prime is "+sweetRange+", a few days after rain."
-      :flow<=cfg.sweetMax?flow+" m³/s, prime flow ("+sweetRange+")."
-      :flow<=cfg.flowHigh?flow+" m³/s, elevated. Target the slower edges."
-      :flow+" m³/s, too high for safe wading.";
     // The old line printed the gauge's UTC timestamp as if it were local time.
-    document.getElementById("flbl").textContent=fd+" "+_flowRead.source+".";
+    document.getElementById("flbl").textContent=flow+" m\u00b3/s. "+_flowRead.source+".";
     document.getElementById("fgv").textContent=flow+" m\u00b3/s";
     var fb=document.getElementById("fbar");fb.style.width=barW(flow,0,cfg.flowHigh)+"%";fb.className="gf "+fc;
-    var _fb=flowBand(flow,cfg);document.getElementById("fstat").innerHTML=(_fb==="normal"||_fb==="prime")?clsLbl(fc).replace("Ideal",_fb==="prime"?"Prime":"Normal"):clsLbl(fc);document.getElementById("fstat").className="gs "+fc;
+    document.getElementById("fstat").innerHTML="";document.getElementById("fstat").className="gs "+fc;
     var _fd=document.getElementById("flow-dot");
     if(_fd){_fd.className="col-status-dot visible dot-"+(fc==="good"?"good":fc==="warn"?"warn":"bad");}
+    var _wr0 = window._waterRead, _res = flowTrendNoFresh(window._readSpecies || window._defaultTargetSpecies,
+      selectedRiver ? selectedRiver.split(",")[0].trim() : "", _wr0 && _wr0.grade !== 'na' ? _wr0.value : null);
+    var _tr = flowTrendRead(trend, flowBand(flow,cfg), fc, _res);
     document.getElementById("fcl").innerHTML=[
-      {t:"Flow "+flow+" m\u00b3/s ("+({low:"too low",normal:"normal",prime:"prime",high:"high",blown:"blown out"}[flowBand(flow,cfg)]||"")+"; prime: "+sweetRange+")",c:fc},
-      {t:"Trend: "+flowTrendRead(trend, flowBand(flow,cfg), fc).text,c:flowTrendRead(trend, flowBand(flow,cfg), fc).grade},
-      {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"},
-      {t:"Fish lies: "+(fc==="good"?"Predictable":"Scattered and harder to find"),c:fc}
+      {t:"Trend: "+_tr.text,c:_tr.grade},
+      {t:"Wading: "+(flow<cfg.flowHigh*0.7?"Safe. Edges accessible":"Caution: high water"),c:flow<cfg.flowHigh*0.7?"good":"bad"}
     ].map(function(i){return "<li><span class=\"ci "+i.c+"\">"+clsIcon(i.c)+"</span><span>"+i.t+"</span></li>";}).join("");
+    renderFlowFishNote(window._readSpecies);
   } else if(flowEst){
     renderFlowEstimate(flowEst, cfg, dateStr);
   } else {
-    document.getElementById("fval").textContent="\u2014";
+    window._flowBandShown = null; renderFlowFishNote(null);
+    document.getElementById("fval").textContent=isToday?"Gauge not reporting":"No estimate";
     document.getElementById("ftrend").textContent="";
     document.getElementById("flbl").textContent=isToday?_flowRead.sentence:"No flow estimate for this date. Check the gauge on the day. You want "+_flowRead.range+" for this stretch.";
     document.getElementById("fgv").textContent="\u2014";
@@ -4002,8 +4028,9 @@ function renderConditionTiles(opts) {
   var _wr = window._waterRead || waterTempRead(opts.wt, window._waterTempInfo, { weatherOk: opts.weatherOk });
   var _tileState = { good: 'good', warn: 'ok', bad: 'poor', na: 'na' };
   var waterState = _tileState[_wr.grade];
-  var waterMeaning = _wr.grade === 'na' ? 'No data' : _wr.word + ' \u00b7 ' + _wr.tag.toLowerCase();
-  var waterVal = _wr.grade === 'na' ? '\u2014' : (_wr.measured ? '' : '~') + _wr.value + '\u00b0';
+  // Band word as the value, the reading under it (TJ, 2026-11-06), like the Flow tile.
+  var waterMeaning = _wr.grade === 'na' ? 'No data' : (_wr.measured ? '' : '~') + _wr.value + '\u00b0C \u00b7 ' + _wr.tag.toLowerCase();
+  var waterVal = _wr.grade === 'na' ? '\u2014' : '<span class="tp-word">' + _wr.word + '</span>';
 
   // 2) SKY / CLOUD: skyRead() in the core (70% overcast, under 30% bright)
   var _sr = skyRead(opts.weatherOk === false ? null : opts.cloudPct);
@@ -4018,8 +4045,9 @@ function renderConditionTiles(opts) {
     // Band words from flowRead() (flowBand: low, normal, prime, high, blown), like the flow card. The tile used to call
     // normal flow "Low" while the card said "Normal".
     var f = opts.flow, _fr = flowRead(f, opts, { isToday: true });
-    var fState = _tileState[_fr.grade], fMeaning = _fr.word;
-    flowTile = tile('Flow', (Math.round(f * 10) / 10) + '', fMeaning + ' \u00b7 live', fState, false, _fx.flow);
+    // Band word as the value, the number under it (TJ, 2026-11-06).
+    var fState = _tileState[_fr.grade];
+    flowTile = tile('Flow', '<span class="tp-word">' + flowPlainRead(_fr.band).word + '</span>', (Math.round(f * 10) / 10) + ' m\u00b3/s \u00b7 live', fState, false, _fx.flow);
   } else if (opts.isToday && opts.flow == null) {
     // Today but gauge down
     flowTile = tile('Flow', 'N/A', 'Gauge down', 'na', true, window._stagingInLake ? _fx.flow : _missingFx);
@@ -4027,7 +4055,7 @@ function renderConditionTiles(opts) {
     // Future date with an estimate (renderFlowEstimate() has the detail): number for days 1 to 2, range after
     var e = opts.flowEst, eb = flowBand(e.q, opts);
     var eState = eb === 'prime' ? 'good' : eb === 'normal' ? 'ok' : eb === 'high' ? 'ok' : 'poor';
-    flowTile = tile('Flow', e.showNumber ? '~' + e.q : e.lo + '\u2013' + e.hi, 'Est. ' + ({low:'low',normal:'normal',prime:'prime',high:'high',blown:'blown'}[eb]), eState);
+    flowTile = tile('Flow', '<span class="tp-word">' + flowPlainRead(eb).word + '</span>', 'Est. ' + (e.showNumber ? '~' + e.q : e.lo + '\u2013' + e.hi) + ' m\u00b3/s', eState);
   } else {
     // Future date with no estimate: show the target range, muted
     flowTile = tile('Flow aim', opts.sweetMin + '\u2013' + opts.sweetMax, 'Check day-of', 'na');

@@ -17,7 +17,8 @@ function oldLive(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, c
     if (tempC >= 8  && tempC <= 14)  s += 3;
     else if (tempC >= 4  && tempC < 8)  s += 1;
     else if (tempC > 14 && tempC <= 18) s += 1;
-    else if (ctx && ctx.coldTolerant && tempC >= C.COLD_RUN_MIN && tempC < 4) s += 1;
+    else if (ctx && ctx.coldTolerant && tempC >= 3 && tempC < 4) s += 1;
+    else if (ctx && ctx.coldTolerant && tempC >= C.COLD_RUN_MIN && tempC < 3) s += 0;
     else if (ctx && !ctx.troutHeat && tempC > 18) s += 1;
     else                                s -= 3;
   }
