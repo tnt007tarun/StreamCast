@@ -740,6 +740,11 @@ Merged recently:
   what's left (`skyRestNote()`), and the Sky tile and the rating use the same number. This minute's reading is kept as
   `cloudNow` (unused). Replaces "the headline value says now on today's date" (Sky note, 2026-11-02).
 
+- **Tile rating lines removed** (TJ, 2026-11-07): the summary tiles (Water, Sky, Flow, Technique) no longer show "Helps the
+  rating / No effect / Holds it back / Caps the day..." (noise for a first-time reader, a line on every tile). `tile()` in
+  `app.js` ignores its `effect` argument; `ratingEffects()` and `window._tileEffects` are still computed, and the note under
+  the pill (`limitRead()`) still says what holds a Marginal or Tough day down. Supersedes the Phase 3b tile tags.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
