@@ -3638,6 +3638,10 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #landing .day-chip .dc-date { font-size: 11px; line-height: 1.2; color: var(--t-muted, #6b7680); font-variant-numeric: tabular-nums; }
 #landing .day-chip.active { border-color: var(--fern, #1e7a6e); background: rgba(30,122,110,.08); box-shadow: inset 0 0 0 1px var(--fern, #1e7a6e); }
 #landing .day-chip.active .dc-day, #landing .day-chip.active .dc-date { color: var(--fern, #1e7a6e); }
+#landing .day-chips-more { display: contents; }
+#landing .day-chips-more[hidden] { display: none; }
+#landing .day-chip.day-more:not(.active) { background: transparent; border-style: dashed; }
+#landing .day-chip.day-more:not(.active) .dc-day { color: var(--fern, #1e7a6e); }
 @media (max-width: 600px) {
   /* The in-field "Date" label sat inside the old input; the heading above the field group says what this row is. */
   #landing #date-field-group > .field-lbl { display: none; }

@@ -1686,27 +1686,47 @@ function rollPastSunset(lat, lng) {
 }
 
 // ── DAY CHIPS (TJ, 2026-11-07) ───────────────────────────────────────────────
-// The native date picker needs an OK tap after picking a day, and the app only covers six days, so the form shows one
-// button per day instead. #trip-date stays the single source of the date (hidden): a tap sets its value and fires
-// 'change', so search, deep links, the sunset roll and the species dots work as before.
+// The native date picker needs an OK tap after picking a day, so the form shows one button per day instead: five days
+// and a "More" button that opens a second row, out to DAY_CHIP_DAYS (11 days: two full rows, and inside Open-Meteo's 16-day forecast even after the sunset roll).
+// #trip-date stays the single source of the date (hidden): a tap sets its value and fires 'change', so search, deep
+// links, the sunset roll and the species dots work as before. Collapsed with a later day picked, "More" shows that day.
+var DAY_CHIP_DAYS = 11, DAY_CHIP_FIRST = 5, _dayChipsOpen = false;
 function renderDayChips() {
   var box = document.getElementById('day-chips'), di = document.getElementById('trip-date');
   if (!box || !di || !di.min) return;
   var todayStr = localDateStr(new Date());
-  var start = new Date(di.min + 'T12:00:00'), html = '';
-  for (var i = 0; i < 6; i++) {
+  var start = new Date(di.min + 'T12:00:00'), first = '', more = '', laterPick = null;
+  for (var i = 0; i < DAY_CHIP_DAYS; i++) {
     var d = new Date(start); d.setDate(start.getDate() + i);
     var ds = localDateStr(d);
     var top = ds === todayStr ? 'Today' : d.toLocaleDateString('en-CA', { weekday: 'short' }).replace('.', '');
     var bot = d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).replace('.', '');
     var on = ds === di.value;
-    html += '<button type="button" class="day-chip' + (on ? ' active' : '') + '" role="radio" aria-checked="' + on + '" data-date="' + ds + '">' +
+    if (on && i >= DAY_CHIP_FIRST) laterPick = { top: top, bot: bot };
+    var b = '<button type="button" class="day-chip' + (on ? ' active' : '') + '" role="radio" aria-checked="' + on + '" data-date="' + ds + '">' +
       '<span class="dc-day">' + top + '</span><span class="dc-date">' + bot + '</span></button>';
+    if (i < DAY_CHIP_FIRST) first += b; else more += b;
   }
-  box.innerHTML = html;
-  di.max = localDateStr(new Date(start.getTime() + 5 * 86400000));   // six days from the first one shown
+  var tog;
+  if (_dayChipsOpen) tog = '<span class="dc-day">Less</span><span class="dc-date">\u25B4</span>';
+  else if (laterPick) tog = '<span class="dc-day">' + laterPick.top + '</span><span class="dc-date">' + laterPick.bot + ' \u25BE</span>';
+  else tog = '<span class="dc-day">More</span><span class="dc-date">dates \u25BE</span>';
+  var togBtn = '<button type="button" class="day-chip day-more' + (laterPick && !_dayChipsOpen ? ' active' : '') +
+    '" aria-expanded="' + _dayChipsOpen + '" aria-controls="day-chips-more">' + tog + '</button>';
+  // Open: the toggle moves to the end of the last row, so the extra days read on in order.
+  box.innerHTML = first + (_dayChipsOpen ? '' : togBtn) +
+    '<div class="day-chips-more" id="day-chips-more"' + (_dayChipsOpen ? '' : ' hidden') + '>' + more + (_dayChipsOpen ? togBtn : '') + '</div>';
+  di.max = localDateStr(new Date(start.getTime() + (DAY_CHIP_DAYS - 1) * 86400000));
 }
 document.addEventListener('click', function (e) {
+  var t = e.target.closest && e.target.closest('.day-more');
+  if (t) {
+    _dayChipsOpen = !_dayChipsOpen;
+    renderDayChips();
+    track('Day Chips Toggled', { open: _dayChipsOpen });
+    var nb = document.querySelector('#day-chips .day-more'); if (nb) nb.focus();
+    return;
+  }
   var b = e.target.closest && e.target.closest('.day-chip');
   if (!b) return;
   var di = document.getElementById('trip-date');
@@ -1723,7 +1743,7 @@ document.addEventListener('change', function (e) { if (e.target && e.target.id =
   // Use local date for date picker — UTC causes off-by-one after 8PM Eastern
   var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   d.value=today; d.min=today;
-  var max=new Date(); max.setDate(max.getDate()+5); d.max=(function(){var n=max;return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
+  var max=new Date(); max.setDate(max.getDate()+DAY_CHIP_DAYS-1); d.max=(function(){var n=max;return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   rollPastSunset();   // after sunset the form opens on tomorrow
   renderDayChips();
   var ld=document.getElementById("land-date");
