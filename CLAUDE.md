@@ -679,6 +679,11 @@ Merged recently:
   season-badge colours). Under 1000 px it is one line, 64 px tall: photo circle, name, badge; the "Target species" label is
   dropped (it cut "Steelhead" off at 360 px) and two fish wrap. From 1000 px up the strip is taller and the summary
   (`#tpband .tpband-inner`) is a white rounded card overlapping its bottom edge, like the home form card (TJ picked B).
+- **Species badge checks legality** (TJ, 2026-11-06: an Upper Credit brook trout search on Nov 6 read "★ Peak season now"): the
+  badge under the fish name (`#species-season-badge`) read only the season calendar. It now checks `speciesSeasonClosureFor()`
+  and `allAccessClosed()` first: "Season closed" when the season is shut for every picked fish on the reach, "Closed on this
+  date" when the season is open but every access spot is closed, "<fish> season closed" (amber) when only some picked fish are.
+  Checked 168 reach/fish/date cases against main: only closed water changed (Upper Credit, Middle Credit, Upper Humber).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

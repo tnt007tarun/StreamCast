@@ -2848,6 +2848,25 @@ async function renderResults(){
       // ALL selected species missing from this section
       badge.textContent = 'Not in this section';
       badge.dataset.state = 'bad';
+    } else if ((function(){
+      // Legality first (TJ, 2026-11-06: an Upper Credit brook trout search on Nov 6 read "Peak season now", but brook trout
+      // close Sept 30). Same checks as the pill and the hero: speciesSeasonClosureFor() and allAccessClosed().
+      var _d = getTripDateStr(), _accessShut = allAccessClosed(cfg, _d);
+      var _on = targetNames.filter(function(n){ return riverSpeciesList.indexOf(n) !== -1; });
+      var _seasonShut = _on.filter(function(n){ return !!speciesSeasonClosureFor(cfg, n, _d); });
+      var _shut = _accessShut ? _on : _seasonShut;
+      if (!_shut.length) return false;
+      if (_shut.length === _on.length) {
+        // The season is the usual reason; name the access closure only when the season itself is open.
+        badge.textContent = _seasonShut.length === _on.length ? 'Season closed' : 'Closed on this date';
+        badge.dataset.state = 'bad';
+      } else {
+        badge.textContent = _shut.map(function(n){ return n.replace(' Salmon','').replace(' Trout',''); }).join('+') + ' season closed';
+        badge.dataset.state = 'warn';
+      }
+      return true;
+    })()) {
+      // badge set above
     } else {
       // At least one selected species is on this river/section
       var _migratory = ['Chinook Salmon','Coho Salmon','Steelhead'];
