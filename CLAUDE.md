@@ -760,6 +760,12 @@ Merged recently:
   "Date" label is hidden on phones. Closed, the row is the old field's height, so button bottoms are unchanged (670 on
   390 x 664, 694 at 375, 736 at 360, 673 on 1024 x 768, 710 on 1280 x 900); open adds about 54 px. Umami `Day Chips Toggled {open}`.
   Days 8 to 11 have no flow estimate (the model stops at 7), so the pill there rests on weather and season.
+- **Rounded form controls, shorter phone hero** (TJ, 2026-11-07): the home form's day buttons, fields, species tiles, method
+  buttons and Find button have 8 px corners (one unlayered rule at the end of `app.css`), matching the signup and Today boxes on
+  river and guide pages (10 px box, 8 px controls). Supersedes "3 px corners" on the day chips. A full radius pass across the
+  site is for later (TJ); the phone form card itself is still square. Under 600 px the hero copy padding is trimmed (photo 88 to
+  73 px), and under 370 px the h1 is 33 px so it stays on one line (it wrapped at 360). Button bottom: 655 on 390 x 664 (was
+  670, now fully on screen), 679 at 375 x 667, 675 at 360 x 640 (was 736). Desktop unchanged.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
