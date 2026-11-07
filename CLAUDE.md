@@ -766,6 +766,10 @@ Merged recently:
   site is for later (TJ); the phone form card itself is still square. Under 600 px the hero copy padding is trimmed (photo 88 to
   73 px), and under 370 px the h1 is 33 px so it stays on one line (it wrapped at 360). Button bottom: 655 on 390 x 664 (was
   670, now fully on screen), 679 at 375 x 667, 675 at 360 x 640 (was 736). Desktop unchanged.
+  Same day (TJ): the phone headline is centred in the photo (15 px above and below, h1 margin 0). From 1000 px the hero points
+  are six: "17 rivers across fishing zones 16 and 17" (every `RIVER_REGS` river is FMZ 16 or 17), the three before, "Free, no
+  account needed", and "Built by TJ, a local GTA angler" (links `/about/`, Umami `Hero About Clicked`). 1000 to 1199 px uses
+  tighter spacing and 14 px text so all six fit beside the form.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
