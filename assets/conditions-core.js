@@ -2563,6 +2563,32 @@ var FLOW_FISH_TEXT = {
     blown: 'Hard to fish. Trout hunker down. Wait for it to drop and clear.'
   }
 };
+// Very cold water (TJ, 2026-11-06: "real winter days, Dec to February mostly"): under VERY_COLD_WATER °C steelhead,
+// lake-run browns and resident trout sit near the bottom of deep, slow pools and barely move, whatever the flow. Then the
+// temperature card says where they are (TEMP_DEEP_TEXT) and the flow note keeps only what flow still decides (clarity,
+// how to approach), so the two never disagree. Salmon unchanged.
+var VERY_COLD_WATER = 3;
+var FLOW_COLD_TEXT = {
+  run: {
+    low: 'Low, clear water. Go light on leader and bait size, and stay back from the pools.',
+    normal: 'Clear water. Fish lighter and approach the pools quietly.',
+    prime: 'Good flow and clarity. Fish are still in the deep pools, so work them slowly.',
+    high: 'Coloured water. Fish stay deep; try the slower edges of the pools with bigger, brighter baits.',
+    blown: 'Too high and dirty to fish well. Better to wait a day or two while it drops.'
+  },
+  trout: {
+    low: 'Low, clear water. Use light line and small flies or baits, and wade carefully.',
+    normal: 'Clear water. Light line and small baits; approach the pools quietly.',
+    prime: 'Good flow and clarity. Trout stay deep in the pools, so fish them slowly.',
+    high: 'Coloured water. Trout stay deep; add weight to get down.',
+    blown: 'Hard to fish. Wait for it to drop and clear.'
+  }
+};
+var TEMP_DEEP_TEXT = {
+  run: 'Fish sit near the bottom of deep, slow pools and barely move. Drift your bait slowly, right on the bottom. Safe for catch and release.',
+  trout: 'Trout sit near the bottom of deep, slow pools and barely move. Fish small baits or nymphs slowly, right on the bottom. Safe for catch and release.'
+};
+function veryColdWater(wt) { return wt != null && !isNaN(wt) && wt < VERY_COLD_WATER; }
 function flowFishGroup(species, section) {
   if (!species) return null;
   if (species === 'Steelhead') return 'run';
@@ -2572,15 +2598,17 @@ function flowFishGroup(species, section) {
   return null;
 }
 // estimate: true words it as a likely band ("Likely normal flow"). fish: null when no fish is named or the band is unknown.
-function flowPlainRead(band, species, section, estimate) {
+// waterTemp (optional): the water read's value; under VERY_COLD_WATER the cold lines replace the holding lines.
+function flowPlainRead(band, species, section, estimate, waterTemp) {
   if (!band || !FLOW_HEAD[band]) return null;
   var head = FLOW_HEAD[band];
   var g = flowFishGroup(species, section);
+  var cold = g && FLOW_COLD_TEXT[g] && veryColdWater(waterTemp);
   return {
     band: band,
     head: estimate ? 'Likely ' + head.charAt(0).toLowerCase() + head.slice(1) : head,
     word: { low: 'Low', normal: 'Normal', prime: 'Prime', high: 'High', blown: 'Blown out' }[band],
-    fish: g ? FLOW_FISH_TEXT[g][band] : null
+    fish: g ? (cold ? FLOW_COLD_TEXT[g][band] : FLOW_FISH_TEXT[g][band]) : null
   };
 }
 
@@ -2617,7 +2645,9 @@ function waterPlainRead(read, species, section) {
   if (!read || !read.band) return null;
   var g = flowFishGroup(species, section);
   if (read.band === 'hot' && TROUT_SPECIES.indexOf(species) !== -1) g = 'trout';   // the 18 °C advisory covers every trout
-  return { band: read.band, head: TEMP_HEAD[read.band], word: read.word, fish: g ? TEMP_FISH_TEXT[g][read.band] : null };
+  var deep = g && TEMP_DEEP_TEXT[g] && veryColdWater(read.value);
+  return { band: read.band, head: TEMP_HEAD[read.band], word: read.word,
+    fish: g ? (deep ? TEMP_DEEP_TEXT[g] : TEMP_FISH_TEXT[g][read.band]) : null };
 }
 
 // Flow trend wording (TJ, 2026-11-02): direction read against where the flow sits. The prime range is the flow a few
@@ -3623,7 +3653,7 @@ if (typeof globalThis !== 'undefined') {
     rateWithFlowEstimate: rateWithFlowEstimate, confidenceWord: confidenceWord, EST_FLOW_MAX_LEAD: EST_FLOW_MAX_LEAD,
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
-    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, waterPlainRead: waterPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
+    skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, veryColdWater: veryColdWater, waterPlainRead: waterPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, confidenceRead: confidenceRead,
     fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
     TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS
   };

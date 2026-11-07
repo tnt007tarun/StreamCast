@@ -1926,7 +1926,8 @@ function renderFlowFishNote(sp) {
   var here = selectedRiver ? selectedRiver.split(",")[0].trim() : "";
   // Only for a fish that is legal and listed on this reach on the trip date (no steelhead advice for a closed reach).
   var ok = sp && here && speciesFishableIn(here, sp, getTripDateStr());
-  var r = b && ok && !window._stagingInLake ? flowPlainRead(b.band, sp, here, b.estimate) : null;
+  var wr = window._waterRead, wtv = wr && wr.grade !== 'na' ? wr.value : null;   // very cold water changes the note
+  var r = b && ok && !window._stagingInLake ? flowPlainRead(b.band, sp, here, b.estimate, wtv) : null;
   if (r && r.fish) { el.textContent = r.fish; el.hidden = false; }
   else { el.textContent = ""; el.hidden = true; }
 }

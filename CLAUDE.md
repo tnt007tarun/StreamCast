@@ -702,7 +702,10 @@ Merged recently:
   water / Too warm" (`waterTempRead().band`, `TEMP_HEAD`), the reading and its source under it, then `TEMP_FISH_TEXT` for the
   fish, activity and catch-and-release safety only (where fish hold is the flow card's job, TJ 2026-11-06) (`waterPlainRead()`; trout at 18 °C+ always get the advisory, lake-run browns included); without a fishable fish the old
   feeding-range sentence stands in. Temperature lines are a first draft for TJ to edit. Water tile value is the band word.
-  Sky card unchanged for now. The home-screen hint now closes when results open
+  Very cold water (under `VERY_COLD_WATER` 3 °C, TJ 2026-11-06: "real winter days, Dec to
+  February mostly"): steelhead, lake-run browns and resident trout sit near the bottom of deep, slow pools and barely move,
+  so the temperature card says so (`TEMP_DEEP_TEXT`) and the flow note switches to `FLOW_COLD_TEXT` (clarity and approach,
+  no holding water); salmon unchanged. Sky card unchanged for now. The home-screen hint now closes when results open
   (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
 
 ### Analytics events (Umami)
