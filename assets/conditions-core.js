@@ -2585,29 +2585,30 @@ function flowPlainRead(band, species, section, estimate) {
 }
 
 // Water temperature in plain English (TJ, 2026-11-06), like the flow card: "Cool water" leads, the reading under it,
-// then what the fish do at that temperature. Bands from waterTempRead().band (Cold under 6, Cool 6 to 8, Prime 8 to 14,
+// then how active the fish are and whether catch and release is safe (TJ, 2026-11-06: where fish sit is the flow card's job,
+// so the two notes can't disagree). Bands from waterTempRead().band (Cold under 6, Cool 6 to 8, Prime 8 to 14,
 // Warm 14 to 18, Too warm 18+). Same fish groups as FLOW_FISH_TEXT. Draft lines for TJ to edit (2026-11-06).
 var TEMP_HEAD = { cold: 'Cold water', cool: 'Cool water', prime: 'Prime temperature', warm: 'Warm water', hot: 'Too warm' };
 var TEMP_FISH_TEXT = {
   run: {
-    cold: 'Winter fish still bite, but slowly. They sit in slow, deep water. Drift small baits slowly near the bottom; midday is often best.',
-    cool: 'Fish are active but won\u2019t move far for a bait. Work the slower runs and tailouts, low and slow.',
-    prime: 'Fish are active and will move for a bait. They spread through runs and seams. Cover water.',
-    warm: 'Fish sit in faster, better-oxygenated water at the heads of pools and in riffles. Best early and late.',
-    hot: 'Hard on the fish. They hold in the coolest water they can find. Land and release fish quickly, or wait for a cooler day.'
+    cold: 'Fish are slow and won\u2019t chase far. Safe for catch and release.',
+    cool: 'Fish are fairly active. Safe for catch and release.',
+    prime: 'Fish are active and feeding. Safe for catch and release.',
+    warm: 'Fish are less active as the water warms. Release fish quickly.',
+    hot: 'Fish are stressed in water this warm. Release fish quickly, or wait for a cooler day.'
   },
   salmon: {
-    cold: 'Late in the run. The salmon left sit in deep pools and move little.',
-    cool: 'Salmon hold in deep pools and slow runs and move little. Drift right in front of them.',
-    prime: 'Good running temperature. Fish move upstream and rest at the heads of pools.',
-    warm: 'Fish hold at the mouth or in the deepest, shaded pools and wait for cooler water. Early morning is best.',
-    hot: 'Too warm for fish to run. Most hold at the mouth until rain or a cold front cools the river.'
+    cold: 'Salmon are sluggish. Safe for catch and release.',
+    cool: 'Salmon are fairly active. Safe for catch and release.',
+    prime: 'Salmon are active and aggressive. Safe for catch and release.',
+    warm: 'Salmon are less active. Release fish quickly.',
+    hot: 'Salmon are stressed in water this warm. Release fish quickly, or wait for a cooler day.'
   },
   trout: {
-    cold: 'Trout feed little and sit in slow, deep water. Fish small nymphs or baits slowly near the bottom, in the warmest hours.',
-    cool: 'Trout start to feed more. Look in slower runs and pools; midday is often best.',
-    prime: 'Trout feed through the day. Riffles, runs and the heads of pools all hold fish.',
-    warm: 'Trout move to riffles and spring seeps, where the water is cooler and holds more oxygen. Fish the first hours of light.',
+    cold: 'Trout are sluggish and feed little. Safe for catch and release.',
+    cool: 'Trout are starting to feed. Safe for catch and release.',
+    prime: 'Trout are active and feeding. Safe for catch and release.',
+    warm: 'Trout are stressed as the water warms. Fish early and release fish quickly.',
     hot: 'Stop fishing for trout above 18\u00b0C. Trout caught in water this warm often die after release.'
   }
 };

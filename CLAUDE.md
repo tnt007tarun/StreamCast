@@ -700,7 +700,7 @@ Merged recently:
   number under it. Dropped as repeats: the bar's status word, the "Flow X m³/s (band)" and "Fish lies" bullets, two of the
   three estimate bullets. Water temperature card the same way (same PR): "Cold water / Cool water / Prime temperature / Warm
   water / Too warm" (`waterTempRead().band`, `TEMP_HEAD`), the reading and its source under it, then `TEMP_FISH_TEXT` for the
-  fish (`waterPlainRead()`; trout at 18 °C+ always get the advisory, lake-run browns included); without a fishable fish the old
+  fish, activity and catch-and-release safety only (where fish hold is the flow card's job, TJ 2026-11-06) (`waterPlainRead()`; trout at 18 °C+ always get the advisory, lake-run browns included); without a fishable fish the old
   feeding-range sentence stands in. Temperature lines are a first draft for TJ to edit. Water tile value is the band word.
   Sky card unchanged for now. The home-screen hint now closes when results open
   (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
