@@ -732,11 +732,13 @@ Merged recently:
   comes from the day-1 estimate, like any future date. Replaces "the picked date never changes" (Phase 1); the hero's
   "Today's window is over" path is now rarely reached. Dates further out are untouched.
 
-- **Sky is the day's cloud** (TJ, 2026-11-06): on today's date the cloud figure was this minute's reading, so the Sky card's
-  headline and colour ("Partly Cloudy now (36%)") could disagree with its 8 AM / 12 PM / 6 PM strip and note. `fetchWeather()`
-  now returns the day's cloud as `cloudPct` (mean of the three periods, like the daily mean future dates use; this minute's
-  reading kept as `cloudNow`, unused). The card reads "<word> (N% through the day)", the Sky tile drops "now", and the rating
-  uses the same number. Replaces "the headline value says now on today's date" (Sky note, 2026-11-02).
+- **Sky covers the hours left** (TJ, 2026-11-06/07): on today's date the cloud figure was this minute's reading, so the Sky
+  card's headline and colour ("Partly Cloudy now (36%)") could disagree with its 8 AM / 12 PM / 6 PM strip and note. Now
+  `fetchWeather()` returns `cloudPct` as the mean of the periods still ahead today (`skyPeriodsLeft()`: periods end 10 AM,
+  3 PM, 9 PM; `skyCloudFor()`), and `periodsLeft`; a future date uses the whole day's mean. The card reads "<word> (N% for
+  the rest of the day)" (or "through the day"), past periods in the strip are dimmed (`.spc-past`), the note describes only
+  what's left (`skyRestNote()`), and the Sky tile and the rating use the same number. This minute's reading is kept as
+  `cloudNow` (unused). Replaces "the headline value says now on today's date" (Sky note, 2026-11-02).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
