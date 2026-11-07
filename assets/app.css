@@ -3671,3 +3671,10 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   .hero-points { margin-top: 18px; padding-top: 16px; }
   .hero-points li { margin-bottom: 7px; font-size: 14px; }
 }
+
+/* One selected look on the form (TJ, 2026-11-07): teal border, light teal fill and teal label for the picked day, fish and
+   method. The fish name was amber (an old rule) and the method label dark ink. */
+#landing .species-btn.active .species-btn-name,
+#landing .tech-family-btn.active, #landing .tech-family-btn.active * { color: var(--fern, #1e7a6e); }
+#landing .species-btn.active, #landing .tech-family-btn.active { background: rgba(30,122,110,.08); }
+#landing .tech-family-btn.active svg, #landing .tech-family-btn.active svg * { stroke: var(--fern, #1e7a6e); }

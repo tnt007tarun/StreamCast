@@ -775,6 +775,8 @@ Merged recently:
   `STEELHEAD_PREFILL_MONTHS` (11, 12, 1, 2). The first day chip was already selected. `Search` now carries
   `prefill: kept|changed` when the default was shown, so Umami can tell a kept default from a real pick; expect `species:
   Steelhead` to jump in Search and River Viewed from this date.
+- **One selected look on the form** (TJ, 2026-11-07): the picked day, fish and method all use a teal border, light teal fill
+  (`rgba(30,122,110,.08)`) and teal label and icon. The fish name was amber and the method label dark ink.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
