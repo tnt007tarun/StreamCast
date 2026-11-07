@@ -8,14 +8,6 @@ var _initialSearch = location.search;
 // Leave as null to use direct EC API calls (works on pages.dev, may CORS on localhost)
 var RIVER_STOCKING = {"Credit River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 3975, "qtyStr": "4k", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Coho Salmon", "year": 2024, "stage": "Fingerlings", "quantity": 45000, "qtyStr": "45k", "primeYear": 2026, "status": "now", "label": "Fall 2026 run"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 193759, "qtyStr": "194k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 120018, "qtyStr": "120k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2017, "stage": "Yearlings", "quantity": 1100, "qtyStr": "1k", "primeYear": 2018, "status": "past", "label": "Class of 2017, established fish"}], "Grand River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 272, "qtyStr": "272", "primeYear": 2026, "status": "now", "label": "Prime this season"}, {"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 300, "qtyStr": "300", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 6, "qtyStr": "6", "primeYear": 2025, "status": "past", "label": "Class of 2025, established fish"}], "Humber River": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 30135, "qtyStr": "30k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brook Trout", "year": 2023, "stage": "Yearlings", "quantity": 5603, "qtyStr": "6k", "primeYear": 2024, "status": "past", "label": "Class of 2023, established fish"}, {"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 302, "qtyStr": "302", "primeYear": 2025, "status": "past", "label": "Class of 2025, established fish"}], "Bronte Creek": [{"species": "Rainbow Trout", "year": 2025, "stage": "Yearlings", "quantity": 54474, "qtyStr": "54k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}, {"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 80047, "qtyStr": "80k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}], "Rouge River": [{"species": "Rainbow Trout", "year": 2024, "stage": "Fingerlings", "quantity": 16000, "qtyStr": "16k", "primeYear": 2026, "status": "now", "label": "Spring 2026 run"}], "Beaver River": [{"species": "Brook Trout", "year": 2025, "stage": "Yearlings", "quantity": 1200, "qtyStr": "1k", "primeYear": 2026, "status": "now", "label": "Prime this season"}], "Saugeen River": [{"species": "Brown Trout", "year": 2025, "stage": "Adult", "quantity": 50, "qtyStr": "50", "primeYear": 2025, "status": "past", "label": "Class of 2025, established fish"}], "Bowmanville Creek": [{"species": "Chinook Salmon", "year": 2025, "stage": "Fingerlings", "quantity": 31261, "qtyStr": "31k", "primeYear": 2028, "status": "future", "label": "Fall 2028 run"}, {"species": "Brown Trout", "year": 2023, "stage": "Fingerlings", "quantity": 40000, "qtyStr": "40k", "primeYear": 2025, "status": "past", "label": "Class of 2023, established fish"}]};
 
-var DEFAULT_RIVERS = [
-  { name:'Upper Credit River', gauge:'02HB001', sweetMin:1.4, sweetMax:2.8, lat:43.870,lng:-80.010 },
-  { name:'Upper Grand River (Tailwater)', gauge:'02GA016', sweetMin:8, sweetMax:12, lat:43.703,lng:-80.274 },
-  { name:'Lower Humber River', gauge:'02HC025', sweetMin:3,  sweetMax:12, lat:43.640,lng:-79.480 },
-  { name:'Bronte Creek',       gauge:'02HB022', sweetMin:2,  sweetMax:8,  lat:43.51, lng:-79.82 },
-  { name:'Duffins Creek',      gauge:'02HC019', sweetMin:2,  sweetMax:10, lat:43.87, lng:-79.12 },
-  { name:'Ganaraska River',    gauge:'02HD012', sweetMin:2,  sweetMax:12, lat:43.95, lng:-78.30 }];
-
 // ── ANALYTICS HELPER ───────────────────────────────────────────────────────
 // Provider-agnostic on purpose. Every call site uses track(name, props); swapping
 // analytics vendors again should mean editing only this function and the script tag
@@ -774,64 +766,6 @@ const FLOW_MIN_DEFAULT = 8, FLOW_MAX_DEFAULT = 12;
 
 
 
-// ── FLOW NOTES (extracted from config for syntax safety) ─────────────────────
-function getAccessFlowNote(riverName, spotIndex, flow) {
-  if(flow == null) return "Check the gauge link below for current flow.";
-  var r = riverName ? riverName.split(",")[0].trim() : "";
-  var notes = {
-    "Grand River": [
-      flow<6?"Low release. Tailwater still fishable, cold water persists.":flow<=12?"Ideal. Current seam below outflow active.":"High release. Prime time here.",
-      flow<6?"Too low. Fish hold deep and spook easily.":flow<=12?"Ideal. Pools defined, fish predictable.":flow<=18?"Elevated. Fish slower edges.":"Too high. Gorge unsafe.",
-      flow<6?"Reduced mixing. Fish may spread.":flow<=15?"Confluence concentrated and productive.":"High flow. Harder to read.",
-      flow<6?"Too low. Pool loses definition.":flow<=10?"Ideal. Pool well-defined.":flow<=14?"Slightly high. Focus on back half.":"Too high. Try elsewhere.",
-      flow<6?"Low release. Less current near outflow.":flow<=12?"Good. Fish stacked in transition zone.":"High release. Prime time here.",
-      flow<6?"Low. Go small and slow.":flow<=12?"Ideal. Gorge walls give shadow all day.":"Elevated. Fish shadow lines."
-    ],
-    "Credit River": [
-      flow<3?"Too low. Fish in the deepest pools only.":flow<=10?"Good. Pool below the dam is productive.":"Elevated. Stick to the flats.",
-      flow<3?"Low. Pools are defined and fish are visible.":flow<=12?"Good. Work the pool below each waterfall.":"Elevated. Stay cautious in the gorge.",
-      flow<3?"Low. Focus on the main pools.":flow<=10?"Good all-around conditions.":"Higher flows. Fish the edges.",
-      flow<3?"Very clear. Fish are wary, so use long leaders.":flow<=10?"Prime conditions.":"Higher water. Fish the seams."
-    ],
-    "Bronte Creek": [
-      flow<1?"Very low. Fish are spooky.":flow<=8?"Good conditions. Fish holding in pools below falls.":"Elevated and muddy. Wait for clarity.",
-      flow<1?"Too low. Fish may have moved.":flow<=6?"Ideal. Fish stacked in the pool below the falls.":"High. Centrepin edge walking most effective.",
-      flow<1?"Very low but may still hold fish in pools.":flow<=5?"Good. Finesse nymphing and dry fly.":"Higher than normal for upper sections."
-    ],
-    "Humber River": [
-      flow<2?"Low. Fish are cautious. Go small and slow.":flow<=8?"Prime conditions for upper Humber.":"Elevated. Fish the slower inside bends.",
-      flow<2?"Low. Fish are cautious.":flow<=12?"Good. Work runs and pools.":"High. Fish the slower edges.",
-      flow<2?"Low. Fish may not have moved in.":flow<=15?"Fishable. Check for active run reports.":"Very high. Bank fishing only."
-    ],
-    "Nottawasaga River": [
-      flow<4?"Low. Fish in deeper pools.":flow<=18?"Good conditions.":"Elevated. Float fishing best.",
-      flow<4?"Low. Confluence mixing reduced.":flow<=15?"Good. Concentration zone active.":"High. Fish the slower water.",
-      flow<5?"Low. Run may not be in yet.":flow<=20?"Active. Check for run reports.":"High. Fish may have pushed upstream."
-    ],
-    "Duffins Creek": [
-      flow<1?"Very low. Fish may have moved back.":flow<=10?"Active conditions. Fish the runs.":"High and dirty. Wait for clarity.",
-      flow<0.5?"Very low. Fish pools only.":flow<=5?"Perfect small-stream conditions.":"Higher than normal. Be cautious."
-    ],
-    "Ganaraska River": [
-      flow<1?"Low. Check for rain upstream.":flow<=12?"Active. Fish the pools below riffles.":"High. Fish pushed upstream.",
-      flow<1?"Low but the forest reach holds fish.":flow<=8?"Excellent conditions for dry fly.":"Higher flows. Nymph through main seams."
-    ],
-    "Beaver River": [
-      flow<2?"Low and clear. Go fine and long.":flow<=12?"Ideal. Work each pool.":"Elevated. Target slower water near banks.",
-      flow<2?"Very low. Target pools only.":flow<=12?"Good. Productive all day in overcast.":"Higher flows. Streamer fishing can be great.",
-      flow<2?"Low. Check for active run reports.":flow<=12?"Fishable. Fish the pools near the harbour.":"High. Fish may be spread through the lower river."
-    ],
-    "Saugeen River": [
-      flow<6?"Low for the Saugeen but upper sections fishable.":flow<=20?"Good conditions.":"High and likely turbid. Wait 24–48 hrs.",
-      flow<8?"Lower than ideal. Fish the pools.":flow<=30?"Prime wade fishing conditions.":"High. Consider float fishing.",
-      flow<10?"Low. Fish may not be in.":flow<=40?"Active fishing conditions.":"Very high. Float fishing only."
-    ]
-  };
-  var riverNotes = notes[r];
-  if(!riverNotes) return "Check the local gauge for current conditions.";
-  return riverNotes[Math.min(spotIndex, riverNotes.length-1)] || "Check current conditions.";
-}
-
 // ── GET CONFIG FOR SELECTED RIVER ─────────────────────────────────────────────
 // Every config knows its own section name, so code holding only a cfg (recommendSpecies on a
 // sibling section, a shadowed cfg in buildTopPick) can still ask section-specific questions.
@@ -1087,7 +1021,6 @@ function renderRiverUI(cfg) {
     var detailHtml = '<div class="adesc">' + a.desc + '</div>' +
         '<div class="atags">' + tags + '</div>' +
         '<div class="abest">' + (a.best || '') + '</div>' +
-        '<div class="afnote" data-access-idx="' + idx + '">\u2026</div>' +
         regsHtml;
     if (isRecommended) {
       return '<div class="ac acard-recommended" data-spot-idx="' + idx + '">' +
@@ -1182,15 +1115,6 @@ function renderRiverUI(cfg) {
       return '<a class="dl" href="' + l.url + '" target="_blank">' + l.text + '</a>';
     }).join("");
   }
-}
-
-function updateAccessFlowNotes(cfg, flow) {
-  var notes = document.querySelectorAll(".afnote[data-access-idx]");
-  var riverName = selectedRiver ? selectedRiver.split(",")[0].trim() : "";
-  notes.forEach(function(el) {
-    var idx = parseInt(el.getAttribute("data-access-idx"), 10);
-    el.textContent = getAccessFlowNote(riverName, idx, flow);
-  });
 }
 
 // ── LOCATION / RIVER SELECTION (from landing page) ────────────────────────────
@@ -3212,7 +3136,6 @@ async function renderResults(){
   if (_stagingModeActive) {
     try { applyStagingTechniqueOverride(); } catch(_reErr) { console.warn('staging apply failed:', _reErr); }
   }
-  updateAccessFlowNotes(cfg,flow);
   autoSelectBaitTab();
 
   // Top Pick band — always shown
@@ -6052,23 +5975,6 @@ function renderStockingSection(riverName) {
 // ── CONFIDENCE SCORE ──────────────────────────────────────────────────────────
 
 
-// Fetch weather for a lat/lng and return {tempC, cloudPct}
-async function fetchLandingWeather(lat, lng) {
-  try {
-    var url = 'https://api.open-meteo.com/v1/forecast'
-      + '?latitude=' + lat + '&longitude=' + lng
-      + '&hourly=temperature_2m,cloudcover'
-      + '&forecast_days=1&timezone=America%2FToronto';
-    var res = await fetch(url);
-    if (!res.ok) return null;
-    var data = await res.json();
-    var hour = new Date().getHours();
-    var tempC    = data.hourly && data.hourly.temperature_2m   ? data.hourly.temperature_2m[hour]   : null;
-    var cloudPct = data.hourly && data.hourly.cloudcover       ? data.hourly.cloudcover[hour]       : null;
-    return { tempC: tempC, cloudPct: cloudPct };
-  } catch(e) { return null; }
-}
-
 // ── SPECIES GRID — season chips, best first (TJ, 2026-10-30) ─────────────────
 // Every tile gets a word chip top right (Prime, Good, Slow, In lake, Closed) from TJ's half-month calendar
 // (FORM_SEASON_CAL) on reaches in range that are legally open on the trip date, and tiles are ordered best
@@ -6171,155 +6077,6 @@ function rrankBadge(score) {
   return '<span class="rrank-badge conf-badge ' + c.cls + '">' + c.label + '</span>';
 }
 
-// ── DEFAULT RIVER PREVIEW (landing page, no city selected) ───────────────────
-function renderDefaultPreview() {
-  var el = document.getElementById('default-preview');
-  if (!el) return;
-
-  var cards = DEFAULT_RIVERS.map(function(river) {
-    var name = river.name;
-    var dbEntry = RIVERS_DB.find(function(r){ return r.name === name; });
-    var cfg = getRiverConfig(name);
-    if (!cfg || !dbEntry) return '';
-
-    // Quick season quality estimate (no flow data on landing)
-    var bestQ = 'absent', bestSp = '';
-    (cfg.species || []).forEach(function(s) {
-      var w = getCurrentSeason(s);
-      if (!w) return;
-      if (w.quality === 'peak' && bestQ !== 'peak')       { bestQ = 'peak';   bestSp = s; }
-      else if (w.quality === 'good' && bestQ === 'absent'){ bestQ = 'good';   bestSp = s; }
-      else if (w.quality === 'slow' && bestQ === 'absent'){ bestQ = 'slow';   bestSp = s; }
-    });
-
-    var score = bestQ === 'peak' ? 10 : bestQ === 'good' ? 6 : bestQ === 'slow' ? 2 : 0;
-    var conf  = scoreToConfidence(score);
-    var drive = (dbEntry.times && dbEntry.times['toronto']) || (cfg && cfg.driveTime && cfg.driveTime['toronto']) || 60;
-    var driveStr = drive < 60 ? drive + ' min' : (drive === 60 ? '1 hr' : Math.floor(drive/60) + ' hr ' + (drive%60||''));
-    var speciesLabel = bestSp ? bestSp.replace(' Trout','').replace(' Salmon','') : (cfg.species||[])[0]||'';
-
-    var shortName = name.replace(' River','').replace(' Creek','');
-    var speciesShort = speciesLabel ? speciesLabel.replace(' Trout','').replace(' Salmon','') : '';
-    // Species key for goToResults (e.g. 'rainbow', 'brown', 'chinook')
-    var speciesKeyMap = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Brook Trout':'brook','Chinook Salmon':'chinook','Coho Salmon':'coho'};
-    var speciesKey = bestSp ? (speciesKeyMap[bestSp] || '') : '';
-    return '<div class="dp-card" data-river="' + name + '" data-gauge="' + river.gauge + '"'+'data-species="' + speciesKey + '" data-sweet-min="' + river.sweetMin + '" data-sweet-max="' + river.sweetMax + '">' +
-      '<div class="dp-name">' + shortName + '</div>' +
-      '<div class="dp-row2">' +
-        (speciesShort ? '<span class="dp-species">' + speciesShort + '</span>' : '') +
-        '<span class="dp-conf ' + conf.cls + '" id="dp-conf-' + name.replace(/ /g,'-') + '">' + conf.label + '</span>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
-  el.innerHTML = '<div class="dp-label" id="dp-label-el">Fishability · Today near Toronto</div>' + '<div class="dp-grid">' + cards + '</div>';
-  el.style.display = 'block';
-
-  // Wire card clicks — go directly to that river's results page
-  el.querySelectorAll('.dp-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      var rname   = this.getAttribute('data-river');
-      var spKey   = this.getAttribute('data-species') || '';
-      var cityMap = {
-        'Credit River':'mississauga','Grand River':'guelph','Humber River':'toronto',
-        'Bronte Creek':'oakville','Duffins Creek':'ajax','Ganaraska River':'port hope'
-      };
-      var city = cityMap[rname] || 'toronto';
-
-      // Set all state directly and jump to results — no form submission needed
-      var dbEntry = RIVERS_DB.find(function(r){ return r.name === rname; });
-      if (!dbEntry) return;
-
-      // Set global state — get loc from RIVER_CONFIG, not RIVERS_DB (which has no .loc)
-      var _cfgEntry = getRiverConfig(rname);
-      var _loc = (_cfgEntry && _cfgEntry.loc) ? _cfgEntry.loc : '';
-      selectedRiver = rname + (_loc ? ', ' + _loc : '');
-      selectedTechFamily = [];
-      selectedSpecies = spKey ? [spKey] : [];
-      appMode = 'beginner';  // keep beginner mode so section order stays correct
-      window._beginnerLocKey = city;
-
-      // Set date to today
-      var dateInp = document.getElementById('trip-date');
-      if (dateInp) dateInp.value = (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
-
-      // Update species buttons UI
-      document.querySelectorAll('.species-btn').forEach(function(b){ b.classList.remove('active'); });
-      if (spKey) {
-        var spBtn = document.querySelector('.species-btn[data-value="' + spKey + '"]');
-        if (spBtn) spBtn.classList.add('active');
-      }
-
-      // Show results page directly
-      setResHeader(selectedRiver);
-      document.getElementById('landing').style.display = 'none';
-      document.getElementById('results').style.display = ''; document.getElementById('results').classList.add('active');
-      window.scrollTo(0, 0);
-      initNotifyBar();
-      window._viewSource = 'home-list'; window._pickSource = 'home-list';
-      renderResults();
-      setTimeout(loadBaitImages, 800);
-    });
-  });
-
-  // Update label with source note
-  var lbl = document.getElementById('dp-label-el') || el.querySelector('.dp-label');
-  if (lbl) lbl.innerHTML = 'FISHABILITY · TODAY NEAR TORONTO <span class="dp-source">· Live flow loading…</span>';
-
-  // Fetch live conditions for each river in parallel
-  var _baseScores = {};
-  DEFAULT_RIVERS.forEach(function(river) { _baseScores[river.name] = 0; });
-
-  // Get weather once for Toronto area (shared)
-  fetchLandingWeather(43.7, -79.4).then(function(wx) {
-    var tempC = wx ? wx.tempC : null;
-    var cloudPct = wx ? wx.cloudPct : null;
-
-    // Fetch flow for each river
-    var fetches = DEFAULT_RIVERS.map(function(river) {
-      return fetchFlow(river.gauge).then(function(fd) {
-        var flow = fd ? fd.flow : null;
-        var cfg  = getRiverConfig(river.name);
-        var flowLow  = cfg ? cfg.flowLow  : river.sweetMin * 0.3;
-        var flowHigh = cfg ? cfg.flowHigh : river.sweetMax * 2;
-
-        // Recalculate base score from season
-        var dbEntry = RIVERS_DB.find(function(r){ return r.name === river.name; });
-        var drive = dbEntry && dbEntry.times ? (dbEntry.times['toronto'] || 60) : 60;
-        var tempRivers = [{ name: river.name, driveTime: drive, times: dbEntry ? dbEntry.times : {} }];
-        var ranked = rankRivers(tempRivers, [], (function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})());
-        var baseScore = ranked.length ? ranked[0].score : 4;
-
-        // Add live conditions
-        var liveBonus = liveConditionsScore(flow, river.sweetMin, river.sweetMax, flowLow, flowHigh, tempC, cloudPct);
-        // Same flow cap as the results pill (flowCapScore in conditions-core.js)
-        var totalScore = flowCapScore(baseScore + liveBonus, getRiverConfig(river.name) || {sweetMin: river.sweetMin, sweetMax: river.sweetMax, flowLow: flowLow, flowHigh: flowHigh}, flow);
-        var conf = scoreToConfidence(totalScore);
-
-        // Update badge in place
-        var badgeEl = document.getElementById('dp-conf-' + river.name.replace(/ /g, '-'));
-        if (badgeEl) {
-          badgeEl.textContent = conf.label;
-          badgeEl.className = 'dp-conf ' + conf.cls;
-        }
-        // Update card data attrs for tooltip
-        var card = el.querySelector('[data-river="' + river.name + '"]');
-        if (card && flow != null) {
-          card.setAttribute('data-flow', flow);
-        }
-        return { name: river.name, flow: flow, score: totalScore };
-      }).catch(function() { return { name: river.name, flow: null }; });
-    });
-
-    Promise.all(fetches).then(function(results) {
-      var gotFlow = results.some(function(r){ return r.flow != null; });
-      if (lbl) lbl.innerHTML = 'Fishability · Today near Toronto'
-        + ' <span class="dp-source">'+(gotFlow?'· Live flow · Default gauge':'· Seasonal estimate')+'</span>';
-    });
-  });
-}
-
-// Render default preview after all JS is parsed
 
 // Handle browser back button on river page
 window.addEventListener('popstate', function(e) {
@@ -6339,8 +6096,7 @@ if (!history.state) {
 // throw in any one of them silently kills every call after it — which is how the guides
 // list came up empty while the heading above it still rendered. Same failure mode as the
 // blank access grid. Each failure now names itself in the console instead of hiding.
-[['renderDefaultPreview', renderDefaultPreview],
- ['renderGuides', renderGuides],
+[['renderGuides', renderGuides],
  ['updateSpeciesGrid', updateSpeciesGrid]].forEach(function(step){
   try { step[1](); }
   catch (e) { console.error('init step failed: ' + step[0], e); }

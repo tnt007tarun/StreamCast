@@ -718,6 +718,13 @@ Merged recently:
   hardcoded flow thresholds, not the reach's bands. Sky card unchanged for now. The home-screen hint now closes when results open
   (`hideInstallHint()` at the top of `renderResults()`). Scoring unchanged.
 
+- **Spot notes and Fishability removed** (TJ, 2026-11-06): the per-spot flow line on the access cards (`.afnote`,
+  `getAccessFlowNote()`) looked notes up by parent river ("Credit River") but was handed the reach ("Lower Credit River"), so it
+  never matched and every card said "Check the local gauge for current conditions." Removed with its hardcoded thresholds; the
+  flow card is the one flow read. The homepage "Fishability · Today near Toronto" block (three river boxes,
+  `renderDefaultPreview()`, `DEFAULT_RIVERS`, `fetchLandingWeather()`, `#default-preview`) is gone too (TJ: unused); guides
+  now follow the form. `.dp-*` and `.afnote` CSS left as dead rules. Umami `River Viewed` source `home-list` stops.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
