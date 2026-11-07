@@ -3529,3 +3529,88 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   .res-next .rn-pre { font-weight: 400; opacity: .8; }
   .res-next:focus-visible { outline: 2px solid #0e2a4a; outline-offset: 2px; }
 }
+
+
+/* Home: ideas borrowed from TJ's Figma Make concept (TJ, 2026-11-06), without undoing the phone form.
+   1. TJ's fall lake photo replaces the steelhead as the hero, at every width (800 px file on phones).
+   2. Warmer paper behind the home page.
+   3. From 1000 px up (iPad landscape and desktop) the form card sits beside the photo, on the right, so the whole form
+      and its button fit on the first screen; the headline, subtitle and three short points sit on the left. Thin rules
+      separate When and where, Target species and Method there (no step numbers). Phones keep the stacked form. */
+#landing, #landing .land-header { background-color: #f4f0e6; }
+#landing .hero-photo {
+  background:
+    linear-gradient(rgba(8,26,24,.40), rgba(8,26,24,.55)),
+    url("/images/hero/home-fall-lake-800.webp") center 40% / cover no-repeat;
+}
+.hero-points { display: none; }
+@media (min-width: 1000px) {
+  #landing .hero-photo {
+    height: 600px; min-height: 0; padding: 0; align-items: flex-start; justify-content: flex-start;
+    background:
+      linear-gradient(90deg, rgba(8,26,24,.72) 0%, rgba(8,26,24,.34) 50%, rgba(8,26,24,.06) 80%),
+      linear-gradient(0deg, rgba(8,26,24,.40) 0%, transparent 45%),
+      url("/images/hero/home-fall-lake.webp") center 45% / cover no-repeat;
+  }
+  #landing .hero-photo .hero-copy {
+    width: min(1180px, calc(100% - 64px)); max-width: none; margin: 0 auto; text-align: left;
+    padding: 132px 600px 0 0;
+  }
+  #landing .hero-photo h1 { font-size: 56px; line-height: 1.02; letter-spacing: -.03em; text-align: left; margin: 0; }
+  #landing .hero-sub { display: block; max-width: 420px; margin: 18px 0 0; text-align: left; font: 400 18px/1.5 Inter, system-ui, -apple-system, sans-serif; }
+  #landing .hero-sub-more { display: inline; }
+  .hero-points { display: block; list-style: none; margin: 30px 0 0; padding: 22px 0 0; max-width: 400px; border-top: 1px solid rgba(255,255,255,.28); }
+  .hero-points li { position: relative; padding-left: 26px; margin: 0 0 12px; color: #fff; font: 500 15px/1.4 Inter, system-ui, -apple-system, sans-serif;
+    text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+  .hero-points li::before { content: "\2713"; position: absolute; left: 0; top: 0; color: #9fe0c4; font-weight: 700; }
+
+  #landing .land-header { max-width: min(1180px, calc(100% - 64px)); padding-left: 0; padding-right: 0; }
+  #landing .form-card { width: min(1180px, calc(100% - 64px)); max-width: none; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; }
+  #landing .form-card > .mode-wrap { width: 540px; margin: -560px 0 0 auto; position: relative; z-index: 3; padding: 6px 6px 4px;
+    background: #fffdf8; border-radius: 22px; box-shadow: 0 24px 70px rgba(8,35,45,.22); }
+  #landing .form-card > .mode-wrap::before { display: none; }
+  #landing .form-card > .mode-wrap > .form-top,
+  #landing .form-card > .mode-wrap > #form-species,
+  #landing .form-card > .mode-wrap > .tech-section { border: 0; background: transparent; box-shadow: none; border-radius: 0; }
+  #landing .form-card > .mode-wrap > #form-species { border-top: 1px solid #e3ddcf; margin: 4px 22px 0; padding-left: 0; padding-right: 0; }
+  #landing .form-card > .mode-wrap > .tech-section > .beginner-only { border-top: 1px solid #e3ddcf; padding-top: 14px; }
+  #landing .form-card > .default-preview-wrap, #landing .form-card > .guides-wrap { max-width: 660px; margin-left: auto; margin-right: auto; }
+  #landing .form-card > .default-preview-wrap { margin-top: 48px; }
+}
+
+/* Results: the same fall lake photo behind the target-species strip (TJ, 2026-11-06). The strip was already there, so
+   it adds no height on phones. Phones and iPad portrait (under 1000 px): one line, photo circle, name, season badge; the
+   "Target species" label is dropped (it cut "Steelhead" off at 360 px) and two fish wrap instead of being cut off.
+   From 1000 px up the strip is taller and the summary (#tpband) is a white card that overlaps its bottom edge, like the
+   form card on the home page (TJ picked B). */
+#results #species-banner {
+  background:
+    linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.45) 55%, rgba(8,26,24,.25) 100%),
+    url("/images/hero/home-fall-lake-800.webp") center 42% / cover no-repeat;
+  padding-top: 12px; padding-bottom: 12px;
+}
+#results #species-banner .sp-banner-fish { border: 0; box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+#results #species-banner .sp-banner-lbl { color: rgba(255,255,255,.78); }
+#results #species-banner .sp-banner-name { color: #fff; }
+#results #species-banner .sp-banner-badge { color: rgba(255,255,255,.8); }
+#results #species-banner .sp-banner-badge[data-state="good"] { color: #9fe0c4; }
+#results #species-banner .sp-banner-badge[data-state="warn"] { color: #f5cd77; }
+#results #species-banner .sp-banner-badge[data-state="bad"] { color: #f4a397; }
+@media (max-width: 999px) {
+  #results #species-banner { gap: 10px; min-height: 64px; box-sizing: border-box; }
+  #results #species-banner .sp-banner-fish { width: 40px; height: 40px; }
+  #results #species-banner > div:nth-child(2) { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; min-width: 0; }
+  #results #species-banner .sp-banner-lbl { display: none; }
+  #results #species-banner .sp-banner-name { margin: 0; font-size: 17px; line-height: 1.2; min-width: 0; }
+  #results #species-banner .sp-banner-badge { margin: 0; flex: none; font-size: 13px; line-height: 1.2; white-space: nowrap; }
+}
+@media (min-width: 1000px) {
+  #results #species-banner {
+    padding-top: 22px; padding-bottom: 110px;
+    background:
+      linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.40) 50%, rgba(8,26,24,.10) 85%),
+      url("/images/hero/home-fall-lake.webp") center 45% / cover no-repeat;
+  }
+  #results #tpband { background: transparent; padding-top: 0; margin-top: -96px; position: relative; z-index: 2; }
+  #results #tpband .tpband-inner { background: #fffdf8; border-radius: 22px; box-shadow: 0 24px 70px rgba(8,35,45,.18); padding: 26px 30px 24px; }
+}
