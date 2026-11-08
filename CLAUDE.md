@@ -777,6 +777,17 @@ Merged recently:
   Steelhead` to jump in Search and River Viewed from this date.
 - **One selected look on the form** (TJ, 2026-11-07): the picked day, fish and method all use a teal border, light teal fill
   (`rgba(30,122,110,.08)`) and teal label and icon. The fish name was amber and the method label dark ink.
+- **Form spacing rebalance** (TJ, 2026-11-08: "dense at the top, loose around the button"): one unlayered block at the end
+  of `app.css`. More air in When and where (card top 13 to 19 px, label to day chips 9 to 13, chips to city 10 to 13); less
+  under the button (button to outlook link 20 to 4, card bottom 16 to 9; the link keeps its 44 px tap box). On phones the
+  photo-to-card gap goes 23 to 11 px and Method to button 17 to 14, so the button moves up 3 px: 651 on 390 x 664, 675 at
+  375 x 667, 671 at 360 x 640. Wider screens move down about 9 px (762 on 768 x 1024, 682 on 1024 x 768, 719 on 1280 x 900),
+  all still on the first screen.
+  Same PR (TJ): under 389 px the Rainbow Trout tile reads "Rainbow" (`.sp-name-rest` hidden; `data-label` unchanged), so it no
+  longer wraps. Under 380 px the method buttons read Spin, Float, Fly (`.mth-lbl` wraps each label so the flex column keeps
+  one text item; `.mth-rest` hidden), and under 370 px the photo band is 6 px shorter. Every phone width now has the whole
+  button on the first screen: 651 on 390 x 664, 647 on 375 x 667, 637 on 360 x 640.
+  Under 380 px the day chips sit 4 px apart (was 6) with 12 px day and 11 px date text, so "Today" no longer fills its button.
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
@@ -852,7 +863,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
    Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"
-   still wraps at 375 and 360 px; TJ kept it as is for now.
+   reads "Rainbow" under 389 px since 2026-11-08.
 
 16. **Alternative reach (built 2026-11-03, Phase 3c):** see Current state. Open: wording "Conditions there" vs "Conditions
    here"; alternatives use regional weather and modelled water (no live CVC); judge on Shown vs Clicked in Umami.

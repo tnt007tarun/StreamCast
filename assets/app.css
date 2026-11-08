@@ -3678,3 +3678,36 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 #landing .tech-family-btn.active, #landing .tech-family-btn.active * { color: var(--fern, #1e7a6e); }
 #landing .species-btn.active, #landing .tech-family-btn.active { background: rgba(30,122,110,.08); }
 #landing .tech-family-btn.active svg, #landing .tech-family-btn.active svg * { stroke: var(--fern, #1e7a6e); }
+
+/* Form spacing rebalance (TJ, 2026-11-08: "dense at the top, loose around the button"). More air in When and where,
+   less dead space under Find my best spot. On phones the extra top space is paid for by a smaller gap between the photo
+   and the card and a slightly tighter Method-to-button gap, so the button does not move down. */
+#landing .form-top { padding-top: 18px; row-gap: 13px; }
+#landing #date-field-group { row-gap: 6px; }
+#landing #forecast-btn-el { margin-top: 6px; }
+#landing .form-bottom { row-gap: 4px; }
+#landing .hero-outlook { margin-top: 0; }
+#landing .tech-section { padding-bottom: 8px; }
+@media (max-width: 600px) {
+  #landing .form-card { margin-top: 0; }
+}
+
+/* Under 389 px "Rainbow Trout" wrapped to two lines and pushed the Find button down; it reads "Rainbow" there (TJ, 2026-11-08).
+   data-label stays "Rainbow Trout", so results, regs and analytics are unchanged. */
+@media (max-width: 389px) {
+  #landing .sp-name-rest { display: none; }
+}
+/* Under 380 px "Spin Fishing" and "Float Fishing" wrapped to two lines; the method buttons read Spin, Float, Fly there (TJ, 2026-11-08). */
+@media (max-width: 379px) {
+  #landing .mth-rest { display: none; }
+}
+/* 360 px phones: 3 px short of fitting the button; a slightly shorter photo band (headline still centred) gets it on screen. */
+@media (max-width: 369px) {
+  #landing .hero-copy { padding-top: 12px; padding-bottom: 12px; }
+}
+/* 360 and 375 px phones: "Today" filled its day button edge to edge; a step smaller there (TJ, 2026-11-08). */
+@media (max-width: 379px) {
+  #landing .day-chips { gap: 4px; }
+  #landing .day-chip .dc-day { font-size: 12px; }
+  #landing .day-chip .dc-date { font-size: 11px; }
+}
