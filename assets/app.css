@@ -3697,3 +3697,11 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 389px) {
   #landing .sp-name-rest { display: none; }
 }
+/* Under 380 px "Spin Fishing" and "Float Fishing" wrapped to two lines; the method buttons read Spin, Float, Fly there (TJ, 2026-11-08). */
+@media (max-width: 379px) {
+  #landing .mth-rest { display: none; }
+}
+/* 360 px phones: 3 px short of fitting the button; a slightly shorter photo band (headline still centred) gets it on screen. */
+@media (max-width: 369px) {
+  #landing .hero-copy { padding-top: 12px; padding-bottom: 12px; }
+}

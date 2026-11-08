@@ -784,8 +784,9 @@ Merged recently:
   375 x 667, 671 at 360 x 640. Wider screens move down about 9 px (762 on 768 x 1024, 682 on 1024 x 768, 719 on 1280 x 900),
   all still on the first screen.
   Same PR (TJ): under 389 px the Rainbow Trout tile reads "Rainbow" (`.sp-name-rest` hidden; `data-label` unchanged), so it no
-  longer wraps. Button bottom 661 at 375 x 667 (on screen now) and 656 at 360 x 640 (still 16 px below; the method words
-  "Spin Fishing" and "Float Fishing" wrap to two lines under 380 px).
+  longer wraps. Under 380 px the method buttons read Spin, Float, Fly (`.mth-lbl` wraps each label so the flex column keeps
+  one text item; `.mth-rest` hidden), and under 370 px the photo band is 6 px shorter. Every phone width now has the whole
+  button on the first screen: 651 on 390 x 664, 647 on 375 x 667, 637 on 360 x 640.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
