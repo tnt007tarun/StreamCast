@@ -3705,3 +3705,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 369px) {
   #landing .hero-copy { padding-top: 12px; padding-bottom: 12px; }
 }
+/* 360 and 375 px phones: "Today" filled its day button edge to edge; a step smaller there (TJ, 2026-11-08). */
+@media (max-width: 379px) {
+  #landing .day-chips { gap: 4px; }
+  #landing .day-chip .dc-day { font-size: 12px; }
+  #landing .day-chip .dc-date { font-size: 11px; }
+}

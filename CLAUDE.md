@@ -787,6 +787,7 @@ Merged recently:
   longer wraps. Under 380 px the method buttons read Spin, Float, Fly (`.mth-lbl` wraps each label so the flex column keeps
   one text item; `.mth-rest` hidden), and under 370 px the photo band is 6 px shorter. Every phone width now has the whole
   button on the first screen: 651 on 390 x 664, 647 on 375 x 667, 637 on 360 x 640.
+  Under 380 px the day chips sit 4 px apart (was 6) with 12 px day and 11 px date text, so "Today" no longer fills its button.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
