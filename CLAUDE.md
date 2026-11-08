@@ -760,6 +760,23 @@ Merged recently:
   "Date" label is hidden on phones. Closed, the row is the old field's height, so button bottoms are unchanged (670 on
   390 x 664, 694 at 375, 736 at 360, 673 on 1024 x 768, 710 on 1280 x 900); open adds about 54 px. Umami `Day Chips Toggled {open}`.
   Days 8 to 11 have no flow estimate (the model stops at 7), so the pill there rests on weather and season.
+- **Rounded form controls, shorter phone hero** (TJ, 2026-11-07): the home form's day buttons, fields, species tiles, method
+  buttons and Find button have 8 px corners (one unlayered rule at the end of `app.css`), matching the signup and Today boxes on
+  river and guide pages (10 px box, 8 px controls). Supersedes "3 px corners" on the day chips. A full radius pass across the
+  site is for later (TJ); the phone form card itself is still square. Under 600 px the hero copy padding is trimmed (photo 88 to
+  73 px), and under 370 px the h1 is 33 px so it stays on one line (it wrapped at 360). Button bottom: 655 on 390 x 664 (was
+  670, now fully on screen), 679 at 375 x 667, 675 at 360 x 640 (was 736). Desktop unchanged.
+  Same day (TJ): the phone headline is centred in the photo (15 px above and below, h1 margin 0). From 1000 px the hero points
+  are six: "17 rivers across fishing zones 16 and 17" (every `RIVER_REGS` river is FMZ 16 or 17), the three before, "Free, no
+  account needed", and "Built by TJ, a local GTA angler" (links `/about/`, Umami `Hero About Clicked`). 1000 to 1199 px uses
+  tighter spacing and 14 px text so all six fit beside the form.
+- **Steelhead picked by default, November to February** (TJ, 2026-11-07): on a plain visit to the form (no deep link, nothing
+  picked yet) the Steelhead tile starts selected when the form's date (today, or tomorrow after sunset) is in
+  `STEELHEAD_PREFILL_MONTHS` (11, 12, 1, 2). The first day chip was already selected. `Search` now carries
+  `prefill: kept|changed` when the default was shown, so Umami can tell a kept default from a real pick; expect `species:
+  Steelhead` to jump in Search and River Viewed from this date.
+- **One selected look on the form** (TJ, 2026-11-07): the picked day, fish and method all use a teal border, light teal fill
+  (`rgba(30,122,110,.08)`) and teal label and icon. The fish name was amber and the method label dark ink.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -769,7 +786,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode, prefill?}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
