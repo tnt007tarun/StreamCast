@@ -124,8 +124,8 @@
     return weeklyPicker(el, opts);
   };
 
-  var HOW = 'Picked from live river flow and the week\u2019s rain, temperature and cloud forecast.';
-  var FINE = 'Only sent when there\u2019s a good day. Free, no account, unsubscribe anytime.';
+  var HOW = 'Where to stand and what to bring, picked from live river flow and the week\u2019s forecast. No email when no day looks good.';
+  var FINE = 'Free, no account, unsubscribe anytime.';
   var CSS = '.hff-signup{margin:2.2rem 0 1rem;padding:1.1rem 1.15rem 1.15rem;background:#eef5f3;border-radius:10px;' +
     'font:400 .95rem/1.45 Inter,system-ui,-apple-system,sans-serif;color:#31414c}' +
     '.hff-signup .lbl{font-weight:600;font-size:.68rem;line-height:1;letter-spacing:.13em;text-transform:uppercase;color:#1e7a6e;margin-bottom:.55rem}' +
@@ -139,6 +139,7 @@
     '.hff-signup .opt input{width:16px;height:16px;margin:0;accent-color:#1e7a6e}' +
     '.hff-signup .small{font-size:.78rem;color:#6b7d86;margin:.6rem 0 0}' +
     '.hff-signup .how{font-size:.8rem;color:#6b7d86;margin:-.35rem 0 .8rem}' +
+    '.hff-signup .hd{font-weight:600;font-size:1.08rem;line-height:1.3;color:#1a2e3a;margin:0 0 .7rem}' +
     '.hff-signup .msg{margin:.6rem 0 0;font-size:.9rem}.hff-signup .msg.err{color:#a63d2f}' +
     PICKER_CSS;
 
@@ -151,6 +152,9 @@
       if ((tries || 0) < 10) setTimeout(function () { track(name, props, (tries || 0) + 1); }, 500);
     } catch (e) {}
   }
+  // A submit stopped by the box's own checks (no river, no fish, bad email). Without it a box that blocks people looks
+  // the same as one nobody tries (2026-11-08).
+  function blocked(page, offer, placement, reason) { track('Signup Blocked', { page: page, offer: offer, placement: placement, reason: reason }); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   function observeSeen(box, page, offer, placement) {
@@ -172,13 +176,14 @@
     var page = location.pathname;
     var placement = box.getAttribute('data-placement') || 'end';
     var parents = RIVERS.filter(function (r) { return STEELHEAD_REACH[r]; });
+    // Offer copy (2026-11-08): say what arrives and when. "Stop guessing" plus a description converted 0 of 181 views.
     var what = mode === 'steelhead'
-      ? 'Each week, get the best steelhead days ' + (river ? 'on ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'on your river')
-      : 'Each week, get the best days to fish your river';
+      ? 'The best steelhead days ' + (river ? 'on ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'on your river') + ', every Thursday'
+      : 'The best days to fish your rivers, every Thursday';
     var showRun = mode === 'steelhead';
     var showOutlook = mode === 'any' && !lsGet('hff_sub_outlook');
-    box.innerHTML = '<div class="lbl">Stop guessing</div>' +
-      '<p>' + what + ', with where to stand and what to bring.</p>' +
+    box.innerHTML = '<div class="lbl">Free Thursday email</div>' +
+      '<p class="hd">' + what + '</p>' +
       '<p class="how">' + HOW + '</p>' +
       (mode === 'any' ? '<div class="pk"></div>' : '') +
       '<form novalidate>' +
@@ -193,24 +198,26 @@
     var form = box.querySelector('form'), email = box.querySelector('input[type=email]');
     var rSel = box.querySelector('select.r');
     var cb = box.querySelector('.opt input'), btn = box.querySelector('button[type=submit]'), msg = box.querySelector('.msg');
-    var picker = mode === 'any' ? weeklyPicker(box.querySelector('.pk')) : null;
+    // Steelhead preselected from October to April (2026-11-08): the box needed a river, a fish and an email, and no one finished it.
+    var picker = mode === 'any' ? weeklyPicker(box.querySelector('.pk'),
+      { species: STEELHEAD_MONTHS.indexOf(new Date().getMonth()) !== -1 ? ['Steelhead'] : [] }) : null;
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       msg.className = 'msg'; msg.textContent = '';
       var r, sp, weekly;
       if (picker) {
         var perr = picker.error();
-        if (perr) { msg.className = 'msg err'; msg.textContent = perr; return; }
+        if (perr) { msg.className = 'msg err'; msg.textContent = perr; blocked(page, 'weekly', placement, /^None/.test(perr) ? 'no-match' : /river/.test(perr) ? 'no-river' : 'no-fish'); return; }
         weekly = picker.pairs();
         r = picker.rivers().join(', '); sp = picker.species().join(', ');
       } else {
         r = rSel ? rSel.value : river;
-        if (!r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; rSel.focus(); return; }
+        if (!r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; rSel.focus(); blocked(page, 'weekly', placement, 'no-river'); return; }
         sp = 'Steelhead';
         weekly = { section: STEELHEAD_REACH[r], species: sp };
       }
       var v = email.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.className = 'msg err'; msg.textContent = 'Check the email address.'; email.focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.className = 'msg err'; msg.textContent = 'Check the email address.'; email.focus(); blocked(page, 'weekly', placement, 'bad-email'); return; }
       var run = !!(showRun && cb && cb.checked), outlook = !!(showOutlook && cb && cb.checked);
       var offer = 'weekly' + (run ? '+run' : '') + (outlook ? '+outlook' : '');
       btn.disabled = true; var label = btn.textContent; btn.textContent = 'Saving\u2026';
@@ -284,9 +291,9 @@
       e.preventDefault();
       msg.className = 'msg'; msg.textContent = '';
       var r = sel ? sel.value : river;
-      if (kind === 'run' && !r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; sel.focus(); return; }
+      if (kind === 'run' && !r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; sel.focus(); blocked(page, kind, placement, 'no-river'); return; }
       var v = email.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.className = 'msg err'; msg.textContent = 'Check the email address.'; email.focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.className = 'msg err'; msg.textContent = 'Check the email address.'; email.focus(); blocked(page, kind, placement, 'bad-email'); return; }
       btn.disabled = true; var label = btn.textContent; btn.textContent = 'Saving…';
       var body = { email: v, kind: kind, source: 'page:' + page, outlook: !!(cb && cb.checked) };
       if (kind === 'run') body.river = r;

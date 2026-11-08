@@ -761,6 +761,15 @@ Merged recently:
   390 x 664, 694 at 375, 736 at 360, 673 on 1024 x 768, 710 on 1280 x 900); open adds about 54 px. Umami `Day Chips Toggled {open}`.
   Days 8 to 11 have no flow estimate (the model stops at 7), so the pill there rests on weather and season.
 
+- **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
+  264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
+  boxes now say what arrives and when: label "Free Thursday email", a bold line ("The best steelhead days on the Humber River,
+  every Thursday"; homepage "The best days to fish your rivers, every Thursday"), then "Where to stand and what to bring, picked
+  from live river flow and the week's forecast. No email when no day looks good." Homepage box preselects Steelhead from
+  October to April (it needed a river, a fish and an email). New Umami `Signup Blocked {page, offer, placement, reason:
+  no-river|no-fish|no-match|bad-email}` when the box's own checks stop a submit. Pages load `signup.js?v=4`. Re-check in 3 to 4
+  weeks: signups and Blocked per Signup Box Seen, by page.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
@@ -769,7 +778,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
