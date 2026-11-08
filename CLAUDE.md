@@ -777,6 +777,12 @@ Merged recently:
   Steelhead` to jump in Search and River Viewed from this date.
 - **One selected look on the form** (TJ, 2026-11-07): the picked day, fish and method all use a teal border, light teal fill
   (`rgba(30,122,110,.08)`) and teal label and icon. The fish name was amber and the method label dark ink.
+- **Form spacing rebalance** (TJ, 2026-11-08: "dense at the top, loose around the button"): one unlayered block at the end
+  of `app.css`. More air in When and where (card top 13 to 19 px, label to day chips 9 to 13, chips to city 10 to 13); less
+  under the button (button to outlook link 20 to 4, card bottom 16 to 9; the link keeps its 44 px tap box). On phones the
+  photo-to-card gap goes 23 to 11 px and Method to button 17 to 14, so the button moves up 3 px: 651 on 390 x 664, 675 at
+  375 x 667, 671 at 360 x 640. Wider screens move down about 9 px (762 on 768 x 1024, 682 on 1024 x 768, 719 on 1280 x 900),
+  all still on the first screen.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
