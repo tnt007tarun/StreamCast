@@ -783,6 +783,9 @@ Merged recently:
   photo-to-card gap goes 23 to 11 px and Method to button 17 to 14, so the button moves up 3 px: 651 on 390 x 664, 675 at
   375 x 667, 671 at 360 x 640. Wider screens move down about 9 px (762 on 768 x 1024, 682 on 1024 x 768, 719 on 1280 x 900),
   all still on the first screen.
+  Same PR (TJ): under 389 px the Rainbow Trout tile reads "Rainbow" (`.sp-name-rest` hidden; `data-label` unchanged), so it no
+  longer wraps. Button bottom 661 at 375 x 667 (on screen now) and 656 at 360 x 640 (still 16 px below; the method words
+  "Spin Fishing" and "Float Fishing" wrap to two lines under 380 px).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -849,7 +852,7 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
    Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"
-   still wraps at 375 and 360 px; TJ kept it as is for now.
+   reads "Rainbow" under 389 px since 2026-11-08.
 
 16. **Alternative reach (built 2026-11-03, Phase 3c):** see Current state. Open: wording "Conditions there" vs "Conditions
    here"; alternatives use regional weather and modelled water (no live CVC); judge on Shown vs Clicked in Umami.

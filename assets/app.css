@@ -3691,3 +3691,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 600px) {
   #landing .form-card { margin-top: 0; }
 }
+
+/* Under 389 px "Rainbow Trout" wrapped to two lines and pushed the Find button down; it reads "Rainbow" there (TJ, 2026-11-08).
+   data-label stays "Rainbow Trout", so results, regs and analytics are unchanged. */
+@media (max-width: 389px) {
+  #landing .sp-name-rest { display: none; }
+}
