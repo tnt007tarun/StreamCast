@@ -3646,3 +3646,35 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   /* The in-field "Date" label sat inside the old input; the heading above the field group says what this row is. */
   #landing #date-field-group > .field-lbl { display: none; }
 }
+
+/* Rounded form controls (TJ, 2026-11-07): match the river and guide pages, where the signup and Today boxes use 10 px and
+   their fields and buttons 8 px. Unlayered so it beats the 3 px rules above. */
+#landing .field-input, #landing select.field-input, #landing .species-btn, #landing .tech-family-btn,
+#landing .forecast-btn, #landing .day-chip { border-radius: 8px; }
+
+/* Shorter hero on phones (TJ, 2026-11-07): about 14 px off the photo so the Find button sits higher. The headline also
+   steps down a little under 370 px so it stays on one line (at 360 px it wrapped to two). */
+@media (max-width: 600px) {
+  /* Equal space above and below the headline so it sits in the middle of the photo (TJ, 2026-11-07). */
+  #landing .hero-copy { padding-top: 15px; padding-bottom: 15px; }
+  #landing .hero-copy h1 { margin-bottom: 0; }
+}
+@media (max-width: 369px) {
+  #landing .hero-copy h1 { font-size: 33px; }
+}
+
+/* Hero points link (TJ, 2026-11-07): the "Built by TJ" point links to the About page. */
+.hero-points li a { color: #fff; text-decoration: underline; text-decoration-color: rgba(255,255,255,.5); text-underline-offset: 3px; }
+.hero-points li a:hover { text-decoration-color: #fff; }
+/* Six points fit beside the form on iPad landscape and small laptops (1000 to 1199 px): tighter rules and gaps. */
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .hero-points { margin-top: 18px; padding-top: 16px; }
+  .hero-points li { margin-bottom: 7px; font-size: 14px; }
+}
+
+/* One selected look on the form (TJ, 2026-11-07): teal border, light teal fill and teal label for the picked day, fish and
+   method. The fish name was amber (an old rule) and the method label dark ink. */
+#landing .species-btn.active .species-btn-name,
+#landing .tech-family-btn.active, #landing .tech-family-btn.active * { color: var(--fern, #1e7a6e); }
+#landing .species-btn.active, #landing .tech-family-btn.active { background: rgba(30,122,110,.08); }
+#landing .tech-family-btn.active svg, #landing .tech-family-btn.active svg * { stroke: var(--fern, #1e7a6e); }

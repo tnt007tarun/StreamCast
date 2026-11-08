@@ -1377,7 +1377,10 @@ function goToResults(){
   (function(){
     var _loc = (document.getElementById('loc-input-field')||{}).value || 'unknown';
     var _spp = Array.from(document.querySelectorAll('.species-btn.active')).map(function(b){ return b.getAttribute('data-label'); }).filter(Boolean).join(',') || 'any';
-    track('Search', { location: _loc, species: _spp, mode: appMode });
+    var _pre = window._speciesPrefill;
+    var _ev = { location: _loc, species: _spp, mode: appMode };
+    if (_pre) _ev.prefill = (_spp === _pre) ? 'kept' : 'changed';
+    track('Search', _ev);
   })();
   // Resolve location — needed in both beginner and expert mode
   var locInp = document.getElementById('loc-input-field');
@@ -6191,6 +6194,27 @@ function updateSpeciesGrid() {
   el.addEventListener('change', function(){ try { updateSpeciesGrid(); } catch (e) { console.error('updateSpeciesGrid', e); } });
   if (id === 'travel-range') el.addEventListener('input', function(){ try { updateSpeciesGrid(); } catch (e) {} });
 });
+
+// November to February, Steelhead starts picked on the form (TJ, 2026-11-07): it is what nearly everyone fishes then, so
+// one fewer tap before "Find my best spot". Only on a plain visit (no deep link), only if nothing is picked yet, and
+// judged by the date the form shows (today, or tomorrow after sunset). The tap can be undone like any other pick.
+// Search sends prefill: kept | changed so Umami can tell a kept default from a real choice.
+var STEELHEAD_PREFILL_MONTHS = [11, 12, 1, 2];
+(function () {
+  try {
+    var q = new URLSearchParams(window.location.search);
+    // A deep link has already opened results (and cleaned its query off the URL) by the time this runs.
+    var land = document.getElementById('landing');
+    if (q.get('river') || q.get('species') || (land && land.style.display === 'none')) return;
+    var m = parseInt(formTripDate().slice(5, 7), 10);
+    if (STEELHEAD_PREFILL_MONTHS.indexOf(m) === -1) return;
+    if (document.querySelector('.species-btn.active')) return;
+    var b = document.querySelector('.species-btn[data-value="steelhead"]');
+    if (!b) return;
+    b.classList.add('active');
+    window._speciesPrefill = b.getAttribute('data-label');
+  } catch (e) {}
+})();
 
 // Remember the city between visits, and clear the "pick a city" message once one is chosen (TJ, 2026-11-04).
 (function () {
