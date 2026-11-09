@@ -1502,7 +1502,27 @@ function goToResults(){
         var cfg = getRiverConfig(r.name);
         return cfg && cfg.species && targetSpeciesNames.some(function(n){ return cfg.species.indexOf(n) !== -1; });
       });
-      if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
+      // Pick the reach that legally offers the most of the picked fish on the trip date (fish present, season open,
+      // access open), best ranked first among equals. A fish that is closed everywhere (brook trout after Sept 30)
+      // counts nowhere, so it can't pull the pick away from water that has the others (TJ, 2026-11-09: Steelhead +
+      // Brown + Brook from Etobicoke went to the Duffins, which offers only steelhead, instead of the Humber).
+      // The listing tiers below only decide when no reach offers any picked fish.
+      var _offerBest = null, _offerN = 0;
+      ranked.forEach(function(r) {
+        // Steelhead water standing in for Rainbow Trout counts half, so a reach with resident rainbows open wins over
+        // it; when no resident rainbows are open, steelhead water still counts (TJ, 2026-10-30).
+        var seen = {};
+        targetSpeciesNames.forEach(function(n){
+          var o = legalSpeciesFor(r.name, n, _tripDate, true);
+          if (o) seen[o] = Math.max(seen[o] || 0, o === n ? 1 : 0.5);
+        });
+        var k = Object.keys(seen).reduce(function(t, o){ return t + seen[o]; }, 0);
+        // Equal fish: the better ranked reach, then the shorter drive.
+        if (k > _offerN || (k > 0 && k === _offerN && (r.score > _offerBest.score ||
+            (r.score === _offerBest.score && r.driveTime < _offerBest.driveTime)))) { _offerN = k; _offerBest = r; }
+      });
+      if (_offerBest) bestPick = _offerBest;
+      else if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
       else if (withAllFishable.length > 0) bestPick = withAllFishable[0];
       else if (withAnySpecies.length > 0) bestPick = withAnySpecies[0];
 
