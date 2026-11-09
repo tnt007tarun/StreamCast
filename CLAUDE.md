@@ -788,6 +788,18 @@ Merged recently:
   one text item; `.mth-rest` hidden), and under 370 px the photo band is 6 px shorter. Every phone width now has the whole
   button on the first screen: 651 on 390 x 664, 647 on 375 x 667, 637 on 360 x 640.
   Under 380 px the day chips sit 4 px apart (was 6) with 12 px day and 11 px date text, so "Today" no longer fills its button.
+- **Several fish picked: pick by fish offered** (TJ, 2026-11-09: Steelhead + Brown + Brook from Etobicoke went to the Duffins,
+  which offers only steelhead, while Steelhead + Brown went to the Humber). Two bugs. (1) `goToResults()` looked for a reach
+  that *lists* every picked fish, and when none did (brook trout aren't on the Humber) took the top-ranked reach listing any.
+  It now takes the reach that legally offers the most picked fish on the trip date (`legalSpeciesFor(..., true)`: listed,
+  open, fish present; steelhead water standing in for Rainbow Trout counts half), ties by rank score then drive; the old
+  listing tiers only decide when no reach offers any. (2) `sectionSeasonScore()` with two or more fish fell into its
+  no-species branch and scored a reach on its best fish of any kind (the Duffins mouth got peak coho on a Steelhead + Brown
+  search); it now scores each picked fish alone and keeps the best. Core change, so the Worker redeploys; the weekly email
+  scores one fish at a time, so its numbers don't change. Checked 7,380 searches (41 cities, 41 fish picks of 1 to 3, six
+  dates) against main: 765 picks change. 143 were reaches that legally offered none of the fish; 256 now offer more of the
+  picked fish (162 of those a longer drive, mostly 5 to 20 min, within the travel range); 363 offer the same fish (mostly
+  rank and upstream-move reshuffles); 1 offers fewer. Open: whether "more of your fish" should be capped by extra drive time.
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly

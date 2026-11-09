@@ -3275,6 +3275,17 @@ function stagingSectionFor(sectionName) {
 // rankRivers adds drive time on top; conditionsScore adds the water. seasonSection is passed
 // to getCurrentSeason (lake-run brown trout); the app leaves it out so the viewed section is used.
 function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSection) {
+  // Several fish picked: score the reach on the best of those fish (each scored as if picked alone, closures
+  // included). It used to fall through to the no-species branch below and score the reach on its best fish of any
+  // kind, so a Steelhead + Brown Trout search credited the Duffins mouth with peak coho (TJ, 2026-11-09).
+  if (targetSpeciesNames && targetSpeciesNames.length > 1) {
+    var _best = null;
+    targetSpeciesNames.forEach(function(n) {
+      var r = sectionSeasonScore(sectionName, [n], dateStr, seasonSection);
+      if (!_best || r.score > _best.score) _best = r;
+    });
+    return _best;
+  }
   var cfg = getRiverConfig(sectionName);
   var score = 0;
   var notes = [];
