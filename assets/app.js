@@ -6082,6 +6082,35 @@ function renderBaitPillar(topMethod) {
     wireAlts(alts);
   }
 
+  // Wide screens (TJ, 2026-11-10): the same baits as cards, three to a row, the top pick first with its badge. Phones keep
+  // the top card plus the tap-to-open list above (CSS shows one or the other). One full row shows; the rest sit behind "N more".
+  var grid = document.getElementById('tg-bait-grid');
+  if (grid) {
+    var gCard = function(b, i) {
+      var r = '';
+      if (b.bestFor) r += '<div><dt>Best for</dt><dd>' + b.bestFor + '</dd></div>';
+      if (b.how)     r += '<div><dt>How</dt><dd>' + b.how + '</dd></div>';
+      if (!r && b.blurb) r = '<div><dt>Note</dt><dd>' + b.blurb + '</dd></div>';
+      return '<div class="p-bgc' + (i === 0 ? ' p-bgc-top' : '') + '">' +
+        '<div class="p-bait-top">' + imgHtml(b) + '<div style="flex:1;min-width:0">' +
+          (i === 0 ? '<span class="p-badge">\u2605 Start here</span>' : (b.when ? '<span class="p-alt-when">' + b.when + '</span>' : '')) +
+          '<h5>' + b.name + '</h5>' + (b.spec ? '<div class="p-bspec">' + b.spec + '</div>' : '') +
+        '</div></div>' + (r ? '<dl class="p-how">' + r + '</dl>' : '') + '</div>';
+    };
+    // One full row shows: three cards from 1000 px, two below (two columns there).
+    var GROW = (window.matchMedia && window.matchMedia('(min-width:1000px)').matches) ? 3 : 2, gFirst = list.slice(0, GROW), gRest = list.slice(GROW);
+    grid.innerHTML = '<div class="p-bgrid">' + gFirst.map(gCard).join('') + '</div>' +
+      (gRest.length ? '<div class="p-bgrid" id="tg-bgrid-more" hidden>' +
+        gRest.map(function(b, k){ return gCard(b, GROW + k); }).join('') + '</div>' +
+        '<button class="p-more" type="button" id="tg-bgrid-btn">' + gRest.length + ' more \u2193</button>' : '');
+    var gBtn = document.getElementById('tg-bgrid-btn');
+    if (gBtn) gBtn.addEventListener('click', function() {
+      var m = document.getElementById('tg-bgrid-more'); if (!m) return;
+      m.hidden = !m.hidden;
+      gBtn.textContent = m.hidden ? (gRest.length + ' more \u2193') : 'Show fewer \u2191';
+    });
+  }
+
   // Panel-level footnote (bait regs, harbour closures) carries over if present.
   var srcFoot = src ? src.querySelector('.bfooter') : null;
   if (foot) {
