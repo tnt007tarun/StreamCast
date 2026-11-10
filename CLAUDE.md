@@ -60,6 +60,11 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
 
 ## House rules
 
+### Angler first (TJ, 2026-11-10)
+For every change, ask: how useful is this to an angler standing at the river, and is the app getting easier to use or
+just busier? Don't show the same thing twice, don't offer places or fish that are closed, and cut lines that don't help
+someone decide where to go or what to bring. Say in the PR what the change does for the angler.
+
 ### Never recommend closed water
 - The source of truth is the **MNR 2026 Ontario Fishing Regulations Summary**. It's a doc in
   the claude.ai project. If it isn't available, ask TJ to attach the PDF. Never work from memory.
