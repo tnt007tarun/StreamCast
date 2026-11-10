@@ -820,6 +820,8 @@ Merged recently:
   (2) Species cards' season bar labels ran together on phones ("JanuaryMarchMay…"): a second `var MONTH_NAMES` with full
   names (species grid block) overrode the short one. That one is gone (`longDate()` uses `MONTH_FULL`), and the bar shows
   one initial under each of the 12 months (J F M A M J J A S O N D), every width.
+  (3) Season notes that named the wrong month (TJ's wording): steelhead Fall Return (Oct to Nov) "…Numbers build through the
+  fall." (was "through October"), Chinook Late Run (Nov) "Run tapering. Mostly spawned-out fish." (was "…early October").
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly

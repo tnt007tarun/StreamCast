@@ -3024,7 +3024,7 @@ var SPECIES_SEASONS = {
     windows: [
       { months: [2,4],   quality: "peak",    label: "Spring Run",  note: "Peak spring steelhead run from Lake Ontario and Georgian Bay. Best of the year." },
       { months: [5,8],   quality: "absent",  label: "Lake",        note: "Steelhead have dropped back to the lake. Target resident rainbow instead." },
-      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through October." },
+      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through the fall." },
       { months: [11,1],  quality: "good",    label: "Winter Run",  note: "Winter steelhead in larger rivers. Slow float with roe or beads. Hardy angling." }
     ]
   },
@@ -3048,7 +3048,7 @@ var SPECIES_SEASONS = {
       { months: [7,7],   quality: "slow",    label: "Harbour Mouth", note: "Early Chinook staging near harbour mouths in late July–August. A few enter rivers mid-August." },
       { months: [8,8],   quality: "good",    label: "Early Run", note: "Chinook entering rivers through September. Numbers building toward peak." },
       { months: [9,9],   quality: "peak",    label: "Peak Run",  note: "Peak Chinook run. Best of the year. Fish stacked in pools." },
-      { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Spawned-out fish. Still worth fishing early October." },
+      { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Mostly spawned-out fish." },
       { months: [11,11], quality: "slow",    label: "Post-Spawn", note: "Run over. Occasional late fish. Most have spawned out." }
     ]
   },
