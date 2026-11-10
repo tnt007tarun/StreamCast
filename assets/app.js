@@ -4937,7 +4937,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     });
     var _d = getTripDateStr();
     // Closed reaches are left out (TJ, 2026-11-10): the line suggests places to fish on the trip date.
-    _sibs = _sibs.filter(function(x) { var _c = getRiverConfig(x); return !(_c && sectionClosedOn(_c, _d)); });
+    // Also left out: a reach the note above already links ("Stay on the …"), so it isn't offered twice (TJ, 2026-11-10).
+    var _linked = window._upstreamFrom ? window._upstreamFrom.from : '';
+    _sibs = _sibs.filter(function(x) { var _c = getRiverConfig(x); return x !== _linked && !(_c && sectionClosedOn(_c, _d)); });
     var _html = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
       return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>';
     }).join(' \u00b7 ') : '';

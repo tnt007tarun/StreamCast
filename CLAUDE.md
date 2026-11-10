@@ -607,7 +607,7 @@ Merged recently:
   (601 to 1199 px, or any touch screen over 600 px): shorter hero, a gap under it, one-line method buttons; button bottom about
   697 px on 1024 x 768 (was 739). "Check by river" no longer shows reach chips: the app always picks the reach
   (`resolveAutoSection()`), and results show one line under the headline, "Other reaches: …" (`#tp-reaches`, siblings from
-  `RIVER_SECTIONS`; reaches closed on the trip date (`sectionClosedOn()`) are left out, TJ 2026-11-10). Tapping one opens that reach and marks it in `_upstreamStay`, so the
+  `RIVER_SECTIONS`; reaches closed on the trip date (`sectionClosedOn()`) are left out, and so is the reach the "Stay on the …" link already offers, TJ 2026-11-10). Tapping one opens that reach and marks it in `_upstreamStay`, so the
   upstream rule doesn't move the reader back up. Umami `Other Reach Clicked {river}`.
 
 - **Regs follow the picked fish** (TJ, 2026-11-05: a Steelhead + Chinook search on the Duffins showed "2026 Regs · Coho"): with
