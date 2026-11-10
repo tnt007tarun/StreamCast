@@ -2794,7 +2794,19 @@ function fishingWindow(o) {
     var pc = o.periodCloud;
     var g = { morning: clsSky(pc.morning), midday: clsSky(pc.midday), evening: clsSky(pc.evening) };
     active = ['morning', 'midday', 'evening'].filter(function(p) { return g[p] !== 'bad'; });
-    if (active.length === 3) { mode = 'allday'; note = 'Cloud cover holds, so fish any time.'; }
+    if (active.length === 3) {
+      mode = 'allday';
+      // All three periods have some cloud. Only "holds" when all are overcast; otherwise say when the cloud is best, in
+      // step with the Sky card's note ("Brighter early, cloudier later…", TJ 2026-11-10: they disagreed).
+      var rk = { warn: 1, good: 2 }, M = rk[g.morning], D = rk[g.midday], E = rk[g.evening];
+      if (M === 2 && D === 2 && E === 2) note = 'Cloud cover holds, so fish any time.';
+      else if (M <= D && D <= E && M < E) {
+        var from = D === 2 ? WINDOW_MIDDAY[0] : (set != null ? Math.min(WINDOW_MIDDAY[1], set - 60) : WINDOW_MIDDAY[1]);
+        note = o.nowMin != null && o.nowMin >= from ? 'Cloud cover holds for the rest of the day, so fish any time.'
+          : 'Enough cloud to fish any time. Best from about ' + clockText(from) + ', as the cloud thickens.';
+      } else if (M >= D && D >= E && M > E) note = 'Enough cloud to fish any time. Best early, while the cloud is thickest.';
+      else note = 'Enough cloud to fish any time.';
+    }
     else if (active.length === 0) { mode = 'early'; note = 'Clear sky all day. Fish the first hours of light.'; }
     else {
       mode = 'periods';
