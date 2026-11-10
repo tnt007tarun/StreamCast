@@ -2794,7 +2794,19 @@ function fishingWindow(o) {
     var pc = o.periodCloud;
     var g = { morning: clsSky(pc.morning), midday: clsSky(pc.midday), evening: clsSky(pc.evening) };
     active = ['morning', 'midday', 'evening'].filter(function(p) { return g[p] !== 'bad'; });
-    if (active.length === 3) { mode = 'allday'; note = 'Cloud cover holds, so fish any time.'; }
+    if (active.length === 3) {
+      mode = 'allday';
+      // All three periods have some cloud. Only "holds" when all are overcast; otherwise say when the cloud is best, in
+      // step with the Sky card's note ("Brighter early, cloudier later…", TJ 2026-11-10: they disagreed).
+      var rk = { warn: 1, good: 2 }, M = rk[g.morning], D = rk[g.midday], E = rk[g.evening];
+      if (M === 2 && D === 2 && E === 2) note = 'Cloud cover holds, so fish any time.';
+      else if (M <= D && D <= E && M < E) {
+        var from = D === 2 ? WINDOW_MIDDAY[0] : (set != null ? Math.min(WINDOW_MIDDAY[1], set - 60) : WINDOW_MIDDAY[1]);
+        note = o.nowMin != null && o.nowMin >= from ? 'Cloud cover holds for the rest of the day, so fish any time.'
+          : 'Enough cloud to fish any time. Best from about ' + clockText(from) + ', as the cloud thickens.';
+      } else if (M >= D && D >= E && M > E) note = 'Enough cloud to fish any time. Best early, while the cloud is thickest.';
+      else note = 'Enough cloud to fish any time.';
+    }
     else if (active.length === 0) { mode = 'early'; note = 'Clear sky all day. Fish the first hours of light.'; }
     else {
       mode = 'periods';
@@ -3012,7 +3024,7 @@ var SPECIES_SEASONS = {
     windows: [
       { months: [2,4],   quality: "peak",    label: "Spring Run",  note: "Peak spring steelhead run from Lake Ontario and Georgian Bay. Best of the year." },
       { months: [5,8],   quality: "absent",  label: "Lake",        note: "Steelhead have dropped back to the lake. Target resident rainbow instead." },
-      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through October." },
+      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through the fall." },
       { months: [11,1],  quality: "good",    label: "Winter Run",  note: "Winter steelhead in larger rivers. Slow float with roe or beads. Hardy angling." }
     ]
   },
@@ -3036,7 +3048,7 @@ var SPECIES_SEASONS = {
       { months: [7,7],   quality: "slow",    label: "Harbour Mouth", note: "Early Chinook staging near harbour mouths in late July–August. A few enter rivers mid-August." },
       { months: [8,8],   quality: "good",    label: "Early Run", note: "Chinook entering rivers through September. Numbers building toward peak." },
       { months: [9,9],   quality: "peak",    label: "Peak Run",  note: "Peak Chinook run. Best of the year. Fish stacked in pools." },
-      { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Spawned-out fish. Still worth fishing early October." },
+      { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Mostly spawned-out fish." },
       { months: [11,11], quality: "slow",    label: "Post-Spawn", note: "Run over. Occasional late fish. Most have spawned out." }
     ]
   },

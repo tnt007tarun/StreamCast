@@ -3686,13 +3686,15 @@ function buildSeasonBar(speciesName) {
   var barHtml = '<div class="season-bar">';
   segments.forEach(function(s) {
     var cls = 'seg seg-' + s.quality + (s.current ? ' seg-now' : '');
-    var title = MONTH_NAMES[s.month];
+    var title = MONTH_FULL[s.month];
     barHtml += '<div class="' + cls + '" title="' + title + '"></div>';
   });
   barHtml += '</div>';
   barHtml += '<div class="season-bar-labels">';
-  [0,2,4,6,8,10].forEach(function(m) {
-    barHtml += '<span>' + MONTH_NAMES[m] + '</span>';
+  // One initial under each month (TJ, 2026-11-10): a second var MONTH_NAMES with full names overrode the short one, and
+  // "JanuaryMarchMay…" ran together on phones.
+  MONTH_FULL.forEach(function(name) {
+    barHtml += '<span title="' + name + '">' + name.charAt(0) + '</span>';
   });
   barHtml += '</div>';
   return barHtml;
@@ -6182,8 +6184,6 @@ function renderStockingSection(riverName) {
 // (FORM_SEASON_CAL) on reaches in range that are legally open on the trip date, and tiles are ordered best
 // first. Closed tiles stay tappable so the results page can say why. formSpeciesStatus() in the core decides.
 var SP_TILE_NAME = { brown:'Brown Trout', rainbow:'Rainbow Trout', steelhead:'Steelhead', brook:'Brook Trout', chinook:'Chinook Salmon', coho:'Coho Salmon' };
-var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
 function formTripDate() {
   var v = (document.getElementById('trip-date') || {}).value;
   if (v) return v;
@@ -6205,7 +6205,7 @@ function formSectionsInRange() {
 
 function longDate(iso) {
   var p = iso.split('-');
-  return MONTH_NAMES[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
+  return MONTH_FULL[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
 }
 
 // One chip per tile (TJ picked word chips, 2026-10-30), tiles ordered best first. 'out' = legal but the fish

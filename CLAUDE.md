@@ -180,7 +180,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-26)
+## Current state (updated 2026-11-10)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -810,6 +810,18 @@ Merged recently:
   reach offering none of the picked fish; 210 now offer more of them (113 farther, almost all 5 to 15 min); 389 offer the
   same fish; 160 offer fewer but are closer (20 to 50 min saved) and 159 of those show the more-fish suggestion. 469
   searches show a suggestion.
+
+- **Best window note and season bar letters** (TJ, 2026-11-10, iPhone): (1) with some cloud in every period, the Best
+  Window note said "Cloud cover holds, so fish any time." while the Sky card's note said "Brighter early, cloudier later. The
+  bite should pick up as the cloud comes in." `fishingWindow()` now says "holds" only when all three periods are overcast;
+  rising cloud reads "Enough cloud to fish any time. Best from about 3 PM (or 10 AM), as the cloud thickens." (once past that
+  time: "Cloud cover holds for the rest of the day"), falling cloud "Best early, while the cloud is thickest", mixed "Enough
+  cloud to fish any time." The window itself is unchanged. Core change, but neither the Worker nor the emails use it.
+  (2) Species cards' season bar labels ran together on phones ("JanuaryMarchMay…"): a second `var MONTH_NAMES` with full
+  names (species grid block) overrode the short one. That one is gone (`longDate()` uses `MONTH_FULL`), and the bar shows
+  one initial under each of the 12 months (J F M A M J J A S O N D), every width.
+  (3) Season notes that named the wrong month (TJ's wording): steelhead Fall Return (Oct to Nov) "…Numbers build through the
+  fall." (was "through October"), Chinook Late Run (Nov) "Run tapering. Mostly spawned-out fish." (was "…early October").
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly

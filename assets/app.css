@@ -3711,3 +3711,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .day-chip .dc-day { font-size: 12px; }
   #landing .day-chip .dc-date { font-size: 11px; }
 }
+
+/* Season bar: one initial under each of the 12 segments (TJ, 2026-11-10). Gap matches .season-bar. */
+.season-bar-labels { justify-content:normal; gap:1px; }
+.season-bar-labels span { flex:1; text-align:center; }
