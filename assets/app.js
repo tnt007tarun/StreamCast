@@ -1741,6 +1741,26 @@ function rollPastSunset(lat, lng) {
 // #trip-date stays the single source of the date (hidden): a tap sets its value and fires 'change', so search, deep
 // links, the sunset roll and the species dots work as before. Collapsed with a later day picked, "More" shows that day.
 var DAY_CHIP_DAYS = 11, DAY_CHIP_FIRST = 5, _dayChipsOpen = false;
+// Home hero from 1000 px: keep the photo behind the whole form card (see the --hero-h rule at the end of app.css).
+function syncHeroHeight() {
+  var land = document.getElementById('landing');
+  var card = land && land.querySelector('.form-card > .mode-wrap');
+  if (!card) return;
+  var wide = window.matchMedia && window.matchMedia('(min-width:1000px)').matches;
+  if (!wide) { land.style.removeProperty('--hero-h'); return; }
+  land.style.setProperty('--hero-h', Math.max(600, Math.ceil(card.offsetHeight) + 32 + 48) + 'px');
+}
+(function() {
+  function start() {
+    var card = document.querySelector('#landing .form-card > .mode-wrap');
+    if (!card) return;
+    syncHeroHeight();
+    if (window.ResizeObserver) new ResizeObserver(syncHeroHeight).observe(card);
+    window.addEventListener('resize', syncHeroHeight);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
 function renderDayChips() {
   var box = document.getElementById('day-chips'), di = document.getElementById('trip-date');
   if (!box || !di || !di.min) return;

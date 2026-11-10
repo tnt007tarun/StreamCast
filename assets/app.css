@@ -3739,3 +3739,12 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (min-width:1000px) {
   #results .p-bgrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 }
+
+/* Home hero from 1000 px (TJ, 2026-11-10, a Dell laptop): the photo was a fixed 600 px and the form card (about 680 px,
+   more with "More dates" open) hung past its bottom edge, so the photo ended in a hard line across the form. The photo
+   now grows with the card: --hero-h is set from the card's height by syncHeroHeight() in app.js (card + 32 px above +
+   48 px below, at least 600). The fallback covers the closed form before the script runs. */
+@media (min-width: 1000px) {
+  #landing .hero-photo { height: var(--hero-h, 760px); }
+  #landing .form-card > .mode-wrap { margin-top: calc(32px - var(--hero-h, 760px)); margin-bottom: 92px; }
+}
