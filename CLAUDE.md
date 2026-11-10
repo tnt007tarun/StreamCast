@@ -838,8 +838,9 @@ Merged recently:
   middle with bare wash on both sides, as if `background-size: cover` was dropped; not reproducible in headless Chrome at any
   width or pixel ratio. The photo is now an `<img class="hero-img">` (800/1600 srcset, `object-fit: cover`, centre 40% on
   phones, 45% from 1000 px) and the wash sits on `.hero-photo-bg` above it. Renders match main within resampling noise at
-  360 to 1920 px. The results page's species strip still uses a CSS background; switch it the same way if it shows the
-  same bars. Open: TJ to recheck on that monitor.
+  360 to 1920 px. The results page's species strip showed the same bars (TJ), so it got the same change: `<img
+  class="sp-banner-img">` inside `#species-banner`, wash on its `::before`; the phone rule that targeted the text block as
+  `> div:nth-child(2)` is now `> .sp-banner-fish + div`. Open: TJ to recheck on that monitor.
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
