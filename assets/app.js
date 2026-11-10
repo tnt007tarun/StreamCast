@@ -6375,10 +6375,10 @@ function notifyOffer() {
   }
   if (weekly && !(parent && RUN_ALERT_RIVERS.indexOf(parent) !== -1)) {
     return { kind: 'weekly', key: weekly.key,
-      title: 'Get a heads-up when ' + weekly.species + ' conditions look good',
-      sub: 'One email on Thursdays, only when the coming days look good on ' + secShort(section),
-      subShort: 'Thursdays, only when the coming days look good.',
-      button: 'Email me', payload: { weekly: { section: weekly.section, species: weekly.species } } };
+      title: 'Get the weekly ' + weekly.species + ' outlook',
+      sub: 'We email you on Thursday, for the best fishing days from Friday to the following Wednesday. Get info on where to stand, and what to bring. We don\u2019t email you if there aren\u2019t any good days forecasted!',
+      subShort: 'Thursdays, for the best days Friday to Wednesday.',
+      button: 'Get it', payload: { weekly: { section: weekly.section, species: weekly.species } } };
   }
   if (!lsGet('hff_sub_outlook')) {
     return { kind: 'outlook', key: 'hff_sub_outlook',
@@ -6428,8 +6428,8 @@ function initNotifyBar() {
     wbox.style.display = offer.weeklyBox ? '' : 'none';
     var wcb = wbox.querySelector('input'); if (wcb) wcb.checked = false;
     var wtx = wbox.querySelector('span');
-    if (wtx && offer.weeklyBox) wtx.textContent = _narrow ? 'Also a Thursday email on good days here'
-      : 'Also a Thursday email when the coming days look good for ' + offer.weeklyBox.species + ' here';
+    if (wtx && offer.weeklyBox) wtx.textContent = _narrow ? 'Also send the weekly outlook'
+      : 'Also send the weekly ' + offer.weeklyBox.species.toLowerCase() + ' outlook for this river';
   }
   if (form) form.style.display = '';
   if (success) success.style.display = 'none';
