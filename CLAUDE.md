@@ -829,6 +829,12 @@ Merged recently:
   edge. One full row shows; the rest sit behind "N more". Phones keep the top card plus the tap-to-open list. Order and
   content are unchanged.
 
+- **Home photo grows with the form** (TJ, 2026-11-10, on a Dell laptop): from 1000 px the hero photo was a fixed 600 px and
+  the form card (about 680 px, more with "More dates" open) hung past it, so the photo ended in a hard line across the form.
+  The photo height is now `--hero-h` on `#landing`, set by `syncHeroHeight()` in `app.js` (card height + 32 above + 48 below,
+  at least 600; a ResizeObserver follows "More dates"); the card's negative top margin uses the same value and it has a 92 px
+  bottom margin so the guides start below the photo. Fallback 760 px. Under 1000 px nothing changes.
+
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
   boxes now say what arrives and when: label "Free Thursday email", a bold line ("The best steelhead days on the Humber River,
