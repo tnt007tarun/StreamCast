@@ -823,6 +823,12 @@ Merged recently:
   (3) Season notes that named the wrong month (TJ's wording): steelhead Fall Return (Oct to Nov) "…Numbers build through the
   fall." (was "through October"), Chinook Late Run (Nov) "Run tapering. Mostly spawned-out fish." (was "…early October").
 
+- **Bait as cards on wide screens** (TJ, 2026-11-10): from 760 px the Bait, Lures or Flies pillar shows each option as a
+  card (photo, name, spec, water tag, Best for, How), three to a row from 1000 px and two from 760 to 999 px
+  (`#tg-bait-grid`, built in `renderBaitPillar()` from the same list). The top pick is first, with "Start here" and a teal
+  edge. One full row shows; the rest sit behind "N more". Phones keep the top card plus the tap-to-open list. Order and
+  content are unchanged.
+
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
   boxes now say what arrives and when: label "Free Thursday email", a bold line ("The best steelhead days on the Humber River,

@@ -3715,3 +3715,27 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* Season bar: one initial under each of the 12 segments (TJ, 2026-11-10). Gap matches .season-bar. */
 .season-bar-labels { justify-content:normal; gap:1px; }
 .season-bar-labels span { flex:1; text-align:center; }
+
+/* Bait as cards from 760 px (TJ, 2026-11-10): three to a row from 1000 px, two between 760 and 999. Phones keep the top
+   card plus the tap-to-open list. The top pick keeps its "Start here" badge and a teal edge. */
+#tg-bait-grid { display:none; }
+@media (min-width:760px) {
+  #pillar-bait #tg-bait-card, #pillar-bait #tg-bait-alts { display:none; }
+  #tg-bait-grid { display:block; }
+  #results .p-bgrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  #results .p-bgrid + .p-bgrid { margin-top:12px; }
+  #results .p-bgrid[hidden] { display:none; }
+  #results .p-bgc { background:var(--white); border:1px solid var(--rule); border-radius:var(--r-md); padding:14px; display:flex; flex-direction:column; }
+  #results .p-bgc-top { border-color:var(--teal, #1e7a6e); box-shadow:inset 0 3px 0 var(--teal, #1e7a6e); }
+  #results .p-bgc .p-bait-top { align-items:flex-start; }
+  #results .p-bgc .p-bimg { width:72px; height:56px; }
+  #results .p-bgc h5 { margin:.35rem 0 .15rem; }
+  #results .p-bgc .p-alt-when { display:inline-block; }
+  #results .p-bgc .p-how { display:block; margin-top:12px; padding-top:0; border-top:0; }
+  #results .p-bgc .p-how > div { background:var(--surface-sunk); border-radius:var(--r-md); padding:8px 10px; }
+  #results .p-bgc .p-how > div + div { margin-top:8px; }
+  #results #tg-bait-grid .p-more { margin-top:8px; }
+}
+@media (min-width:1000px) {
+  #results .p-bgrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
