@@ -4936,11 +4936,10 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       if (RIVER_SECTIONS[rv].indexOf(_here) !== -1) _sibs = RIVER_SECTIONS[rv].filter(function(x) { return x !== _here; });
     });
     var _d = getTripDateStr();
+    // Closed reaches are left out (TJ, 2026-11-10): the line suggests places to fish on the trip date.
+    _sibs = _sibs.filter(function(x) { var _c = getRiverConfig(x); return !(_c && sectionClosedOn(_c, _d)); });
     var _html = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
-      var _c = getRiverConfig(x);
-      var _closed = _c && sectionClosedOn(_c, _d);
-      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>'
-        + (_closed ? ' <span class="tp-reach-closed">(closed)</span>' : '');
+      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>';
     }).join(' \u00b7 ') : '';
     // A reach with more of the picked fish that the search skipped for being over 15 min farther (TJ, 2026-11-09).
     var _mf = window._moreFishAlt;
