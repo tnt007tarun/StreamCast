@@ -3600,7 +3600,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 999px) {
   #results #species-banner { gap: 10px; min-height: 64px; box-sizing: border-box; }
   #results #species-banner .sp-banner-fish { width: 40px; height: 40px; }
-  #results #species-banner > div:nth-child(2) { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; min-width: 0; }
+  #results #species-banner > .sp-banner-fish + div { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; min-width: 0; }
   #results #species-banner .sp-banner-lbl { display: none; }
   #results #species-banner .sp-banner-name { margin: 0; font-size: 17px; line-height: 1.2; min-width: 0; }
   #results #species-banner .sp-banner-badge { margin: 0; flex: none; font-size: 13px; line-height: 1.2; white-space: nowrap; }
@@ -3747,4 +3747,34 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (min-width: 1000px) {
   #landing .hero-photo { height: var(--hero-h, 760px); }
   #landing .form-card > .mode-wrap { margin-top: calc(32px - var(--hero-h, 760px)); margin-bottom: 92px; }
+}
+
+/* Home hero photo as an <img> (TJ, 2026-11-10: on an external monitor the photo drew at its natural 1600 px in the middle
+   of a wider hero, with bare wash on both sides, so the CSS background's "cover" didn't hold there). The photo is now an
+   <img class="hero-img"> with object-fit: cover and a 800/1600 srcset; the wash moved from the hero's background to
+   .hero-photo-bg on top of it. Same crop (centre 40% on phones, 45% from 1000 px) and the same gradients as before. */
+#landing .hero-photo { position: relative; isolation: isolate; background: #24302c; }
+#landing .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%;
+  z-index: 0; display: block; pointer-events: none; }
+#landing .hero-photo-bg { display: block; position: absolute; inset: 0; z-index: 1; animation: none;
+  background: linear-gradient(rgba(8,26,24,.40), rgba(8,26,24,.55)); }
+#landing .hero-photo-bg::before, #landing .hero-photo-bg::after { display: none; }
+#landing .hero-photo .hero-copy { position: relative; z-index: 2; }
+@media (min-width: 1000px) {
+  #landing .hero-img { object-position: center 45%; }
+  #landing .hero-photo-bg { background:
+    linear-gradient(90deg, rgba(8,26,24,.72) 0%, rgba(8,26,24,.34) 50%, rgba(8,26,24,.06) 80%),
+    linear-gradient(0deg, rgba(8,26,24,.40) 0%, transparent 45%); }
+}
+
+/* Results species strip: the same photo as an <img> for the same reason as the home hero (TJ, 2026-11-10: the CSS
+   background drew at 1600 px with bars on his external monitor). The wash is the strip's ::before; children sit above. */
+#results #species-banner { position: relative; isolation: isolate; overflow: hidden; background: #24302c; }
+#results #species-banner > .sp-banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  object-position: center 42%; z-index: -2; display: block; pointer-events: none; }
+#results #species-banner::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.45) 55%, rgba(8,26,24,.25) 100%); }
+@media (min-width: 1000px) {
+  #results #species-banner > .sp-banner-img { object-position: center 45%; }
+  #results #species-banner::before { background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.40) 50%, rgba(8,26,24,.10) 85%); }
 }
