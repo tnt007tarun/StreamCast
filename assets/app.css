@@ -3748,3 +3748,21 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .hero-photo { height: var(--hero-h, 760px); }
   #landing .form-card > .mode-wrap { margin-top: calc(32px - var(--hero-h, 760px)); margin-bottom: 92px; }
 }
+
+/* Home hero photo as an <img> (TJ, 2026-11-10: on an external monitor the photo drew at its natural 1600 px in the middle
+   of a wider hero, with bare wash on both sides, so the CSS background's "cover" didn't hold there). The photo is now an
+   <img class="hero-img"> with object-fit: cover and a 800/1600 srcset; the wash moved from the hero's background to
+   .hero-photo-bg on top of it. Same crop (centre 40% on phones, 45% from 1000 px) and the same gradients as before. */
+#landing .hero-photo { position: relative; isolation: isolate; background: #24302c; }
+#landing .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%;
+  z-index: 0; display: block; pointer-events: none; }
+#landing .hero-photo-bg { display: block; position: absolute; inset: 0; z-index: 1; animation: none;
+  background: linear-gradient(rgba(8,26,24,.40), rgba(8,26,24,.55)); }
+#landing .hero-photo-bg::before, #landing .hero-photo-bg::after { display: none; }
+#landing .hero-photo .hero-copy { position: relative; z-index: 2; }
+@media (min-width: 1000px) {
+  #landing .hero-img { object-position: center 45%; }
+  #landing .hero-photo-bg { background:
+    linear-gradient(90deg, rgba(8,26,24,.72) 0%, rgba(8,26,24,.34) 50%, rgba(8,26,24,.06) 80%),
+    linear-gradient(0deg, rgba(8,26,24,.40) 0%, transparent 45%); }
+}
