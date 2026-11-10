@@ -60,6 +60,11 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
 
 ## House rules
 
+### Angler first (TJ, 2026-11-10)
+For every change, ask: how useful is this to an angler standing at the river, and is the app getting easier to use or
+just busier? Don't show the same thing twice, don't offer places or fish that are closed, and cut lines that don't help
+someone decide where to go or what to bring. Say in the PR what the change does for the angler.
+
 ### Never recommend closed water
 - The source of truth is the **MNR 2026 Ontario Fishing Regulations Summary**. It's a doc in
   the claude.ai project. If it isn't available, ask TJ to attach the PDF. Never work from memory.
@@ -607,7 +612,7 @@ Merged recently:
   (601 to 1199 px, or any touch screen over 600 px): shorter hero, a gap under it, one-line method buttons; button bottom about
   697 px on 1024 x 768 (was 739). "Check by river" no longer shows reach chips: the app always picks the reach
   (`resolveAutoSection()`), and results show one line under the headline, "Other reaches: …" (`#tp-reaches`, siblings from
-  `RIVER_SECTIONS`, "(closed)" from `sectionClosedOn()`). Tapping one opens that reach and marks it in `_upstreamStay`, so the
+  `RIVER_SECTIONS`; reaches closed on the trip date (`sectionClosedOn()`) are left out, and so is the reach the "Stay on the …" link already offers, TJ 2026-11-10). Tapping one opens that reach and marks it in `_upstreamStay`, so the
   upstream rule doesn't move the reader back up. Umami `Other Reach Clicked {river}`.
 
 - **Regs follow the picked fish** (TJ, 2026-11-05: a Steelhead + Chinook search on the Duffins showed "2026 Regs · Coho"): with
@@ -791,15 +796,20 @@ Merged recently:
 - **Several fish picked: pick by fish offered** (TJ, 2026-11-09: Steelhead + Brown + Brook from Etobicoke went to the Duffins,
   which offers only steelhead, while Steelhead + Brown went to the Humber). Two bugs. (1) `goToResults()` looked for a reach
   that *lists* every picked fish, and when none did (brook trout aren't on the Humber) took the top-ranked reach listing any.
-  It now takes the reach that legally offers the most picked fish on the trip date (`legalSpeciesFor(..., true)`: listed,
-  open, fish present; steelhead water standing in for Rainbow Trout counts half), ties by rank score then drive; the old
-  listing tiers only decide when no reach offers any. (2) `sectionSeasonScore()` with two or more fish fell into its
-  no-species branch and scored a reach on its best fish of any kind (the Duffins mouth got peak coho on a Steelhead + Brown
-  search); it now scores each picked fish alone and keeps the best. Core change, so the Worker redeploys; the weekly email
-  scores one fish at a time, so its numbers don't change. Checked 7,380 searches (41 cities, 41 fish picks of 1 to 3, six
-  dates) against main: 765 picks change. 143 were reaches that legally offered none of the fish; 256 now offer more of the
-  picked fish (162 of those a longer drive, mostly 5 to 20 min, within the travel range); 363 offer the same fish (mostly
-  rank and upstream-move reshuffles); 1 offers fewer. Open: whether "more of your fish" should be capped by extra drive time.
+  It now counts, per reach, the picked fish it legally offers on the trip date (`legalSpeciesFor(..., true)`: listed, open,
+  fish present; steelhead water counts for Rainbow Trout). Within a count: more of them for real (resident rainbows beat
+  steelhead water), then rank score, then drive. More fish wins only if it is at most `MORE_FISH_EXTRA_MIN` (15, TJ
+  2026-11-09) minutes farther than the best reach with fewer; otherwise the closer reach is picked and the skipped one is
+  offered under the headline, after "Other reaches": "More of your fish: steelhead and coho salmon on the Duffins Creek ·
+  Lower Section, about 40 min away." (`window._moreFishAlt`, shown while viewing the picked river on the same date; link via
+  `goToSection()`, Umami `More Fish Reach Clicked {river}`). The old listing tiers only decide when no reach offers any picked
+  fish. (2) `sectionSeasonScore()` with two or more fish fell into its no-species branch and scored a reach on its best fish
+  of any kind (the Duffins mouth got peak coho on a Steelhead + Brown search); it now scores each picked fish alone and keeps
+  the best. Core change, so the Worker redeploys; the weekly email scores one fish at a time, so its numbers don't change.
+  Checked 7,380 searches (41 cities, 41 fish picks of 1 to 3, six dates) against main: 902 picks change. 143 had landed on a
+  reach offering none of the picked fish; 210 now offer more of them (113 farther, almost all 5 to 15 min); 389 offer the
+  same fish; 160 offer fewer but are closer (20 to 50 min saved) and 159 of those show the more-fish suggestion. 469
+  searches show a suggestion.
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
@@ -818,7 +828,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode, prefill?}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode, prefill?}`, `More Fish Reach Clicked {river}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
@@ -872,6 +882,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+18. **"Coho not in this section" badge (TJ, 2026-11-10: leave for now, revisit):** with several fish picked, the banner's amber
+   badge names a missing fish but offers no next step, while the "More of your fish" line under the headline does. Options:
+   point the badge at that reach, or drop it when the line shows.
 
 17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
    Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"

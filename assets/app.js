@@ -1507,21 +1507,41 @@ function goToResults(){
       // counts nowhere, so it can't pull the pick away from water that has the others (TJ, 2026-11-09: Steelhead +
       // Brown + Brook from Etobicoke went to the Duffins, which offers only steelhead, instead of the Humber).
       // The listing tiers below only decide when no reach offers any picked fish.
-      var _offerBest = null, _offerN = 0;
+      // More fish wins only if it costs at most MORE_FISH_EXTRA_MIN more driving than the best reach with fewer of them
+      // (TJ, 2026-11-09: 15 min). A skipped reach is suggested under the headline (window._moreFishAlt).
+      var _offerBest = null, _offerN = 0, _byK = {};
+      window._moreFishAlt = null;
       ranked.forEach(function(r) {
-        // Steelhead water standing in for Rainbow Trout counts half, so a reach with resident rainbows open wins over
-        // it; when no resident rainbows are open, steelhead water still counts (TJ, 2026-10-30).
-        var seen = {};
+        // Count the picked fish this reach legally offers. Steelhead water standing in for Rainbow Trout counts as the
+        // fish but loses to a reach with resident rainbows open at the same count (TJ, 2026-10-30).
+        var seen = {}, real = 0;
         targetSpeciesNames.forEach(function(n){
           var o = legalSpeciesFor(r.name, n, _tripDate, true);
-          if (o) seen[o] = Math.max(seen[o] || 0, o === n ? 1 : 0.5);
+          if (o && !seen[o]) { seen[o] = 1; if (o === n) real++; }
         });
-        var k = Object.keys(seen).reduce(function(t, o){ return t + seen[o]; }, 0);
-        // Equal fish: the better ranked reach, then the shorter drive.
-        if (k > _offerN || (k > 0 && k === _offerN && (r.score > _offerBest.score ||
-            (r.score === _offerBest.score && r.driveTime < _offerBest.driveTime)))) { _offerN = k; _offerBest = r; }
+        var k = Object.keys(seen).length;
+        if (!k) return;
+        var _b = _byK[k];
+        // Equal fish: more of them for real, then the better ranked reach, then the shorter drive.
+        if (!_b || real > _b.real || (real === _b.real && (r.score > _b.r.score ||
+            (r.score === _b.r.score && r.driveTime < _b.r.driveTime)))) _byK[k] = { r: r, fish: Object.keys(seen), real: real };
+        _offerBest = _offerBest || r;
       });
-      if (_offerBest) bestPick = _offerBest;
+      if (_offerBest) {
+        var _ks = Object.keys(_byK).map(Number).sort(function(a, b){ return b - a; });
+        var _cand = _byK[_ks[0]];
+        for (var _i = 1; _i < _ks.length; _i++) {
+          var _lower = _byK[_ks[_i]];
+          if ((_cand.r.driveTime || 0) > (_lower.r.driveTime || 0) + MORE_FISH_EXTRA_MIN) _cand = _lower;
+        }
+        if (_cand.r !== _byK[_ks[0]].r) {
+          var _top = _byK[_ks[0]];
+          window._moreFishAlt = { section: _top.r.name, fish: _top.fish, drive: _top.r.driveTime,
+            forRiver: parentRiverOfSection(_cand.r.name), date: _tripDate };
+        }
+        _offerBest = _cand.r;
+        bestPick = _offerBest;
+      }
       else if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
       else if (withAllFishable.length > 0) bestPick = withAllFishable[0];
       else if (withAnySpecies.length > 0) bestPick = withAnySpecies[0];
@@ -1606,6 +1626,12 @@ function goToResults(){
 
 // Follow a "head there" redirect from the headline: load that section's results, and
 // switch the target species when the suggestion is a different fish.
+var MORE_FISH_EXTRA_MIN = 15;
+function parentRiverOfSection(section) {
+  var out = '';
+  Object.keys(RIVER_SECTIONS).forEach(function(rv) { if (RIVER_SECTIONS[rv].indexOf(section) !== -1) out = rv; });
+  return out || section;
+}
 function goToSection(section, speciesName) {
   var keyMap = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Steelhead':'steelhead',
     'Brook Trout':'brook','Chinook Salmon':'chinook','Coho Salmon':'coho'};
@@ -1648,6 +1674,7 @@ document.addEventListener('click', function(e) {
     return;
   }
   var t = e.target.closest && e.target.closest('[data-goto-section]');
+  if (t && t.classList.contains('tp-morefish-link')) track('More Fish Reach Clicked', { river: t.getAttribute('data-goto-section') });
   if (!t) return;
   e.preventDefault();
   goToSection(t.getAttribute('data-goto-section'), t.getAttribute('data-goto-species'));
@@ -4909,13 +4936,24 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       if (RIVER_SECTIONS[rv].indexOf(_here) !== -1) _sibs = RIVER_SECTIONS[rv].filter(function(x) { return x !== _here; });
     });
     var _d = getTripDateStr();
-    _r.hidden = !_sibs.length;
-    _r.innerHTML = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
-      var _c = getRiverConfig(x);
-      var _closed = _c && sectionClosedOn(_c, _d);
-      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>'
-        + (_closed ? ' <span class="tp-reach-closed">(closed)</span>' : '');
+    // Closed reaches are left out (TJ, 2026-11-10): the line suggests places to fish on the trip date.
+    // Also left out: a reach the note above already links ("Stay on the …"), so it isn't offered twice (TJ, 2026-11-10).
+    var _linked = window._upstreamFrom ? window._upstreamFrom.from : '';
+    _sibs = _sibs.filter(function(x) { var _c = getRiverConfig(x); return x !== _linked && !(_c && sectionClosedOn(_c, _d)); });
+    var _html = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
+      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>';
     }).join(' \u00b7 ') : '';
+    // A reach with more of the picked fish that the search skipped for being over 15 min farther (TJ, 2026-11-09).
+    var _mf = window._moreFishAlt;
+    if (_mf && _mf.date === _d && parentRiverOfSection(_here) === _mf.forRiver) {
+      var _names = _mf.fish.map(function(f){ return f === 'Steelhead' ? 'steelhead' : f.toLowerCase(); });
+      var _list = _names.length > 1 ? _names.slice(0, -1).join(', ') + ' and ' + _names[_names.length - 1] : _names[0];
+      _html += (_html ? '<br>' : '') + 'More of your fish: ' + _list + ' on the '
+        + '<a href="#river" class="tp-goto-link tp-morefish-link" data-goto-section="' + _mf.section + '">'
+        + secLabel(_mf.section) + '</a>' + (_mf.drive ? ', about ' + _mf.drive + ' min away' : '') + '.';
+    }
+    _r.hidden = !_html;
+    _r.innerHTML = _html;
   })();
   (function() {
     var _btn = document.getElementById('tp-goto');
