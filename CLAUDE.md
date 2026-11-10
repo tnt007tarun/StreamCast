@@ -180,7 +180,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-26)
+## Current state (updated 2026-11-10)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
