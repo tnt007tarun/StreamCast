@@ -791,15 +791,20 @@ Merged recently:
 - **Several fish picked: pick by fish offered** (TJ, 2026-11-09: Steelhead + Brown + Brook from Etobicoke went to the Duffins,
   which offers only steelhead, while Steelhead + Brown went to the Humber). Two bugs. (1) `goToResults()` looked for a reach
   that *lists* every picked fish, and when none did (brook trout aren't on the Humber) took the top-ranked reach listing any.
-  It now takes the reach that legally offers the most picked fish on the trip date (`legalSpeciesFor(..., true)`: listed,
-  open, fish present; steelhead water standing in for Rainbow Trout counts half), ties by rank score then drive; the old
-  listing tiers only decide when no reach offers any. (2) `sectionSeasonScore()` with two or more fish fell into its
-  no-species branch and scored a reach on its best fish of any kind (the Duffins mouth got peak coho on a Steelhead + Brown
-  search); it now scores each picked fish alone and keeps the best. Core change, so the Worker redeploys; the weekly email
-  scores one fish at a time, so its numbers don't change. Checked 7,380 searches (41 cities, 41 fish picks of 1 to 3, six
-  dates) against main: 765 picks change. 143 were reaches that legally offered none of the fish; 256 now offer more of the
-  picked fish (162 of those a longer drive, mostly 5 to 20 min, within the travel range); 363 offer the same fish (mostly
-  rank and upstream-move reshuffles); 1 offers fewer. Open: whether "more of your fish" should be capped by extra drive time.
+  It now counts, per reach, the picked fish it legally offers on the trip date (`legalSpeciesFor(..., true)`: listed, open,
+  fish present; steelhead water counts for Rainbow Trout). Within a count: more of them for real (resident rainbows beat
+  steelhead water), then rank score, then drive. More fish wins only if it is at most `MORE_FISH_EXTRA_MIN` (15, TJ
+  2026-11-09) minutes farther than the best reach with fewer; otherwise the closer reach is picked and the skipped one is
+  offered under the headline, after "Other reaches": "More of your fish: steelhead and coho salmon on the Duffins Creek ·
+  Lower Section, about 40 min away." (`window._moreFishAlt`, shown while viewing the picked river on the same date; link via
+  `goToSection()`, Umami `More Fish Reach Clicked {river}`). The old listing tiers only decide when no reach offers any picked
+  fish. (2) `sectionSeasonScore()` with two or more fish fell into its no-species branch and scored a reach on its best fish
+  of any kind (the Duffins mouth got peak coho on a Steelhead + Brown search); it now scores each picked fish alone and keeps
+  the best. Core change, so the Worker redeploys; the weekly email scores one fish at a time, so its numbers don't change.
+  Checked 7,380 searches (41 cities, 41 fish picks of 1 to 3, six dates) against main: 902 picks change. 143 had landed on a
+  reach offering none of the picked fish; 210 now offer more of them (113 farther, almost all 5 to 15 min); 389 offer the
+  same fish; 160 offer fewer but are closer (20 to 50 min saved) and 159 of those show the more-fish suggestion. 469
+  searches show a suggestion.
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
@@ -818,7 +823,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode, prefill?}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode, prefill?}`, `More Fish Reach Clicked {river}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
