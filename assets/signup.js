@@ -124,7 +124,8 @@
     return weeklyPicker(el, opts);
   };
 
-  var HOW = 'Where to stand and what to bring, picked from live river flow and the week\u2019s forecast. No email when no day looks good.';
+  // TJ's wording (2026-11-10).
+  var HOW = 'We email you on Thursday, for the best fishing days from Friday to the following Wednesday. Get info on where to stand, and what to bring. We don\u2019t email you if there aren\u2019t any good days forecasted!';
   var FINE = 'Free, no account, unsubscribe anytime.';
   var CSS = '.hff-signup{margin:2.2rem 0 1rem;padding:1.1rem 1.15rem 1.15rem;background:#eef5f3;border-radius:10px;' +
     'font:400 .95rem/1.45 Inter,system-ui,-apple-system,sans-serif;color:#31414c}' +
@@ -176,13 +177,13 @@
     var page = location.pathname;
     var placement = box.getAttribute('data-placement') || 'end';
     var parents = RIVERS.filter(function (r) { return STEELHEAD_REACH[r]; });
-    // Offer copy (2026-11-08): say what arrives and when. "Stop guessing" plus a description converted 0 of 181 views.
+    // Offer copy (TJ, 2026-11-10): name it as a weekly outlook (pairs with the monthly outlook); Thursday moves to the line below.
     var what = mode === 'steelhead'
-      ? 'The best steelhead days ' + (river ? 'on ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'on your river') + ', every Thursday'
-      : 'The best days to fish your rivers, every Thursday';
+      ? 'Your weekly steelhead outlook ' + (river ? 'for ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'for your river')
+      : 'Your weekly fishing outlook';
     var showRun = mode === 'steelhead';
     var showOutlook = mode === 'any' && !lsGet('hff_sub_outlook');
-    box.innerHTML = '<div class="lbl">Free Thursday email</div>' +
+    box.innerHTML = '<div class="lbl">Free weekly email</div>' +
       '<p class="hd">' + what + '</p>' +
       '<p class="how">' + HOW + '</p>' +
       (mode === 'any' ? '<div class="pk"></div>' : '') +
@@ -190,7 +191,7 @@
       (river || mode === 'any' ? '' : '<select aria-label="River" class="r" required><option value="">Choose your river</option>' +
         parents.map(function (r) { return '<option>' + esc(r) + '</option>'; }).join('') + '</select>') +
       '<input type="email" placeholder="your@email.com" autocomplete="email" aria-label="Email" required>' +
-      '<button type="submit">Send me the best days</button></form>' +
+      '<button type="submit">Get the weekly outlook</button></form>' +
       (showRun ? '<label class="opt"><input type="checkbox"> Also send run alerts</label>' : '') +
       (showOutlook ? '<label class="opt"><input type="checkbox"> Also send the monthly outlook</label>' : '') +
       '<p class="small">' + FINE + '</p><p class="msg" role="status"></p>';

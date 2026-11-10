@@ -831,6 +831,12 @@ Merged recently:
   October to April (it needed a river, a fish and an email). New Umami `Signup Blocked {page, offer, placement, reason:
   no-river|no-fish|no-match|bad-email}` when the box's own checks stop a submit. Pages load `signup.js?v=4`. Re-check in 3 to 4
   weeks: signups and Blocked per Signup Box Seen, by page.
+  Renamed (TJ, 2026-11-10: "Thursday" hid that it is a weekly outlook): label "Free weekly email", heading "Your weekly steelhead
+  outlook for the Humber River" (homepage and `/weekly/`: "Your weekly fishing outlook"), line in TJ's words "We email you on
+  Thursday, for the best fishing days from Friday to the following Wednesday. Get info on where to stand, and what to bring. We
+  don't email you if there aren't any good days forecasted!", button "Get the weekly outlook". Notify bar weekly offer: "Get the
+  weekly <fish> outlook", same line, button "Get it"; its run-alert checkbox "Also send the weekly <fish> outlook for this river"
+  ("Also send the weekly outlook" on phones). Pairs with the Monthly outlook by name.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
