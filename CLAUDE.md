@@ -883,6 +883,10 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
+18. **"Coho not in this section" badge (TJ, 2026-11-10: leave for now, revisit):** with several fish picked, the banner's amber
+   badge names a missing fish but offers no next step, while the "More of your fish" line under the headline does. Options:
+   point the badge at that reach, or drop it when the line shows.
+
 17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
    Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"
    reads "Rainbow" under 389 px since 2026-11-08.
