@@ -3260,6 +3260,9 @@ async function renderResults(){
   // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
   document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc, window._fishWindow && window._fishWindow.mode === 'winter', window._periodsLeft) : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
   document.getElementById("skystat").className="gs "+sc;
+  // With the period strip showing, the strip says what the sky does and the Best Window card right under it says when to
+  // fish, so this line only repeated them (TJ, 2026-11-11). It stays as the fallback when there is no strip.
+  document.getElementById("skystat").style.display = (weatherOk && window._periodCloud) ? 'none' : '';
   // The temperature column and the Best Window card were painted by speciesReads() above.
 
   window._defaultTargetSpecies = defaultTargetSpecies(cfg, wt);
