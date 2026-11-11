@@ -882,12 +882,12 @@ var RIVER_CONFIG = {
     lat:43.843, lng:-79.065,
     loc:'Lake Ontario to Highway 2 (Ajax / Pickering)',
     driveTime:{'toronto':40,'north york':35,'scarborough':20,'etobicoke':55,'markham':25,'richmond hill':35,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':90,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':20,'whitby':15,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':90,'collingwood':130,'owen sound':190},
-    species:['Steelhead','Chinook Salmon','Coho Salmon'],
+    species:['Steelhead','Chinook Salmon'],
     active:true,
     regs:[{rule:'South of the CNR tracks: open all year. Between the CNR and Hwy 2: open fourth Saturday in April to Dec 31. Standard FMZ 17 limits.',icon:'📋'}],
     methods:['float','spin'],
     access:[
-      {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook and Coho runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
+      {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
       {name:'Duffins Creek Marsh',mouth:true,loc:'Ajax / Pickering · Duffins Creek marsh',crowd:'med',desc:'Estuary section holds staging fish before they push upstream. Good for casting spoons and crankbaits at chrome fish. Smallmouth bass and pike year-round for warmwater anglers.'},
       {name:'Below CNR Railway Line',loc:'South of CNR tracks · Lower Duffins',crowd:'med',desc:'Extended fall season applies south of the CNR track (Oct–Dec 31). Check boundary markers carefully. Good pool and run structure for float fishing.'}
     ]
@@ -901,7 +901,7 @@ var RIVER_CONFIG = {
     lat:43.870, lng:-79.058,
     loc:'Highway 2 to the dams (Greenwood Conservation Area / Whitevale)',
     driveTime:{'toronto':45,'north york':40,'scarborough':20,'etobicoke':60,'markham':25,'richmond hill':40,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':95,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':85,'collingwood':130,'owen sound':190},
-    species:['Steelhead','Chinook Salmon','Coho Salmon','Rainbow Trout','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Rainbow Trout','Brown Trout'],
     active:true,
     regs:[{rule:'Fishing near Whitevale Dam and the barrier north of Church Street is prohibited. Both are fish sanctuaries. Check posted signs.',icon:'🚫'},{rule:'North of Hwy 2 the trout and salmon season ends Sept 30.',icon:'📋'}],
     methods:['float','fly','spin'],
@@ -934,7 +934,7 @@ var RIVER_CONFIG = {
     lat:43.940, lng:-78.305,
     loc:'Lake Ontario to the CNR railway bridge (Port Hope harbour)',
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:40,bowmanville:25,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Open all year below the CNR. Upstream, Jocelyn St to the CNR is closed Sept 1 to Oct 14, and Hwy 401 to Jocelyn St is closed all year.',icon:'📋'}],
     methods:['float','spin'],
@@ -950,7 +950,7 @@ var RIVER_CONFIG = {
     lat:43.945, lng:-78.300,
     loc:'Jocelyn Street Bridge to the CNR bridge, through Port Hope',
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:40,bowmanville:25,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Jocelyn St bridge to the CNR: open fourth Saturday in April to Aug 31 and Oct 15 to Dec 31. Closed Sept 1 to Oct 14.',icon:'🚫'},{rule:'Fish south of the Jocelyn St bridge only. Upstream to Hwy 401 is a sanctuary, closed all year.',icon:'🚫'}],
     methods:['float','fly'],
@@ -965,7 +965,7 @@ var RIVER_CONFIG = {
     lat:43.950, lng:-78.298,
     loc:'Highway 401 to the Jocelyn Street Bridge (Corbetts Dam and fishway)',
     driveTime:{toronto:95,'north york':90,scarborough:80,etobicoke:105,markham:75,'richmond hill':80,vaughan:85,ajax:60,pickering:55,mississauga:120,brampton:110,oakville:115,burlington:125,milton:110,hamilton:135,guelph:145,cambridge:160,kitchener:170,waterloo:170,orangeville:130,oshawa:40,whitby:30,bowmanville:15,clarington:20,newcastle:20,cobourg:40,'port hope':10,barrie:115,collingwood:155,'owen sound':215},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:false,
     regs:[{rule:'CLOSED TO FISHING ALL YEAR. Fish sanctuary protecting migrating salmon and trout at Corbetts Dam and fishway.',icon:'🚫'}],
     methods:[],
@@ -1213,12 +1213,12 @@ var RIVER_CONFIG = {
     lat:43.890, lng:-78.594,
     loc:'Sir Samuel Wilmot Nature Area (Lake Ontario mouth, Cobbledick Road)',
     driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':110,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':180,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
-    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17. Standard trout and salmon limits apply. Sir Samuel Wilmot Nature Area is a provincially significant wetland, so respect all posted rules.',icon:'📋'}],
     methods:['float','spin'],
     access:[
-      {name:'Sir Samuel Wilmot Nature Area',mouth:true,loc:'Cobbledick Road · South of CN tracks · Clarington',crowd:'high',desc:'The marsh and creek mouth where Wilmot Creek enters Lake Ontario through a provincially significant wetland. Excellent staging area for fall Chinook and Coho before they push upstream, and spring steelhead. Also holds northern pike, crappie, sunfish, and large carp year-round. Heavy pressure during peak fall salmon runs.'}
+      {name:'Sir Samuel Wilmot Nature Area',mouth:true,loc:'Cobbledick Road · South of CN tracks · Clarington',crowd:'high',desc:'The marsh and creek mouth where Wilmot Creek enters Lake Ontario through a provincially significant wetland. Excellent staging area for fall Chinook before they push upstream, and spring steelhead. Also holds northern pike, crappie, sunfish, and large carp year-round. Heavy pressure during peak fall salmon runs.'}
     ]
   },
   'Wilmot Creek — Lower River (to CN Rail Tracks)': {
@@ -1228,7 +1228,7 @@ var RIVER_CONFIG = {
     lat:43.900, lng:-78.592,
     loc:'Mouth to the CN railway tracks: gravel runs and holding pools',
     driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':115,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':185,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
-    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17. Heavy pressure during peak runs. Respect other anglers and release fish where you can.',icon:'📋'}],
     methods:['float','spin'],

@@ -1492,7 +1492,7 @@ function goToResults(){
       });
       // Tier 1.5: rivers that have ALL currently FISHABLE selected species
       // e.g. Brook Trout + Coho in June → Coho is staging so fishable = [Brook Trout]
-      // Duffins Upper has Brook Trout → wins over Duffins Middle which only has Coho
+      // a reach with Brook Trout → wins over a reach that only has Coho
       var withAllFishable = ranked.filter(function(r){
         var cfg = getRiverConfig(r.name);
         return cfg && cfg.species && fishableSpecies.every(function(n){ return cfg.species.indexOf(n) !== -1; });
