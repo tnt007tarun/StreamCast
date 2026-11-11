@@ -859,7 +859,7 @@ Merged recently:
   ("Also send the weekly outlook" on phones). Pairs with the Monthly outlook by name.
 
 - **Coho on the east only** (TJ, 2026-11-11): Coho removed from Duffins Lower and Middle and Wilmot Mouth & Marsh and Lower
-  River (spot text and the `/rivers/` chips too), added to the Ganaraska Lower, Port Hope town reach and Corbetts sections
+  River (and their spot text; the `/rivers/` chips go with #179), added to the Ganaraska Lower, Port Hope town reach and Corbetts sections
   (its "Chinook / Coho Salmon" regs row already existed). Checked 450 city/fish/date searches against main: chinook-only
   picks unchanged; coho searches now land on Bowmanville or the Ganaraska instead of the Duffins or Wilmot. Open: the
   `/rivers/` page still shows Coho chips on the Saugeen and Nottawasaga (the app doesn't list coho there).
