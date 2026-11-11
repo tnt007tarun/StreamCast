@@ -889,7 +889,7 @@ var RIVER_CONFIG = {
     access:[
       {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook and Coho runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
       {name:'Duffins Creek Marsh',mouth:true,loc:'Ajax / Pickering · Duffins Creek marsh',crowd:'med',desc:'Estuary section holds staging fish before they push upstream. Good for casting spoons and crankbaits at chrome fish. Smallmouth bass and pike year-round for warmwater anglers.'},
-      {name:'Below CNR Railway Line',loc:'South of CNR tracks · Lower Duffins',crowd:'med',desc:'Extended fall season applies south of the CNR track (Oct–Dec 31). Check boundary markers carefully. Good pool and run structure for float fishing.'}
+      {name:'Below CNR Railway Line',loc:'South of CNR tracks · Lower Duffins',crowd:'med',desc:'Open all year south of the CNR tracks; between the CNR and Hwy 2 the season ends Dec 31. Check boundary markers carefully. Good pool and run structure for float fishing.'}
     ]
   },
   'Duffins Creek — Middle Section': {
