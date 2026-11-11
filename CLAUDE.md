@@ -858,6 +858,9 @@ Merged recently:
   `Jjoc2T9MYok` in the lower creek), captioned only from their YouTube descriptions. TJ: say "check the signs at the dam"
   (no sanctuary claim); the app's Whitevale regs line and spot text now say the same (core change). Browns are rare on
   the lower Duffins, so it stays without them (TJ).
+  TJ confirmed all three videos are from the lower Duffins ("the open section for November"; captions say so, no spot
+  named), skip the 3 tips. "Room to spread out" is TJ's own reason for the creek: several decent pools and runs with
+  good depth throughout, so you aren't packed in at one spot like Old Mill on the Humber.
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
