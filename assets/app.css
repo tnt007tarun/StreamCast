@@ -3770,14 +3770,17 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* Results species strip: the same photo as an <img> for the same reason as the home hero (TJ, 2026-11-10: the CSS
    background drew at 1600 px with bars on his external monitor). The wash is the strip's ::before; children sit above. */
 #results #species-banner { position: relative; isolation: isolate; overflow: hidden; background: #24302c; }
-#results #species-banner > .sp-banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+#results #species-banner .sp-banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
   object-position: center 42%; z-index: -2; display: block; pointer-events: none; }
 #results #species-banner::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.45) 55%, rgba(8,26,24,.25) 100%); }
 @media (min-width: 1000px) {
-  #results #species-banner > .sp-banner-img { object-position: center 45%; }
+  #results #species-banner .sp-banner-img { object-position: center 45%; }
   #results #species-banner::before { background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.40) 50%, rgba(8,26,24,.10) 85%); }
 }
 
 /* Page speed (2026-11-11): hold the day-chip row's height before app.js fills it, so the form doesn't jump down 48 px. */
 #landing .day-chips:empty { min-height: 48px; }
+/* The hero and species-banner photos sit in a <picture> (phone strip, 2026-11-11). Keep the wrapper out of the layout so
+   flex gaps behave as they did with a bare, absolutely placed <img>. */
+.hero-photo > picture, #results #species-banner > picture { position: absolute; inset: 0; display: block; }
