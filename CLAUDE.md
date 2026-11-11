@@ -899,6 +899,11 @@ Merged recently:
   390 and 1280 px against main: same text, no page errors. Keep new layout-changing JS out of first paint, or reserve
   its space in CSS.
 
+- **Sky note dropped under the strip** (TJ, 2026-11-11, iPhone: "Bright at midday. Fish morning and evening." sat right
+  above "Best window: ... Skip the bright midday."): `#skystat` is hidden whenever the 8 AM / 12 PM / 6 PM strip shows, since
+  the strip says what the sky does and the Best Window card says when to fish. `skyDayNote()` still fills it as the fallback
+  with no period forecast, and "Weather didn't load" still shows.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
