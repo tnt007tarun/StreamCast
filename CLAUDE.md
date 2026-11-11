@@ -863,7 +863,7 @@ Merged recently:
   good depth throughout, so you aren't packed in at one spot like Old Mill on the Humber.
   Photo: TJ's About-page steelhead (`images/about/about-steelhead-duffins.webp`, Duffins, trout opener day 2024, TJ), also
   the page's og:image (the JPG). Homepage `GUIDES` card added after the Humber (peak Oct, Nov, Apr; thumb in `images/thumbs/`).
-  The page opens with the photo and a short story paragraph (the Salmon River name, salmon and steelhead runs, moraine to
+  The page opens with the photo and a short story paragraph (the Salmon River name, Chinook and steelhead runs, no coho in the lead per TJ, moraine to
   marsh), then the three-season sentence (TJ, 2026-11-11: start with the photo and something that's not all numbers).
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
