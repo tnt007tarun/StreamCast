@@ -91,8 +91,9 @@ someone decide where to go or what to bring. Say in the PR what the change does 
   Oct-Nov fall run, Dec-Feb holding over (good), Mar-Apr spring run, May-Aug in the lake. Gear is
   float with roe, like steelhead.
 - `getCurrentSeason(species, date, section)`: pass the section when it isn't the one being viewed.
-- **Coho** are rare on the Credit, Bronte and Humber (TJ, 2026-11-02: they run mostly in the eastern tributaries), so
-  those sections don't list them. `/credit-river/coho-salmon` 301s to `/credit-river/steelhead`. Run alert drafts for
+- **Coho** run in good numbers only on the Bowmanville, the Ganaraska and Cobourg Creek (TJ, 2026-11-11; Cobourg isn't in
+  the app). Only Bowmanville and the Ganaraska's lower three sections list them; the Credit, Bronte, Humber, Duffins and
+  Wilmot don't. `/credit-river/coho-salmon` 301s to `/credit-river/steelhead`. Run alert drafts for
   the Credit talk about steelhead only.
 
 ### One decision, one function
@@ -880,6 +881,12 @@ Merged recently:
   don't email you if there aren't any good days forecasted!", button "Get the weekly outlook". Notify bar weekly offer: "Get the
   weekly <fish> outlook", same line, button "Get it"; its run-alert checkbox "Also send the weekly <fish> outlook for this river"
   ("Also send the weekly outlook" on phones). Pairs with the Monthly outlook by name.
+
+- **Coho on the east only** (TJ, 2026-11-11): Coho removed from Duffins Lower and Middle and Wilmot Mouth & Marsh and Lower
+  River (and their spot text; the `/rivers/` chips go with #179), added to the Ganaraska Lower, Port Hope town reach and Corbetts sections
+  (its "Chinook / Coho Salmon" regs row already existed). Checked 450 city/fish/date searches against main: chinook-only
+  picks unchanged; coho searches now land on Bowmanville or the Ganaraska instead of the Duffins or Wilmot. Open: the
+  `/rivers/` page still shows Coho chips on the Saugeen and Nottawasaga (the app doesn't list coho there).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
