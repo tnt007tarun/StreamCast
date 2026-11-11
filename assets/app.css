@@ -3778,3 +3778,6 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results #species-banner > .sp-banner-img { object-position: center 45%; }
   #results #species-banner::before { background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.40) 50%, rgba(8,26,24,.10) 85%); }
 }
+
+/* Page speed (2026-11-11): hold the day-chip row's height before app.js fills it, so the form doesn't jump down 48 px. */
+#landing .day-chips:empty { min-height: 48px; }
