@@ -11,7 +11,6 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   if (_nt) { if (_nt[1] === '1') localStorage.setItem('umami.disabled', '1'); else localStorage.removeItem('umami.disabled'); }
 } catch (e) {}
 </script>
-<script defer src="/assets/signup.js?v=4"></script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="839b4e48-5eb8-4ef5-a7a4-d8cace66f68c" data-domains="herefishyfishy.ca,www.herefishyfishy.ca"></script>
 <!-- MS Clarity -->
   <script type="text/javascript">
@@ -103,7 +102,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
     </div>
   </div>
 
-  <div class="form-card">
+  <div class="form-card mode-beginner">
 
     <!-- Mode toggle -->
     <div class="mode-wrap">
@@ -199,27 +198,27 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
         <div class="species-btn-grid">
           
           <button class="species-btn" data-value="brown" data-label="Brown Trout">
-            <div class="species-btn-img"><img src="/images/species/brown-trout.jpg" alt="" loading="lazy" width="96" height="96"></div>
+            <div class="species-btn-img"><img src="/images/species/sm/brown-trout.webp" alt="" loading="lazy" width="96" height="96"></div>
             <span class="species-btn-name">Brown Trout</span>
           </button>
           <button class="species-btn" data-value="rainbow" data-label="Rainbow Trout">
-            <div class="species-btn-img"><img src="/images/species/rainbow-trout.jpg" alt="" loading="lazy" width="96" height="96"></div>
+            <div class="species-btn-img"><img src="/images/species/sm/rainbow-trout.webp" alt="" loading="lazy" width="96" height="96"></div>
             <span class="species-btn-name">Rainbow<span class="sp-name-rest"> Trout</span></span>
           </button>
           <button class="species-btn" data-value="steelhead" data-label="Steelhead">
-            <div class="species-btn-img"><img src="/images/species/steelhead.jpg" alt="" loading="lazy" width="96" height="96"></div>
+            <div class="species-btn-img"><img src="/images/species/sm/steelhead.webp" alt="" loading="lazy" width="96" height="96"></div>
             <span class="species-btn-name">Steelhead</span>
           </button>
           <button class="species-btn" data-value="brook" data-label="Brook Trout">
-            <div class="species-btn-img"><img src="/images/species/brook-trout.jpg" alt="" loading="lazy" width="96" height="96"></div>
+            <div class="species-btn-img"><img src="/images/species/sm/brook-trout.webp" alt="" loading="lazy" width="96" height="96"></div>
             <span class="species-btn-name">Brook Trout</span>
           </button>
           <button class="species-btn" data-value="chinook" data-label="Chinook Salmon">
-            <div class="species-btn-img"><img src="/images/species/chinook-salmon.jpg" alt="" loading="lazy" width="96" height="96"></div>
+            <div class="species-btn-img"><img src="/images/species/sm/chinook-salmon.webp" alt="" loading="lazy" width="96" height="96"></div>
             <span class="species-btn-name">Chinook</span>
           </button>
           <button class="species-btn" data-value="coho" data-label="Coho Salmon">
-            <div class="species-btn-img"><img src="/images/species/coho-salmon.jpg" alt="" loading="lazy" width="96" height="96"></div>
+            <div class="species-btn-img"><img src="/images/species/sm/coho-salmon.webp" alt="" loading="lazy" width="96" height="96"></div>
             <span class="species-btn-name">Coho Salmon</span>
           </button>
         </div>
@@ -605,7 +604,9 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
 
 </div>
 
-<script src="/assets/conditions-core.js"></script>
-<script src="/assets/app.js"></script>
+<!-- defer (page speed, 2026-11-11): the form paints before these parse. Order matters: signup.js reads RIVER_SECTIONS from the core. -->
+<script defer src="/assets/conditions-core.js"></script>
+<script defer src="/assets/app.js"></script>
+<script defer src="/assets/signup.js?v=4"></script>
 </body>
 </html>

@@ -888,6 +888,17 @@ Merged recently:
   picks unchanged; coho searches now land on Bowmanville or the Ganaraska instead of the Duffins or Wilmot. Open: the
   `/rivers/` page still shows Coho chips on the Saugeen and Nottawasaga (the app doesn't list coho there).
 
+- **Mobile page speed** (TJ, 2026-11-11, PageSpeed Insights on mobile): Lighthouse mobile on the homepage, served with
+  compression like Cloudflare, went from about 81 to 98 to 99. (1) Layout shift 0.232 to 0: the old river-tab blocks
+  (`.expert-only`, `#river-placeholder`) showed until `app.js` set `mode-beginner` on `.form-card`, so the form jumped up
+  about 60 px; the class is now in the HTML. The empty day-chip row is held at 48 px (`.day-chips:empty`) until
+  `renderDayChips()` fills it. (2) LCP 3.4 s to about 2.2 s: `conditions-core.js` and `app.js` are `defer`, so the hero
+  paints before 650 KB of script parses. `signup.js` moved after them (also `defer`) because it reads `RIVER_SECTIONS`
+  from the core. (3) The form's fish photos use 96 px WebP copies in `images/species/sm/` (84 KB to 14 KB); the 200 px
+  JPGs stay for everything else. Checked 12 rendered cases (form, search, deep links, closed reach, install hint) at
+  390 and 1280 px against main: same text, no page errors. Keep new layout-changing JS out of first paint, or reserve
+  its space in CSS.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
