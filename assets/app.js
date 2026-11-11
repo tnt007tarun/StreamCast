@@ -3501,6 +3501,13 @@ var GUIDES = [
     peak:[9,10], on:[11,12,1,2,3,4], video:false
   },
   {
+    url:'/rivers/duffins/',
+    title:'Duffins Creek: room to spread out',
+    blurb:'Open all year below the CN tracks in Ajax, with good depth and enough pools and runs that you are never stuck in one crowded spot. Salmon in September, steelhead fall to spring.',
+    img:'/images/about/about-steelhead-duffins.webp',
+    peak:[10,11,4], on:[9,12,1,2,3], video:true
+  },
+  {
     url:'/rivers/bronte/',
     title:'Bronte runs last, and then runs again',
     blurb:'The last salmon river of the Ontario season, running into November, and a good spring steelhead creek. Two windows at opposite ends of the year.',
