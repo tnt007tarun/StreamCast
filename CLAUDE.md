@@ -851,6 +851,13 @@ Merged recently:
   weekly-steelhead signup box. HTML comments mark where TJ's photo and video go. `/rivers/` links to it, plus a note on the
   three seasons; sitemap and llms.txt updated. Not in the homepage `GUIDES` cards until it has a photo. Also fixed the app's
   "Below CNR Railway Line" spot text, which said the extended season applied south of the CNR (it's open all year there).
+  Round 2 (TJ, 2026-11-11: "a bit dry"): a history section, "The Salmon River" (Riviere au Saumon in 1670, Augustus Jones's
+  1791 map and Mike Duffin, Timothy Rogers's 1809 mill and Duffin's Creek village becoming Pickering Village, salmon gone by
+  1834, the Whitevale dam from the 1820s with no ladder, Bring Back the Salmon stocking since 2006 and the May 2026 class
+  release; sources in the endnote), and TJ's three videos (`mgWa8P09NKM`, `sdcNeg5ibaw` under the year table,
+  `Jjoc2T9MYok` in the lower creek), captioned only from their YouTube descriptions. TJ: say "check the signs at the dam"
+  (no sanctuary claim); the app's Whitevale regs line and spot text now say the same (core change). Browns are rare on
+  the lower Duffins, so it stays without them (TJ).
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
@@ -929,11 +936,6 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
-
-19. **Duffins sanctuary text (2026-11-11):** the app's Middle Section regs line says fishing near Whitevale Dam and "the
-   barrier north of Church Street" is prohibited as fish sanctuaries. The 2026 Zone 17 page on ontario.ca lists no Duffins
-   sanctuary. TJ to confirm the source (TRCA sign, older regs?) before it is kept or reworded. The new page only says to check
-   the signs at the dam. Also: the lower Duffins doesn't list lake-run browns; TJ to say whether it should.
 
 18. **"Coho not in this section" badge (TJ, 2026-11-10: leave for now, revisit):** with several fish picked, the banner's amber
    badge names a missing fish but offers no next step, while the "More of your fish" line under the headline does. Options:

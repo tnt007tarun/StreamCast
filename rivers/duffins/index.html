@@ -110,6 +110,20 @@ footer.site a{font:500 .8rem/1 Inter,system-ui,-apple-system,sans-serif;
 color:var(--muted);text-decoration:none}
 footer.site .brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;color:var(--ink)}
 
+.vid{margin:2.6rem 0}
+.vid-frame{position:relative;aspect-ratio:16/9;border-radius:3px;overflow:hidden;
+background:var(--deep);display:block}
+.vid-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(180deg,rgba(13,31,45,.1),rgba(13,31,45,.45));cursor:pointer;border:0;width:100%}
+.vid-play i{width:56px;height:56px;border-radius:50%;background:rgba(13,31,45,.8);
+display:flex;align-items:center;justify-content:center;transition:transform .18s ease}
+.vid-play:hover i{transform:scale(1.08)}
+.vid-play svg{width:18px;height:18px;fill:#fff;margin-left:3px}
+.vid-cap{font:400 .84rem/1.6 Inter,system-ui,-apple-system,sans-serif;
+color:var(--muted);margin-top:.7rem}
+
 @media(max-width:640px){
   body{font-size:18px}
   h1{font-size:1.95rem}
@@ -186,6 +200,28 @@ footer.site .brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;co
   <p>Salmon usually peak from mid-September to mid-October, which overlaps the September 30 close above Highway 2.
   From October on, the runs are fished below Kingston Road.</p>
 
+  <h3>Salmon on a float</h3>
+  <p>In the creek, salmon are mostly fished with a float and roe or beads, the same setup the app suggests for the
+  lower Duffins in the fall. These two are from salmon days on the creek.</p>
+  <div class="vid">
+    <div class="vid-frame">
+      <img src="https://i.ytimg.com/vi/mgWa8P09NKM/hqdefault.jpg" alt="Fishing for Chinook salmon in an urban creek near Toronto" loading="lazy" width="480" height="360">
+      <button class="vid-play" data-yt="mgWa8P09NKM" data-umami-event="Video Played" data-umami-event-page="/rivers/duffins/" data-umami-event-video="mgWa8P09NKM" aria-label="Play video: Fishing for Chinook salmon in an urban creek near Toronto">
+        <i><svg viewBox="0 0 10 10"><path d="M2 1 L9 5 L2 9 Z"/></svg></i>
+      </button>
+    </div>
+    <div class="vid-cap">Chinook on a float: plenty of float-down footage, a few blistering runs, and one salmon in the net.</div>
+  </div>
+  <div class="vid">
+    <div class="vid-frame">
+      <img src="https://i.ytimg.com/vi/sdcNeg5ibaw/hqdefault.jpg" alt="Salmon fishing in Ontario creeks, three tips and three fish" loading="lazy" width="480" height="360">
+      <button class="vid-play" data-yt="sdcNeg5ibaw" data-umami-event="Video Played" data-umami-event-page="/rivers/duffins/" data-umami-event-video="sdcNeg5ibaw" aria-label="Play video: Salmon fishing in Ontario creeks, three tips and three fish">
+        <i><svg viewBox="0 0 10 10"><path d="M2 1 L9 5 L2 9 Z"/></svg></i>
+      </button>
+    </div>
+    <div class="vid-cap">Three tips that worked for me when I started float fishing for salmon, then three fish.</div>
+  </div>
+
   <!-- TJ: photo of the lower creek or a fish goes here (figure with WebP + caption). -->
 
   <div class="hff-signup" data-kind="run" data-river="Duffins Creek" data-placement="mid"></div>
@@ -200,7 +236,15 @@ footer.site .brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;co
   from January to April, so it gets most of the winter and early-spring steelhead pressure.</p>
   <p><a href="/?river=Duffins%20Creek%20%E2%80%94%20Lower%20Section&amp;species=steelhead" data-umami-event="Conditions CTA Clicked" data-umami-event-page="/rivers/duffins/" data-umami-event-river="Duffins Creek — Lower Section">Check today&rsquo;s conditions on the lower Duffins &rarr;</a></p>
 
-  <!-- TJ: video of the lower creek goes here (.vid-play button with data-yt and data-umami-event-video). -->
+  <div class="vid">
+    <div class="vid-frame">
+      <img src="https://i.ytimg.com/vi/Jjoc2T9MYok/hqdefault.jpg" alt="First steelhead of the season in southern Ontario" loading="lazy" width="480" height="360">
+      <button class="vid-play" data-yt="Jjoc2T9MYok" data-umami-event="Video Played" data-umami-event-page="/rivers/duffins/" data-umami-event-video="Jjoc2T9MYok" aria-label="Play video: First steelhead of the season in southern Ontario">
+        <i><svg viewBox="0 0 10 10"><path d="M2 1 L9 5 L2 9 Z"/></svg></i>
+      </button>
+    </div>
+    <div class="vid-cap">My first steelhead of the 2024 season, on October 12: a small, fresh fish that jumped all over before I landed it. The only salmon around were spawning, so I left them alone.</div>
+  </div>
 
   <h2>CN line to Kingston Road: open until December 31</h2>
   <p>From the railway up to Highway 2 the creek is open from the April opener through the fall, then closes on
@@ -217,6 +261,27 @@ footer.site .brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;co
   <h3>Glen Major and the West Duffins</h3>
   <p>Small, cold tributaries on the Oak Ridges Moraine with brook trout and brown trout, open from the April opener to
   September 30. It&rsquo;s redside dace habitat, so leave the baitfish alone.</p>
+
+  <h2>The Salmon River</h2>
+  <p>French missionaries reached the creek in 1670 and called it the <strong>Rivi&egrave;re au Saumon</strong>, the
+  Salmon River, for the Atlantic salmon that came up from Lake Ontario to spawn. The Mississauga name is
+  Zhingwaatigotigweyaa-ziibi. In 1791 the surveyor Augustus Jones put it on his map as Duffin&rsquo;s Creek, after
+  Mike Duffin, an Irish fur trader who had settled near the mouth in the 1770s.</p>
+  <p>A village grew up where the Danforth Road crossed the creek, and in 1809 Timothy Rogers, a Quaker settler,
+  built a saw and grist mill on its banks. The village was called Duffin&rsquo;s Creek until the 1870s, when it
+  became Pickering Village. It&rsquo;s now part of Ajax.</p>
+  <p>When Rogers arrived, thousands of salmon still ran the creek each year. By 1834 they had practically
+  disappeared. Mill dams cut the fish off from their spawning gravel, and clearing the forest for farms left less
+  water in the creek. By the late 1800s Atlantic salmon were gone from Lake Ontario altogether.</p>
+  <p>The dam at Whitevale is a reminder of that time. The first one went in during the 1820s for a saw mill, which
+  became a grist mill in the 1850s. The mill burned in 1961 and the dam has since been rebuilt. It has no fish
+  ladder, and today that&rsquo;s on purpose. It keeps lake-run trout and salmon off the brook trout water upstream.</p>
+  <h3>Bringing the salmon back</h3>
+  <p>In 2006 the Duffins was one of the first three streams, with the Credit and Cobourg Creek, chosen for Lake
+  Ontario&rsquo;s Atlantic salmon restoration program, run by the Ontario Federation of Anglers and Hunters and the
+  Ministry of Natural Resources. Young Atlantics have been stocked in it ever since, and school classes raise eggs
+  through the winter to release them here. In May 2026 one class let 93 young salmon go into the creek in Ajax. So
+  the creek that was named for salmon is getting them back, one bucket at a time.</p>
 
   <h2>Flow</h2>
   <p>The app reads the Water Survey of Canada gauge on Duffins Creek at Ajax (02HC049). On the lower creek it calls
@@ -242,12 +307,26 @@ footer.site .brand{font:700 .95rem/1 Inter,system-ui,-apple-system,sans-serif;co
 
   <div class="endnote">
     <strong>Sources.</strong> Ontario Fishing Regulations Summary 2026, Zone 17 &middot; Water Survey of Canada
-    real-time gauge 02HC049 (Duffins Creek at Ajax) &middot; Toronto and Region Conservation Authority.
+    real-time gauge 02HC049 (Duffins Creek at Ajax) &middot; Toronto and Region Conservation Authority &middot;
+    Ontario Heritage Trust plaque, &ldquo;The Founding of Pickering&rdquo; &middot; Lake Ontario Atlantic Salmon
+    Restoration Program (bringbackthesalmon.ca) &middot; CP24, June 22, 2026.
   </div>
 </div></article>
 <footer class="site"><div class="wrap">
   <span class="brand">HereFishyFishy</span>
   <span><a href="/rivers">Rivers</a> &nbsp; <a href="/guides/">Guides</a> &nbsp; <a href="/about">About</a></span>
 </div></footer>
+<script>
+document.querySelectorAll('.vid-play').forEach(function(b){
+  b.addEventListener('click', function(){
+    var id=b.getAttribute('data-yt');
+    var f=document.createElement('iframe');
+    f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
+    f.title='Video'; f.allowFullscreen=true;
+    f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    b.parentNode.appendChild(f); b.remove();
+  });
+});
+</script>
 </body>
 </html>

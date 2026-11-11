@@ -903,11 +903,11 @@ var RIVER_CONFIG = {
     driveTime:{'toronto':45,'north york':40,'scarborough':20,'etobicoke':60,'markham':25,'richmond hill':40,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':95,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':85,'collingwood':130,'owen sound':190},
     species:['Steelhead','Chinook Salmon','Coho Salmon','Rainbow Trout','Brown Trout'],
     active:true,
-    regs:[{rule:'Fishing near Whitevale Dam and the barrier north of Church Street is prohibited. Both are fish sanctuaries. Check posted signs.',icon:'🚫'},{rule:'North of Hwy 2 the trout and salmon season ends Sept 30.',icon:'📋'}],
+    regs:[{rule:'Check the posted signs at Whitevale Dam before fishing near it.',icon:'🚫'},{rule:'North of Hwy 2 the trout and salmon season ends Sept 30.',icon:'📋'}],
     methods:['float','fly','spin'],
     access:[
       {name:'Greenwood Conservation Area',loc:'Greenwood, ON · TRCA managed',crowd:'med',desc:'Deep valley lands with excellent holding water. Migratory salmon and steelhead push through in season. Resident rainbow and brown trout in cooler upper pools. TRCA managed with day-use fee.'},
-      {name:'Whitevale · Below Dam',loc:'Whitevale, ON · Below Whitevale Dam',crowd:'high',desc:'Fish concentrate below the dam before the sanctuary zone. The dam separates migratory fish from resident trout upstream. Don’t fish inside the sanctuary boundary. It’s signed, and wardens patrol it.'}
+      {name:'Whitevale · Below Dam',loc:'Whitevale, ON · Below Whitevale Dam',crowd:'high',desc:'Fish concentrate below the dam. The dam separates migratory fish from resident trout upstream. Check the posted signs at the dam before you fish near it.'}
     ]
   },
   'Duffins Creek — Upper Reaches': {
