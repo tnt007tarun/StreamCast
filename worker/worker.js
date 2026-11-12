@@ -812,6 +812,7 @@ function andList(a) {
   return a.length <= 1 ? (a[0] || "") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
 }
 // "<strong>Steelhead</strong> on the <strong>Credit River</strong> and <strong>Bronte Creek</strong>", grouped by fish.
+// Used only for a short, inline mention (the "run" confirmation's one extra sentence).
 function weeklyWhat(list) {
   const bySp = {};
   list.forEach((w) => {
@@ -820,6 +821,22 @@ function weeklyWhat(list) {
     (bySp[w.species] = bySp[w.species] || []).push(where);
   });
   return andList(Object.keys(bySp).map((sp) => "<strong>" + escapeHtml(sp) + "</strong> on " + andList(bySp[sp])));
+}
+// A scannable list for the weekly-signup confirmation: one line per river or reach, species after it.
+// weeklyWhat() reads fine for one or two picks, but a multi-river, multi-species signup (the form lets
+// someone pick 3 rivers and every species on each) turned into one long run-on sentence of bold text
+// (TJ, 2026-11-13: a subscriber with 12 combos read it as "a big chunk of text"). This groups by where
+// instead of by fish, which is how someone pictures "what am I tracking".
+function weeklyGroupedList(list) {
+  const byWhere = {}, order = [];
+  list.forEach((w) => {
+    const where = w.river || secDisplay(w.section);
+    if (!byWhere[where]) { byWhere[where] = []; order.push(where); }
+    if (byWhere[where].indexOf(w.species) === -1) byWhere[where].push(w.species);
+  });
+  return `<ul style="padding-left:18px;line-height:1.6;margin:8px 0 18px">` +
+    order.map((where) => `<li><strong>${escapeHtml(where)}</strong>: ${byWhere[where].map(escapeHtml).join(", ")}</li>`).join("") +
+    `</ul>`;
 }
 function secDisplay(s) {
   return String(s || "").replace(/ — /g, " \xB7 ");
@@ -906,8 +923,10 @@ async function handleSubscribe(request, env) {
         (record.outlook ? `<p>You'll also get the monthly outlook.</p>` : "");
     } else if (kind === "weekly") {
       subject = "Thursday heads-up for " + andList([...new Set(weeklyAdded.map((w) => w.species))]);
-      lead = `<p>On Thursdays we check the next six days for ${weeklyWhat(weeklyAdded)}. When at least one looks good,
-            we email you which days, where to stand and what to bring. No good days, no email.</p>`;
+      lead = `<p>Every Thursday we check the next six days. When at least one looks good, we email you which
+            days, where to stand and what to bring. No good days, no email.</p>
+            <p style="margin:16px 0 4px"><strong>What we're checking for you:</strong></p>
+            ${weeklyGroupedList(weeklyAdded)}`;
     } else if (kind === "outlook") {
       subject = "You're on the monthly outlook";
       lead = `<p>Once a month we'll send what the forecast means for Ontario's trout and salmon rivers, plus the season

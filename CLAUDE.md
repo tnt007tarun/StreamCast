@@ -861,6 +861,20 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
+18. **Weekly-signup confirmation reformatted; unsubscribe hypothesis logged (2026-11-13):** the "You're set" confirmation
+   (`handleSubscribe()` in `worker/worker.js`) wrote every river and species a subscriber picked into one `weeklyWhat()`
+   sentence; a multi-river signup (3 rivers, every species on each, 12 combos) read as a dense wall of bold text (TJ: "not
+   as readable or UI friendly"). Replaced with `weeklyGroupedList()`: one bullet per river, species listed after it. Only
+   the weekly-signup lead changed; the `run` confirmation's one-line mention still uses `weeklyWhat()` (always short so
+   far). Not yet opened as a PR.
+   Unsubscribe hypothesis (unconfirmed): a subscriber who signed up for the weekly email (homepage box, 3 rivers,
+   12 combos, plus outlook) Nov 8 at 11:38 pm Toronto unsubscribed Nov 12 (Thursday) at 1:16 pm Toronto, about 4
+   hours before that week's Thursday run actually sent (5:06 pm). The confirmation email says "Every Thursday..." with no
+   time of day. They may have expected something that Thursday and left when nothing had arrived by early afternoon. They
+   didn't reply to the "which river do you fish most" question, so this isn't confirmed by anything they said. If another
+   subscriber unsubscribes same-day on a Thursday before the send, that supports it; a fix would be naming a time
+   ("Thursday evenings") in the confirmation copy.
+
 17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
    Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"
    reads "Rainbow" under 389 px since 2026-11-08.
