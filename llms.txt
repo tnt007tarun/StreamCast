@@ -42,4 +42,4 @@ How it works:
 
 ## About
 
-- [About HereFishyFishy](https://herefishyfishy.ca/about): who builds it, how the readings and ratings work
+- [About HereFishyFishy](https://herefishyfishy.ca/about/): who builds it, how the readings and ratings work
