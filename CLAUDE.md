@@ -181,7 +181,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-11-10)
+## Current state (updated 2026-11-12)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -989,6 +989,15 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 ("bowmanville salmon run 2026"). The Humber is #2 in app river picks.
 
 ## Open threads
+
+19. **Coho chips on `/rivers/` for the Saugeen and Nottawasaga (TJ, 2026-11-11: park, review before next salmon season):**
+   the page shows Coho on both, but the app doesn't list coho on either river.
+
+20. **Page speed follow-ups (2026-11-12):** re-run PageSpeed mobile after #184 (hero strip, guide images and Clarity after
+   load). If LCP is still over 2.5 s: minify `app.js`, `conditions-core.js` and `app.css` with a Pages build step (about
+   94 KB compressed saved; TJ was given the tradeoffs), or turn off Cloudflare Web Analytics (TJ's call). Search Console:
+   resubmit the sitemap after #185; app deep links should move from "Page with redirect" to "Alternate page with proper
+   canonical tag" after #186.
 
 18. **"Coho not in this section" badge (TJ, 2026-11-10: leave for now, revisit):** with several fish picked, the banner's amber
    badge names a missing fish but offers no next step, while the "More of your fish" line under the headline does. Options:
