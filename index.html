@@ -16,8 +16,11 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        // Page speed (2026-11-11): load Clarity once the page has loaded, so it doesn't compete with the hero photo.
+        // Calls made before then wait in the queue above.
+        var go=function(){t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);};
+        if(l.readyState==="complete")go();else c.addEventListener("load",go);
     })(window, document, "clarity", "script", "x3jmju83ap");
 </script>
 
@@ -85,7 +88,11 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   </header>
 
   <div class="hero-photo">
-    <img class="hero-img" src="/images/hero/home-fall-lake-800.webp" srcset="/images/hero/home-fall-lake-800.webp 800w, /images/hero/home-fall-lake.webp 1600w" sizes="100vw" alt="" fetchpriority="high" decoding="async">
+    <picture>
+      <!-- Under 1000 px the photo is a short band: phones get a strip of just the rows it shows (page speed, 2026-11-11). -->
+      <source media="(max-width: 599px)" srcset="/images/hero/home-fall-lake-strip.webp"><source media="(max-width: 999px)" srcset="/images/hero/home-fall-lake-strip-1200.webp">
+      <img class="hero-img" src="/images/hero/home-fall-lake-800.webp" srcset="/images/hero/home-fall-lake-800.webp 800w, /images/hero/home-fall-lake.webp 1600w" sizes="100vw" alt="" fetchpriority="high">
+    </picture>
     <div class="hero-photo-bg"></div>
     <div class="hero-copy">
       <h1>Where to fish today.</h1>
@@ -345,7 +352,7 @@ try { var _nt = /[?&]notrack=([01])/.exec(location.search);
   <!-- one-glance summary strip -->
   <!-- Species + Summary Banner -->
   <div id="species-banner" class="sp-banner fi">
-    <img class="sp-banner-img" src="/images/hero/home-fall-lake-800.webp" srcset="/images/hero/home-fall-lake-800.webp 800w, /images/hero/home-fall-lake.webp 1600w" sizes="100vw" alt="" decoding="async">
+    <picture><source media="(max-width: 599px)" srcset="/images/hero/home-fall-lake-strip.webp"><source media="(max-width: 999px)" srcset="/images/hero/home-fall-lake-strip-1200.webp"><img class="sp-banner-img" src="/images/hero/home-fall-lake-800.webp" srcset="/images/hero/home-fall-lake-800.webp 800w, /images/hero/home-fall-lake.webp 1600w" sizes="100vw" alt="" loading="lazy" decoding="async"></picture>
     <div id="species-banner-fish" class="sp-banner-fish"></div>
     <div>
       <div class="sp-banner-lbl">Target Species</div>

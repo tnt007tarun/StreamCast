@@ -904,6 +904,21 @@ Merged recently:
   the strip says what the sky does and the Best Window card says when to fish. `skyDayNote()` still fills it as the fallback
   with no period forecast, and "Weather didn't load" still shows.
 
+- **Mobile page speed, round 2** (TJ, 2026-11-11, live PageSpeed after #182: CLS 0.032, LCP 5.0 s; the LCP element is the
+  hero photo). Local Lighthouse can't see third parties, so the live run had more bytes fighting the hero than ours did:
+  YouTube and local guide thumbnails (Chrome starts `loading="lazy"` images about 2,500 px early on slow connections),
+  Clarity (25 KB) and Cloudflare's Web Analytics beacon (10 KB). (1) Under 1000 px the hero is a 62 to 119 px band, so
+  phones get `home-fall-lake-strip.webp` (rows 160 to 660 of the 1600 px photo, 800 px, 28 KB; was 45 KB) and 600 to 999 px
+  `home-fall-lake-strip-1200.webp` (56 KB; was the 155 KB full photo), through `<picture>`; object-position 40% keeps the
+  same framing at every width. The results species banner uses the same strips and is `loading="lazy"` (it downloaded
+  its own copy on the homepage while hidden). Both `<picture>` wrappers are `position:absolute; inset:0` so they don't
+  become flex items (a bare wrapper pushed the banner text 10 px right). (2) Guide card images are rendered with
+  `data-src`/`data-srcset` and swapped in on `load` (`loadGuideImages()`); list cards get 300 px copies in
+  `images/thumbs/sm/`. (3) Clarity's tag loads on `load` (calls before then queue). Not changed: `app.css` stays
+  render-blocking (46 KB, the only blocking request), and the "cache lifetimes" item is the deliberate `no-cache` on
+  `/assets/*`. Possible next steps if LCP is still high: minify `app.js`/`conditions-core.js` (about 58 KB) with a build
+  step, or turn off Cloudflare Web Analytics if Umami is enough (TJ's call).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

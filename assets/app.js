@@ -3635,9 +3635,13 @@ function renderGuides() {
     if (!g.img) return '';
     var local = g.img.charAt(0) === '/';
     var thumb = local ? g.img.replace(/^\/images\/[^\/]+\//, '/images/thumbs/') : g.img;
-    var srcset = local ? ' srcset="' + thumb + ' 480w, ' + g.img + ' 1200w" sizes="' +
+    // 300 px copies in /images/thumbs/sm/ for the 96 px list cards (page speed, 2026-11-11).
+    var small = local ? thumb.replace('/images/thumbs/', '/images/thumbs/sm/') : '';
+    var srcset = local ? ' srcset="' + small + ' 300w, ' + thumb + ' 480w, ' + g.img + ' 1200w" sizes="' +
       (isLead ? '(max-width:700px) 100vw, 620px' : '96px') + '"' : '';
-    return '<img src="' + thumb + '"' + srcset + ' alt="" loading="lazy" decoding="async" onerror="this.remove()">';
+    // data-src until the page has loaded (page speed, 2026-11-11): on a slow phone Chrome starts "lazy" images up to
+    // about 2,500 px below the screen, so these competed with the hero photo. loadGuideImages() swaps them in.
+    return '<img data-src="' + thumb + '"' + srcset.replace(' srcset=', ' data-srcset=') + ' alt="" loading="lazy" decoding="async" onerror="this.remove()">';
   }
   function card(g, isLead) {
     var live = g.peak.indexOf(m) !== -1;
@@ -3661,6 +3665,18 @@ function renderGuides() {
     (more.length ? '<details class="gmore"><summary>More guides <span>(' + more.length + ')</span></summary>' +
       '<ul>' + more.map(mini).join('') + '</ul>' +
       '<a class="gmore-all" href="/guides/">Browse every guide</a></details>' : '');
+  loadGuideImages();
+}
+
+function loadGuideImages() {
+  var go = function () {
+    document.querySelectorAll('#guides-grid img[data-src]').forEach(function (im) {
+      if (im.dataset.srcset) im.srcset = im.dataset.srcset;
+      im.src = im.dataset.src;
+      im.removeAttribute('data-src'); im.removeAttribute('data-srcset');
+    });
+  };
+  if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
 }
 
 function getTripDateStr() {
