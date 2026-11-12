@@ -28,7 +28,7 @@ build, and the Cloudflare check on the PR links to it.
 | `assets/app.css` | All app styling, in cascade layers. See `assets/README.md` |
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
 | `guides/*/index.html`, `rivers/*/index.html`, `about/` | Hand-written static pages, each self-contained with its own `<style>` |
-| `sitemap.xml`, `llms.txt`, `robots.txt` | Keep in sync when pages are added |
+| `sitemap.xml`, `llms.txt`, `robots.txt` | Keep in sync when pages are added. `llms.txt` entries are markdown links (`- [Title](url): note`); PageSpeed's agent check counts only those (2026-11-12) |
 | `_redirects`, `_headers` | Cloudflare Pages config. They keep repo docs (`CLAUDE.md`, the READMEs) off the live site and out of search. Add any new repo-only doc to both |
 | `images/`, `video/` | Photos (WebP for pages, JPG kept for og:image) and short clips |
 | `worker/` | The `streamcast-proxy` Worker (flow, lake temps, stocking, subscribe, unsubscribe) and its `wrangler.toml`. Not deployed by Pages. See `worker/README.md` |
@@ -60,6 +60,11 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
 
 ## House rules
 
+### Angler first (TJ, 2026-11-10)
+For every change, ask: how useful is this to an angler standing at the river, and is the app getting easier to use or
+just busier? Don't show the same thing twice, don't offer places or fish that are closed, and cut lines that don't help
+someone decide where to go or what to bring. Say in the PR what the change does for the angler.
+
 ### Never recommend closed water
 - The source of truth is the **MNR 2026 Ontario Fishing Regulations Summary**. It's a doc in
   the claude.ai project. If it isn't available, ask TJ to attach the PDF. Never work from memory.
@@ -86,8 +91,9 @@ October 2026. The old `Streamcast-worker` repo is disconnected; never deploy fro
   Oct-Nov fall run, Dec-Feb holding over (good), Mar-Apr spring run, May-Aug in the lake. Gear is
   float with roe, like steelhead.
 - `getCurrentSeason(species, date, section)`: pass the section when it isn't the one being viewed.
-- **Coho** are rare on the Credit, Bronte and Humber (TJ, 2026-11-02: they run mostly in the eastern tributaries), so
-  those sections don't list them. `/credit-river/coho-salmon` 301s to `/credit-river/steelhead`. Run alert drafts for
+- **Coho** run in good numbers only on the Bowmanville, the Ganaraska and Cobourg Creek (TJ, 2026-11-11; Cobourg isn't in
+  the app). Only Bowmanville and the Ganaraska's lower three sections list them; the Credit, Bronte, Humber, Duffins and
+  Wilmot don't. `/credit-river/coho-salmon` 301s to `/credit-river/steelhead`. Run alert drafts for
   the Credit talk about steelhead only.
 
 ### One decision, one function
@@ -175,7 +181,7 @@ short-name splits accept either character.
 Cloud sessions can't reach herefishyfishy.ca or the gauge and weather APIs, so test with
 the app's fallback data and say so. Local Claude Code can test against live data.
 
-## Current state (updated 2026-10-26)
+## Current state (updated 2026-11-12)
 
 Merged recently:
 - **#60** Regulations verified against MNR 2026. Closed-as-open spot/dates went from 25 to 0. Added `allAccessClosed()`.
@@ -607,7 +613,7 @@ Merged recently:
   (601 to 1199 px, or any touch screen over 600 px): shorter hero, a gap under it, one-line method buttons; button bottom about
   697 px on 1024 x 768 (was 739). "Check by river" no longer shows reach chips: the app always picks the reach
   (`resolveAutoSection()`), and results show one line under the headline, "Other reaches: …" (`#tp-reaches`, siblings from
-  `RIVER_SECTIONS`, "(closed)" from `sectionClosedOn()`). Tapping one opens that reach and marks it in `_upstreamStay`, so the
+  `RIVER_SECTIONS`; reaches closed on the trip date (`sectionClosedOn()`) are left out, and so is the reach the "Stay on the …" link already offers, TJ 2026-11-10). Tapping one opens that reach and marks it in `_upstreamStay`, so the
   upstream rule doesn't move the reader back up. Umami `Other Reach Clicked {river}`.
 
 - **Regs follow the picked fish** (TJ, 2026-11-05: a Steelhead + Chinook search on the Duffins showed "2026 Regs · Coho"): with
@@ -788,6 +794,78 @@ Merged recently:
   one text item; `.mth-rest` hidden), and under 370 px the photo band is 6 px shorter. Every phone width now has the whole
   button on the first screen: 651 on 390 x 664, 647 on 375 x 667, 637 on 360 x 640.
   Under 380 px the day chips sit 4 px apart (was 6) with 12 px day and 11 px date text, so "Today" no longer fills its button.
+- **Several fish picked: pick by fish offered** (TJ, 2026-11-09: Steelhead + Brown + Brook from Etobicoke went to the Duffins,
+  which offers only steelhead, while Steelhead + Brown went to the Humber). Two bugs. (1) `goToResults()` looked for a reach
+  that *lists* every picked fish, and when none did (brook trout aren't on the Humber) took the top-ranked reach listing any.
+  It now counts, per reach, the picked fish it legally offers on the trip date (`legalSpeciesFor(..., true)`: listed, open,
+  fish present; steelhead water counts for Rainbow Trout). Within a count: more of them for real (resident rainbows beat
+  steelhead water), then rank score, then drive. More fish wins only if it is at most `MORE_FISH_EXTRA_MIN` (15, TJ
+  2026-11-09) minutes farther than the best reach with fewer; otherwise the closer reach is picked and the skipped one is
+  offered under the headline, after "Other reaches": "More of your fish: steelhead and coho salmon on the Duffins Creek ·
+  Lower Section, about 40 min away." (`window._moreFishAlt`, shown while viewing the picked river on the same date; link via
+  `goToSection()`, Umami `More Fish Reach Clicked {river}`). The old listing tiers only decide when no reach offers any picked
+  fish. (2) `sectionSeasonScore()` with two or more fish fell into its no-species branch and scored a reach on its best fish
+  of any kind (the Duffins mouth got peak coho on a Steelhead + Brown search); it now scores each picked fish alone and keeps
+  the best. Core change, so the Worker redeploys; the weekly email scores one fish at a time, so its numbers don't change.
+  Checked 7,380 searches (41 cities, 41 fish picks of 1 to 3, six dates) against main: 902 picks change. 143 had landed on a
+  reach offering none of the picked fish; 210 now offer more of them (113 farther, almost all 5 to 15 min); 389 offer the
+  same fish; 160 offer fewer but are closer (20 to 50 min saved) and 159 of those show the more-fish suggestion. 469
+  searches show a suggestion.
+
+- **Best window note and season bar letters** (TJ, 2026-11-10, iPhone): (1) with some cloud in every period, the Best
+  Window note said "Cloud cover holds, so fish any time." while the Sky card's note said "Brighter early, cloudier later. The
+  bite should pick up as the cloud comes in." `fishingWindow()` now says "holds" only when all three periods are overcast;
+  rising cloud reads "Enough cloud to fish any time. Best from about 3 PM (or 10 AM), as the cloud thickens." (once past that
+  time: "Cloud cover holds for the rest of the day"), falling cloud "Best early, while the cloud is thickest", mixed "Enough
+  cloud to fish any time." The window itself is unchanged. Core change, but neither the Worker nor the emails use it.
+  (2) Species cards' season bar labels ran together on phones ("JanuaryMarchMay…"): a second `var MONTH_NAMES` with full
+  names (species grid block) overrode the short one. That one is gone (`longDate()` uses `MONTH_FULL`), and the bar shows
+  one initial under each of the 12 months (J F M A M J J A S O N D), every width.
+  (3) Season notes that named the wrong month (TJ's wording): steelhead Fall Return (Oct to Nov) "…Numbers build through the
+  fall." (was "through October"), Chinook Late Run (Nov) "Run tapering. Mostly spawned-out fish." (was "…early October").
+
+- **Bait as cards on wide screens** (TJ, 2026-11-10): from 760 px the Bait, Lures or Flies pillar shows each option as a
+  card (photo, name, spec, water tag, Best for, How), three to a row from 1000 px and two from 760 to 999 px
+  (`#tg-bait-grid`, built in `renderBaitPillar()` from the same list). The top pick is first, with "Start here" and a teal
+  edge. One full row shows; the rest sit behind "N more". Phones keep the top card plus the tap-to-open list. Order and
+  content are unchanged.
+
+- **Home photo grows with the form** (TJ, 2026-11-10, on a Dell laptop): from 1000 px the hero photo was a fixed 600 px and
+  the form card (about 680 px, more with "More dates" open) hung past it, so the photo ended in a hard line across the form.
+  The photo height is now `--hero-h` on `#landing`, set by `syncHeroHeight()` in `app.js` (card height + 32 above + 48 below,
+  at least 600; a ResizeObserver follows "More dates"); the card's negative top margin uses the same value and it has a 92 px
+  bottom margin so the guides start below the photo. Fallback 760 px. Under 1000 px nothing changes.
+  Then (TJ, 2026-11-10, external monitor about 1890 px wide on the same laptop): the photo drew at its natural 1600 px in the
+  middle with bare wash on both sides, as if `background-size: cover` was dropped; not reproducible in headless Chrome at any
+  width or pixel ratio. The photo is now an `<img class="hero-img">` (800/1600 srcset, `object-fit: cover`, centre 40% on
+  phones, 45% from 1000 px) and the wash sits on `.hero-photo-bg` above it. Renders match main within resampling noise at
+  360 to 1920 px. The results page's species strip showed the same bars (TJ), so it got the same change: `<img
+  class="sp-banner-img">` inside `#species-banner`, wash on its `::before`; the phone rule that targeted the text block as
+  `> div:nth-child(2)` is now `> .sp-banner-fish + div`. Open: TJ to recheck on that monitor.
+
+- **Duffins Creek page** (TJ, 2026-11-11, from the Search Console pull through Windsor.ai: "duffins creek fishing
+  regulations" had 29 impressions in 90 days at about 10th and landed on `/about/`): `/rivers/duffins/`, built on the Don
+  page's layout. Leads with the three stretches and their seasons (Zone 17 Durham exceptions, checked on ontario.ca on
+  2026-11-11: lake to the CN right-of-way all year; CN to Hwy 2 to Dec 31; above Hwy 2 to Sept 30; brook trout Sept 30
+  everywhere), limits from `RIVER_REGS`, a year table, access by stretch (Rotary Park and the marsh, below the CN line,
+  CN to Kingston Rd, Greenwood, Whitevale, Glen Major), flow on 02HC049, FAQ (matches the JSON-LD), Today strip and a mid
+  weekly-steelhead signup box. HTML comments mark where TJ's photo and video go. `/rivers/` links to it, plus a note on the
+  three seasons; sitemap and llms.txt updated. Not in the homepage `GUIDES` cards until it has a photo. Also fixed the app's
+  "Below CNR Railway Line" spot text, which said the extended season applied south of the CNR (it's open all year there).
+  Round 2 (TJ, 2026-11-11: "a bit dry"): a history section, "The Salmon River" (Riviere au Saumon in 1670, Augustus Jones's
+  1791 map and Mike Duffin, Timothy Rogers's 1809 mill and Duffin's Creek village becoming Pickering Village, salmon gone by
+  1834, the Whitevale dam from the 1820s with no ladder, Bring Back the Salmon stocking since 2006 and the May 2026 class
+  release; sources in the endnote), and TJ's three videos (`mgWa8P09NKM`, `sdcNeg5ibaw` under the year table,
+  `Jjoc2T9MYok` in the lower creek), captioned only from their YouTube descriptions. TJ: say "check the signs at the dam"
+  (no sanctuary claim); the app's Whitevale regs line and spot text now say the same (core change). Browns are rare on
+  the lower Duffins, so it stays without them (TJ).
+  TJ confirmed all three videos are from the lower Duffins ("the open section for November"; captions say so, no spot
+  named), skip the 3 tips. "Room to spread out" is TJ's own reason for the creek: several decent pools and runs with
+  good depth throughout, so you aren't packed in at one spot like Old Mill on the Humber.
+  Photo: TJ's About-page steelhead (`images/about/about-steelhead-duffins.webp`, Duffins, trout opener day 2024, TJ), also
+  the page's og:image (the JPG). Homepage `GUIDES` card added after the Humber (peak Oct, Nov, Apr; thumb in `images/thumbs/`).
+  The page opens with the photo and a short story paragraph (the Salmon River name, Chinook and steelhead runs, no coho in the lead per TJ, moraine to
+  marsh), then the three-season sentence (TJ, 2026-11-11: start with the photo and something that's not all numbers).
 
 - **Signup box offer** (2026-11-08, from the Umami review in project doc `claude/analytics-2026-11-08.md`: 30 days, notify bar
   264 shown / 10 signups, page boxes 181 seen / 0 signups and 0 failures; a live test signup on the homepage box worked). Weekly
@@ -797,6 +875,57 @@ Merged recently:
   October to April (it needed a river, a fish and an email). New Umami `Signup Blocked {page, offer, placement, reason:
   no-river|no-fish|no-match|bad-email}` when the box's own checks stop a submit. Pages load `signup.js?v=4`. Re-check in 3 to 4
   weeks: signups and Blocked per Signup Box Seen, by page.
+  Renamed (TJ, 2026-11-10: "Thursday" hid that it is a weekly outlook): label "Free weekly email", heading "Your weekly steelhead
+  outlook for the Humber River" (homepage and `/weekly/`: "Your weekly fishing outlook"), line in TJ's words "We email you on
+  Thursday, for the best fishing days from Friday to the following Wednesday. Get info on where to stand, and what to bring. We
+  don't email you if there aren't any good days forecasted!", button "Get the weekly outlook". Notify bar weekly offer: "Get the
+  weekly <fish> outlook", same line, button "Get it"; its run-alert checkbox "Also send the weekly <fish> outlook for this river"
+  ("Also send the weekly outlook" on phones). Pairs with the Monthly outlook by name.
+
+- **Coho on the east only** (TJ, 2026-11-11): Coho removed from Duffins Lower and Middle and Wilmot Mouth & Marsh and Lower
+  River (and their spot text; the `/rivers/` chips go with #179), added to the Ganaraska Lower, Port Hope town reach and Corbetts sections
+  (its "Chinook / Coho Salmon" regs row already existed). Checked 450 city/fish/date searches against main: chinook-only
+  picks unchanged; coho searches now land on Bowmanville or the Ganaraska instead of the Duffins or Wilmot. Open: the
+  `/rivers/` page still shows Coho chips on the Saugeen and Nottawasaga (the app doesn't list coho there).
+
+- **Mobile page speed** (TJ, 2026-11-11, PageSpeed Insights on mobile): Lighthouse mobile on the homepage, served with
+  compression like Cloudflare, went from about 81 to 98 to 99. (1) Layout shift 0.232 to 0: the old river-tab blocks
+  (`.expert-only`, `#river-placeholder`) showed until `app.js` set `mode-beginner` on `.form-card`, so the form jumped up
+  about 60 px; the class is now in the HTML. The empty day-chip row is held at 48 px (`.day-chips:empty`) until
+  `renderDayChips()` fills it. (2) LCP 3.4 s to about 2.2 s: `conditions-core.js` and `app.js` are `defer`, so the hero
+  paints before 650 KB of script parses. `signup.js` moved after them (also `defer`) because it reads `RIVER_SECTIONS`
+  from the core. (3) The form's fish photos use 96 px WebP copies in `images/species/sm/` (84 KB to 14 KB); the 200 px
+  JPGs stay for everything else. Checked 12 rendered cases (form, search, deep links, closed reach, install hint) at
+  390 and 1280 px against main: same text, no page errors. Keep new layout-changing JS out of first paint, or reserve
+  its space in CSS.
+
+- **Sky note dropped under the strip** (TJ, 2026-11-11, iPhone: "Bright at midday. Fish morning and evening." sat right
+  above "Best window: ... Skip the bright midday."): `#skystat` is hidden whenever the 8 AM / 12 PM / 6 PM strip shows, since
+  the strip says what the sky does and the Best Window card says when to fish. `skyDayNote()` still fills it as the fallback
+  with no period forecast, and "Weather didn't load" still shows.
+
+- **Mobile page speed, round 2** (TJ, 2026-11-11, live PageSpeed after #182: CLS 0.032, LCP 5.0 s; the LCP element is the
+  hero photo). Local Lighthouse can't see third parties, so the live run had more bytes fighting the hero than ours did:
+  YouTube and local guide thumbnails (Chrome starts `loading="lazy"` images about 2,500 px early on slow connections),
+  Clarity (25 KB) and Cloudflare's Web Analytics beacon (10 KB). (1) Under 1000 px the hero is a 62 to 119 px band, so
+  phones get `home-fall-lake-strip.webp` (rows 160 to 660 of the 1600 px photo, 800 px, 28 KB; was 45 KB) and 600 to 999 px
+  `home-fall-lake-strip-1200.webp` (56 KB; was the 155 KB full photo), through `<picture>`; object-position 40% keeps the
+  same framing at every width. The results species banner uses the same strips and is `loading="lazy"` (it downloaded
+  its own copy on the homepage while hidden). Both `<picture>` wrappers are `position:absolute; inset:0` so they don't
+  become flex items (a bare wrapper pushed the banner text 10 px right). (2) Guide card images are rendered with
+  `data-src`/`data-srcset` and swapped in on `load` (`loadGuideImages()`); list cards get 300 px copies in
+  `images/thumbs/sm/`. (3) Clarity's tag loads on `load` (calls before then queue). Not changed: `app.css` stays
+  render-blocking (46 KB, the only blocking request), and the "cache lifetimes" item is the deliberate `no-cache` on
+  `/assets/*`. Possible next steps if LCP is still high: minify `app.js`/`conditions-core.js` (about 58 KB) with a build
+  step, or turn off Cloudflare Web Analytics if Umami is enough (TJ's call).
+
+- **Results keep their address** (TJ, 2026-11-12, from Search Console's "Page with redirect" list): opening results rewrote
+  the address to `/#river`, so a refresh, a bookmark or a shared link lost the reach, the fish and the date, and Google read
+  every deep link as a JS redirect to `/`. `resultsUrl()` builds `/?river=<section>&species=<keys>[&date=<day>]#river` (date
+  only when it isn't today); the search, `goToSection()` and the deep-link handler push it, and `syncResultsUrl()` in
+  `renderResults()` updates it after the sunset roll and the upstream move, so it names the reach on screen. A shared date
+  before today or past the last day chip is ignored. Back still returns to `/`. Umami now records a page view for each
+  results address (`/?river=...`); compare homepage views before and after 2026-11-12 with that in mind.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
@@ -806,7 +935,7 @@ Merged recently:
   `Full Regs Clicked`, `Regs Details Opened`, `Guide Card Clicked {url, slot: card|list}`,
   `Upstream Auto Switch {from, river}`, `Upstream Stay Clicked {river}`, `Install Hint Shown {platform}`,
   `Install Hint Dismissed {platform}`, `Install Prompt Answered {outcome}`, `Other Reach Clicked {river}`,
-  `Search {location, species, mode, prefill?}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
+  `Search {location, species, mode, prefill?}`, `More Fish Reach Clicked {river}`, `River Viewed` also carries `mode` (spot or river), `Results Section Seen {river, section: conditions|spots|gear, layout, screen}` (first time each section heading is 60% on screen in a results view, watched only once the headline has loaded) and `Results Engaged {river, seconds: 30|60|120, layout, screen}` (time the results page is on screen in a visible tab), both from `resultsDepthStart()` (`layout` is `scroll`, or `pill` once the Next pill ships; `screen` is phone under 600 px, else wide; TJ 2026-11-05: results share `/` with the form, so Umami's bounce rate and time on page can't measure them), `Alternative Reach Shown`, `Alternative Reach Clicked`, `Scroll Depth {page, depth}` (signup.js, pages with a box), `Signup Blocked {page, offer, placement, reason}` (signup.js, a submit stopped by the box's checks), `App Installed`, `Home Screen Launch`. Click events come from one delegated listener
   next to `track()`. Add new click events there.
 - Static pages and the Credit SSR page, via `data-umami-event` attributes: `Conditions CTA Clicked {page, river}` on
   every link into the app (`placement: top` for the Today's conditions block), `Video Played {page, video}` on `.vid-play`. New pages need the same attributes.
@@ -861,12 +990,12 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-18. **Weekly-signup confirmation reformatted; unsubscribe hypothesis logged (2026-11-13):** the "You're set" confirmation
+21. **Weekly-signup confirmation reformatted; unsubscribe hypothesis logged (2026-11-13):** the "You're set" confirmation
    (`handleSubscribe()` in `worker/worker.js`) wrote every river and species a subscriber picked into one `weeklyWhat()`
    sentence; a multi-river signup (3 rivers, every species on each, 12 combos) read as a dense wall of bold text (TJ: "not
    as readable or UI friendly"). Replaced with `weeklyGroupedList()`: one bullet per river, species listed after it. Only
    the weekly-signup lead changed; the `run` confirmation's one-line mention still uses `weeklyWhat()` (always short so
-   far). Not yet opened as a PR.
+   far). PR #188.
    Unsubscribe hypothesis (unconfirmed): a subscriber who signed up for the weekly email (homepage box, 3 rivers,
    12 combos, plus outlook) Nov 8 at 11:38 pm Toronto unsubscribed Nov 12 (Thursday) at 1:16 pm Toronto, about 4
    hours before that week's Thursday run actually sent (5:06 pm). The confirmation email says "Every Thursday..." with no
@@ -874,6 +1003,19 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
    didn't reply to the "which river do you fish most" question, so this isn't confirmed by anything they said. If another
    subscriber unsubscribes same-day on a Thursday before the send, that supports it; a fix would be naming a time
    ("Thursday evenings") in the confirmation copy.
+
+20. **Page speed follow-ups (2026-11-12):** re-run PageSpeed mobile after #184 (hero strip, guide images and Clarity after
+   load). If LCP is still over 2.5 s: minify `app.js`, `conditions-core.js` and `app.css` with a Pages build step (about
+   94 KB compressed saved; TJ was given the tradeoffs), or turn off Cloudflare Web Analytics (TJ's call). Search Console:
+   resubmit the sitemap after #185; app deep links should move from "Page with redirect" to "Alternate page with proper
+   canonical tag" after #186.
+
+19. **Coho chips on `/rivers/` for the Saugeen and Nottawasaga (TJ, 2026-11-11: park, review before next salmon season):**
+   the page shows Coho on both, but the app doesn't list coho on either river.
+
+18. **"Coho not in this section" badge (TJ, 2026-11-10: leave for now, revisit):** with several fish picked, the banner's amber
+   badge names a missing fish but offers no next step, while the "More of your fish" line under the headline does. Options:
+   point the badge at that reach, or drop it when the line shows.
 
 17. **Test widths from real devices (TJ, 2026-11-07):** once there are more users, pull the device and screen-size split from
    Umami and use the common widths for layout checks (today: 390 x 664 for iPhone 13 to 16, plus 375 and 360). "Rainbow Trout"

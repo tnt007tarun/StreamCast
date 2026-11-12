@@ -882,14 +882,14 @@ var RIVER_CONFIG = {
     lat:43.843, lng:-79.065,
     loc:'Lake Ontario to Highway 2 (Ajax / Pickering)',
     driveTime:{'toronto':40,'north york':35,'scarborough':20,'etobicoke':55,'markham':25,'richmond hill':35,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':90,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':20,'whitby':15,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':90,'collingwood':130,'owen sound':190},
-    species:['Steelhead','Chinook Salmon','Coho Salmon'],
+    species:['Steelhead','Chinook Salmon'],
     active:true,
     regs:[{rule:'South of the CNR tracks: open all year. Between the CNR and Hwy 2: open fourth Saturday in April to Dec 31. Standard FMZ 17 limits.',icon:'📋'}],
     methods:['float','spin'],
     access:[
-      {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook and Coho runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
+      {name:'Rotary Park',loc:'Ajax · Rotary Park near Lake Ontario',crowd:'high',desc:'Primary access for migratory runs entering from Lake Ontario. Heavy pressure during fall Chinook runs and spring steelhead. Float fishing with roe and beads most productive. Arrive before dawn on fall weekends.'},
       {name:'Duffins Creek Marsh',mouth:true,loc:'Ajax / Pickering · Duffins Creek marsh',crowd:'med',desc:'Estuary section holds staging fish before they push upstream. Good for casting spoons and crankbaits at chrome fish. Smallmouth bass and pike year-round for warmwater anglers.'},
-      {name:'Below CNR Railway Line',loc:'South of CNR tracks · Lower Duffins',crowd:'med',desc:'Extended fall season applies south of the CNR track (Oct–Dec 31). Check boundary markers carefully. Good pool and run structure for float fishing.'}
+      {name:'Below CNR Railway Line',loc:'South of CNR tracks · Lower Duffins',crowd:'med',desc:'Open all year south of the CNR tracks; between the CNR and Hwy 2 the season ends Dec 31. Check boundary markers carefully. Good pool and run structure for float fishing.'}
     ]
   },
   'Duffins Creek — Middle Section': {
@@ -901,13 +901,13 @@ var RIVER_CONFIG = {
     lat:43.870, lng:-79.058,
     loc:'Highway 2 to the dams (Greenwood Conservation Area / Whitevale)',
     driveTime:{'toronto':45,'north york':40,'scarborough':20,'etobicoke':60,'markham':25,'richmond hill':40,'vaughan':45,'ajax':5,'pickering':5,'mississauga':85,'brampton':70,'oakville':75,'burlington':95,'milton':85,'hamilton':105,'guelph':115,'cambridge':130,'kitchener':140,'waterloo':140,'orangeville':95,'oshawa':15,'whitby':10,'bowmanville':35,'clarington':45,'newcastle':45,'cobourg':80,'port hope':70,'barrie':85,'collingwood':130,'owen sound':190},
-    species:['Steelhead','Chinook Salmon','Coho Salmon','Rainbow Trout','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Rainbow Trout','Brown Trout'],
     active:true,
-    regs:[{rule:'Fishing near Whitevale Dam and the barrier north of Church Street is prohibited. Both are fish sanctuaries. Check posted signs.',icon:'🚫'},{rule:'North of Hwy 2 the trout and salmon season ends Sept 30.',icon:'📋'}],
+    regs:[{rule:'Check the posted signs at Whitevale Dam before fishing near it.',icon:'🚫'},{rule:'North of Hwy 2 the trout and salmon season ends Sept 30.',icon:'📋'}],
     methods:['float','fly','spin'],
     access:[
       {name:'Greenwood Conservation Area',loc:'Greenwood, ON · TRCA managed',crowd:'med',desc:'Deep valley lands with excellent holding water. Migratory salmon and steelhead push through in season. Resident rainbow and brown trout in cooler upper pools. TRCA managed with day-use fee.'},
-      {name:'Whitevale · Below Dam',loc:'Whitevale, ON · Below Whitevale Dam',crowd:'high',desc:'Fish concentrate below the dam before the sanctuary zone. The dam separates migratory fish from resident trout upstream. Don’t fish inside the sanctuary boundary. It’s signed, and wardens patrol it.'}
+      {name:'Whitevale · Below Dam',loc:'Whitevale, ON · Below Whitevale Dam',crowd:'high',desc:'Fish concentrate below the dam. The dam separates migratory fish from resident trout upstream. Check the posted signs at the dam before you fish near it.'}
     ]
   },
   'Duffins Creek — Upper Reaches': {
@@ -934,7 +934,7 @@ var RIVER_CONFIG = {
     lat:43.940, lng:-78.305,
     loc:'Lake Ontario to the CNR railway bridge (Port Hope harbour)',
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:40,bowmanville:25,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Open all year below the CNR. Upstream, Jocelyn St to the CNR is closed Sept 1 to Oct 14, and Hwy 401 to Jocelyn St is closed all year.',icon:'📋'}],
     methods:['float','spin'],
@@ -950,7 +950,7 @@ var RIVER_CONFIG = {
     lat:43.945, lng:-78.300,
     loc:'Jocelyn Street Bridge to the CNR bridge, through Port Hope',
     driveTime:{toronto:90,'north york':85,scarborough:75,etobicoke:100,markham:70,'richmond hill':75,vaughan:80,ajax:55,pickering:50,mississauga:120,brampton:105,oakville:110,burlington:120,milton:105,hamilton:130,guelph:140,cambridge:155,kitchener:165,waterloo:165,orangeville:125,oshawa:35,whitby:40,bowmanville:25,clarington:15,newcastle:15,cobourg:35,'port hope':5,barrie:110,collingwood:150,'owen sound':210},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'Jocelyn St bridge to the CNR: open fourth Saturday in April to Aug 31 and Oct 15 to Dec 31. Closed Sept 1 to Oct 14.',icon:'🚫'},{rule:'Fish south of the Jocelyn St bridge only. Upstream to Hwy 401 is a sanctuary, closed all year.',icon:'🚫'}],
     methods:['float','fly'],
@@ -965,7 +965,7 @@ var RIVER_CONFIG = {
     lat:43.950, lng:-78.298,
     loc:'Highway 401 to the Jocelyn Street Bridge (Corbetts Dam and fishway)',
     driveTime:{toronto:95,'north york':90,scarborough:80,etobicoke:105,markham:75,'richmond hill':80,vaughan:85,ajax:60,pickering:55,mississauga:120,brampton:110,oakville:115,burlington:125,milton:110,hamilton:135,guelph:145,cambridge:160,kitchener:170,waterloo:170,orangeville:130,oshawa:40,whitby:30,bowmanville:15,clarington:20,newcastle:20,cobourg:40,'port hope':10,barrie:115,collingwood:155,'owen sound':215},
-    species:['Steelhead','Chinook Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
     active:false,
     regs:[{rule:'CLOSED TO FISHING ALL YEAR. Fish sanctuary protecting migrating salmon and trout at Corbetts Dam and fishway.',icon:'🚫'}],
     methods:[],
@@ -1213,12 +1213,12 @@ var RIVER_CONFIG = {
     lat:43.890, lng:-78.594,
     loc:'Sir Samuel Wilmot Nature Area (Lake Ontario mouth, Cobbledick Road)',
     driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':110,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':180,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
-    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17. Standard trout and salmon limits apply. Sir Samuel Wilmot Nature Area is a provincially significant wetland, so respect all posted rules.',icon:'📋'}],
     methods:['float','spin'],
     access:[
-      {name:'Sir Samuel Wilmot Nature Area',mouth:true,loc:'Cobbledick Road · South of CN tracks · Clarington',crowd:'high',desc:'The marsh and creek mouth where Wilmot Creek enters Lake Ontario through a provincially significant wetland. Excellent staging area for fall Chinook and Coho before they push upstream, and spring steelhead. Also holds northern pike, crappie, sunfish, and large carp year-round. Heavy pressure during peak fall salmon runs.'}
+      {name:'Sir Samuel Wilmot Nature Area',mouth:true,loc:'Cobbledick Road · South of CN tracks · Clarington',crowd:'high',desc:'The marsh and creek mouth where Wilmot Creek enters Lake Ontario through a provincially significant wetland. Excellent staging area for fall Chinook before they push upstream, and spring steelhead. Also holds northern pike, crappie, sunfish, and large carp year-round. Heavy pressure during peak fall salmon runs.'}
     ]
   },
   'Wilmot Creek — Lower River (to CN Rail Tracks)': {
@@ -1228,7 +1228,7 @@ var RIVER_CONFIG = {
     lat:43.900, lng:-78.592,
     loc:'Mouth to the CN railway tracks: gravel runs and holding pools',
     driveTime:{'toronto':80,'north york':80,'scarborough':60,'etobicoke':100,'markham':65,'richmond hill':80,'vaughan':85,'ajax':40,'pickering':45,'mississauga':125,'brampton':115,'oakville':115,'burlington':130,'milton':125,'hamilton':140,'guelph':155,'cambridge':170,'kitchener':180,'waterloo':185,'orangeville':135,'oshawa':25,'whitby':30,'bowmanville':10,'clarington':5,'newcastle':5,'cobourg':40,'port hope':30,'barrie':115,'collingwood':165,'owen sound':225},
-    species:['Steelhead','Chinook Salmon','Coho Salmon','Brown Trout'],
+    species:['Steelhead','Chinook Salmon','Brown Trout'],
     active:true,
     regs:[{rule:'FMZ 17. Heavy pressure during peak runs. Respect other anglers and release fish where you can.',icon:'📋'}],
     methods:['float','spin'],
@@ -2794,7 +2794,19 @@ function fishingWindow(o) {
     var pc = o.periodCloud;
     var g = { morning: clsSky(pc.morning), midday: clsSky(pc.midday), evening: clsSky(pc.evening) };
     active = ['morning', 'midday', 'evening'].filter(function(p) { return g[p] !== 'bad'; });
-    if (active.length === 3) { mode = 'allday'; note = 'Cloud cover holds, so fish any time.'; }
+    if (active.length === 3) {
+      mode = 'allday';
+      // All three periods have some cloud. Only "holds" when all are overcast; otherwise say when the cloud is best, in
+      // step with the Sky card's note ("Brighter early, cloudier later…", TJ 2026-11-10: they disagreed).
+      var rk = { warn: 1, good: 2 }, M = rk[g.morning], D = rk[g.midday], E = rk[g.evening];
+      if (M === 2 && D === 2 && E === 2) note = 'Cloud cover holds, so fish any time.';
+      else if (M <= D && D <= E && M < E) {
+        var from = D === 2 ? WINDOW_MIDDAY[0] : (set != null ? Math.min(WINDOW_MIDDAY[1], set - 60) : WINDOW_MIDDAY[1]);
+        note = o.nowMin != null && o.nowMin >= from ? 'Cloud cover holds for the rest of the day, so fish any time.'
+          : 'Enough cloud to fish any time. Best from about ' + clockText(from) + ', as the cloud thickens.';
+      } else if (M >= D && D >= E && M > E) note = 'Enough cloud to fish any time. Best early, while the cloud is thickest.';
+      else note = 'Enough cloud to fish any time.';
+    }
     else if (active.length === 0) { mode = 'early'; note = 'Clear sky all day. Fish the first hours of light.'; }
     else {
       mode = 'periods';
@@ -3012,7 +3024,7 @@ var SPECIES_SEASONS = {
     windows: [
       { months: [2,4],   quality: "peak",    label: "Spring Run",  note: "Peak spring steelhead run from Lake Ontario and Georgian Bay. Best of the year." },
       { months: [5,8],   quality: "absent",  label: "Lake",        note: "Steelhead have dropped back to the lake. Target resident rainbow instead." },
-      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through October." },
+      { months: [9,10],  quality: "good",    label: "Fall Return", note: "Early steelhead begin entering rivers. Numbers build through the fall." },
       { months: [11,1],  quality: "good",    label: "Winter Run",  note: "Winter steelhead in larger rivers. Slow float with roe or beads. Hardy angling." }
     ]
   },
@@ -3036,7 +3048,7 @@ var SPECIES_SEASONS = {
       { months: [7,7],   quality: "slow",    label: "Harbour Mouth", note: "Early Chinook staging near harbour mouths in late July–August. A few enter rivers mid-August." },
       { months: [8,8],   quality: "good",    label: "Early Run", note: "Chinook entering rivers through September. Numbers building toward peak." },
       { months: [9,9],   quality: "peak",    label: "Peak Run",  note: "Peak Chinook run. Best of the year. Fish stacked in pools." },
-      { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Spawned-out fish. Still worth fishing early October." },
+      { months: [10,10], quality: "good",    label: "Late Run",  note: "Run tapering. Mostly spawned-out fish." },
       { months: [11,11], quality: "slow",    label: "Post-Spawn", note: "Run over. Occasional late fish. Most have spawned out." }
     ]
   },
@@ -3275,6 +3287,17 @@ function stagingSectionFor(sectionName) {
 // rankRivers adds drive time on top; conditionsScore adds the water. seasonSection is passed
 // to getCurrentSeason (lake-run brown trout); the app leaves it out so the viewed section is used.
 function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSection) {
+  // Several fish picked: score the reach on the best of those fish (each scored as if picked alone, closures
+  // included). It used to fall through to the no-species branch below and score the reach on its best fish of any
+  // kind, so a Steelhead + Brown Trout search credited the Duffins mouth with peak coho (TJ, 2026-11-09).
+  if (targetSpeciesNames && targetSpeciesNames.length > 1) {
+    var _best = null;
+    targetSpeciesNames.forEach(function(n) {
+      var r = sectionSeasonScore(sectionName, [n], dateStr, seasonSection);
+      if (!_best || r.score > _best.score) _best = r;
+    });
+    return _best;
+  }
   var cfg = getRiverConfig(sectionName);
   var score = 0;
   var notes = [];

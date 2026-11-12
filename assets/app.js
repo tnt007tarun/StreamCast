@@ -1492,7 +1492,7 @@ function goToResults(){
       });
       // Tier 1.5: rivers that have ALL currently FISHABLE selected species
       // e.g. Brook Trout + Coho in June → Coho is staging so fishable = [Brook Trout]
-      // Duffins Upper has Brook Trout → wins over Duffins Middle which only has Coho
+      // a reach with Brook Trout → wins over a reach that only has Coho
       var withAllFishable = ranked.filter(function(r){
         var cfg = getRiverConfig(r.name);
         return cfg && cfg.species && fishableSpecies.every(function(n){ return cfg.species.indexOf(n) !== -1; });
@@ -1502,7 +1502,47 @@ function goToResults(){
         var cfg = getRiverConfig(r.name);
         return cfg && cfg.species && targetSpeciesNames.some(function(n){ return cfg.species.indexOf(n) !== -1; });
       });
-      if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
+      // Pick the reach that legally offers the most of the picked fish on the trip date (fish present, season open,
+      // access open), best ranked first among equals. A fish that is closed everywhere (brook trout after Sept 30)
+      // counts nowhere, so it can't pull the pick away from water that has the others (TJ, 2026-11-09: Steelhead +
+      // Brown + Brook from Etobicoke went to the Duffins, which offers only steelhead, instead of the Humber).
+      // The listing tiers below only decide when no reach offers any picked fish.
+      // More fish wins only if it costs at most MORE_FISH_EXTRA_MIN more driving than the best reach with fewer of them
+      // (TJ, 2026-11-09: 15 min). A skipped reach is suggested under the headline (window._moreFishAlt).
+      var _offerBest = null, _offerN = 0, _byK = {};
+      window._moreFishAlt = null;
+      ranked.forEach(function(r) {
+        // Count the picked fish this reach legally offers. Steelhead water standing in for Rainbow Trout counts as the
+        // fish but loses to a reach with resident rainbows open at the same count (TJ, 2026-10-30).
+        var seen = {}, real = 0;
+        targetSpeciesNames.forEach(function(n){
+          var o = legalSpeciesFor(r.name, n, _tripDate, true);
+          if (o && !seen[o]) { seen[o] = 1; if (o === n) real++; }
+        });
+        var k = Object.keys(seen).length;
+        if (!k) return;
+        var _b = _byK[k];
+        // Equal fish: more of them for real, then the better ranked reach, then the shorter drive.
+        if (!_b || real > _b.real || (real === _b.real && (r.score > _b.r.score ||
+            (r.score === _b.r.score && r.driveTime < _b.r.driveTime)))) _byK[k] = { r: r, fish: Object.keys(seen), real: real };
+        _offerBest = _offerBest || r;
+      });
+      if (_offerBest) {
+        var _ks = Object.keys(_byK).map(Number).sort(function(a, b){ return b - a; });
+        var _cand = _byK[_ks[0]];
+        for (var _i = 1; _i < _ks.length; _i++) {
+          var _lower = _byK[_ks[_i]];
+          if ((_cand.r.driveTime || 0) > (_lower.r.driveTime || 0) + MORE_FISH_EXTRA_MIN) _cand = _lower;
+        }
+        if (_cand.r !== _byK[_ks[0]].r) {
+          var _top = _byK[_ks[0]];
+          window._moreFishAlt = { section: _top.r.name, fish: _top.fish, drive: _top.r.driveTime,
+            forRiver: parentRiverOfSection(_cand.r.name), date: _tripDate };
+        }
+        _offerBest = _cand.r;
+        bestPick = _offerBest;
+      }
+      else if (withAllSpecies.length > 0) bestPick = withAllSpecies[0];
       else if (withAllFishable.length > 0) bestPick = withAllFishable[0];
       else if (withAnySpecies.length > 0) bestPick = withAnySpecies[0];
 
@@ -1579,13 +1619,38 @@ function goToResults(){
   initNotifyBar();
   window._viewSource = 'search'; window._pickSource = 'search';
   // Push history state so browser back button returns to dashboard
-  history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
+  history.pushState({ page: "results", river: selectedRiver }, "", resultsUrl());
   renderResults();
   setTimeout(loadBaitImages, 800);
 }
 
+// The results address carries the reach, the fish and (when it isn't today) the date, so a refresh, a bookmark or a
+// link shared with a buddy opens the same results (TJ, 2026-11-12). It used to be "/#river", which dropped all three,
+// and Search Console reported every deep link as a redirect to "/". The deep-link handler reads the same params back.
+function resultsUrl() {
+  var u = window.location.pathname + '?river=' + encodeURIComponent(String(selectedRiver || '').split(',')[0].trim());
+  if (selectedSpecies && selectedSpecies.length) u += '&species=' + selectedSpecies.join(',');
+  var d = (document.getElementById('trip-date') || {}).value || '';
+  var n = new Date(), today = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d) && d !== today) u += '&date=' + d;
+  return u + '#river';
+}
+function syncResultsUrl() {
+  try {
+    var url = resultsUrl();
+    if (url !== window.location.pathname + window.location.search + window.location.hash)
+      history.replaceState({ page: 'results', river: selectedRiver }, '', url);
+  } catch (e) {}
+}
+
 // Follow a "head there" redirect from the headline: load that section's results, and
 // switch the target species when the suggestion is a different fish.
+var MORE_FISH_EXTRA_MIN = 15;
+function parentRiverOfSection(section) {
+  var out = '';
+  Object.keys(RIVER_SECTIONS).forEach(function(rv) { if (RIVER_SECTIONS[rv].indexOf(section) !== -1) out = rv; });
+  return out || section;
+}
 function goToSection(section, speciesName) {
   var keyMap = {'Brown Trout':'brown','Rainbow Trout':'rainbow','Steelhead':'steelhead',
     'Brook Trout':'brook','Chinook Salmon':'chinook','Coho Salmon':'coho'};
@@ -1604,7 +1669,7 @@ function goToSection(section, speciesName) {
   track('Redirect Followed', { river: section, species: speciesName || '' });
   window._viewSource = 'redirect'; window._pickSource = 'redirect';
   setResHeader(selectedRiver);
-  history.pushState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+  history.pushState({ page: 'results', river: selectedRiver }, '', resultsUrl());
   window.scrollTo(0, 0);
   renderResults();
 }
@@ -1628,6 +1693,7 @@ document.addEventListener('click', function(e) {
     return;
   }
   var t = e.target.closest && e.target.closest('[data-goto-section]');
+  if (t && t.classList.contains('tp-morefish-link')) track('More Fish Reach Clicked', { river: t.getAttribute('data-goto-section') });
   if (!t) return;
   e.preventDefault();
   goToSection(t.getAttribute('data-goto-section'), t.getAttribute('data-goto-species'));
@@ -1694,6 +1760,26 @@ function rollPastSunset(lat, lng) {
 // #trip-date stays the single source of the date (hidden): a tap sets its value and fires 'change', so search, deep
 // links, the sunset roll and the species dots work as before. Collapsed with a later day picked, "More" shows that day.
 var DAY_CHIP_DAYS = 11, DAY_CHIP_FIRST = 5, _dayChipsOpen = false;
+// Home hero from 1000 px: keep the photo behind the whole form card (see the --hero-h rule at the end of app.css).
+function syncHeroHeight() {
+  var land = document.getElementById('landing');
+  var card = land && land.querySelector('.form-card > .mode-wrap');
+  if (!card) return;
+  var wide = window.matchMedia && window.matchMedia('(min-width:1000px)').matches;
+  if (!wide) { land.style.removeProperty('--hero-h'); return; }
+  land.style.setProperty('--hero-h', Math.max(600, Math.ceil(card.offsetHeight) + 32 + 48) + 'px');
+}
+(function() {
+  function start() {
+    var card = document.querySelector('#landing .form-card > .mode-wrap');
+    if (!card) return;
+    syncHeroHeight();
+    if (window.ResizeObserver) new ResizeObserver(syncHeroHeight).observe(card);
+    window.addEventListener('resize', syncHeroHeight);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
 function renderDayChips() {
   var box = document.getElementById('day-chips'), di = document.getElementById('trip-date');
   if (!box || !di || !di.min) return;
@@ -1896,10 +1982,11 @@ document.addEventListener('change', function (e) { if (e.target && e.target.id =
     // ?date=YYYY-MM-DD (the weekly email links straight to a day)
     var _dParam = _params.get('date');
     var _tdEl = document.getElementById('trip-date');
-    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) { _tdEl.value = _dParam; renderDayChips(); }
+    // A shared link can be days old: ignore a date the form can't pick (before today, or past the last day chip).
+    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '') && !(_tdEl.min && _dParam < _tdEl.min) && !(_tdEl.max && _dParam > _tdEl.max)) { _tdEl.value = _dParam; renderDayChips(); }
     initNotifyBar();
     window._viewSource = 'deep-link'; window._pickSource = 'deep-link';
-    history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+    history.replaceState({ page: 'results', river: selectedRiver }, '', resultsUrl());
     renderResults();
     setTimeout(loadBaitImages, 800);
   })();
@@ -2751,6 +2838,7 @@ async function renderResults(){
     track('Upstream Auto Switch', { from: _au.from, river: _au.section });
   }
   var cfg = getRiverConfig(selectedRiver);
+  syncResultsUrl();   // after the sunset roll and the upstream move, so the address names what's on screen
   trackRiverViewed();
   // Keep the header in sync on every path. Deep links set selectedRiver and call
   // renderResults directly without going through selectRiver, which previously left
@@ -3193,6 +3281,9 @@ async function renderResults(){
   // disagree (TJ, 2026-11-02: it said "Clear" from the 7 AM reading under a strip showing an overcast afternoon).
   document.getElementById("skystat").textContent=weatherOk ? skyDayNote(window._periodCloud, sc, window._fishWindow && window._fishWindow.mode === 'winter', window._periodsLeft) : "Weather didn\u2019t load, so there\u2019s no sky forecast.";
   document.getElementById("skystat").className="gs "+sc;
+  // With the period strip showing, the strip says what the sky does and the Best Window card right under it says when to
+  // fish, so this line only repeated them (TJ, 2026-11-11). It stays as the fallback when there is no strip.
+  document.getElementById("skystat").style.display = (weatherOk && window._periodCloud) ? 'none' : '';
   // The temperature column and the Best Window card were painted by speciesReads() above.
 
   window._defaultTargetSpecies = defaultTargetSpecies(cfg, wt);
@@ -3434,6 +3525,13 @@ var GUIDES = [
     peak:[9,10], on:[11,12,1,2,3,4], video:false
   },
   {
+    url:'/rivers/duffins/',
+    title:'Duffins Creek: room to spread out',
+    blurb:'Open all year below the CN tracks in Ajax, with good depth and enough pools and runs that you are never stuck in one crowded spot. Salmon in September, steelhead fall to spring.',
+    img:'/images/about/about-steelhead-duffins.webp',
+    peak:[10,11,4], on:[9,12,1,2,3], video:true
+  },
+  {
     url:'/rivers/bronte/',
     title:'Bronte runs last, and then runs again',
     blurb:'The last salmon river of the Ontario season, running into November, and a good spring steelhead creek. Two windows at opposite ends of the year.',
@@ -3558,9 +3656,13 @@ function renderGuides() {
     if (!g.img) return '';
     var local = g.img.charAt(0) === '/';
     var thumb = local ? g.img.replace(/^\/images\/[^\/]+\//, '/images/thumbs/') : g.img;
-    var srcset = local ? ' srcset="' + thumb + ' 480w, ' + g.img + ' 1200w" sizes="' +
+    // 300 px copies in /images/thumbs/sm/ for the 96 px list cards (page speed, 2026-11-11).
+    var small = local ? thumb.replace('/images/thumbs/', '/images/thumbs/sm/') : '';
+    var srcset = local ? ' srcset="' + small + ' 300w, ' + thumb + ' 480w, ' + g.img + ' 1200w" sizes="' +
       (isLead ? '(max-width:700px) 100vw, 620px' : '96px') + '"' : '';
-    return '<img src="' + thumb + '"' + srcset + ' alt="" loading="lazy" decoding="async" onerror="this.remove()">';
+    // data-src until the page has loaded (page speed, 2026-11-11): on a slow phone Chrome starts "lazy" images up to
+    // about 2,500 px below the screen, so these competed with the hero photo. loadGuideImages() swaps them in.
+    return '<img data-src="' + thumb + '"' + srcset.replace(' srcset=', ' data-srcset=') + ' alt="" loading="lazy" decoding="async" onerror="this.remove()">';
   }
   function card(g, isLead) {
     var live = g.peak.indexOf(m) !== -1;
@@ -3584,6 +3686,18 @@ function renderGuides() {
     (more.length ? '<details class="gmore"><summary>More guides <span>(' + more.length + ')</span></summary>' +
       '<ul>' + more.map(mini).join('') + '</ul>' +
       '<a class="gmore-all" href="/guides/">Browse every guide</a></details>' : '');
+  loadGuideImages();
+}
+
+function loadGuideImages() {
+  var go = function () {
+    document.querySelectorAll('#guides-grid img[data-src]').forEach(function (im) {
+      if (im.dataset.srcset) im.srcset = im.dataset.srcset;
+      im.src = im.dataset.src;
+      im.removeAttribute('data-src'); im.removeAttribute('data-srcset');
+    });
+  };
+  if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
 }
 
 function getTripDateStr() {
@@ -3639,13 +3753,15 @@ function buildSeasonBar(speciesName) {
   var barHtml = '<div class="season-bar">';
   segments.forEach(function(s) {
     var cls = 'seg seg-' + s.quality + (s.current ? ' seg-now' : '');
-    var title = MONTH_NAMES[s.month];
+    var title = MONTH_FULL[s.month];
     barHtml += '<div class="' + cls + '" title="' + title + '"></div>';
   });
   barHtml += '</div>';
   barHtml += '<div class="season-bar-labels">';
-  [0,2,4,6,8,10].forEach(function(m) {
-    barHtml += '<span>' + MONTH_NAMES[m] + '</span>';
+  // One initial under each month (TJ, 2026-11-10): a second var MONTH_NAMES with full names overrode the short one, and
+  // "JanuaryMarchMay…" ran together on phones.
+  MONTH_FULL.forEach(function(name) {
+    barHtml += '<span title="' + name + '">' + name.charAt(0) + '</span>';
   });
   barHtml += '</div>';
   return barHtml;
@@ -4889,13 +5005,24 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
       if (RIVER_SECTIONS[rv].indexOf(_here) !== -1) _sibs = RIVER_SECTIONS[rv].filter(function(x) { return x !== _here; });
     });
     var _d = getTripDateStr();
-    _r.hidden = !_sibs.length;
-    _r.innerHTML = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
-      var _c = getRiverConfig(x);
-      var _closed = _c && sectionClosedOn(_c, _d);
-      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>'
-        + (_closed ? ' <span class="tp-reach-closed">(closed)</span>' : '');
+    // Closed reaches are left out (TJ, 2026-11-10): the line suggests places to fish on the trip date.
+    // Also left out: a reach the note above already links ("Stay on the …"), so it isn't offered twice (TJ, 2026-11-10).
+    var _linked = window._upstreamFrom ? window._upstreamFrom.from : '';
+    _sibs = _sibs.filter(function(x) { var _c = getRiverConfig(x); return x !== _linked && !(_c && sectionClosedOn(_c, _d)); });
+    var _html = _sibs.length ? 'Other reaches: ' + _sibs.map(function(x) {
+      return '<a href="#river" class="tp-reach-link" data-reach-section="' + x + '">' + secShort(x) + '</a>';
     }).join(' \u00b7 ') : '';
+    // A reach with more of the picked fish that the search skipped for being over 15 min farther (TJ, 2026-11-09).
+    var _mf = window._moreFishAlt;
+    if (_mf && _mf.date === _d && parentRiverOfSection(_here) === _mf.forRiver) {
+      var _names = _mf.fish.map(function(f){ return f === 'Steelhead' ? 'steelhead' : f.toLowerCase(); });
+      var _list = _names.length > 1 ? _names.slice(0, -1).join(', ') + ' and ' + _names[_names.length - 1] : _names[0];
+      _html += (_html ? '<br>' : '') + 'More of your fish: ' + _list + ' on the '
+        + '<a href="#river" class="tp-goto-link tp-morefish-link" data-goto-section="' + _mf.section + '">'
+        + secLabel(_mf.section) + '</a>' + (_mf.drive ? ', about ' + _mf.drive + ' min away' : '') + '.';
+    }
+    _r.hidden = !_html;
+    _r.innerHTML = _html;
   })();
   (function() {
     var _btn = document.getElementById('tp-goto');
@@ -6022,6 +6149,35 @@ function renderBaitPillar(topMethod) {
     wireAlts(alts);
   }
 
+  // Wide screens (TJ, 2026-11-10): the same baits as cards, three to a row, the top pick first with its badge. Phones keep
+  // the top card plus the tap-to-open list above (CSS shows one or the other). One full row shows; the rest sit behind "N more".
+  var grid = document.getElementById('tg-bait-grid');
+  if (grid) {
+    var gCard = function(b, i) {
+      var r = '';
+      if (b.bestFor) r += '<div><dt>Best for</dt><dd>' + b.bestFor + '</dd></div>';
+      if (b.how)     r += '<div><dt>How</dt><dd>' + b.how + '</dd></div>';
+      if (!r && b.blurb) r = '<div><dt>Note</dt><dd>' + b.blurb + '</dd></div>';
+      return '<div class="p-bgc' + (i === 0 ? ' p-bgc-top' : '') + '">' +
+        '<div class="p-bait-top">' + imgHtml(b) + '<div style="flex:1;min-width:0">' +
+          (i === 0 ? '<span class="p-badge">\u2605 Start here</span>' : (b.when ? '<span class="p-alt-when">' + b.when + '</span>' : '')) +
+          '<h5>' + b.name + '</h5>' + (b.spec ? '<div class="p-bspec">' + b.spec + '</div>' : '') +
+        '</div></div>' + (r ? '<dl class="p-how">' + r + '</dl>' : '') + '</div>';
+    };
+    // One full row shows: three cards from 1000 px, two below (two columns there).
+    var GROW = (window.matchMedia && window.matchMedia('(min-width:1000px)').matches) ? 3 : 2, gFirst = list.slice(0, GROW), gRest = list.slice(GROW);
+    grid.innerHTML = '<div class="p-bgrid">' + gFirst.map(gCard).join('') + '</div>' +
+      (gRest.length ? '<div class="p-bgrid" id="tg-bgrid-more" hidden>' +
+        gRest.map(function(b, k){ return gCard(b, GROW + k); }).join('') + '</div>' +
+        '<button class="p-more" type="button" id="tg-bgrid-btn">' + gRest.length + ' more \u2193</button>' : '');
+    var gBtn = document.getElementById('tg-bgrid-btn');
+    if (gBtn) gBtn.addEventListener('click', function() {
+      var m = document.getElementById('tg-bgrid-more'); if (!m) return;
+      m.hidden = !m.hidden;
+      gBtn.textContent = m.hidden ? (gRest.length + ' more \u2193') : 'Show fewer \u2191';
+    });
+  }
+
   // Panel-level footnote (bait regs, harbour closures) carries over if present.
   var srcFoot = src ? src.querySelector('.bfooter') : null;
   if (foot) {
@@ -6124,8 +6280,6 @@ function renderStockingSection(riverName) {
 // (FORM_SEASON_CAL) on reaches in range that are legally open on the trip date, and tiles are ordered best
 // first. Closed tiles stay tappable so the results page can say why. formSpeciesStatus() in the core decides.
 var SP_TILE_NAME = { brown:'Brown Trout', rainbow:'Rainbow Trout', steelhead:'Steelhead', brook:'Brook Trout', chinook:'Chinook Salmon', coho:'Coho Salmon' };
-var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
 function formTripDate() {
   var v = (document.getElementById('trip-date') || {}).value;
   if (v) return v;
@@ -6147,7 +6301,7 @@ function formSectionsInRange() {
 
 function longDate(iso) {
   var p = iso.split('-');
-  return MONTH_NAMES[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
+  return MONTH_FULL[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
 }
 
 // One chip per tile (TJ picked word chips, 2026-10-30), tiles ordered best first. 'out' = legal but the fish
@@ -6317,10 +6471,10 @@ function notifyOffer() {
   }
   if (weekly && !(parent && RUN_ALERT_RIVERS.indexOf(parent) !== -1)) {
     return { kind: 'weekly', key: weekly.key,
-      title: 'Get a heads-up when ' + weekly.species + ' conditions look good',
-      sub: 'One email on Thursdays, only when the coming days look good on ' + secShort(section),
-      subShort: 'Thursdays, only when the coming days look good.',
-      button: 'Email me', payload: { weekly: { section: weekly.section, species: weekly.species } } };
+      title: 'Get the weekly ' + weekly.species + ' outlook',
+      sub: 'We email you on Thursday, for the best fishing days from Friday to the following Wednesday. Get info on where to stand, and what to bring. We don\u2019t email you if there aren\u2019t any good days forecasted!',
+      subShort: 'Thursdays, for the best days Friday to Wednesday.',
+      button: 'Get it', payload: { weekly: { section: weekly.section, species: weekly.species } } };
   }
   if (!lsGet('hff_sub_outlook')) {
     return { kind: 'outlook', key: 'hff_sub_outlook',
@@ -6370,8 +6524,8 @@ function initNotifyBar() {
     wbox.style.display = offer.weeklyBox ? '' : 'none';
     var wcb = wbox.querySelector('input'); if (wcb) wcb.checked = false;
     var wtx = wbox.querySelector('span');
-    if (wtx && offer.weeklyBox) wtx.textContent = _narrow ? 'Also a Thursday email on good days here'
-      : 'Also a Thursday email when the coming days look good for ' + offer.weeklyBox.species + ' here';
+    if (wtx && offer.weeklyBox) wtx.textContent = _narrow ? 'Also send the weekly outlook'
+      : 'Also send the weekly ' + offer.weeklyBox.species.toLowerCase() + ' outlook for this river';
   }
   if (form) form.style.display = '';
   if (success) success.style.display = 'none';

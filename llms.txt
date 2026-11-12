@@ -1,49 +1,45 @@
 # HereFishyFishy
 
-> Free Ontario river fishing conditions app. Tells anglers where to fish today based on live flow data, water temperature, and weather.
+> Free Ontario river fishing conditions app at herefishyfishy.ca. For a river section, fish and date it combines live river flow, weather, water temperature and the 2026 Ontario fishing regulations, then says whether to go, where to stand and what to bring. Built by TJ, a GTA angler. No account or download needed.
 
-## What this site does
+The app covers rivers in Ontario fishing zones 16 and 17, including the Credit, Humber, Black Creek, Don, Rouge, Duffins, Bronte, Sixteen Mile, Ganaraska, Bowmanville, Wilmot, Grand, Speed, Eramosa, Saugeen, Nottawasaga and Beaver. Fish: steelhead, Chinook salmon, coho salmon (Bowmanville and the Ganaraska), brown trout, rainbow trout and brook trout.
 
-HereFishyFishy is a web app for Ontario anglers. It recommends the best river sections to fish on a given day or forecast date, using live gauge data, Open-Meteo weather forecasts, and species-specific seasonal logic. It covers rivers across Southern Ontario including the Credit, Grand, Humber, Rouge, Ganaraska, Duffins, Bronte, Saugeen, Notawasaga, and others.
+How it works:
 
-## Who it's for
+- Live flow from Water Survey of Canada gauges, with an estimated flow 1 to 7 days out for most gauges.
+- Weather and cloud cover from Open-Meteo, with a best fishing window from the trip date's sunrise and sunset.
+- Water temperature: live Credit Valley Conservation readings on the Credit, a weather-based model elsewhere.
+- Regulations checked reach by reach against the 2026 Ontario Fishing Regulations Summary. The app never recommends water that is closed on the trip date.
+- A free weekly email (Thursday) with the best days from Friday to the following Wednesday on the rivers a subscriber picks, and a monthly outlook.
 
-Recreational anglers in Southern Ontario targeting Brown Trout, Rainbow Trout, Brook Trout, Steelhead, Chinook Salmon, and Coho Salmon in rivers.
+## App
 
-## Key features
+- [Conditions app](https://herefishyfishy.ca/): pick a date, a city or a river, and a fish; the app picks the reach, the access spot, the method and the gear
+- [This month's outlook](https://herefishyfishy.ca/outlook/): best steelhead dates by region (West, Central and East GTA) as a calendar, updated at the start of each month
+- [Live Credit River steelhead conditions](https://herefishyfishy.ca/credit-river/steelhead): server-rendered conditions page; also [Chinook salmon](https://herefishyfishy.ca/credit-river/chinook-salmon), [brown trout](https://herefishyfishy.ca/credit-river/brown-trout), [rainbow trout](https://herefishyfishy.ca/credit-river/rainbow-trout) and [brook trout](https://herefishyfishy.ca/credit-river/brook-trout)
 
-- River section recommendations ranked by current conditions
-- Live flow data from Water Survey of Canada gauges
-- Estimated water temperature from air temp
-- Hourly cloud cover with per-period fishing windows (morning, midday, evening)
-- Access point information with crowd level and GPS coordinates
-- Ontario fishing regulations (FMZ, seasons, limits) per river section
-- Technique and gear recommendations by conditions
-- Species seasonal status and staging information
-- Email alerts for excellent conditions
+## Rivers
 
-## Coverage
+- [All rivers](https://herefishyfishy.ca/rivers/): every covered river with its fish and seasons
+- [Credit River](https://herefishyfishy.ca/rivers/credit/): overview by section
+- [Humber River](https://herefishyfishy.ca/rivers/humber/): salmon and steelhead, Old Mill in fall, winter and spring, rules below and above Eglinton
+- [Don River](https://herefishyfishy.ca/rivers/don/): the Chinook run in Toronto, Pottery Road to Sunnybrook, open all year below Eglinton
+- [Duffins Creek](https://herefishyfishy.ca/rivers/duffins/): Ajax and Pickering; open all year to the CN line, to December 31 up to Highway 2, to September 30 above it
+- [Bronte Creek](https://herefishyfishy.ca/rivers/bronte/): the latest salmon run of the season
+- [Ganaraska River salmon run](https://herefishyfishy.ca/rivers/ganaraska/salmon-run/): Port Hope run dates and the September 1 to October 14 closure
+- [Bowmanville Creek salmon run](https://herefishyfishy.ca/rivers/bowmanville/salmon-run/): run timing and where to fish
 
-Southern Ontario rivers. Eastern rivers (Ganaraska, Wilmot, Bowmanville) run 2–3 weeks ahead of western rivers (Credit, Humber, Bronte) in spring. Steelhead spring run gated on Lake Ontario surface temperature (5–10°C band). Chinook run peaks October. Coho peaks November.
+## Guides
 
-## No app download required
+- [All guides](https://herefishyfishy.ca/guides/)
+- [Steelhead run timing](https://herefishyfishy.ca/guides/steelhead-run-timing/): when steelhead run in Ontario, river by river, and which reaches stay open all year
+- [Salmon run timing](https://herefishyfishy.ca/guides/salmon-run-timing/): when Chinook run in Ontario rivers, river by river
+- [Trout after September 30](https://herefishyfishy.ca/guides/trout-after-september-30/): brook trout close September 30 everywhere in zones 16 and 17; which lower reaches stay open for brown and rainbow trout
+- [Winter steelhead](https://herefishyfishy.ca/guides/winter-steelhead/): open water after September 30, where fish sit in cold water, float setup and baits
+- [Where steelhead hold](https://herefishyfishy.ca/guides/where-steelhead-hold/): reading pools, runs and seams so you stop fishing dead water
+- [Salmon float fishing tips](https://herefishyfishy.ca/guides/salmon-float-fishing-tips/): where to start the drift, leader length under the float, holding the float back
+- [Euro nymphing the Upper Credit](https://herefishyfishy.ca/guides/euro-nymphing-upper-credit/): rainbows at the Forks of the Credit, fly changes, season and barbless rules
 
-Runs in any mobile browser at herefishyfishy.ca. Free, no account required to use.
+## About
 
-## Key pages
-
-- https://herefishyfishy.ca/ — Live conditions app (main tool)
-- https://herefishyfishy.ca/rivers — All covered rivers with species
-- https://herefishyfishy.ca/guides/salmon-run-timing — When salmon run in Ontario, river-by-river timing table (staging begins July on eastern rivers, late July on the Credit/Humber; runs peak mid-September to mid-October)
-- https://herefishyfishy.ca/guides/steelhead-run-timing/ — When steelhead run in Ontario: late September on the Ganaraska and eastern creeks, October further west, sporadic through winter, good again around the late-April opener; table of reaches open all year and to Dec 31
-- https://herefishyfishy.ca/outlook/ — This month's outlook: best steelhead dates by region (West, Central, East GTA) as a calendar, from the month forecast and the flow rule; updated at the start of each month
-- https://herefishyfishy.ca/guides/trout-after-september-30/ — Where to trout fish after Sept 30: brook trout close Sept 30 on every river in Zones 16 and 17; brown and rainbow trout stay open on named lower reaches (river-by-river table from the 2026 regulations); 2027 opener April 24
-- https://herefishyfishy.ca/guides/winter-steelhead/ — Late fall and winter steelhead: open water after Sept 30, where fish sit in cold water, float setup and baits
-- https://herefishyfishy.ca/rivers/humber/ — Humber River salmon and steelhead: timing, Old Mill in fall, winter and spring, rules below and above Eglinton
-- https://herefishyfishy.ca/rivers/don/ — Don River Chinook run in Toronto: late September into October, where to fish from Pottery Road to Sunnybrook, open all year below Eglinton
-- https://herefishyfishy.ca/rivers/ganaraska/salmon-run/ — Port Hope / Ganaraska salmon run dates and the Sept 1 to Oct 14 closure
-- https://herefishyfishy.ca/rivers/bowmanville/salmon-run/ — Bowmanville Creek salmon run
-- https://herefishyfishy.ca/rivers/bronte/ — Bronte Creek, the latest salmon run of the season
-- https://herefishyfishy.ca/rivers/credit/ — Credit River overview by section
-- https://herefishyfishy.ca/credit-river/chinook-salmon — Live Credit River Chinook conditions (also: /brown-trout, /rainbow-trout, /brook-trout, /steelhead)
-- https://herefishyfishy.ca/about — Who built this and how it works
+- [About HereFishyFishy](https://herefishyfishy.ca/about/): who builds it, how the readings and ratings work

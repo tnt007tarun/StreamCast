@@ -3600,7 +3600,7 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 @media (max-width: 999px) {
   #results #species-banner { gap: 10px; min-height: 64px; box-sizing: border-box; }
   #results #species-banner .sp-banner-fish { width: 40px; height: 40px; }
-  #results #species-banner > div:nth-child(2) { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; min-width: 0; }
+  #results #species-banner > .sp-banner-fish + div { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; min-width: 0; }
   #results #species-banner .sp-banner-lbl { display: none; }
   #results #species-banner .sp-banner-name { margin: 0; font-size: 17px; line-height: 1.2; min-width: 0; }
   #results #species-banner .sp-banner-badge { margin: 0; flex: none; font-size: 13px; line-height: 1.2; white-space: nowrap; }
@@ -3711,3 +3711,76 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #landing .day-chip .dc-day { font-size: 12px; }
   #landing .day-chip .dc-date { font-size: 11px; }
 }
+
+/* Season bar: one initial under each of the 12 segments (TJ, 2026-11-10). Gap matches .season-bar. */
+.season-bar-labels { justify-content:normal; gap:1px; }
+.season-bar-labels span { flex:1; text-align:center; }
+
+/* Bait as cards from 760 px (TJ, 2026-11-10): three to a row from 1000 px, two between 760 and 999. Phones keep the top
+   card plus the tap-to-open list. The top pick keeps its "Start here" badge and a teal edge. */
+#tg-bait-grid { display:none; }
+@media (min-width:760px) {
+  #pillar-bait #tg-bait-card, #pillar-bait #tg-bait-alts { display:none; }
+  #tg-bait-grid { display:block; }
+  #results .p-bgrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  #results .p-bgrid + .p-bgrid { margin-top:12px; }
+  #results .p-bgrid[hidden] { display:none; }
+  #results .p-bgc { background:var(--white); border:1px solid var(--rule); border-radius:var(--r-md); padding:14px; display:flex; flex-direction:column; }
+  #results .p-bgc-top { border-color:var(--teal, #1e7a6e); box-shadow:inset 0 3px 0 var(--teal, #1e7a6e); }
+  #results .p-bgc .p-bait-top { align-items:flex-start; }
+  #results .p-bgc .p-bimg { width:72px; height:56px; }
+  #results .p-bgc h5 { margin:.35rem 0 .15rem; }
+  #results .p-bgc .p-alt-when { display:inline-block; }
+  #results .p-bgc .p-how { display:block; margin-top:12px; padding-top:0; border-top:0; }
+  #results .p-bgc .p-how > div { background:var(--surface-sunk); border-radius:var(--r-md); padding:8px 10px; }
+  #results .p-bgc .p-how > div + div { margin-top:8px; }
+  #results #tg-bait-grid .p-more { margin-top:8px; }
+}
+@media (min-width:1000px) {
+  #results .p-bgrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+
+/* Home hero from 1000 px (TJ, 2026-11-10, a Dell laptop): the photo was a fixed 600 px and the form card (about 680 px,
+   more with "More dates" open) hung past its bottom edge, so the photo ended in a hard line across the form. The photo
+   now grows with the card: --hero-h is set from the card's height by syncHeroHeight() in app.js (card + 32 px above +
+   48 px below, at least 600). The fallback covers the closed form before the script runs. */
+@media (min-width: 1000px) {
+  #landing .hero-photo { height: var(--hero-h, 760px); }
+  #landing .form-card > .mode-wrap { margin-top: calc(32px - var(--hero-h, 760px)); margin-bottom: 92px; }
+}
+
+/* Home hero photo as an <img> (TJ, 2026-11-10: on an external monitor the photo drew at its natural 1600 px in the middle
+   of a wider hero, with bare wash on both sides, so the CSS background's "cover" didn't hold there). The photo is now an
+   <img class="hero-img"> with object-fit: cover and a 800/1600 srcset; the wash moved from the hero's background to
+   .hero-photo-bg on top of it. Same crop (centre 40% on phones, 45% from 1000 px) and the same gradients as before. */
+#landing .hero-photo { position: relative; isolation: isolate; background: #24302c; }
+#landing .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%;
+  z-index: 0; display: block; pointer-events: none; }
+#landing .hero-photo-bg { display: block; position: absolute; inset: 0; z-index: 1; animation: none;
+  background: linear-gradient(rgba(8,26,24,.40), rgba(8,26,24,.55)); }
+#landing .hero-photo-bg::before, #landing .hero-photo-bg::after { display: none; }
+#landing .hero-photo .hero-copy { position: relative; z-index: 2; }
+@media (min-width: 1000px) {
+  #landing .hero-img { object-position: center 45%; }
+  #landing .hero-photo-bg { background:
+    linear-gradient(90deg, rgba(8,26,24,.72) 0%, rgba(8,26,24,.34) 50%, rgba(8,26,24,.06) 80%),
+    linear-gradient(0deg, rgba(8,26,24,.40) 0%, transparent 45%); }
+}
+
+/* Results species strip: the same photo as an <img> for the same reason as the home hero (TJ, 2026-11-10: the CSS
+   background drew at 1600 px with bars on his external monitor). The wash is the strip's ::before; children sit above. */
+#results #species-banner { position: relative; isolation: isolate; overflow: hidden; background: #24302c; }
+#results #species-banner .sp-banner-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  object-position: center 42%; z-index: -2; display: block; pointer-events: none; }
+#results #species-banner::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.45) 55%, rgba(8,26,24,.25) 100%); }
+@media (min-width: 1000px) {
+  #results #species-banner .sp-banner-img { object-position: center 45%; }
+  #results #species-banner::before { background: linear-gradient(90deg, rgba(8,26,24,.78) 0%, rgba(8,26,24,.40) 50%, rgba(8,26,24,.10) 85%); }
+}
+
+/* Page speed (2026-11-11): hold the day-chip row's height before app.js fills it, so the form doesn't jump down 48 px. */
+#landing .day-chips:empty { min-height: 48px; }
+/* The hero and species-banner photos sit in a <picture> (phone strip, 2026-11-11). Keep the wrapper out of the layout so
+   flex gaps behave as they did with a bare, absolutely placed <img>. */
+.hero-photo > picture, #results #species-banner > picture { position: absolute; inset: 0; display: block; }
