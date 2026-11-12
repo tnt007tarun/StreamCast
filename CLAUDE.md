@@ -919,6 +919,14 @@ Merged recently:
   `/assets/*`. Possible next steps if LCP is still high: minify `app.js`/`conditions-core.js` (about 58 KB) with a build
   step, or turn off Cloudflare Web Analytics if Umami is enough (TJ's call).
 
+- **Results keep their address** (TJ, 2026-11-12, from Search Console's "Page with redirect" list): opening results rewrote
+  the address to `/#river`, so a refresh, a bookmark or a shared link lost the reach, the fish and the date, and Google read
+  every deep link as a JS redirect to `/`. `resultsUrl()` builds `/?river=<section>&species=<keys>[&date=<day>]#river` (date
+  only when it isn't today); the search, `goToSection()` and the deep-link handler push it, and `syncResultsUrl()` in
+  `renderResults()` updates it after the sunset roll and the upstream move, so it names the reach on screen. A shared date
+  before today or past the last day chip is ignored. Back still returns to `/`. Umami now records a page view for each
+  results address (`/?river=...`); compare homepage views before and after 2026-11-12 with that in mind.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

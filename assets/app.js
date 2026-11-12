@@ -1619,9 +1619,28 @@ function goToResults(){
   initNotifyBar();
   window._viewSource = 'search'; window._pickSource = 'search';
   // Push history state so browser back button returns to dashboard
-  history.pushState({ page: "results", river: selectedRiver }, "", window.location.pathname + "#river");
+  history.pushState({ page: "results", river: selectedRiver }, "", resultsUrl());
   renderResults();
   setTimeout(loadBaitImages, 800);
+}
+
+// The results address carries the reach, the fish and (when it isn't today) the date, so a refresh, a bookmark or a
+// link shared with a buddy opens the same results (TJ, 2026-11-12). It used to be "/#river", which dropped all three,
+// and Search Console reported every deep link as a redirect to "/". The deep-link handler reads the same params back.
+function resultsUrl() {
+  var u = window.location.pathname + '?river=' + encodeURIComponent(String(selectedRiver || '').split(',')[0].trim());
+  if (selectedSpecies && selectedSpecies.length) u += '&species=' + selectedSpecies.join(',');
+  var d = (document.getElementById('trip-date') || {}).value || '';
+  var n = new Date(), today = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d) && d !== today) u += '&date=' + d;
+  return u + '#river';
+}
+function syncResultsUrl() {
+  try {
+    var url = resultsUrl();
+    if (url !== window.location.pathname + window.location.search + window.location.hash)
+      history.replaceState({ page: 'results', river: selectedRiver }, '', url);
+  } catch (e) {}
 }
 
 // Follow a "head there" redirect from the headline: load that section's results, and
@@ -1650,7 +1669,7 @@ function goToSection(section, speciesName) {
   track('Redirect Followed', { river: section, species: speciesName || '' });
   window._viewSource = 'redirect'; window._pickSource = 'redirect';
   setResHeader(selectedRiver);
-  history.pushState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+  history.pushState({ page: 'results', river: selectedRiver }, '', resultsUrl());
   window.scrollTo(0, 0);
   renderResults();
 }
@@ -1963,10 +1982,11 @@ document.addEventListener('change', function (e) { if (e.target && e.target.id =
     // ?date=YYYY-MM-DD (the weekly email links straight to a day)
     var _dParam = _params.get('date');
     var _tdEl = document.getElementById('trip-date');
-    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '')) { _tdEl.value = _dParam; renderDayChips(); }
+    // A shared link can be days old: ignore a date the form can't pick (before today, or past the last day chip).
+    if (_tdEl && /^\d{4}-\d{2}-\d{2}$/.test(_dParam || '') && !(_tdEl.min && _dParam < _tdEl.min) && !(_tdEl.max && _dParam > _tdEl.max)) { _tdEl.value = _dParam; renderDayChips(); }
     initNotifyBar();
     window._viewSource = 'deep-link'; window._pickSource = 'deep-link';
-    history.replaceState({ page: 'results', river: selectedRiver }, '', window.location.pathname + '#river');
+    history.replaceState({ page: 'results', river: selectedRiver }, '', resultsUrl());
     renderResults();
     setTimeout(loadBaitImages, 800);
   })();
@@ -2818,6 +2838,7 @@ async function renderResults(){
     track('Upstream Auto Switch', { from: _au.from, river: _au.section });
   }
   var cfg = getRiverConfig(selectedRiver);
+  syncResultsUrl();   // after the sunset roll and the upstream move, so the address names what's on screen
   trackRiverViewed();
   // Keep the header in sync on every path. Deep links set selectedRiver and call
   // renderResults directly without going through selectRiver, which previously left
