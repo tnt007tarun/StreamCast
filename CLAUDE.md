@@ -28,7 +28,7 @@ build, and the Cloudflare check on the PR links to it.
 | `assets/app.css` | All app styling, in cascade layers. See `assets/README.md` |
 | `functions/credit-river/[species].js` | Cloudflare Pages Function: server-rendered `/credit-river/{species}` pages |
 | `guides/*/index.html`, `rivers/*/index.html`, `about/` | Hand-written static pages, each self-contained with its own `<style>` |
-| `sitemap.xml`, `llms.txt`, `robots.txt` | Keep in sync when pages are added |
+| `sitemap.xml`, `llms.txt`, `robots.txt` | Keep in sync when pages are added. `llms.txt` entries are markdown links (`- [Title](url): note`); PageSpeed's agent check counts only those (2026-11-12) |
 | `_redirects`, `_headers` | Cloudflare Pages config. They keep repo docs (`CLAUDE.md`, the READMEs) off the live site and out of search. Add any new repo-only doc to both |
 | `images/`, `video/` | Photos (WebP for pages, JPG kept for og:image) and short clips |
 | `worker/` | The `streamcast-proxy` Worker (flow, lake temps, stocking, subscribe, unsubscribe) and its `wrangler.toml`. Not deployed by Pages. See `worker/README.md` |
