@@ -310,7 +310,7 @@ ${route.readNext ? `<p>${route.readNext}</p>` : ''}
 
 <footer class="site"><div class="wrap">
   <span class="b">HereFishyFishy</span>
-  <span><a href="/rivers/">Rivers</a> &nbsp; <a href="/guides/">Guides</a> &nbsp; <a href="/about">About</a></span>
+  <span><a href="/rivers/">Rivers</a> &nbsp; <a href="/guides/">Guides</a> &nbsp; <a href="/about/">About</a></span>
 </div></footer>
 </body>
 </html>`;
