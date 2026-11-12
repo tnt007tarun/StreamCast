@@ -918,13 +918,13 @@ async function handleSubscribe(request, env) {
       subject = "Run alerts for the " + body.river;
       lead = `<p>We'll email you when salmon or steelhead are running on the <strong>${escapeHtml(body.river)}</strong>.
             Each alert is checked by an angler before it goes out, so expect a few a season, not a stream.</p>` +
-        (weeklyAdded ? `<p>You'll also get a Thursday email when the coming days look good for ${weeklyWhat(weeklyAdded)}.
-            No good days, no email.</p>` : "") +
+        (weeklyAdded ? `<p>You'll also get a Thursday email, around 5 pm Toronto time, when the coming days look good
+            for ${weeklyWhat(weeklyAdded)}. No good days, no email.</p>` : "") +
         (record.outlook ? `<p>You'll also get the monthly outlook.</p>` : "");
     } else if (kind === "weekly") {
       subject = "Thursday heads-up for " + andList([...new Set(weeklyAdded.map((w) => w.species))]);
-      lead = `<p>Every Thursday we check the next six days. When at least one looks good, we email you which
-            days, where to stand and what to bring. No good days, no email.</p>
+      lead = `<p>Every Thursday, around 5 pm Toronto time, we check the next six days. When at least one looks good,
+            we email you which days, where to stand and what to bring. No good days, no email.</p>
             <p style="margin:16px 0 4px"><strong>What we're checking for you:</strong></p>
             ${weeklyGroupedList(weeklyAdded)}`;
     } else if (kind === "outlook") {

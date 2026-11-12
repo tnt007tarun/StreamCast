@@ -990,19 +990,18 @@ Analytics (Search Console to Oct 4, Umami 90 days) are in the claude.ai project 
 
 ## Open threads
 
-21. **Weekly-signup confirmation reformatted; unsubscribe hypothesis logged (2026-11-13):** the "You're set" confirmation
-   (`handleSubscribe()` in `worker/worker.js`) wrote every river and species a subscriber picked into one `weeklyWhat()`
-   sentence; a multi-river signup (3 rivers, every species on each, 12 combos) read as a dense wall of bold text (TJ: "not
-   as readable or UI friendly"). Replaced with `weeklyGroupedList()`: one bullet per river, species listed after it. Only
-   the weekly-signup lead changed; the `run` confirmation's one-line mention still uses `weeklyWhat()` (always short so
-   far). PR #188.
+21. **Weekly-signup confirmation reformatted, now names a time; unsubscribe hypothesis logged (2026-11-13):** the "You're
+   set" confirmation (`handleSubscribe()` in `worker/worker.js`) wrote every river and species a subscriber picked into
+   one `weeklyWhat()` sentence; a multi-river signup (3 rivers, every species on each, 12 combos) read as a dense wall of
+   bold text (TJ: "not as readable or UI friendly"). Replaced with `weeklyGroupedList()`: one bullet per river, species
+   listed after it. Both the weekly-signup lead and the run confirmation's one-line mention now say "around 5 pm Toronto
+   time" (the cron fires in the Thu 17:00 Toronto hour; `worker.js` line ~1308). PR #188.
    Unsubscribe hypothesis (unconfirmed): a subscriber who signed up for the weekly email (homepage box, 3 rivers,
    12 combos, plus outlook) Nov 8 at 11:38 pm Toronto unsubscribed Nov 12 (Thursday) at 1:16 pm Toronto, about 4
-   hours before that week's Thursday run actually sent (5:06 pm). The confirmation email says "Every Thursday..." with no
-   time of day. They may have expected something that Thursday and left when nothing had arrived by early afternoon. They
-   didn't reply to the "which river do you fish most" question, so this isn't confirmed by anything they said. If another
-   subscriber unsubscribes same-day on a Thursday before the send, that supports it; a fix would be naming a time
-   ("Thursday evenings") in the confirmation copy.
+   hours before that week's Thursday run actually sent (5:06 pm). The confirmation didn't say what time of day to expect
+   it; they may have expected something that Thursday and left when nothing had arrived by early afternoon. They didn't
+   reply to the "which river do you fish most" question, so this isn't confirmed by anything they said. The time-of-day
+   line above is the fix for it; watch whether a same-day-before-send unsubscribe happens again.
 
 20. **Page speed follow-ups (2026-11-12):** re-run PageSpeed mobile after #184 (hero strip, guide images and Clarity after
    load). If LCP is still over 2.5 s: minify `app.js`, `conditions-core.js` and `app.css` with a Pages build step (about
