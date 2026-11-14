@@ -951,6 +951,9 @@ Merged recently:
   streamer card keeps its swing advice. The bead section shows a screenshot of the app's bait cards (Lower Credit,
   steelhead): `images/guides/app-bait-cards.webp` (three cards) and, under 600 px, `app-bait-cards-beads.webp` (the two
   bead cards stacked). Retake them if the bait cards change.
+  Round 3 (TJ, 2026-11-14): his own words added. Clearer water go-to is an 8 mm translucent hard bead; he ties his own roe
+  bags from a salmon he kept last year, cured with salt, sugar, borax and a little Pautzke red; he sees trout and steelhead
+  go after worms in May, especially after rain (the smolt line stays). Soft beads: "a few good companies", no brand named.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
