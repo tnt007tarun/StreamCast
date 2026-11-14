@@ -963,6 +963,20 @@ Merged recently:
   `river` (the first); the Worker's `/subscribe` takes `body.runRivers` (up to `MAX_WEEKLY_RIVERS`, each in `RUN_RIVERS`)
   and names them all in the confirmation. River pages with `data-river` are unchanged. Pages load `signup.js?v=5`.
 
+- **Run days rated on the river** (TJ, 2026-11-14, Lower Credit at midday: drizzle, overcast, 4.1 m3/s, 6.1 °C live, steelhead
+  in; the pill said Marginal, "The modelled run at the mouth is only fair"). For a migratory fish in its run, `conditionsParts()`
+  used the modelled run at the mouth (`stagingRead()`: lake temperature and wind) as the whole rating and dropped the season,
+  flow, water and sky. Now: fish still in the lake (`fishInLake`, staging at a mouth) keep the run-only rating; fish in the
+  river are rated like any other day (`sectionSeasonScore()` + `liveConditionsParts()`), plus `RUN_STRONG_BONUS` (2) only
+  when the run reads strong (65%+) and flow is in prime (TJ: the run model reads strong on most fall days whatever the
+  rain, so the bonus alone made almost every day Excellent). Cool water (4 to 8 °C) scores +2 for winter run fish
+  (`ctx.coldTolerant`; +1 for everyone else), and the water note for them reads "cool but fine for steelhead, which may be a
+  little slower to take" instead of "below the feeding range, so expect slower fishing". The `RUN_PRIME_SCORE` rule (strong
+  run + prime = Excellent) is gone; prime flow's +5 does that now. Core change: the Worker redeploys, and the weekly email
+  uses the same rule. Real forecast for Nov 14 to 28 on the outlook rivers: was mostly Marginal and Good (swinging with the
+  wind), now Good and Excellent every day (Excellent on overcast days even at normal flow), so more weekly emails will send.
+  Open: whether Excellent should need prime flow.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

@@ -359,9 +359,9 @@ const mins = (s) => C.localMinutes(s);
   assert.equal(fx.temp.text, 'Flow cap overrides'); assert.equal(fx.sky.text, 'Flow cap overrides');
   fx = C.ratingEffects(C.conditionsParts(12, cfg, cfg.sweetMax + 1, 10, 80, null, false, null));
   assert.equal(fx.flow.text, 'Caps the day at Marginal');
-  // Run days: not scored, not missing
-  fx = C.ratingEffects(C.conditionsParts(null, cfg, (cfg.sweetMin + cfg.sweetMax) / 2, null, null, 70, false, null));
-  assert.equal(fx.temp.text, 'Not used for run rating'); assert.equal(fx.sky.text, 'Not used for run rating'); assert.equal(fx.flow.text, 'Helps the rating');
+  // Fish in the river on a run day: the river readings are scored (TJ, 2026-11-14)
+  fx = C.ratingEffects(C.conditionsParts(6, cfg, (cfg.sweetMin + cfg.sweetMax) / 2, 10, 80, 70, false, null));
+  assert.equal(fx.temp.text, 'Helps the rating'); assert.equal(fx.sky.text, 'Helps the rating'); assert.equal(fx.flow.text, 'Helps the rating');
   fx = C.ratingEffects(C.conditionsParts(null, cfg, 3, null, null, 70, true, null));
   assert.equal(fx.flow.text, 'Not used at the mouth');
   for (const k of ['flow','temp','sky']) assert.ok(!/hold|cap/i.test((fx[k]||{}).text || ''), 'unscored is never negative');
@@ -379,7 +379,7 @@ const mins = (s) => C.localMinutes(s);
   assert.match(L.text, /^Flow is estimated at .* below the prime range of /); assert.equal(L.kind, 'estimated');
   r = rate(cfg.sweetMin + 1, 20, 20, null, false, 0); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live', waterC: 20, waterKind: 'modelled' }, r));
   assert.ok(L && /^Water is about 20\u00b0C \(modelled\), above the feeding range\.$/.test(L.text), 'hot water: ' + JSON.stringify(L));
-  r = rate(cfg.sweetMin + 1, null, null, 20, false); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live' }, r)); assert.equal(L.text, 'The modelled run at the mouth is weak.');
+  r = rate(cfg.sweetMin + 1, null, null, 20, true); L = C.limitRead(Object.assign({ cfg, flow: cfg.sweetMin + 1, flowKind: 'live' }, r)); assert.equal(L.text, 'The modelled run at the mouth is weak.');
   r = rate(null, 10, 80, null, false, 4); L = C.limitRead(Object.assign({ cfg, flow: null }, r)); assert.equal(L.kind, 'calendar');
   for (const sc of [6, 7, 10, 14]) assert.equal(C.limitRead({ conf: C.scoreToConfidence(sc), parts: { parts: [] }, cfg }), null, 'Good and Excellent get no note');
   assert.equal(C.limitRead(null), null);
