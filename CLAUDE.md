@@ -115,7 +115,8 @@ Technique panel and the summary tile each kept their own rule and disagreed.
   conditions columns, the Best Window card and the hero all call these; don't word one of those readings by hand.
 - Recommended access spot: `bestAccessSpot(access, atMouth)`. The hero headline and the access cards both use it.
 - Moving people to another reach: the hero's `_goto` (legal-season pass, then the upstream pass via
-  `furthestUpstreamOpen()`). Both use the "See … →" button and `goToSection()`.
+  `furthestUpstreamOpen()`). Both use the "See … →" button and `goToSection()`; the upstream pass only for a reach on
+  another river, since same-river reaches are in the "Other reaches" line (2026-11-14).
 - Reach for "Best for species": `resolveAutoSection()`. With no species it uses `autoSectionNoSpecies()` (best-season
   species that is fishable on some reach, then the upstream rule); it never lands on a closed reach when one is open.
 - Spinning picked with migratory fish in the river: `salmonMethodMode()` returns `'spin-float'` (float and roe on a
@@ -962,6 +963,18 @@ Merged recently:
   scores the reach the app would open, like the homepage box). "Also send run alerts" sends `runRivers` (the list) plus
   `river` (the first); the Worker's `/subscribe` takes `body.runRivers` (up to `MAX_WEEKLY_RIVERS`, each in `RUN_RIVERS`)
   and names them all in the confirmation. River pages with `data-river` are unchanged. Pages load `signup.js?v=5`.
+
+- **Spin shows spinners and spoons; no duplicate See button** (TJ, 2026-11-14, Oakville steelhead, Spin, from his phone):
+  (1) With Spin picked and steelhead, salmon or lake-run browns in the river (`salmonMethodMode()` = `'spin-float'`), the
+  float baits still lead (float and roe on a spinning rod, TJ 2026-10-17), and the Bait pillar adds "Or cast spinners and
+  spoons" (`#tg-bait-lures`, built in `renderBaitPillar()`): Little Cleo, Blue Fox Vibrax and Kastmaster from
+  `#p-salmon-lures`, with in-river advice under `BAIT_ADVICE['spin-float:<name>']` (`read(el, adviceTab)`). Rows on phones,
+  three cards from 760 px. Flag `window._spinFloatTech`, set in `updateMethods()`. Not while staging, not on
+  artificial-only reaches (the float tab becomes nymphs there). The m2/m3 method objects in `updateMethods()` are not
+  rendered anywhere, so don't put angler-facing changes there.
+  (2) The hero's upstream pass no longer shows the big "See <reach> →" button when the upstream reach is on the same river:
+  it is open, so the "Other reaches" line under the headline already links it. The legal-season pass (closed water) keeps
+  its button.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
