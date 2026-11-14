@@ -2059,12 +2059,7 @@ function periodPrecipFrom(h, off) {
   };
   return { morning: span(5, 9), midday: span(10, 14), evening: span(15, 20) };
 }
-// Words for an amount over a period, or '' for none worth naming. Under 0.3 mm is a trace. Snow wins when any falls.
-function precipWord(p) {
-  if (!p || p.mm < 0.3) return '';
-  if (p.snow) return p.mm < 1 ? 'Flurries' : p.mm < 5 ? 'Light snow' : 'Snow';
-  return p.mm < 1 ? 'Drizzle' : p.mm < 5 ? 'Light rain' : p.mm < 15 ? 'Rain' : 'Heavy rain';
-}
+// precipWord() is in the core (shared with the hero's rain line).
 async function fetchWeather(cfg){
   var lat=cfg?cfg.lat:LAT_DEFAULT, lng=cfg?cfg.lng:LNG_DEFAULT;
   var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
@@ -2152,9 +2147,15 @@ function fetchAirHistory(lat, lng) {
   var key = lat + ',' + lng;
   if (!_airHistoryCache[key]) {
     _airHistoryCache[key] = fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng +
-        '&daily=temperature_2m_mean&past_days=30&forecast_days=16&timezone=America%2FToronto')
+        '&daily=temperature_2m_mean,rain_sum,showers_sum&past_days=30&forecast_days=16&timezone=America%2FToronto')
       .then(function(r){ return r.json(); })
-      .then(function(d){ return d && d.daily ? { time: d.daily.time, mean: d.daily.temperature_2m_mean } : null; })
+      .then(function(d){
+        if (!d || !d.daily) return null;
+        // Daily rain (rain plus showers, no snow) for the worms-after-rain rule (recentRainMm() in the core).
+        var rs = d.daily.rain_sum, sh = d.daily.showers_sum;
+        var rain = rs ? rs.map(function(v, i) { return (v || 0) + ((sh && sh[i]) || 0); }) : null;
+        return { time: d.daily.time, mean: d.daily.temperature_2m_mean, rain: rain };
+      })
       .catch(function(){ return null; });
   }
   return _airHistoryCache[key];
@@ -2836,14 +2837,18 @@ function speciesReads(sp) {
 // The lines under a headline that sends the reader to a spot (Phase 2): when to fish, then what to bring and for which
 // fish. go = the fish the headline names (or true); null hides both. The fish is named only when it isn't the one the
 // species banner already shows. Window wording comes from fishingWindow() (Best Window card text).
-function renderHeroLines(go, win, next, bringPhrase) {
+// rain: rainHeroRead() (TJ, 2026-11-14): adds rain gear to Bring and a "Rain" line on what it does to the river.
+function renderHeroLines(go, win, next, bringPhrase, rain) {
   var hd = document.getElementById('tp-headline');
   if (!hd) return;
-  var when = document.getElementById('tp-when'), gear = document.getElementById('tp-gear');
+  var when = document.getElementById('tp-when'), gear = document.getElementById('tp-gear'), wet = document.getElementById('tp-rain');
   if (!gear) { gear = document.createElement('p'); gear.id = 'tp-gear'; gear.className = 'tp-line tp-gear'; hd.parentNode.insertBefore(gear, hd.nextSibling); }
   if (!when) { when = document.createElement('p'); when.id = 'tp-when'; when.className = 'tp-line tp-when'; hd.parentNode.insertBefore(when, hd.nextSibling); }
+  if (!wet) { wet = document.createElement('p'); wet.id = 'tp-rain'; wet.className = 'tp-line tp-rain'; gear.parentNode.insertBefore(wet, gear.nextSibling); }
   when.hidden = gear.hidden = !go;
+  wet.hidden = !go || !rain || !rain.note;
   if (!go) return;
+  if (rain && rain.note) wet.innerHTML = '<span class="tp-line-lbl">Rain</span> ' + rain.note;
   var t;
   if (!win.passed) t = win.text + (win.approximate ? ' (approximate)' : '');
   else if (next) t = 'Today\u2019s window is over. Tomorrow: ' + next.text.charAt(0).toLowerCase() + next.text.slice(1);
@@ -2853,7 +2858,7 @@ function renderHeroLines(go, win, next, bringPhrase) {
   var sp = typeof go === 'string' ? go : '';
   var named = sp && sp.toLowerCase() !== banner.trim().toLowerCase()
     ? ' for ' + sp.toLowerCase().replace(' + ', ' and ').replace(/\b(chinook|coho)\b/g, function(m){ return m.charAt(0).toUpperCase() + m.slice(1); }) : '';
-  gear.innerHTML = '<span class="tp-line-lbl">Bring</span> your ' + bringPhrase + named;
+  gear.innerHTML = '<span class="tp-line-lbl">Bring</span> your ' + bringPhrase + named + (rain && rain.gear ? ', and ' + rain.gear : '');
 }
 
 async function renderResults(){
@@ -2913,6 +2918,14 @@ async function renderResults(){
   try { _wtInfo = await waterTempFor(selectedRiver, cfg, dateStr, isToday, airTemp); } catch(_wtErr) { _wtInfo = null; }
   var wt = (_wtInfo && _wtInfo.value != null) ? _wtInfo.value : waterTempEst(airTemp, dateStr);
   window._waterTempInfo = _wtInfo;
+  // Worms after rain (TJ, 2026-11-14): raining now, or about 5 mm over the trip day and the two days before. The air
+  // history is already cached by waterTempFor(), so this adds no request.
+  window._wormsAfterRain = false;
+  try {
+    var _rh = cfg ? await fetchAirHistory(cfg.lat, cfg.lng) : null;
+    window._recentRainMm = recentRainMm(_rh, dateStr);
+    window._wormsAfterRain = wormsAfterRain(isToday ? window._precipNow : null, window._recentRainMm);
+  } catch (_rhErr) {}
   // Salmon staging card (mouth sections, staging species, in-season)
   var _stagingPromise = null;
   try {
@@ -4039,7 +4052,7 @@ function skyCloudFor(pc, left) {
   return Math.round(ids.reduce(function (a, id) { return a + pc[id]; }, 0) / ids.length);
 }
 
-// One line on the day's sky for the Sky & light card. With the period forecast it describes the day; without
+// One line on the day's sky for the Weather card. With the period forecast it describes the day; without
 // it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
 function skyDayNote(pc, sc, winter, left) {
   // Today, part way through: describe only the periods still ahead (TJ, 2026-11-07).
@@ -4100,16 +4113,13 @@ function renderSkyPrecip(weatherOk, restOfDay) {
   if (el) el.hidden = true;
   var pp = window._periodPrecip, left = window._periodsLeft || ['morning', 'midday', 'evening'];
   if (!weatherOk || !pp || !v) return;
-  var tot = { mm: 0, cm: 0, snow: false }, prob = 0;
-  left.forEach(function(id) { var p = pp[id]; if (!p) return; tot.mm += p.mm; tot.cm += p.cm || 0; tot.snow = tot.snow || (p.snow && p.mm >= 0.3); prob = Math.max(prob, p.prob || 0); });
-  tot.mm = Math.round(tot.mm * 10) / 10;
-  var now = window._periodsLeft ? window._precipNow : null;
+  var day = precipDay(pp, window._periodsLeft, window._precipNow);   // core; the hero's rain line reads the same
+  var tot = day.tot, prob = day.prob, now = day.now, word = day.word;
   var when = restOfDay ? ' for the rest of the day' : ' through the day';
-  var word = precipWord(tot);
   if (word) {
     var amt = tot.snow ? (tot.cm >= 1 ? 'about ' + Math.round(tot.cm) + ' cm' : '') : (tot.mm >= 1 ? 'about ' + Math.round(tot.mm) + ' mm' : '');
     // When it only falls in part of what's left, say when (rain only in the evening isn't an all-day rain).
-    var wet = left.filter(function(id) { return precipWord(pp[id]); });
+    var wet = day.wet;
     if (!now && wet.length && wet.length < left.length) {
       var today = !!window._periodsLeft;
       when = { morning: today ? ' this morning' : ' in the morning', midday: ' from midday', evening: today ? ' this evening' : ' in the evening' }[wet[0]];
@@ -5057,7 +5067,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // The legal-season pass replaced the headline: it explains itself, no spot lines.
   if (headlineHtml !== _headlineBeforeLegal) _heroGo = null;
   document.getElementById('tp-headline').innerHTML = headlineHtml;
-  renderHeroLines(_heroGo, _win, _winNext, bringPhrase);
+  window._rainHero = (_win && !_win.passed && window._weatherOk)
+    ? rainHeroRead(precipDay(window._periodPrecip, window._periodsLeft, window._precipNow), _heroIsToday) : null;
+  renderHeroLines(_heroGo, _win, _winNext, bringPhrase, window._rainHero);
   // After an automatic move upstream: one small line saying so, with a way back.
   (function() {
     var _hd = document.getElementById('tp-headline');
@@ -6165,6 +6177,16 @@ function renderBaitPillar(topMethod) {
     };
   }
   var list = items.map(function(el) { return read(el); });
+  // After rain, worms come right after roe (TJ, 2026-11-14): coloured water, and worms wash in. window._wormsAfterRain is
+  // set in renderResults() from wormsAfterRain() in the core.
+  if (tab === 'float' && window._wormsAfterRain) {
+    var _isWorm = function(b) { return /Plastic Worm|Nightcrawler/i.test(b.name); };
+    var _worms = list.filter(_isWorm), _others = list.filter(function(b) { return !_isWorm(b); });
+    if (_worms.length && _others.length) {
+      _worms.forEach(function(b) { b.when = 'Good after rain'; });
+      list = [_others[0]].concat(_worms, _others.slice(1));
+    }
+  }
   var top = list[0], rest = list.slice(1);
 
   function imgHtml(b) {

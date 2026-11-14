@@ -1008,6 +1008,16 @@ Merged recently:
   of rain, little expected." The Sky summary tile's second line reads "Raining now", "Drizzle now", "Flurries now" or
   "Snowing now" instead of the cover word. Checked with mocked weather (rain now, drizzle code only, rain this evening,
   snow, flurries, a chance only, dry) at 390 and 1280 px; this session's sandbox hit Open-Meteo's daily request limit, so it wasn't seen on live data.
+  Same PR (TJ, 2026-11-14): the card is headed **"Weather"** (was "Sky & light"). The totals come from `precipDay()` in the
+  core (with `precipWord()`, moved from `app.js`), which the hero reads too. Hero (`rainHeroRead()`, `renderHeroLines(..., rain)`):
+  with rain falling or due that day, Bring adds "and a rain jacket" (snow: "warm, waterproof layers") and a "Rain" line says what
+  it does: light rain "may nudge the river up a little", 5 mm+ "may raise and colour the river by evening. Fish the soft edges
+  and slower water", 15 mm+ (`HEAVY_RAIN_MM`) "could push the river high and muddy by evening. Fish it early and watch the
+  gauge", evening-only "the river should hold until then"; no line for snow, none once today's window is over. Worms after
+  rain: when it's raining now or 5 mm+ (`WORMS_RAIN_MM`) of rain fell over the trip day and the two days before
+  (`recentRainMm()` on the air-history fetch, which now asks for `rain_sum,showers_sum`; `wormsAfterRain()`), the float list
+  puts Plastic Worm and Nightcrawler right after Roe Bag, tagged "Good after rain" (`window._wormsAfterRain`,
+  `renderBaitPillar()`). Any season. Not on artificial-only reaches (no float tab there).
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

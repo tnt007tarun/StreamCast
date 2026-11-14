@@ -2944,6 +2944,56 @@ function heroReasons(o) {
   return out.slice(0, 3);
 }
 
+// ── RAIN AND SNOW ───────────────────────────────────────────────────────────────
+// Words for an amount over a period, or '' for none worth naming. Under 0.3 mm is a trace. Snow wins when any falls.
+function precipWord(p) {
+  if (!p || p.mm < 0.3) return '';
+  if (p.snow) return p.mm < 1 ? 'Flurries' : p.mm < 5 ? 'Light snow' : 'Snow';
+  return p.mm < 1 ? 'Drizzle' : p.mm < 5 ? 'Light rain' : p.mm < 15 ? 'Rain' : 'Heavy rain';
+}
+// The rest of the trip day's rain or snow, summed over the sky periods still ahead (pp from periodPrecipFrom(); left:
+// the period ids still ahead today, or null for a whole future day; now: what's falling now, today only). The Sky card
+// and the hero both read this, so they can't disagree.
+function precipDay(pp, left, now) {
+  var ids = left || ['morning', 'midday', 'evening'];
+  var tot = { mm: 0, cm: 0, snow: false }, prob = 0;
+  if (!pp) return null;
+  ids.forEach(function(id) { var p = pp[id]; if (!p) return; tot.mm += p.mm; tot.cm += p.cm || 0; tot.snow = tot.snow || (p.snow && p.mm >= 0.3); prob = Math.max(prob, p.prob || 0); });
+  tot.mm = Math.round(tot.mm * 10) / 10;
+  return { tot: tot, prob: prob, word: precipWord(tot), left: ids,
+           wet: ids.filter(function(id) { return precipWord(pp[id]); }), now: left ? (now || null) : null };
+}
+// What rain does to the trip (TJ, 2026-11-14): extra gear for the Bring line and one line on the river. day:
+// precipDay(). Returns null on a dry day. Snow gets gear only (it doesn't raise the river the same day).
+var HEAVY_RAIN_MM = 15;
+function rainHeroRead(day, isToday) {
+  if (!day || (!day.word && !day.now)) return null;
+  var snow = day.now ? day.now.snow : day.tot.snow;
+  if (snow) return { gear: 'warm, waterproof layers', note: null };
+  var mm = day.tot.mm, lateOnly = !day.now && day.wet.length === 1 && day.wet[0] === 'evening' && day.left.length > 1;
+  var note;
+  if (lateOnly) note = 'Rain comes in the evening, so the river should hold until then.';
+  else if (mm >= HEAVY_RAIN_MM) note = 'Heavy rain could push the river high and muddy ' + (isToday ? 'by evening' : 'through the day') + '. Fish it early and watch the gauge.';
+  else if (mm >= 5) note = 'The rain may raise and colour the river ' + (isToday ? 'by evening' : 'through the day') + '. Fish the soft edges and slower water.';
+  else note = 'Light rain may nudge the river up a little. Overcast and a touch of colour often help the bite.';
+  return { gear: 'a rain jacket', note: note };
+}
+// Worms after rain (TJ, 2026-11-14): plastic worms and nightcrawlers move up to right after roe when it's raining now or
+// about 5 mm or more of rain fell over the trip day and the two days before it, any season. hist: {time [], rain []}
+// daily rain (rain plus showers, no snow) from the air-history fetch.
+var WORMS_RAIN_MM = 5;
+function recentRainMm(hist, dateStr) {
+  if (!hist || !hist.time || !hist.rain) return null;
+  var i = hist.time.indexOf(dateStr);
+  if (i < 0) return null;
+  var s = 0;
+  for (var k = Math.max(0, i - 2); k <= i; k++) s += hist.rain[k] || 0;
+  return Math.round(s * 10) / 10;
+}
+function wormsAfterRain(now, recentMm) {
+  return !!(now && !now.snow) || (recentMm != null && recentMm >= WORMS_RAIN_MM);
+}
+
 var GROUNDWATER_C = 8.5;   // shallow groundwater in southern Ontario, about the mean annual air temperature plus a little
 
 // Midpoint of the air-to-water curve. Fitted to CVC's Credit stations on 2026-10-16 (four stations, mean error
@@ -3742,7 +3792,8 @@ if (typeof globalThis !== 'undefined') {
     FORM_SEASON_CAL: FORM_SEASON_CAL, formHalfIndex: formHalfIndex, formSpeciesStatus: formSpeciesStatus,
     tempContext: tempContext, coldTolerantFish: coldTolerantFish, COLD_RUN_MIN: COLD_RUN_MIN,
     skyRead: skyRead, waterTempRead: waterTempRead, flowRead: flowRead, flowPlainRead: flowPlainRead, veryColdWater: veryColdWater, waterPlainRead: waterPlainRead, flowFishGroup: flowFishGroup, flowTrendRead: flowTrendRead, flowTrendNoFresh: flowTrendNoFresh, confidenceRead: confidenceRead,
-    fishingWindow: fishingWindow, heroReasons: heroReasons, clockText: clockText, localMinutes: localMinutes,
+    fishingWindow: fishingWindow, heroReasons: heroReasons, precipWord: precipWord, precipDay: precipDay, rainHeroRead: rainHeroRead,
+    recentRainMm: recentRainMm, wormsAfterRain: wormsAfterRain, clockText: clockText, localMinutes: localMinutes,
     TEMP_MIN: TEMP_MIN, TEMP_MAX: TEMP_MAX, TEMP_STRESS: TEMP_STRESS
   };
 }
