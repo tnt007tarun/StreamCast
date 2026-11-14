@@ -999,12 +999,15 @@ Merged recently:
   `precipitation_probability` (and, for today, current `precipitation`, `snowfall` and `weather_code`).
   `periodPrecipFrom()` sums them over the strip's hours (5-9, 10-14, 15-20) into `window._periodPrecip`; `window._precipNow`
   is set when something is falling now (an amount over 0, or a WMO wet code 51+, which catches drizzle that rounds to 0).
-  The Sky card gets a line under its headline (`#skyrain`, `renderSkyPrecip()`): "Raining now, about 9 mm of rain for the rest
-  of the day." (snow in cm, a future date "through the day"; hidden when dry, or "N% chance of rain, little expected" at 40%+).
-  Each strip period shows a rain or snow icon and word (`precipWord()`: Drizzle under 1 mm, Light rain under 5, Rain under 15,
-  Heavy rain; Light snow / Snow) with the amount on its own line. The Sky summary tile's second line reads "Raining now",
-  "Drizzling now" or "Snowing now" instead of the cover word. Checked with mocked weather (rain, drizzle code only, snow,
-  dry) at 390 and 1280 px; this session's sandbox hit Open-Meteo's daily request limit, so it wasn't seen on live data.
+  Rain or snow replaces the cloud words (TJ, same day: "rain already implies the sky is overcast"; bold blue looked too
+  loud). Headline (`renderSkyPrecip()`): "Raining now, about 9 mm for the rest of the day", "Light rain, about 3 mm this
+  evening" (when it falls in only some of what's left), "Drizzle now, little more expected", "Snowing now, about 3 cm ..."
+  (snow in cm), "Flurries now"; a future date "through the day". Each strip slot shows a rain or snow cloud icon and the word
+  (`precipWord()`: Drizzle under 1 mm, Light rain under 5, Rain under 15, Heavy rain; Flurries under 1 mm, Light snow under
+  5, Snow), no amounts. A dry-looking day with a 40%+ chance keeps "Overcast (...)" and a muted line under it, "60% chance
+  of rain, little expected." The Sky summary tile's second line reads "Raining now", "Drizzle now", "Flurries now" or
+  "Snowing now" instead of the cover word. Checked with mocked weather (rain now, drizzle code only, rain this evening,
+  snow, flurries, a chance only, dry) at 390 and 1280 px; this session's sandbox hit Open-Meteo's daily request limit, so it wasn't seen on live data.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

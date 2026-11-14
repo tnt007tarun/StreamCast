@@ -2062,7 +2062,7 @@ function periodPrecipFrom(h, off) {
 // Words for an amount over a period, or '' for none worth naming. Under 0.3 mm is a trace. Snow wins when any falls.
 function precipWord(p) {
   if (!p || p.mm < 0.3) return '';
-  if (p.snow) return p.mm < 2 ? 'Light snow' : 'Snow';
+  if (p.snow) return p.mm < 1 ? 'Flurries' : p.mm < 5 ? 'Light snow' : 'Snow';
   return p.mm < 1 ? 'Drizzle' : p.mm < 5 ? 'Light rain' : p.mm < 15 ? 'Rain' : 'Heavy rain';
 }
 async function fetchWeather(cfg){
@@ -3309,7 +3309,7 @@ async function renderResults(){
   // The headline is the cloud for the periods still ahead today (the whole day on a future date), like the strip and note.
   var _restOfDay = window._periodsLeft && window._periodsLeft.length < 3;
   document.getElementById("skyv").textContent=weatherOk ? skyl+" ("+cloudPct+(_restOfDay ? "% for the rest of the day)" : "% through the day)") : "No weather data";
-  renderSkyPrecip(weatherOk);
+  renderSkyPrecip(weatherOk, _restOfDay);
   renderSkyPeriodStrip(window._periodCloud || null, window._periodsLeft);
   // the sky card has its own dot (sky-dot)
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
@@ -4087,29 +4087,42 @@ function skyRestNote(pc, left, winter) {
 
 // One line under the Sky headline on rain and snow (TJ, 2026-11-14: "it's raining right now and the card just says
 // cloudy"). Today: what's falling now, then what's left of the day; a future date: the day's total. Display only.
-function renderSkyPrecip(weatherOk) {
+function renderSkyPrecip(weatherOk, restOfDay) {
+  // Rain or snow takes over the Sky headline (TJ, 2026-11-14: rain already says the sky is overcast): "Rain, about 9 mm for
+  // the rest of the day", "Drizzle now", "Light snow, about 2 cm through the day". The muted line under it is only for a
+  // dry-looking day with a real chance of rain. Display only, nothing scored.
+  var v = document.getElementById('skyv');
   var el = document.getElementById('skyrain');
-  if (!el) {
-    var v = document.getElementById('skyv'); if (!v || !v.parentNode) return;
+  if (!el && v && v.parentNode) {
     el = document.createElement('div'); el.id = 'skyrain'; el.className = 'sky-rain';
     v.parentNode.parentNode.insertBefore(el, v.parentNode.nextSibling);
   }
+  if (el) el.hidden = true;
   var pp = window._periodPrecip, left = window._periodsLeft || ['morning', 'midday', 'evening'];
-  if (!weatherOk || !pp) { el.hidden = true; return; }
-  var mm = 0, cm = 0, snow = false, prob = 0;
-  left.forEach(function(id) { var p = pp[id]; if (!p) return; mm += p.mm; cm += p.cm || 0; snow = snow || (p.snow && p.mm >= 0.3); prob = Math.max(prob, p.prob || 0); });
-  mm = Math.round(mm * 10) / 10;
-  var today = !!window._periodsLeft, now = window._precipNow;
-  var what = snow ? 'snow' : 'rain', parts = [];
-  if (today && now) parts.push((now.snow ? 'Snowing' : (now.drizzle || now.mm < 0.5) ? 'Drizzling' : 'Raining') + ' now');
-  // Snow in centimetres (Open-Meteo snowfall), rain in millimetres.
-  var amt = snow ? (cm < 1 ? 'under 1 cm' : 'about ' + Math.round(cm) + ' cm') : (mm < 1 ? 'under 1 mm' : 'about ' + Math.round(mm) + ' mm');
-  if (mm >= 0.3) parts.push(amt + ' of ' + what + (today ? ' for the rest of the day' : ' through the day'));
-  else if (!parts.length && prob >= 40) parts.push(prob + '% chance of ' + what + ', little expected');
-  else if (!parts.length) { el.hidden = true; return; }
-  var line = parts.join(', ') + '.';
-  el.textContent = line.charAt(0).toUpperCase() + line.slice(1);
-  el.hidden = false;
+  if (!weatherOk || !pp || !v) return;
+  var tot = { mm: 0, cm: 0, snow: false }, prob = 0;
+  left.forEach(function(id) { var p = pp[id]; if (!p) return; tot.mm += p.mm; tot.cm += p.cm || 0; tot.snow = tot.snow || (p.snow && p.mm >= 0.3); prob = Math.max(prob, p.prob || 0); });
+  tot.mm = Math.round(tot.mm * 10) / 10;
+  var now = window._periodsLeft ? window._precipNow : null;
+  var when = restOfDay ? ' for the rest of the day' : ' through the day';
+  var word = precipWord(tot);
+  if (word) {
+    var amt = tot.snow ? (tot.cm >= 1 ? 'about ' + Math.round(tot.cm) + ' cm' : '') : (tot.mm >= 1 ? 'about ' + Math.round(tot.mm) + ' mm' : '');
+    // When it only falls in part of what's left, say when (rain only in the evening isn't an all-day rain).
+    var wet = left.filter(function(id) { return precipWord(pp[id]); });
+    if (!now && wet.length && wet.length < left.length) {
+      var today = !!window._periodsLeft;
+      when = { morning: today ? ' this morning' : ' in the morning', midday: ' from midday', evening: today ? ' this evening' : ' in the evening' }[wet[0]];
+    }
+    var lead = now ? (now.snow ? (word === 'Flurries' ? 'Flurries now' : 'Snowing now')
+      : (now.drizzle || now.mm < 0.5) && !/rain/i.test(word) ? 'Drizzle now' : 'Raining now') : word;
+    v.textContent = lead + (amt ? ', ' + amt + when : now ? '' : when);
+  } else if (now) {
+    v.textContent = (now.snow ? 'Flurries' : 'Drizzle') + ' now, little more expected';
+  } else if (prob >= 40 && el) {
+    el.textContent = prob + '% chance of ' + (tot.snow ? 'snow' : 'rain') + ', little expected.';
+    el.hidden = false;
+  }
 }
 function renderSkyPeriodStrip(periodCloud, left) {
   var strip = document.getElementById('sky-period-strip');
@@ -4160,13 +4173,10 @@ function renderSkyPeriodStrip(periodCloud, left) {
     var past = left && left.indexOf(p.id) === -1;
     cell.className = 'spc spc-'+g + (past ? ' spc-past' : '');
     cell.title = past ? 'Already past' : '';
+    // Rain or snow replaces the cloud word: rain already says the sky is overcast (TJ, 2026-11-14).
     var pw = precipWord(window._periodPrecip && window._periodPrecip[p.id]);
-    iconEl.innerHTML = pw ? (/snow/i.test(pw) ? SVG_SNOW : SVG_RAIN) : getIcon(p.val);
-    lblEl.textContent = skyLabel(p.val);
-    if (pw) { var pp = window._periodPrecip[p.id]; var r = document.createElement('span'); r.className = 'spc-rain';
-      var amt = pp.snow ? (pp.cm >= 1 ? Math.round(pp.cm) + '\u00a0cm' : '') : (pp.mm >= 1 ? Math.round(pp.mm) + '\u00a0mm' : '');
-      r.textContent = pw; lblEl.appendChild(r);
-      if (amt) { var ra = document.createElement('span'); ra.className = 'spc-rain spc-rain-amt'; ra.textContent = amt; lblEl.appendChild(ra); } }
+    iconEl.innerHTML = pw ? (/snow|flurr/i.test(pw) ? SVG_SNOW : SVG_RAIN) : getIcon(p.val);
+    lblEl.textContent = pw || skyLabel(p.val);
   });
 
   strip.style.display = 'block';
@@ -4300,7 +4310,7 @@ function renderConditionTiles(opts) {
   // The day's cloud, the same number as the Sky card and the rating.
   var skyMeaning = _sr.cover;   // the day's cloud, same as the card (TJ, 2026-11-06)
   // Raining or snowing now (today only) says so on the tile instead of the cover word (TJ, 2026-11-14).
-  if (window._precipNow && window._periodsLeft) skyMeaning = window._precipNow.snow ? 'Snowing now' : (window._precipNow.drizzle || window._precipNow.mm < 0.5) ? 'Drizzling now' : 'Raining now';
+  if (window._precipNow && window._periodsLeft) skyMeaning = window._precipNow.snow ? (window._precipNow.mm < 1 ? 'Flurries now' : 'Snowing now') : (window._precipNow.drizzle || window._precipNow.mm < 0.5) ? 'Drizzle now' : 'Raining now';
   var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '% cloud';   // say what the % is (TJ, 2026-11-05)
 
   // 3) FLOW — today: live value + state; future: target range, muted
