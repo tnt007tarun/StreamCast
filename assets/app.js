@@ -2043,13 +2043,30 @@ function renderFlowFishNote(sp) {
 function barW(v,mn,mx){return Math.min(100,Math.max(2,((v-mn)/(mx-mn))*100));}
 
 // ── WEATHER ───────────────────────────────────────────────────────────────────
+// Rain and snow per sky period (same hours as the cloud strip: 5-9, 10-14, 15-20), from Open-Meteo hourly. off: the first
+// hour of the day in the arrays (0). Each period: {mm (rain and melted snow, summed), snow (any snowfall), prob (highest
+// chance of precipitation in the period, %)}. null when the hourly data is missing.
+function periodPrecipFrom(h, off) {
+  if (!h || !h.precipitation || h.precipitation.length < 21) return null;
+  var span = function(s, e) {
+    var mm = 0, snow = 0, prob = 0;
+    for (var i = off + s; i <= off + e; i++) {
+      mm += h.precipitation[i] || 0;
+      snow += (h.snowfall && h.snowfall[i]) || 0;
+      if (h.precipitation_probability && h.precipitation_probability[i] != null) prob = Math.max(prob, h.precipitation_probability[i]);
+    }
+    return { mm: Math.round(mm * 10) / 10, snow: snow > 0, cm: Math.round(snow * 10) / 10, prob: prob };
+  };
+  return { morning: span(5, 9), midday: span(10, 14), evening: span(15, 20) };
+}
+// precipWord() is in the core (shared with the hero's rain line).
 async function fetchWeather(cfg){
   var lat=cfg?cfg.lat:LAT_DEFAULT, lng=cfg?cfg.lng:LNG_DEFAULT;
   var dateStr=document.getElementById("trip-date").value||(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   // Use local date not UTC — after 8PM Eastern, UTC is already "tomorrow"
   var today=(function(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');})();
   if(dateStr===today){
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m&hourly=cloudcover&daily=sunrise,sunset&timezone=America%2FToronto&forecast_days=2");
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&current=temperature_2m,cloudcover,winddirection_10m,windspeed_10m,precipitation,snowfall,weather_code&hourly=cloudcover,precipitation,snowfall,precipitation_probability&daily=sunrise,sunset&timezone=America%2FToronto&forecast_days=2");
     var d=await r.json();
     // Build period cloud from hourly forecast for today (same logic as forecast branch)
     var _hc = d.hourly && d.hourly.cloudcover ? d.hourly.cloudcover : null;
@@ -2068,10 +2085,19 @@ async function fetchWeather(cfg){
     // future date uses the whole day's mean. The card, strip, note, Sky tile and rating all read this one number.
     var _left = skyPeriodsLeft(new Date());
     var _dayCloud = _pc ? skyCloudFor(_pc, _left) : d.current.cloudcover;
+    // Rain and snow (TJ, 2026-11-14): what's falling now and per period, for the Sky card. Display only, not scored.
+    var _cur = d.current || {};
+    // WMO weather code as well: 51-57 drizzle, 61-67 rain, 71-77 snow, 80-82 showers, 85-86 snow showers, 95-99 storms. It
+    // catches light drizzle the amount rounds to 0.
+    var _wc = _cur.weather_code, _wcWet = _wc != null && _wc >= 51 && _wc !== 45 && _wc !== 48;
+    var _wcSnow = _wc != null && ((_wc >= 71 && _wc <= 77) || _wc === 85 || _wc === 86);
+    var _now = (_cur.precipitation > 0 || _cur.snowfall > 0 || _wcWet)
+      ? { mm: _cur.precipitation || 0, snow: (_cur.snowfall || 0) > 0 || _wcSnow, drizzle: _wc >= 51 && _wc <= 57 } : null;
     return{airTemp:d.current.temperature_2m,cloudPct:_dayCloud,cloudNow:d.current.cloudcover,periodCloud:_pc,periodsLeft:_left,windDir:d.current.winddirection_10m,windSpeed:d.current.windspeed_10m,
+      precipNow:_now,periodPrecip:periodPrecipFrom(d.hourly, 0),
       sunrise:(d.daily&&d.daily.sunrise?d.daily.sunrise[0]:null),sunset:(d.daily&&d.daily.sunset?d.daily.sunset[0]:null),next:_next};
   } else {
-    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max,sunrise,sunset&hourly=cloudcover&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng+"&daily=temperature_2m_max,temperature_2m_min,cloudcover_mean,winddirection_10m_dominant,windspeed_10m_max,sunrise,sunset&hourly=cloudcover,precipitation,snowfall,precipitation_probability&timezone=America%2FToronto&start_date="+dateStr+"&end_date="+dateStr);
     var d=await r.json();
     var avg=(d.daily.temperature_2m_max[0]+d.daily.temperature_2m_min[0])/2;
     // Compute per-period cloud cover from hourly data (hours are 0-23 for that day)
@@ -2086,7 +2112,7 @@ async function fetchWeather(cfg){
         evening: avg6(_hourlyCloud, 15, 20)
       };
     }
-    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],periodCloud:_periodCloud,windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null),
+    return{airTemp:Math.round(avg*10)/10,cloudPct:d.daily.cloudcover_mean[0],periodCloud:_periodCloud,periodPrecip:periodPrecipFrom(d.hourly, 0),windDir:(d.daily.winddirection_10m_dominant?d.daily.winddirection_10m_dominant[0]:null),windSpeed:(d.daily.windspeed_10m_max?d.daily.windspeed_10m_max[0]:null),
       sunrise:(d.daily.sunrise?d.daily.sunrise[0]:null),sunset:(d.daily.sunset?d.daily.sunset[0]:null)};
   }
 }
@@ -2121,9 +2147,15 @@ function fetchAirHistory(lat, lng) {
   var key = lat + ',' + lng;
   if (!_airHistoryCache[key]) {
     _airHistoryCache[key] = fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng +
-        '&daily=temperature_2m_mean&past_days=30&forecast_days=16&timezone=America%2FToronto')
+        '&daily=temperature_2m_mean,rain_sum,showers_sum&past_days=30&forecast_days=16&timezone=America%2FToronto')
       .then(function(r){ return r.json(); })
-      .then(function(d){ return d && d.daily ? { time: d.daily.time, mean: d.daily.temperature_2m_mean } : null; })
+      .then(function(d){
+        if (!d || !d.daily) return null;
+        // Daily rain (rain plus showers, no snow) for the worms-after-rain rule (recentRainMm() in the core).
+        var rs = d.daily.rain_sum, sh = d.daily.showers_sum;
+        var rain = rs ? rs.map(function(v, i) { return (v || 0) + ((sh && sh[i]) || 0); }) : null;
+        return { time: d.daily.time, mean: d.daily.temperature_2m_mean, rain: rain };
+      })
       .catch(function(){ return null; });
   }
   return _airHistoryCache[key];
@@ -2805,14 +2837,18 @@ function speciesReads(sp) {
 // The lines under a headline that sends the reader to a spot (Phase 2): when to fish, then what to bring and for which
 // fish. go = the fish the headline names (or true); null hides both. The fish is named only when it isn't the one the
 // species banner already shows. Window wording comes from fishingWindow() (Best Window card text).
-function renderHeroLines(go, win, next, bringPhrase) {
+// rain: rainHeroRead() (TJ, 2026-11-14): adds rain gear to Bring and a "Rain" line on what it does to the river.
+function renderHeroLines(go, win, next, bringPhrase, rain) {
   var hd = document.getElementById('tp-headline');
   if (!hd) return;
-  var when = document.getElementById('tp-when'), gear = document.getElementById('tp-gear');
+  var when = document.getElementById('tp-when'), gear = document.getElementById('tp-gear'), wet = document.getElementById('tp-rain');
   if (!gear) { gear = document.createElement('p'); gear.id = 'tp-gear'; gear.className = 'tp-line tp-gear'; hd.parentNode.insertBefore(gear, hd.nextSibling); }
   if (!when) { when = document.createElement('p'); when.id = 'tp-when'; when.className = 'tp-line tp-when'; hd.parentNode.insertBefore(when, hd.nextSibling); }
+  if (!wet) { wet = document.createElement('p'); wet.id = 'tp-rain'; wet.className = 'tp-line tp-rain'; gear.parentNode.insertBefore(wet, gear.nextSibling); }
   when.hidden = gear.hidden = !go;
+  wet.hidden = !go || !rain || !rain.note;
   if (!go) return;
+  if (rain && rain.note) wet.innerHTML = '<span class="tp-line-lbl">Rain</span> ' + rain.note;
   var t;
   if (!win.passed) t = win.text + (win.approximate ? ' (approximate)' : '');
   else if (next) t = 'Today\u2019s window is over. Tomorrow: ' + next.text.charAt(0).toLowerCase() + next.text.slice(1);
@@ -2822,7 +2858,7 @@ function renderHeroLines(go, win, next, bringPhrase) {
   var sp = typeof go === 'string' ? go : '';
   var named = sp && sp.toLowerCase() !== banner.trim().toLowerCase()
     ? ' for ' + sp.toLowerCase().replace(' + ', ' and ').replace(/\b(chinook|coho)\b/g, function(m){ return m.charAt(0).toUpperCase() + m.slice(1); }) : '';
-  gear.innerHTML = '<span class="tp-line-lbl">Bring</span> your ' + bringPhrase + named;
+  gear.innerHTML = '<span class="tp-line-lbl">Bring</span> your ' + bringPhrase + named + (rain && rain.gear ? ', and ' + rain.gear : '');
 }
 
 async function renderResults(){
@@ -2861,13 +2897,15 @@ async function renderResults(){
 
   var airTemp=null, cloudPct=null, weatherOk=false, _stagingWeather=null;
   // Per search: a failed fetch must not reuse the last river's cloud forecast or sunrise.
-  window._periodCloud = null; window._periodsLeft = null; window._sun = null; window._sunNext = null; window._pillMissing = null; hideAlternative();
+  window._periodCloud = null; window._periodPrecip = null; window._precipNow = null; window._periodsLeft = null; window._sun = null; window._sunNext = null; window._pillMissing = null; hideAlternative();
   try{
     var wx=await fetchWeather(cfg);
     if(wx && wx.airTemp!=null && !isNaN(wx.airTemp)){
       airTemp=wx.airTemp; cloudPct=wx.cloudPct; weatherOk=true;
       _stagingWeather = {cloudPct:wx.cloudPct, windDir:wx.windDir, windSpeed:wx.windSpeed};
       window._periodCloud = wx.periodCloud || null;
+      window._periodPrecip = wx.periodPrecip || null;
+      window._precipNow = wx.precipNow || null;
       window._periodsLeft = wx.periodsLeft || null;   // today only; null (whole day) on future dates
       window._sun = (wx.sunrise && wx.sunset) ? { sunrise: wx.sunrise, sunset: wx.sunset } : null;
       window._sunNext = wx.next || null;
@@ -2880,6 +2918,14 @@ async function renderResults(){
   try { _wtInfo = await waterTempFor(selectedRiver, cfg, dateStr, isToday, airTemp); } catch(_wtErr) { _wtInfo = null; }
   var wt = (_wtInfo && _wtInfo.value != null) ? _wtInfo.value : waterTempEst(airTemp, dateStr);
   window._waterTempInfo = _wtInfo;
+  // Worms after rain (TJ, 2026-11-14): raining now, or about 5 mm over the trip day and the two days before. The air
+  // history is already cached by waterTempFor(), so this adds no request.
+  window._wormsAfterRain = false;
+  try {
+    var _rh = cfg ? await fetchAirHistory(cfg.lat, cfg.lng) : null;
+    window._recentRainMm = recentRainMm(_rh, dateStr);
+    window._wormsAfterRain = wormsAfterRain(isToday ? window._precipNow : null, window._recentRainMm);
+  } catch (_rhErr) {}
   // Salmon staging card (mouth sections, staging species, in-season)
   var _stagingPromise = null;
   try {
@@ -3276,6 +3322,7 @@ async function renderResults(){
   // The headline is the cloud for the periods still ahead today (the whole day on a future date), like the strip and note.
   var _restOfDay = window._periodsLeft && window._periodsLeft.length < 3;
   document.getElementById("skyv").textContent=weatherOk ? skyl+" ("+cloudPct+(_restOfDay ? "% for the rest of the day)" : "% through the day)") : "No weather data";
+  renderSkyPrecip(weatherOk, _restOfDay);
   renderSkyPeriodStrip(window._periodCloud || null, window._periodsLeft);
   // the sky card has its own dot (sky-dot)
   var sb=document.getElementById("skybar");if(sb){sb.style.width=cloudPct+"%";sb.className="gf "+sc;}
@@ -4005,7 +4052,7 @@ function skyCloudFor(pc, left) {
   return Math.round(ids.reduce(function (a, id) { return a + pc[id]; }, 0) / ids.length);
 }
 
-// One line on the day's sky for the Sky & light card. With the period forecast it describes the day; without
+// One line on the day's sky for the Weather card. With the period forecast it describes the day; without
 // it, the single cloud value. Grades match the Best Window card (70% and up overcast, under 30% bright).
 function skyDayNote(pc, sc, winter, left) {
   // Today, part way through: describe only the periods still ahead (TJ, 2026-11-07).
@@ -4051,6 +4098,42 @@ function skyRestNote(pc, left, winter) {
     : 'Cloudier now, brighter later. Fish while the cloud holds.';
 }
 
+// One line under the Sky headline on rain and snow (TJ, 2026-11-14: "it's raining right now and the card just says
+// cloudy"). Today: what's falling now, then what's left of the day; a future date: the day's total. Display only.
+function renderSkyPrecip(weatherOk, restOfDay) {
+  // Rain or snow takes over the Sky headline (TJ, 2026-11-14: rain already says the sky is overcast): "Rain, about 9 mm for
+  // the rest of the day", "Drizzle now", "Light snow, about 2 cm through the day". The muted line under it is only for a
+  // dry-looking day with a real chance of rain. Display only, nothing scored.
+  var v = document.getElementById('skyv');
+  var el = document.getElementById('skyrain');
+  if (!el && v && v.parentNode) {
+    el = document.createElement('div'); el.id = 'skyrain'; el.className = 'sky-rain';
+    v.parentNode.parentNode.insertBefore(el, v.parentNode.nextSibling);
+  }
+  if (el) el.hidden = true;
+  var pp = window._periodPrecip, left = window._periodsLeft || ['morning', 'midday', 'evening'];
+  if (!weatherOk || !pp || !v) return;
+  var day = precipDay(pp, window._periodsLeft, window._precipNow);   // core; the hero's rain line reads the same
+  var tot = day.tot, prob = day.prob, now = day.now, word = day.word;
+  var when = restOfDay ? ' for the rest of the day' : ' through the day';
+  if (word) {
+    var amt = tot.snow ? (tot.cm >= 1 ? 'about ' + Math.round(tot.cm) + ' cm' : '') : (tot.mm >= 1 ? 'about ' + Math.round(tot.mm) + ' mm' : '');
+    // When it only falls in part of what's left, say when (rain only in the evening isn't an all-day rain).
+    var wet = day.wet;
+    if (!now && wet.length && wet.length < left.length) {
+      var today = !!window._periodsLeft;
+      when = { morning: today ? ' this morning' : ' in the morning', midday: ' from midday', evening: today ? ' this evening' : ' in the evening' }[wet[0]];
+    }
+    var lead = now ? (now.snow ? (word === 'Flurries' ? 'Flurries now' : 'Snowing now')
+      : (now.drizzle || now.mm < 0.5) && !/rain/i.test(word) ? 'Drizzle now' : 'Raining now') : word;
+    v.textContent = lead + (amt ? ', ' + amt + when : now ? '' : when);
+  } else if (now) {
+    v.textContent = (now.snow ? 'Flurries' : 'Drizzle') + ' now, little more expected';
+  } else if (prob >= 40 && el) {
+    el.textContent = prob + '% chance of ' + (tot.snow ? 'snow' : 'rain') + ', little expected.';
+    el.hidden = false;
+  }
+}
 function renderSkyPeriodStrip(periodCloud, left) {
   var strip = document.getElementById('sky-period-strip');
   if (!strip) return;
@@ -4078,6 +4161,11 @@ function renderSkyPeriodStrip(periodCloud, left) {
   var SVG_CLOUD = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 18 Q3 18 3 15 Q3 12 6 12 Q6 9.5 9 9.5 Q12 9.5 12.5 12 Q15 12 15 15 Q15 18 12 18 Z" fill="#6b9a95"/></svg>';
 
   function getIcon(c) { var g = clsSky(c); return g === 'good' ? SVG_CLOUD : g === 'warn' ? SVG_PARTLY : SVG_SUN; }
+  var _drops = function(ch) { return '<text x="5" y="22" font-size="6" fill="#4e7fa3">' + ch + '</text>'; };
+  var SVG_RAIN = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 15 Q3 15 3 12 Q3 9 6 9 Q6 6.5 9 6.5 Q12 6.5 12.5 9 Q15 9 15 12 Q15 15 12 15 Z" fill="#6b9a95"/>' +
+    '<line x1="6" y1="17.5" x2="5" y2="20.5" stroke="#4e7fa3" stroke-width="1.4" stroke-linecap="round"/><line x1="9.5" y1="17.5" x2="8.5" y2="20.5" stroke="#4e7fa3" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="17.5" x2="12" y2="20.5" stroke="#4e7fa3" stroke-width="1.4" stroke-linecap="round"/></svg>';
+  var SVG_SNOW = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 15 Q3 15 3 12 Q3 9 6 9 Q6 6.5 9 6.5 Q12 6.5 12.5 9 Q15 9 15 12 Q15 15 12 15 Z" fill="#6b9a95"/>' +
+    '<circle cx="5.5" cy="19" r="1.1" fill="#7a9cb5"/><circle cx="9.5" cy="20" r="1.1" fill="#7a9cb5"/><circle cx="13" cy="19" r="1.1" fill="#7a9cb5"/></svg>';
 
   var periods = [
     { id:'morning', time:'8 AM',  val:periodCloud.morning },
@@ -4095,8 +4183,10 @@ function renderSkyPeriodStrip(periodCloud, left) {
     var past = left && left.indexOf(p.id) === -1;
     cell.className = 'spc spc-'+g + (past ? ' spc-past' : '');
     cell.title = past ? 'Already past' : '';
-    iconEl.innerHTML = getIcon(p.val);
-    lblEl.textContent = skyLabel(p.val);
+    // Rain or snow replaces the cloud word: rain already says the sky is overcast (TJ, 2026-11-14).
+    var pw = precipWord(window._periodPrecip && window._periodPrecip[p.id]);
+    iconEl.innerHTML = pw ? (/snow|flurr/i.test(pw) ? SVG_SNOW : SVG_RAIN) : getIcon(p.val);
+    lblEl.textContent = pw || skyLabel(p.val);
   });
 
   strip.style.display = 'block';
@@ -4229,6 +4319,8 @@ function renderConditionTiles(opts) {
   var skyState = _tileState[_sr.grade];
   // The day's cloud, the same number as the Sky card and the rating.
   var skyMeaning = _sr.cover;   // the day's cloud, same as the card (TJ, 2026-11-06)
+  // Raining or snowing now (today only) says so on the tile instead of the cover word (TJ, 2026-11-14).
+  if (window._precipNow && window._periodsLeft) skyMeaning = window._precipNow.snow ? (window._precipNow.mm < 1 ? 'Flurries now' : 'Snowing now') : (window._precipNow.drizzle || window._precipNow.mm < 0.5) ? 'Drizzle now' : 'Raining now';
   var skyVal = _sr.pct == null ? '\u2014' : _sr.pct + '% cloud';   // say what the % is (TJ, 2026-11-05)
 
   // 3) FLOW — today: live value + state; future: target range, muted
@@ -4975,7 +5067,9 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
   // The legal-season pass replaced the headline: it explains itself, no spot lines.
   if (headlineHtml !== _headlineBeforeLegal) _heroGo = null;
   document.getElementById('tp-headline').innerHTML = headlineHtml;
-  renderHeroLines(_heroGo, _win, _winNext, bringPhrase);
+  window._rainHero = (_win && !_win.passed && window._weatherOk)
+    ? rainHeroRead(precipDay(window._periodPrecip, window._periodsLeft, window._precipNow), _heroIsToday) : null;
+  renderHeroLines(_heroGo, _win, _winNext, bringPhrase, window._rainHero);
   // After an automatic move upstream: one small line saying so, with a way back.
   (function() {
     var _hd = document.getElementById('tp-headline');
@@ -6083,6 +6177,16 @@ function renderBaitPillar(topMethod) {
     };
   }
   var list = items.map(function(el) { return read(el); });
+  // After rain, worms come right after roe (TJ, 2026-11-14): coloured water, and worms wash in. window._wormsAfterRain is
+  // set in renderResults() from wormsAfterRain() in the core.
+  if (tab === 'float' && window._wormsAfterRain) {
+    var _isWorm = function(b) { return /Plastic Worm|Nightcrawler/i.test(b.name); };
+    var _worms = list.filter(_isWorm), _others = list.filter(function(b) { return !_isWorm(b); });
+    if (_worms.length && _others.length) {
+      _worms.forEach(function(b) { b.when = 'Good after rain'; });
+      list = [_others[0]].concat(_worms, _others.slice(1));
+    }
+  }
   var top = list[0], rest = list.slice(1);
 
   function imgHtml(b) {

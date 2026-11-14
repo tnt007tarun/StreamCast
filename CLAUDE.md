@@ -994,6 +994,31 @@ Merged recently:
   now shows its best day, plus a second only when it scores the same (`bestDays()` in `worker/weekly.js`; ties go to the
   cloudier day, then the earlier one). It listed up to three. `bestDay()` (where to stand, gear) uses the same pick.
 
+- **Rain and snow on the Sky card** (TJ, 2026-11-14, drizzle in Mississauga: "the sky section just says cloudy"): display
+  only, nothing scored. `fetchWeather()` now also asks Open-Meteo for hourly `precipitation`, `snowfall` and
+  `precipitation_probability` (and, for today, current `precipitation`, `snowfall` and `weather_code`).
+  `periodPrecipFrom()` sums them over the strip's hours (5-9, 10-14, 15-20) into `window._periodPrecip`; `window._precipNow`
+  is set when something is falling now (an amount over 0, or a WMO wet code 51+, which catches drizzle that rounds to 0).
+  Rain or snow replaces the cloud words (TJ, same day: "rain already implies the sky is overcast"; bold blue looked too
+  loud). Headline (`renderSkyPrecip()`): "Raining now, about 9 mm for the rest of the day", "Light rain, about 3 mm this
+  evening" (when it falls in only some of what's left), "Drizzle now, little more expected", "Snowing now, about 3 cm ..."
+  (snow in cm), "Flurries now"; a future date "through the day". Each strip slot shows a rain or snow cloud icon and the word
+  (`precipWord()`: Drizzle under 1 mm, Light rain under 5, Rain under 15, Heavy rain; Flurries under 1 mm, Light snow under
+  5, Snow), no amounts. A dry-looking day with a 40%+ chance keeps "Overcast (...)" and a muted line under it, "60% chance
+  of rain, little expected." The Sky summary tile's second line reads "Raining now", "Drizzle now", "Flurries now" or
+  "Snowing now" instead of the cover word. Checked with mocked weather (rain now, drizzle code only, rain this evening,
+  snow, flurries, a chance only, dry) at 390 and 1280 px; this session's sandbox hit Open-Meteo's daily request limit, so it wasn't seen on live data.
+  Same PR (TJ, 2026-11-14): the card is headed **"Weather"** (was "Sky & light"). The totals come from `precipDay()` in the
+  core (with `precipWord()`, moved from `app.js`), which the hero reads too. Hero (`rainHeroRead()`, `renderHeroLines(..., rain)`):
+  with rain falling or due that day, Bring adds "and a rain jacket" (snow: "warm, waterproof layers") and a "Rain" line says what
+  it does: light rain "may nudge the river up a little", 5 mm+ "may raise and colour the river by evening. Fish the soft edges
+  and slower water", 15 mm+ (`HEAVY_RAIN_MM`) "could push the river high and muddy by evening. Fish it early and watch the
+  gauge", evening-only "the river should hold until then"; no line for snow, none once today's window is over. Worms after
+  rain: when it's raining now or 5 mm+ (`WORMS_RAIN_MM`) of rain fell over the trip day and the two days before
+  (`recentRainMm()` on the air-history fetch, which now asks for `rain_sum,showers_sum`; `wormsAfterRain()`), the float list
+  puts Plastic Worm and Nightcrawler right after Roe Bag, tagged "Good after rain" (`window._wormsAfterRain`,
+  `renderBaitPillar()`). Any season. Not on artificial-only reaches (no float tab there).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
