@@ -3794,3 +3794,9 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
   #results .p-lures-rows { display:none; }
   #results .p-lures-grid { display:grid; }
 }
+
+/* Rain and snow on the Sky card (TJ, 2026-11-14) */
+#results .sky-rain { margin-top:4px; font:500 13px/1.4 Inter,system-ui,-apple-system,sans-serif; color:#3f6f93; }
+#results .sky-rain[hidden] { display:none; }
+#results .spc-rain { display:block; margin-top:2px; color:#3f6f93; font-weight:600; }
+#results .spc-rain-amt { margin-top:0; font-weight:500; }

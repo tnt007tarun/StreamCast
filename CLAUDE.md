@@ -994,6 +994,18 @@ Merged recently:
   now shows its best day, plus a second only when it scores the same (`bestDays()` in `worker/weekly.js`; ties go to the
   cloudier day, then the earlier one). It listed up to three. `bestDay()` (where to stand, gear) uses the same pick.
 
+- **Rain and snow on the Sky card** (TJ, 2026-11-14, drizzle in Mississauga: "the sky section just says cloudy"): display
+  only, nothing scored. `fetchWeather()` now also asks Open-Meteo for hourly `precipitation`, `snowfall` and
+  `precipitation_probability` (and, for today, current `precipitation`, `snowfall` and `weather_code`).
+  `periodPrecipFrom()` sums them over the strip's hours (5-9, 10-14, 15-20) into `window._periodPrecip`; `window._precipNow`
+  is set when something is falling now (an amount over 0, or a WMO wet code 51+, which catches drizzle that rounds to 0).
+  The Sky card gets a line under its headline (`#skyrain`, `renderSkyPrecip()`): "Raining now, about 9 mm of rain for the rest
+  of the day." (snow in cm, a future date "through the day"; hidden when dry, or "N% chance of rain, little expected" at 40%+).
+  Each strip period shows a rain or snow icon and word (`precipWord()`: Drizzle under 1 mm, Light rain under 5, Rain under 15,
+  Heavy rain; Light snow / Snow) with the amount on its own line. The Sky summary tile's second line reads "Raining now",
+  "Drizzling now" or "Snowing now" instead of the cover word. Checked with mocked weather (rain, drizzle code only, snow,
+  dry) at 390 and 1280 px; this session's sandbox hit Open-Meteo's daily request limit, so it wasn't seen on live data.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
