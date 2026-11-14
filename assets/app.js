@@ -2619,6 +2619,8 @@ function updateMethods(fc,tc,sc,flow,wt){
   // for staging salmon and depending on applyStagingTechniqueOverride running afterwards
   // to correct it. Correct-by-ordering is what caused the earlier drift bugs; this is now
   // correct standalone, and the override is belt-and-braces rather than load-bearing.
+  // The bait pillar adds spinners and spoons under the float baits when Spin is picked (TJ, 2026-11-14).
+  window._spinFloatTech = _salmonMode === 'spin-float';
   if (_salmonMode === 'spin') {
     m1 = {n:SALMON_MODE_METHOD.spin,
           d:'Fish aren’t in the river yet. They’re staging out front, so cast from the pier, beach or river mouth, fan casting and varying your retrieve depth.',
@@ -4961,8 +4963,12 @@ function buildTopPick(rankedRivers, flow, wt, cloudPct, tc, sc, speciesKey, weat
     _want = _want.filter(function(n){ return _mig.indexOf(n) !== -1; });
     var _up = furthestUpstreamOpen(_here, _want, _trip);
     if (!_up) return;
-    // Usually autoUpstreamSection() has already moved the reader up. This is left for "Stay on ..."
-    // (or a species mix it didn't cover): the button only, so the headline stays short (TJ, 2026-10-25).
+    // Usually autoUpstreamSection() has already moved the reader up. When the reader is still here (after "Stay on ..."
+    // or an "Other reaches" tap), the upstream reach is open and sits in the "Other reaches" line under the headline,
+    // so no big "See ..." button as well (TJ, 2026-11-14: the same offer twice). Only a reach on another river, which
+    // that line can't list, still gets the button.
+    var _sameRiver = parentRiverOfSection(_up.section) === parentRiverOfSection(_here);
+    if (_sameRiver) return;
     _goto = { section: _up.section, species: targetName ? _up.species : '' };
   })();
 
@@ -6014,6 +6020,9 @@ var BAIT_ADVICE = {
   'Soft Bead': {spec:'10–12 mm · Pink, Peach, Natural', bestFor:'Steelhead and salmon in coloured water', how:'Peg 1–2 in above the hook. Pink when coloured', when:'Coloured water'},
   'Hard Bead': {spec:'8–12 mm · Nuke Egg colours', bestFor:'Clear water and pressured fish', how:'Peg 1–2 in above the hook. Chartreuse and orange lead', when:'Clear water'},
   'float:Woolly Bugger': {spec:'#6–10 · Purple, Black, Olive', bestFor:'Steelhead that have seen too many eggs', how:'Under the float, just off the bottom, like a bead', when:'Egg-shy fish'},
+  'spin-float:Little Cleo Spoon': {spec:'1/4–1/2 oz · Gold/Red, Orange, Silver', bestFor:'Fresh fish in deeper runs and pools', how:'Cast across and a little upstream, let it sink, then retrieve slowly so it wobbles near the bottom'},
+  'spin-float:Blue Fox Vibrax': {spec:'#3–4 · Silver, Gold, Chartreuse', bestFor:'Covering a run to find active fish', how:'Cast across, let it swing on a tight line and retrieve just fast enough to feel the blade turn'},
+  'spin-float:Kastmaster Spoon': {spec:'1/4–3/8 oz · Silver, Gold', bestFor:'Getting down fast in deep pools and faster water', how:'Cast upstream of where fish hold, count it down, then a steady retrieve'},
   'Plastic Worm': {spec:'3–4 inch · Red, Pink, Chartreuse', bestFor:'Stained water after rain', how:'Thread on the hook and drift it naturally', when:'After rain'},
   'Nightcrawler': {spec:'Full or half · Natural', bestFor:'Spring, and after rain when naturals wash in', how:'Drift naturally with just enough shot to hold', when:'Spring / rain'},
   'Little Cleo Spoon': {spec:'½–¾ oz · Orange/White, Gold/Red', bestFor:'Harbour mouths and pier ends', how:'Cast across the current and retrieve slowly, letting it flutter on the drop', when:'Top pick'},
@@ -6056,11 +6065,12 @@ function renderBaitPillar(topMethod) {
   }
   if (pill) pill.style.display = '';
 
-  function read(el) {
+  function read(el, adviceTab) {
     var name = (el.querySelector('.bname')||{}).textContent || '';
+    var tab0 = typeof adviceTab === 'string' ? adviceTab : tab;
     // A fly can sit in more than one panel with different advice (the Woolly Bugger swung as a streamer, or under a
     // float): a 'tab:name' entry wins over the plain name (2026-11-13).
-    var adv  = BAIT_ADVICE[tab + ':' + name] || BAIT_ADVICE[name] || {};
+    var adv  = BAIT_ADVICE[tab0 + ':' + name] || BAIT_ADVICE[name] || {};
     return {
       name: name,
       spec: adv.spec || ((el.querySelector('.bdet')||{}).textContent || ''),
@@ -6072,7 +6082,7 @@ function renderBaitPillar(topMethod) {
       key: el.getAttribute('data-bait-name') || name
     };
   }
-  var list = items.map(read);
+  var list = items.map(function(el) { return read(el); });
   var top = list[0], rest = list.slice(1);
 
   function imgHtml(b) {
@@ -6186,6 +6196,41 @@ function renderBaitPillar(topMethod) {
       m.hidden = !m.hidden;
       gBtn.textContent = m.hidden ? (gRest.length + ' more \u2193') : 'Show fewer \u2191';
     });
+  }
+
+  // Spin picked with steelhead or salmon in the river (TJ, 2026-11-14): the float baits lead (float and roe on a spinning
+  // rod, TJ 2026-10-17), and spinners and spoons follow as their own small group, so a spin angler sees what to cast.
+  var lureBox = document.getElementById('tg-bait-lures');
+  if (!lureBox && grid) {
+    lureBox = document.createElement('div');
+    lureBox.id = 'tg-bait-lures';
+    lureBox.className = 'p-lures';
+    grid.parentNode.insertBefore(lureBox, grid.nextSibling);
+  }
+  if (lureBox) {
+    var lureSrc = document.getElementById('p-salmon-lures');
+    var lures = (window._spinFloatTech && tab === 'float' && !_stagingModeActive && lureSrc)
+      ? ['Little Cleo Spoon', 'Blue Fox Vibrax Spinner', 'Kastmaster Spoon'].map(function(k) {
+          var el = lureSrc.querySelector('.bi[data-bait-name="' + k + '"]');
+          return el ? read(el, 'spin-float') : null;
+        }).filter(Boolean)
+      : [];
+    lureBox.hidden = !lures.length;
+    if (lures.length) {
+      lureBox.innerHTML = '<div class="p-lures-lbl">Or cast spinners and spoons</div>' +
+        '<div class="p-lures-rows">' + lures.map(altRow).join('') + '</div>' +
+        '<div class="p-bgrid p-lures-grid">' + lures.map(function(b) { return grid ? gCardLure(b) : ''; }).join('') + '</div>';
+      wireAlts(lureBox);
+    } else {
+      lureBox.innerHTML = '';
+    }
+  }
+  function gCardLure(b) {
+    var r = '';
+    if (b.bestFor) r += '<div><dt>Best for</dt><dd>' + b.bestFor + '</dd></div>';
+    if (b.how)     r += '<div><dt>How</dt><dd>' + b.how + '</dd></div>';
+    return '<div class="p-bgc"><div class="p-bait-top">' + imgHtml(b) + '<div style="flex:1;min-width:0"><h5>' + b.name + '</h5>' +
+      (b.spec ? '<div class="p-bspec">' + b.spec + '</div>' : '') + '</div></div>' + (r ? '<dl class="p-how">' + r + '</dl>' : '') + '</div>';
   }
 
   // Panel-level footnote (bait regs, harbour closures) carries over if present.
