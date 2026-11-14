@@ -952,6 +952,14 @@ Merged recently:
   steelhead): `images/guides/app-bait-cards.webp` (three cards) and, under 600 px, `app-bait-cards-beads.webp` (the two
   bead cards stacked). Retake them if the bait cards change.
 
+- **Several rivers on the steelhead boxes** (TJ, 2026-11-14, from the outlook page on his phone): a steelhead signup box
+  with no river of its own (the outlook page and the guides without `data-river`) showed one "Choose your river" dropdown.
+  It now shows the river chips from the homepage picker (`weeklyPicker(el, {only: parents, fish: 'Steelhead'})`: up to 3
+  rivers from `STEELHEAD_REACH`, no fish chips) and saves `weekly` as `{river, species: 'Steelhead'}` entries (the Worker
+  scores the reach the app would open, like the homepage box). "Also send run alerts" sends `runRivers` (the list) plus
+  `river` (the first); the Worker's `/subscribe` takes `body.runRivers` (up to `MAX_WEEKLY_RIVERS`, each in `RUN_RIVERS`)
+  and names them all in the confirmation. River pages with `data-river` are unchanged. Pages load `signup.js?v=5`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
