@@ -2,7 +2,7 @@
 // Run from the repo root: node worker/weekly.test.mjs   (writes worker/.weekly-preview.html, ignored by git)
 import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
-import { runWeekly, weeklyInterests, weeklyEntries, MAX_WEEKLY_RIVERS, windowDates, scoreWeek, parseWeather, renderEmail, weeklySubject, SPECIES_KEY } from './weekly.js';
+import { runWeekly, weeklyInterests, weeklyEntries, MAX_WEEKLY_RIVERS, windowDates, scoreWeek, parseWeather, renderEmail, weeklySubject, SPECIES_KEY, bestDays } from './weekly.js';
 
 const C = globalThis.HFF_CORE;
 const TODAY = '2026-10-22'; // a Thursday
@@ -130,5 +130,15 @@ assert.equal(sent.batches.length, 0, 'no email on a low-water week');
 // The subject names the river for a mouth reach
 assert.equal(weeklySubject([{ section: 'Rouge River \u2014 Marsh & Mouth (Lake Ontario)', species: 'Chinook Salmon' }]),
   'Good days ahead for Chinook Salmon on Rouge River \u00b7 Marsh & Mouth (Lake Ontario)');
+
+// The best one or two days (TJ, 2026-11-14): a second day only when it ties the best; ties go to the cloudier day.
+{
+  const d = (date, score, cloud, good = true) => ({ date, score, cloud, good });
+  const pick = (days) => bestDays({ days }).map((x) => x.date);
+  assert.deepEqual(pick([d('11-20', 9, 40), d('11-21', 9, 90), d('11-22', 9, 70), d('11-23', 8, 100)]), ['11-21', '11-22'], 'two best, cloudier first');
+  assert.deepEqual(pick([d('11-20', 11, 80), d('11-21', 9, 90)]), ['11-20'], 'one clear best day');
+  assert.deepEqual(pick([d('11-20', 9, 80, false), d('11-21', 8, 20)]), ['11-21'], 'only good days count');
+  assert.deepEqual(pick([d('11-20', 9, 80, false)]), [], 'no good day, nothing listed');
+}
 
 console.log('weekly: all checks passed');

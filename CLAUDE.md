@@ -978,7 +978,9 @@ Merged recently:
   any day scoring 10+ without prime flow (or with no flow reading) stops at 9, Good, and the result carries `primeCap`.
   Same forecast now: Good on almost every day (8 or 9), Excellent only where flow is prime (the Rouge Nov 14 to 18).
   In-season steelhead on normal flow is Good even on a bright day (6 + 2 + 0), so the weekly email (Good or better)
-  still sends most weeks. Open: whether the weekly email should need Excellent, or Good with something extra.
+  still sends most weeks. TJ chose to keep Good as the trigger but list fewer days: each river and fish in the weekly email
+  now shows its best day, plus a second only when it scores the same (`bestDays()` in `worker/weekly.js`; ties go to the
+  cloudier day, then the earlier one). It listed up to three. `bestDay()` (where to stand, gear) uses the same pick.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
