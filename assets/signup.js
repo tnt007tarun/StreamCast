@@ -185,7 +185,7 @@
     var parents = RIVERS.filter(function (r) { return STEELHEAD_REACH[r]; });
     // Offer copy (TJ, 2026-11-10): name it as a weekly outlook (pairs with the monthly outlook); Thursday moves to the line below.
     var what = mode === 'steelhead'
-      ? 'Your weekly steelhead outlook ' + (river ? 'for ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'for your river')
+      ? 'Your weekly steelhead outlook ' + (river ? 'for ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'for your rivers')
       : 'Your weekly fishing outlook';
     var showRun = mode === 'steelhead';
     var showOutlook = mode === 'any' && !lsGet('hff_sub_outlook');
