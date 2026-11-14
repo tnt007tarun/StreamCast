@@ -3784,3 +3784,13 @@ body:has(#landing:not([style*="display: none"])){background:var(--ed-paper)}
 /* The hero and species-banner photos sit in a <picture> (phone strip, 2026-11-11). Keep the wrapper out of the layout so
    flex gaps behave as they did with a bare, absolutely placed <img>. */
 .hero-photo > picture, #results #species-banner > picture { position: absolute; inset: 0; display: block; }
+
+/* Spinners and spoons under the float baits when Spin is picked (TJ, 2026-11-14) */
+#results .p-lures { margin-top:16px; padding-top:14px; border-top:1px solid var(--rule, #e2ded6); }
+#results .p-lures[hidden] { display:none; }
+#results .p-lures-lbl { font:600 13px/1.3 Inter,system-ui,-apple-system,sans-serif; color:var(--t-muted, #6b7d86); margin-bottom:8px; }
+#results .p-lures-grid { display:none; }
+@media (min-width:760px) {
+  #results .p-lures-rows { display:none; }
+  #results .p-lures-grid { display:grid; }
+}
