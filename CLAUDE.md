@@ -927,6 +927,15 @@ Merged recently:
   before today or past the last day chip is ignored. Back still returns to `/`. Umami now records a page view for each
   results address (`/?river=...`); compare homepage views before and after 2026-11-12 with that in mind.
 
+- **Steelhead bait guide** (TJ, 2026-11-13, from the Search Console pull and forum research: the most-asked steelhead
+  questions are beads or roe, bead colour and float setup): `/guides/steelhead-bait/`. Roe bags, soft and hard beads,
+  worms and flies; size and colour by water clarity (same table as the winter guide, plus bead sizes); by season; Ontario
+  bait rules from MNR 2026 pp. 14 and 20 to 22 (artificial-only reaches, no bait or eggs within 30 m of water, no buying or
+  selling eggs from anglers, Southern BMZ). First person only from TJ's stated facts (his setup, the November Credit bait
+  day, the Hard Bead line from the app card). Videos `iI_O65M99G4` (setup and bait) and `8J_6sD0Nn_k` (green worm). Mid
+  signup box, Today's conditions block, FAQ matches JSON-LD. In the guides index, sitemap and llms.txt; the winter guide's
+  bait section links to it. Not a homepage `GUIDES` card (no photo yet).
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
