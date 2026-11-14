@@ -48,7 +48,9 @@ assert.equal(closed.confidence, null);
   // TJ's Lower Credit, 2026-11-14 midday: steelhead in, normal flow 4.1, 6.1 °C live, 100% cloud, fair run. Was Marginal.
   const lc = C.getRiverConfig('Lower Credit River'), base = C.sectionSeasonScore('Lower Credit River', ['Steelhead'], '2026-11-14', 'Lower Credit River').score;
   const ctx = C.tempContext(['Steelhead'], '2026-11-14', 'Lower Credit River');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(base, lc, 4.1, 6.1, 100, 50, false, ctx)).word, 'Excellent', 'drizzly Credit day, cool water: ' + base);
+  assert.equal(C.scoreToConfidence(C.conditionsScore(base, lc, 4.1, 6.1, 100, 50, false, ctx)).word, 'Good', 'drizzly Credit day, normal flow: Good (Excellent needs prime)');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(base, lc, 8, 6.1, 100, 50, false, ctx)).word, 'Excellent', 'same day with prime flow: Excellent');
+  assert.equal(C.conditionsScore(10, lc, null, 10, 80, null, false, null), 9, 'no flow reading: a peak-season day stops at Good');
 }
 
 // Drive verdict

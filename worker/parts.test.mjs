@@ -33,10 +33,11 @@ function oldConditions(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fi
   // strong run with prime flow.
   if (stagingPct != null && fishInLake) return stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
   var bonus = (stagingPct != null && stagingPct >= 65 && C.flowBand(flow, cfg) === 'prime') ? 2 : 0;
-  if (cfg && flow != null) {
-    return C.flowCapScore(baseScore + oldLive(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx) + bonus, cfg, flow);
-  }
-  return baseScore + bonus;
+  var t = (cfg && flow != null)
+    ? C.flowCapScore(baseScore + oldLive(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx) + bonus, cfg, flow)
+    : baseScore;
+  // Excellent needs prime flow (TJ, 2026-11-14)
+  return (t >= 10 && C.flowBand(flow, cfg) !== 'prime') ? 9 : t;
 }
 
 const cfgs = ['Lower Credit River', 'Lower Bowmanville Creek', 'Upper Grand River (Tailwater)', 'Lower Humber River'].map((n) => C.getRiverConfig(n));
@@ -53,7 +54,7 @@ for (const cfg of cfgs) for (const f of flows(cfg)) for (const t of temps) for (
     assert.equal(got.total, oldConditions(base, cfg, f, t, c, sp, inLake, ctx));
     assert.equal(C.conditionsScore(base, cfg, f, t, c, sp, inLake, ctx), got.total);
     // The parts add up to the total, unless a cap or a run day replaced the sum.
-    if (!got.cap && !got.replaced) assert.equal(base + got.parts.reduce((a, p) => a + p.pts, 0), got.total);
+    if (!got.cap && !got.replaced && !got.primeCap) assert.equal(base + got.parts.reduce((a, p) => a + p.pts, 0), got.total);
     n++;
   }
 }

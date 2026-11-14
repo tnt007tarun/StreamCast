@@ -974,8 +974,11 @@ Merged recently:
   little slower to take" instead of "below the feeding range, so expect slower fishing". The `RUN_PRIME_SCORE` rule (strong
   run + prime = Excellent) is gone; prime flow's +5 does that now. Core change: the Worker redeploys, and the weekly email
   uses the same rule. Real forecast for Nov 14 to 28 on the outlook rivers: was mostly Marginal and Good (swinging with the
-  wind), now Good and Excellent every day (Excellent on overcast days even at normal flow), so more weekly emails will send.
-  Open: whether Excellent should need prime flow.
+  wind). Then (TJ, same day, "too generous"): **Excellent needs prime flow** (`primeForExcellent()`, `EXCELLENT_SCORE`):
+  any day scoring 10+ without prime flow (or with no flow reading) stops at 9, Good, and the result carries `primeCap`.
+  Same forecast now: Good on almost every day (8 or 9), Excellent only where flow is prime (the Rouge Nov 14 to 18).
+  In-season steelhead on normal flow is Good even on a bright day (6 + 2 + 0), so the weekly email (Good or better)
+  still sends most weeks. Open: whether the weekly email should need Excellent, or Good with something extra.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in

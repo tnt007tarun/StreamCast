@@ -3452,10 +3452,17 @@ function conditionsParts(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, 
     parts = liveConditionsParts(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx);
     if (runBonus) parts.push(runBonus);
     total = capped(baseScore + parts.reduce(function(a, p) { return a + p.pts; }, 0));
-    return { total: total, parts: parts, cap: cap, replaced: false };
+    return primeForExcellent({ total: total, parts: parts, cap: cap, replaced: false }, cfg, flow);
   }
-  if (runBonus) return { total: baseScore + runBonus.pts, parts: [runBonus], cap: null, replaced: false };
-  return { total: baseScore, parts: [], cap: null, replaced: false };
+  return primeForExcellent({ total: baseScore, parts: [], cap: null, replaced: false }, cfg, flow);
+}
+
+// Excellent needs prime flow (TJ, 2026-11-14): only the flow a few days after rain makes a day Excellent. Season, cool
+// water and cloud alone stop at Good (EXCELLENT_SCORE - 1), with or without a flow reading. Marks the result primeCap.
+var EXCELLENT_SCORE = 10;
+function primeForExcellent(r, cfg, flow) {
+  if (r.total >= EXCELLENT_SCORE && flowBand(flow, cfg) !== 'prime') { r.total = EXCELLENT_SCORE - 1; r.primeCap = true; }
+  return r;
 }
 
 // One day on one section: what the weekly email scores. The app builds the same number from
