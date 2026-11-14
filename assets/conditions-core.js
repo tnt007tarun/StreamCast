@@ -2456,6 +2456,13 @@ function waterTempRead(wt, info, o) {
   var inSeason = !!(o.species && seasonal && (seasonal.quality === 'peak' || seasonal.quality === 'good'));
   var sentence, clause;
   if (g === 'good') { sentence = 'Inside the ' + range + ' feeding range.'; clause = 'inside the ' + range + ' feeding range'; }
+  else if (o.coldTolerant && wt >= 4 && wt < TEMP_MIN) {
+    // Winter run fish in 4 to 8 °C water: cool, not a problem (TJ, 2026-11-14: the note read as if 6 °C water ruined a
+    // good steelhead day). The score gives this +2, close to the 8 to 14 °C range.
+    var fishW = o.species ? String(o.species).toLowerCase() : 'run fish';
+    clause = 'cool but fine for ' + fishW + ', which may be a little slower to take';
+    sentence = clause.charAt(0).toUpperCase() + clause.slice(1) + '.';
+  }
   else if (wt < TEMP_MIN) {
     clause = (wt < TEMP_MIN - 2 ? 'cold' : !measured && v >= TEMP_MIN ? 'at the cool edge of the ' + range + ' feeding range'
       : 'below the ' + range + ' feeding range') + ', so expect slower fishing';
@@ -3113,7 +3120,10 @@ function liveConditionsParts(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC,
   if (tempC != null) {
     var t;
     if (tempC >= 8  && tempC <= 14)  t = { pts: 3, label: 'Water in the 8 to 14\u00b0C feeding range' };
-    else if (tempC >= 4  && tempC < 8)  t = { pts: 1, label: 'Water cool (4 to 8\u00b0C)' };
+    // Winter run fish (steelhead, lake-run browns in season) feed fine in cool water: +2, nearly the 8 to 14 \u00b0C
+    // range (TJ, 2026-11-14). Resident trout and salmon keep +1.
+    else if (tempC >= 4  && tempC < 8)  t = (ctx && ctx.coldTolerant) ? { pts: 2, label: 'Water cool (4 to 8\u00b0C), fine for run fish' }
+                                                                       : { pts: 1, label: 'Water cool (4 to 8\u00b0C)' };
     else if (tempC > 14 && tempC <= 18) t = { pts: 1, label: 'Water warm (14 to 18\u00b0C)' };
     // Under VERY_COLD_WATER (3 °C) winter fish sit deep and barely move: no bonus (TJ, 2026-11-06), so the Water tile says
     // "No effect" while the card says they barely move. 3 to 4 °C keeps +1; under COLD_RUN_MIN the old -3 stays.
@@ -3391,6 +3401,7 @@ function sectionSeasonScore(sectionName, targetSpeciesNames, dateStr, seasonSect
 // points for bad flow, so a high season score kept the Lower Grand "Excellent" at 200 m3/s.
 var FLOW_CAP_MARGINAL = 5, FLOW_CAP_TOUGH = 1;
 var RUN_PRIME_SCORE = 10;   // scoreToConfidence: 10 and up is Excellent
+var RUN_STRONG_BONUS = 2;   // a strong modelled run at the mouth, added to an in-river day (TJ, 2026-11-14)
 // Normal flow (between too low and prime) is not capped (TJ, 2026-10-24): rivers are fishable most days, and
 // about half of open-season days sit there. Prime (sweetMin to sweetMax, the flow a few days after rain) is the
 // only band that adds a bonus, so it is what lifts a day to Excellent.
@@ -3424,24 +3435,34 @@ function conditionsParts(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, 
       : 'Flow above prime caps the day at Marginal' };
     return c;
   };
-  if (stagingPct != null) {
+  // Fish still in the lake (staging at the mouth): the day is the run, rated on run strength alone.
+  if (stagingPct != null && fishInLake) {
     var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
     parts.push({ key: 'run', pts: s, label: 'Run strength at the mouth (' + (stagingPct >= 65 ? 'strong' : stagingPct >= 40 ? 'fair' : 'weak') + ')' });
-    if (fishInLake) return { total: s, parts: parts, cap: null, replaced: true };
-    // A strong run with prime flow in the river is the best day there is: Excellent (TJ, 2026-10-24).
-    var band = flowBand(flow, cfg);
-    if (s >= 8 && band === 'prime') { parts.push({ key: 'flow', pts: RUN_PRIME_SCORE - s, label: 'Strong run with prime flow' }); s = RUN_PRIME_SCORE; }
-    else if (band) parts.push({ key: 'flow', pts: 0, label: { low: 'Flow too low', normal: 'Flow normal, below prime', prime: 'Flow in the prime range',
-      high: 'Flow above prime', blown: 'Flow blown out' }[band] + (s >= 8 && band !== 'prime' ? ' (prime would make it Excellent)' : '') });
-    total = capped(s);
-    return { total: total, parts: parts, cap: cap, replaced: true };
+    return { total: s, parts: parts, cap: null, replaced: true };
   }
+  // Fish in the river (TJ, 2026-11-14): rated on the river, like any other day (season, flow, water, sky). It used to
+  // replace the river readings with the modelled run at the mouth, so an overcast, drizzly Lower Credit day with
+  // steelhead in read Marginal. The run model (lake temperature and wind) reads strong on most fall days whatever the
+  // rain, so it only adds a bump when flow is in prime too, a few days after rain, when a fresh push is plausible. A fair
+  // or weak run takes nothing away.
+  var runBonus = (stagingPct != null && stagingPct >= 65 && flowBand(flow, cfg) === 'prime')
+    ? { key: 'run', pts: RUN_STRONG_BONUS, label: 'Strong run modelled at the mouth, with prime flow' } : null;
   if (cfg && flow != null) {
     parts = liveConditionsParts(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx);
+    if (runBonus) parts.push(runBonus);
     total = capped(baseScore + parts.reduce(function(a, p) { return a + p.pts; }, 0));
-    return { total: total, parts: parts, cap: cap, replaced: false };
+    return primeForExcellent({ total: total, parts: parts, cap: cap, replaced: false }, cfg, flow);
   }
-  return { total: baseScore, parts: [], cap: null, replaced: false };
+  return primeForExcellent({ total: baseScore, parts: [], cap: null, replaced: false }, cfg, flow);
+}
+
+// Excellent needs prime flow (TJ, 2026-11-14): only the flow a few days after rain makes a day Excellent. Season, cool
+// water and cloud alone stop at Good (EXCELLENT_SCORE - 1), with or without a flow reading. Marks the result primeCap.
+var EXCELLENT_SCORE = 10;
+function primeForExcellent(r, cfg, flow) {
+  if (r.total >= EXCELLENT_SCORE && flowBand(flow, cfg) !== 'prime') { r.total = EXCELLENT_SCORE - 1; r.primeCap = true; }
+  return r;
 }
 
 // One day on one section: what the weekly email scores. The app builds the same number from

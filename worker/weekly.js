@@ -218,15 +218,23 @@ export function flowWords(day, cfg) {
 export function blockHeader(combo) {
   return `<h2 style="color:#1e7a6e;margin:24px 0 4px">${esc(combo.species)} on ${esc(C.secLabel(combo.section))}</h2>`;
 }
+// The best one or two days of the week (TJ, 2026-11-14): with in-river days rated on the river, most days of a run week
+// score Good, so listing three read as "every day is fine". The best day, plus a second only when it scores the same.
+// Ties go to the cloudier day (cloud is what usually separates two Good steelhead days), then the earlier one.
+export function bestDays(combo) {
+  const good = combo.days.filter((d) => d.good)
+    .sort((a, b) => b.score - a.score || (b.cloud || 0) - (a.cloud || 0) || (a.date < b.date ? -1 : 1));
+  if (!good.length) return [];
+  return good.slice(0, 2).filter((d) => d.score === good[0].score);
+}
 export function blockDays(combo) {
   const cfg = C.getRiverConfig(combo.section);
-  const good = combo.days.filter((d) => d.good).sort((a, b) => b.score - a.score).slice(0, 3)
-    .sort((a, b) => (a.date < b.date ? -1 : 1));
+  const good = bestDays(combo).slice().sort((a, b) => (a.date < b.date ? -1 : 1));
   return `<ul style="padding-left:18px;line-height:1.6;margin:8px 0">` + good.map((d) =>
     `<li><strong>${esc(prettyDay(d.date))}: ${esc(d.word)}.</strong> ${esc(dayReason(d, cfg))}.</li>`).join('') + `</ul>`;
 }
 export function bestDay(combo) {
-  return combo.days.filter((d) => d.good).sort((a, b) => b.score - a.score || (a.date < b.date ? -1 : 1))[0] || null;
+  return bestDays(combo)[0] || null;
 }
 export function blockWhere(combo) {
   const day = bestDay(combo);

@@ -1,6 +1,6 @@
 // conditionsScore() and liveConditionsScore() are now sums of conditionsParts() / liveConditionsParts() (Phase 2,
 // 2026-11-02), so the app can show how a rating was built. This checks the split changed no score: the old functions
-// are copied below verbatim from commit 0aaa399 and compared on a grid. Run from the repo root: node worker/parts.test.mjs
+// were copied from commit 0aaa399 and compared on a grid; they now carry the 2026-11-14 run-day and cool-water rules. Run from the repo root: node worker/parts.test.mjs
 import assert from 'node:assert/strict';
 import '../assets/conditions-core.js';
 
@@ -15,7 +15,7 @@ function oldLive(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, c
   }
   if (tempC != null) {
     if (tempC >= 8  && tempC <= 14)  s += 3;
-    else if (tempC >= 4  && tempC < 8)  s += 1;
+    else if (tempC >= 4  && tempC < 8)  s += (ctx && ctx.coldTolerant) ? 2 : 1;   // +2 for run fish (TJ, 2026-11-14)
     else if (tempC > 14 && tempC <= 18) s += 1;
     else if (ctx && ctx.coldTolerant && tempC >= 3 && tempC < 4) s += 1;
     else if (ctx && ctx.coldTolerant && tempC >= C.COLD_RUN_MIN && tempC < 3) s += 0;
@@ -29,16 +29,15 @@ function oldLive(flow, sweetMin, sweetMax, flowLow, flowHigh, tempC, cloudPct, c
   return s;
 }
 function oldConditions(baseScore, cfg, flow, waterTemp, cloudPct, stagingPct, fishInLake, ctx) {
-  if (stagingPct != null) {
-    var s = stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
-    if (fishInLake) return s;
-    if (s >= 8 && C.flowBand(flow, cfg) === 'prime') s = 10;
-    return C.flowCapScore(s, cfg, flow);
-  }
-  if (cfg && flow != null) {
-    return C.flowCapScore(baseScore + oldLive(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx), cfg, flow);
-  }
-  return baseScore;
+  // Run days as of 2026-11-14 (TJ): fish in the lake, run strength alone; fish in the river, the river score plus 2 for a
+  // strong run with prime flow.
+  if (stagingPct != null && fishInLake) return stagingPct >= 65 ? 8 : stagingPct >= 40 ? 5 : 2;
+  var bonus = (stagingPct != null && stagingPct >= 65 && C.flowBand(flow, cfg) === 'prime') ? 2 : 0;
+  var t = (cfg && flow != null)
+    ? C.flowCapScore(baseScore + oldLive(flow, cfg.sweetMin, cfg.sweetMax, cfg.flowLow, cfg.flowHigh, waterTemp, cloudPct, ctx) + bonus, cfg, flow)
+    : baseScore;
+  // Excellent needs prime flow (TJ, 2026-11-14)
+  return (t >= 10 && C.flowBand(flow, cfg) !== 'prime') ? 9 : t;
 }
 
 const cfgs = ['Lower Credit River', 'Lower Bowmanville Creek', 'Upper Grand River (Tailwater)', 'Lower Humber River'].map((n) => C.getRiverConfig(n));
@@ -55,7 +54,7 @@ for (const cfg of cfgs) for (const f of flows(cfg)) for (const t of temps) for (
     assert.equal(got.total, oldConditions(base, cfg, f, t, c, sp, inLake, ctx));
     assert.equal(C.conditionsScore(base, cfg, f, t, c, sp, inLake, ctx), got.total);
     // The parts add up to the total, unless a cap or a run day replaced the sum.
-    if (!got.cap && !got.replaced) assert.equal(base + got.parts.reduce((a, p) => a + p.pts, 0), got.total);
+    if (!got.cap && !got.replaced && !got.primeCap) assert.equal(base + got.parts.reduce((a, p) => a + p.pts, 0), got.total);
     n++;
   }
 }

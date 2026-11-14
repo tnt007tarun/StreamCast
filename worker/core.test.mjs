@@ -29,19 +29,28 @@ const closed = C.scoreDay({ section: 'Upper Credit River', species: ['Brook Trou
 assert.equal(closed.closed, true);
 assert.equal(closed.confidence, null);
 
-// Run strength with flow (TJ, 2026-10-23). Lower Bowmanville: flowLow 0.6, prime 1.1 to 2, flowHigh 5 (2026-10-24 ranges).
+// Run days (TJ, 2026-11-14). Fish in the river: rated on the river (season, flow, water, sky), plus 2 for a strong
+// modelled run at the mouth when flow is in prime too; a fair or weak run takes nothing away. Fish still in the lake: run strength alone.
+// Lower Bowmanville: flowLow 0.6, prime 1.1 to 2, flowHigh 5 (2026-10-24 ranges). Base 0, 10 °C (+3), 50% cloud (+1).
 {
   const cfg = C.getRiverConfig('Lower Bowmanville Creek');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 1.5, 10, 50, 80)).word, 'Excellent', 'strong run, prime flow: Excellent (TJ, 2026-10-24)');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 0.8, 10, 50, 80)).word, 'Good', 'strong run, normal flow: Good');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 1.5, 10, 50, 50)).word, 'Marginal', 'fair run, prime flow: no lift');
-  assert.equal(C.scoreToConfidence(C.conditionsScore(0, cfg, 1.5, 10, 50, 80, true)).word, 'Good', 'fish still in the lake: no lift');
-  assert.equal(C.conditionsScore(0, cfg, 0.8, 10, 50, 80), 8, 'normal flow (below prime) is not capped (TJ, 2026-10-24)');
-  assert.equal(C.conditionsScore(0, cfg, 0.2, 10, 50, 80), 1, 'too low (under flowLow) caps at Tough');
-  assert.equal(C.conditionsScore(0, cfg, 3, 10, 50, 80), 5, 'above prime caps at Marginal');
-  assert.equal(C.conditionsScore(0, cfg, 20, 10, 50, 80), 1, 'blown out caps at Tough');
+  assert.equal(C.conditionsScore(0, cfg, 1.5, 10, 50, 80), 0 + 5 + 3 + 1 + 2, 'strong run, prime flow: river plus the run bonus');
+  assert.equal(C.conditionsScore(0, cfg, 1.5, 10, 50, 50), 9, 'fair run, prime flow: the river alone');
+  assert.equal(C.conditionsScore(0, cfg, 1.5, 10, 50, 20), 9, 'weak run takes nothing away');
+  assert.equal(C.conditionsScore(0, cfg, 1.5, 10, 50, null), 9, 'no run model: the same river score');
+  assert.equal(C.conditionsScore(0, cfg, 1.5, 10, 50, 80, true), 8, 'fish still in the lake: run strength alone');
   assert.equal(C.conditionsScore(0, cfg, 0.8, 10, 50, 80, true), 8, 'fish still in the lake: flow ignored');
-  assert.equal(C.conditionsScore(0, cfg, null, 10, 50, 80), 8, 'no gauge reading: no cap');
+  assert.equal(C.conditionsScore(0, cfg, 0.8, 10, 50, 80), 4, 'strong run, normal flow: no bonus, and normal flow is not capped');
+  assert.equal(C.conditionsScore(10, cfg, 0.2, 10, 50, 80), 1, 'too low (under flowLow) caps at Tough');
+  assert.equal(C.conditionsScore(10, cfg, 3, 10, 50, 80), 5, 'above prime caps at Marginal');
+  assert.equal(C.conditionsScore(10, cfg, 20, 10, 50, 80), 1, 'blown out caps at Tough');
+  assert.equal(C.conditionsScore(6, cfg, null, 10, 50, 80), 6, 'no gauge reading: the season rating, no cap');
+  // TJ's Lower Credit, 2026-11-14 midday: steelhead in, normal flow 4.1, 6.1 °C live, 100% cloud, fair run. Was Marginal.
+  const lc = C.getRiverConfig('Lower Credit River'), base = C.sectionSeasonScore('Lower Credit River', ['Steelhead'], '2026-11-14', 'Lower Credit River').score;
+  const ctx = C.tempContext(['Steelhead'], '2026-11-14', 'Lower Credit River');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(base, lc, 4.1, 6.1, 100, 50, false, ctx)).word, 'Good', 'drizzly Credit day, normal flow: Good (Excellent needs prime)');
+  assert.equal(C.scoreToConfidence(C.conditionsScore(base, lc, 8, 6.1, 100, 50, false, ctx)).word, 'Excellent', 'same day with prime flow: Excellent');
+  assert.equal(C.conditionsScore(10, lc, null, 10, 80, null, false, null), 9, 'no flow reading: a peak-season day stops at Good');
 }
 
 // Drive verdict

@@ -975,6 +975,24 @@ Merged recently:
   (2) The hero's upstream pass no longer shows the big "See <reach> →" button when the upstream reach is on the same river:
   it is open, so the "Other reaches" line under the headline already links it. The legal-season pass (closed water) keeps
   its button.
+- **Run days rated on the river** (TJ, 2026-11-14, Lower Credit at midday: drizzle, overcast, 4.1 m3/s, 6.1 °C live, steelhead
+  in; the pill said Marginal, "The modelled run at the mouth is only fair"). For a migratory fish in its run, `conditionsParts()`
+  used the modelled run at the mouth (`stagingRead()`: lake temperature and wind) as the whole rating and dropped the season,
+  flow, water and sky. Now: fish still in the lake (`fishInLake`, staging at a mouth) keep the run-only rating; fish in the
+  river are rated like any other day (`sectionSeasonScore()` + `liveConditionsParts()`), plus `RUN_STRONG_BONUS` (2) only
+  when the run reads strong (65%+) and flow is in prime (TJ: the run model reads strong on most fall days whatever the
+  rain, so the bonus alone made almost every day Excellent). Cool water (4 to 8 °C) scores +2 for winter run fish
+  (`ctx.coldTolerant`; +1 for everyone else), and the water note for them reads "cool but fine for steelhead, which may be a
+  little slower to take" instead of "below the feeding range, so expect slower fishing". The `RUN_PRIME_SCORE` rule (strong
+  run + prime = Excellent) is gone; prime flow's +5 does that now. Core change: the Worker redeploys, and the weekly email
+  uses the same rule. Real forecast for Nov 14 to 28 on the outlook rivers: was mostly Marginal and Good (swinging with the
+  wind). Then (TJ, same day, "too generous"): **Excellent needs prime flow** (`primeForExcellent()`, `EXCELLENT_SCORE`):
+  any day scoring 10+ without prime flow (or with no flow reading) stops at 9, Good, and the result carries `primeCap`.
+  Same forecast now: Good on almost every day (8 or 9), Excellent only where flow is prime (the Rouge Nov 14 to 18).
+  In-season steelhead on normal flow is Good even on a bright day (6 + 2 + 0), so the weekly email (Good or better)
+  still sends most weeks. TJ chose to keep Good as the trigger but list fewer days: each river and fish in the weekly email
+  now shows its best day, plus a second only when it scores the same (`bestDays()` in `worker/weekly.js`; ties go to the
+  cloudier day, then the earlier one). It listed up to three. `bestDay()` (where to stand, gear) uses the same pick.
 
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
