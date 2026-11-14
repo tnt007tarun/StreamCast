@@ -927,6 +927,13 @@ Merged recently:
   before today or past the last day chip is ignored. Back still returns to `/`. Umami now records a page view for each
   results address (`/?river=...`); compare homepage views before and after 2026-11-12 with that in mind.
 
+- **Outlook mid-month update** (TJ, 2026-11-13, for Facebook group posts): `/outlook/` refreshed for Nov 14 to 30. Days 1 to 13
+  greyed (`.cal-past`). Dates came from scoring every outlook reach with the weekly email's chain (`scoreWeek()` /
+  `scoreDay()`, Steelhead) on Open-Meteo for each reach (30 days back, 16 ahead), with each gauge's KV `flowfc:<gauge>`
+  estimate (day 7 held for later days; dry until about Nov 22), cross-checked against four models (best match, GEM,
+  ECMWF, GFS). Good everywhere on Nov 18 to 20 and Nov 25 to 26; the second window is 12 days out. "Also running" now
+  names coho on Bowmanville and the Ganaraska only. Facebook links: `?utm_source=facebook&utm_medium=social&utm_campaign=<month>-outlook`.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in
