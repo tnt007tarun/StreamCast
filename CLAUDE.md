@@ -934,6 +934,24 @@ Merged recently:
   ECMWF, GFS). Good everywhere on Nov 18 to 20 and Nov 25 to 26; the second window is 12 days out. "Also running" now
   names coho on Bowmanville and the Ganaraska only. Facebook links: `?utm_source=facebook&utm_medium=social&utm_campaign=<month>-outlook`.
 
+- **Steelhead bait guide** (TJ, 2026-11-13, from the Search Console pull and forum research: the most-asked steelhead
+  questions are beads or roe, bead colour and float setup): `/guides/steelhead-bait/`. Roe bags, soft and hard beads,
+  worms and flies; size and colour by water clarity (same table as the winter guide, plus bead sizes); by season; Ontario
+  bait rules from MNR 2026 pp. 14 and 20 to 22 (artificial-only reaches, no bait or eggs within 30 m of water, no buying or
+  selling eggs from anglers, Southern BMZ). First person only from TJ's stated facts (his setup, the November Credit bait
+  day, the Hard Bead line from the app card). Videos `iI_O65M99G4` (setup and bait) and `8J_6sD0Nn_k` (green worm). Mid
+  signup box, Today's conditions block, FAQ matches JSON-LD. In the guides index, sitemap and llms.txt; the winter guide's
+  bait section links to it. Homepage `GUIDES` card after the winter guide (peak Nov, Dec, Mar, Apr; on Oct, Jan, Feb; thumb
+  `images/thumbs/humber-winter-steelhead-buck.webp`), so in November Bronte drops to the "More guides" list.
+  Round 2 (TJ, 2026-11-13): top photo is the Humber buck (`humber-winter-steelhead-buck`, also og:image); videos
+  `DIOPyGUBFnc` (TJ's "My Biggest Steelhead Yet" short, a buck on a purple Woolly Bugger, lower Bronte in spring) under the
+  flies list and `8ZAt0ks_FEY` (Credit) under the season list. Woolly Buggers added to the guide's flies and to the app's
+  float panel (`#p-float`, 4th, "#6–10 · Purple, Black, Olive"). `renderBaitPillar()` now looks up advice as
+  `BAIT_ADVICE['<tab>:<name>']` before `BAIT_ADVICE[name]`, so the float Woolly Bugger reads "under the float" while the
+  streamer card keeps its swing advice. The bead section shows a screenshot of the app's bait cards (Lower Credit,
+  steelhead): `images/guides/app-bait-cards.webp` (three cards) and, under 600 px, `app-bait-cards-beads.webp` (the two
+  bead cards stacked). Retake them if the bait cards change.
+
 ### Analytics events (Umami)
 - App, via `track()` in `app.js`: `River Viewed {river, species, source, day}` (fired once per river/species/date in
   `renderResults()` via `trackRiverViewed()`; `source` is search, deep-link, redirect, nearby or home-list, set in

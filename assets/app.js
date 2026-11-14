@@ -3518,6 +3518,13 @@ var GUIDES = [
     peak:[11,12,1,2], on:[10,3], video:true
   },
   {
+    url:'/guides/steelhead-bait/',
+    title:'The best bait for steelhead in Ontario',
+    blurb:'Roe bags, beads, worms and flies. Which to tie on for the water in front of you, what size and colour of bead, and the bait rules.',
+    img:'/images/rivers/humber-winter-steelhead-buck.webp',
+    peak:[11,12,3,4], on:[10,1,2], video:true
+  },
+  {
     url:'/rivers/humber/',
     title:'Salmon and steelhead on the Humber',
     blurb:'Toronto\u2019s closest salmon river. Old Mill is packed in the fall, quiet in winter, full of redhorse in spring, and open all year below Eglinton.',
@@ -6006,6 +6013,7 @@ var BAIT_ADVICE = {
   'Roe Bag': {spec:'Small mesh sacs · Natural or cured', bestFor:'Fresh fish holding in pools', how:'Cast upstream, hold the float back so the bait leads', when:'Top pick'},
   'Soft Bead': {spec:'10–12 mm · Pink, Peach, Natural', bestFor:'Steelhead and salmon in coloured water', how:'Peg 1–2 in above the hook. Pink when coloured', when:'Coloured water'},
   'Hard Bead': {spec:'8–12 mm · Nuke Egg colours', bestFor:'Clear water and pressured fish', how:'Peg 1–2 in above the hook. Chartreuse and orange lead', when:'Clear water'},
+  'float:Woolly Bugger': {spec:'#6–10 · Purple, Black, Olive', bestFor:'Steelhead that have seen too many eggs', how:'Under the float, just off the bottom, like a bead', when:'Egg-shy fish'},
   'Plastic Worm': {spec:'3–4 inch · Red, Pink, Chartreuse', bestFor:'Stained water after rain', how:'Thread on the hook and drift it naturally', when:'After rain'},
   'Nightcrawler': {spec:'Full or half · Natural', bestFor:'Spring, and after rain when naturals wash in', how:'Drift naturally with just enough shot to hold', when:'Spring / rain'},
   'Little Cleo Spoon': {spec:'½–¾ oz · Orange/White, Gold/Red', bestFor:'Harbour mouths and pier ends', how:'Cast across the current and retrieve slowly, letting it flutter on the drop', when:'Top pick'},
@@ -6050,7 +6058,9 @@ function renderBaitPillar(topMethod) {
 
   function read(el) {
     var name = (el.querySelector('.bname')||{}).textContent || '';
-    var adv  = BAIT_ADVICE[name] || {};
+    // A fly can sit in more than one panel with different advice (the Woolly Bugger swung as a streamer, or under a
+    // float): a 'tab:name' entry wins over the plain name (2026-11-13).
+    var adv  = BAIT_ADVICE[tab + ':' + name] || BAIT_ADVICE[name] || {};
     return {
       name: name,
       spec: adv.spec || ((el.querySelector('.bdet')||{}).textContent || ''),
