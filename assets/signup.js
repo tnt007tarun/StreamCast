@@ -56,9 +56,12 @@
   }
   // Builds the two chip groups into `el`. opts: {rivers: [...], species: [...]} to preselect.
   // Returns {pairs(): [{river, species}], rivers(), species(), error()} where error() is '' when the picks are usable.
+  // opts.only: offer just these rivers. opts.fish: one fixed fish, no fish chips (the steelhead boxes, TJ 2026-11-14).
   function weeklyPicker(el, opts) {
     opts = opts || {};
-    var all = Object.keys(window.RIVER_SECTIONS || {}).filter(function (r) { return riverFish(r).length; }).sort();
+    var fixed = opts.fish || '';
+    var all = opts.only ? opts.only.slice().sort()
+      : Object.keys(window.RIVER_SECTIONS || {}).filter(function (r) { return riverFish(r).length; }).sort();
     var selR = (opts.rivers || []).filter(function (r) { return all.indexOf(r) !== -1; }).slice(0, MAX_RIVERS);
     var selF = (opts.species || []).filter(function (n) { return FISH_ORDER.indexOf(n) !== -1; });
     var top = TOP_RIVERS.filter(function (r) { return all.indexOf(r) !== -1; });
@@ -67,7 +70,7 @@
     var showAll = !top.length || selR.some(function (r) { return top.indexOf(r) === -1; });
     el.innerHTML = '<div class="hff-pick"><span class="plbl">Rivers <span>(up to ' + MAX_RIVERS + ')</span></span>' +
       '<div class="hff-chips r" role="group" aria-label="Rivers"></div><p class="pnote rn" hidden></p></div>' +
-      '<div class="hff-pick"><span class="plbl">Fish</span><div class="hff-chips f" role="group" aria-label="Fish"></div></div>';
+      (fixed ? '' : '<div class="hff-pick"><span class="plbl">Fish</span><div class="hff-chips f" role="group" aria-label="Fish"></div></div>');
     var rBox = el.querySelector('.hff-chips.r'), fBox = el.querySelector('.hff-chips.f'), note = el.querySelector('.rn');
     function chip(label, value, on) {
       return '<button type="button" class="hff-chip" data-v="' + esc(value) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + esc(label) + '</button>';
@@ -81,6 +84,7 @@
       var shown = showAll ? top.concat(rest) : top;
       rBox.innerHTML = shown.map(function (r) { return chip(chipName(r), r, selR.indexOf(r) !== -1); }).join('') +
         (showAll || !rest.length ? '' : '<button type="button" class="hff-chip more" aria-expanded="false">More rivers (' + rest.length + ')</button>');
+      if (fixed) return;
       var offered = fishOffered();
       selF = selF.filter(function (n) { return offered.indexOf(n) !== -1; });
       fBox.innerHTML = offered.map(function (n) { return chip(n, n, selF.indexOf(n) !== -1); }).join('');
@@ -95,14 +99,16 @@
       else selR.push(v);
       draw();
     });
-    fBox.addEventListener('click', function (e) {
+    if (fBox) fBox.addEventListener('click', function (e) {
       var b = e.target.closest('.hff-chip'); if (!b) return;
       var v = b.getAttribute('data-v'), i = selF.indexOf(v);
       if (i !== -1) selF.splice(i, 1); else selF.push(v);
       b.setAttribute('aria-pressed', i === -1 ? 'true' : 'false');
     });
     draw();
+    if (fixed) selF = [fixed];
     function pairs() {
+      if (fixed) return selR.map(function (r) { return { river: r, species: fixed }; });
       var out = [];
       selR.forEach(function (r) { var fish = riverFish(r); selF.forEach(function (n) { if (fish.indexOf(n) !== -1) out.push({ river: r, species: n }); }); });
       return out;
@@ -179,17 +185,15 @@
     var parents = RIVERS.filter(function (r) { return STEELHEAD_REACH[r]; });
     // Offer copy (TJ, 2026-11-10): name it as a weekly outlook (pairs with the monthly outlook); Thursday moves to the line below.
     var what = mode === 'steelhead'
-      ? 'Your weekly steelhead outlook ' + (river ? 'for ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'for your river')
+      ? 'Your weekly steelhead outlook ' + (river ? 'for ' + (/River$/.test(river) ? 'the ' : '') + esc(river) : 'for your rivers')
       : 'Your weekly fishing outlook';
     var showRun = mode === 'steelhead';
     var showOutlook = mode === 'any' && !lsGet('hff_sub_outlook');
     box.innerHTML = '<div class="lbl">Free weekly email</div>' +
       '<p class="hd">' + what + '</p>' +
       '<p class="how">' + HOW + '</p>' +
-      (mode === 'any' ? '<div class="pk"></div>' : '') +
+      (mode === 'any' || !river ? '<div class="pk"></div>' : '') +
       '<form novalidate>' +
-      (river || mode === 'any' ? '' : '<select aria-label="River" class="r" required><option value="">Choose your river</option>' +
-        parents.map(function (r) { return '<option>' + esc(r) + '</option>'; }).join('') + '</select>') +
       '<input type="email" placeholder="your@email.com" autocomplete="email" aria-label="Email" required>' +
       '<button type="submit">Get the weekly outlook</button></form>' +
       (showRun ? '<label class="opt"><input type="checkbox"> Also send run alerts</label>' : '') +
@@ -197,11 +201,13 @@
       '<p class="small">' + FINE + '</p><p class="msg" role="status"></p>';
     observeSeen(box, page, 'weekly', placement);
     var form = box.querySelector('form'), email = box.querySelector('input[type=email]');
-    var rSel = box.querySelector('select.r');
     var cb = box.querySelector('.opt input'), btn = box.querySelector('button[type=submit]'), msg = box.querySelector('.msg');
     // Steelhead preselected from October to April (2026-11-08): the box needed a river, a fish and an email, and no one finished it.
+    // Steelhead boxes with no river of their own (outlook, guides): pick up to 3 rivers (TJ, 2026-11-14; was one dropdown).
     var picker = mode === 'any' ? weeklyPicker(box.querySelector('.pk'),
-      { species: STEELHEAD_MONTHS.indexOf(new Date().getMonth()) !== -1 ? ['Steelhead'] : [] }) : null;
+      { species: STEELHEAD_MONTHS.indexOf(new Date().getMonth()) !== -1 ? ['Steelhead'] : [] })
+      : (!river ? weeklyPicker(box.querySelector('.pk'), { only: parents, fish: 'Steelhead' }) : null);
+    var runRivers = [];
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       msg.className = 'msg'; msg.textContent = '';
@@ -211,9 +217,9 @@
         if (perr) { msg.className = 'msg err'; msg.textContent = perr; blocked(page, 'weekly', placement, /^None/.test(perr) ? 'no-match' : /river/.test(perr) ? 'no-river' : 'no-fish'); return; }
         weekly = picker.pairs();
         r = picker.rivers().join(', '); sp = picker.species().join(', ');
+        runRivers = picker.rivers();
       } else {
-        r = rSel ? rSel.value : river;
-        if (!r) { msg.className = 'msg err'; msg.textContent = 'Pick a river first.'; rSel.focus(); blocked(page, 'weekly', placement, 'no-river'); return; }
+        r = river; runRivers = [river];
         sp = 'Steelhead';
         weekly = { section: STEELHEAD_REACH[r], species: sp };
       }
@@ -225,7 +231,7 @@
       // Ticking run alerts sends kind "run" with the weekly reach attached; the Worker saves both.
       var body = { email: v, kind: run ? 'run' : 'weekly', source: 'page:' + page, outlook: outlook,
         weekly: weekly };
-      if (run) body.river = r;
+      if (run) { body.river = runRivers[0]; body.runRivers = runRivers; }
       fetch(PROXY + '/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (res) {
           return res.json().catch(function () { return {}; }).then(function (d) {
@@ -234,7 +240,7 @@
         })
         .then(function () {
           (Array.isArray(weekly) ? weekly : [weekly]).forEach(function (w) { lsSet('hff_sub_weekly:' + (w.river || w.section) + ':' + w.species, '1'); });
-          if (run) lsSet('hff_sub_run:' + r, '1');
+          if (run) runRivers.forEach(function (x) { lsSet('hff_sub_run:' + x, '1'); });
           if (outlook) lsSet('hff_sub_outlook', '1');
           track('Email Signup', { page: page, offer: offer, river: r, species: sp, placement: placement });
           form.style.display = 'none';

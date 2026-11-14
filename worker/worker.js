@@ -863,10 +863,13 @@ async function handleSubscribe(request, env) {
       record.outlook = true;
       topics.push(TOPIC_OUTLOOK);
     }
+    // body.runRivers: several rivers from the steelhead boxes' river chips (2026-11-14); body.river alone still works.
+    let runList = [];
     if (kind === "run") {
-      const river = String(body.river || "");
-      if (RUN_RIVERS.indexOf(river) === -1) return jsonResponse({ error: "Unknown river" }, 400);
-      if (record.runRivers.indexOf(river) === -1) record.runRivers.push(river);
+      runList = [...new Set((Array.isArray(body.runRivers) && body.runRivers.length ? body.runRivers : [body.river])
+        .map((r) => String(r || "")))].slice(0, MAX_WEEKLY_RIVERS);
+      if (!runList.length || runList.some((r) => RUN_RIVERS.indexOf(r) === -1)) return jsonResponse({ error: "Unknown river" }, 400);
+      runList.forEach((r) => { if (record.runRivers.indexOf(r) === -1) record.runRivers.push(r); });
       topics.push(TOPIC_RUN);
     }
     if (kind === "trip") {
@@ -915,8 +918,8 @@ async function handleSubscribe(request, env) {
       lead = `<p>On the morning of <strong>${escapeHtml(prettyDate(trip.date))}</strong> we'll email you the flow and weather for
             <strong>${escapeHtml(secDisplay(trip.section))}</strong>, with a link to the full forecast.</p>`;
     } else if (kind === "run") {
-      subject = "Run alerts for the " + body.river;
-      lead = `<p>We'll email you when salmon or steelhead are running on the <strong>${escapeHtml(body.river)}</strong>.
+      subject = "Run alerts for the " + andList(runList);
+      lead = `<p>We'll email you when salmon or steelhead are running on the <strong>${escapeHtml(andList(runList))}</strong>.
             Each alert is checked by an angler before it goes out, so expect a few a season, not a stream.</p>` +
         (weeklyAdded ? `<p>You'll also get a Thursday email, around 5 pm Toronto time, when the coming days look good
             for ${weeklyWhat(weeklyAdded)}. No good days, no email.</p>` : "") +
