@@ -927,6 +927,13 @@ Merged recently:
   before today or past the last day chip is ignored. Back still returns to `/`. Umami now records a page view for each
   results address (`/?river=...`); compare homepage views before and after 2026-11-12 with that in mind.
 
+- **Outlook mid-month update** (TJ, 2026-11-13, for Facebook group posts): `/outlook/` refreshed for Nov 14 to 30. Days 1 to 13
+  greyed (`.cal-past`). Dates came from scoring every outlook reach with the weekly email's chain (`scoreWeek()` /
+  `scoreDay()`, Steelhead) on Open-Meteo for each reach (30 days back, 16 ahead), with each gauge's KV `flowfc:<gauge>`
+  estimate (day 7 held for later days; dry until about Nov 22), cross-checked against four models (best match, GEM,
+  ECMWF, GFS). Good everywhere on Nov 18 to 20 and Nov 25 to 26; the second window is 12 days out. "Also running" now
+  names coho on Bowmanville and the Ganaraska only. Facebook links: `?utm_source=facebook&utm_medium=social&utm_campaign=<month>-outlook`.
+
 - **Steelhead bait guide** (TJ, 2026-11-13, from the Search Console pull and forum research: the most-asked steelhead
   questions are beads or roe, bead colour and float setup): `/guides/steelhead-bait/`. Roe bags, soft and hard beads,
   worms and flies; size and colour by water clarity (same table as the winter guide, plus bead sizes); by season; Ontario
@@ -934,7 +941,8 @@ Merged recently:
   selling eggs from anglers, Southern BMZ). First person only from TJ's stated facts (his setup, the November Credit bait
   day, the Hard Bead line from the app card). Videos `iI_O65M99G4` (setup and bait) and `8J_6sD0Nn_k` (green worm). Mid
   signup box, Today's conditions block, FAQ matches JSON-LD. In the guides index, sitemap and llms.txt; the winter guide's
-  bait section links to it. Not a homepage `GUIDES` card yet.
+  bait section links to it. Homepage `GUIDES` card after the winter guide (peak Nov, Dec, Mar, Apr; on Oct, Jan, Feb; thumb
+  `images/thumbs/humber-winter-steelhead-buck.webp`), so in November Bronte drops to the "More guides" list.
   Round 2 (TJ, 2026-11-13): top photo is the Humber buck (`humber-winter-steelhead-buck`, also og:image); videos
   `DIOPyGUBFnc` (TJ's "My Biggest Steelhead Yet" short, a buck on a purple Woolly Bugger, lower Bronte in spring) under the
   flies list and `8ZAt0ks_FEY` (Credit) under the season list. Woolly Buggers added to the guide's flies and to the app's

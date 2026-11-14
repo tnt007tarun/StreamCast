@@ -3518,6 +3518,13 @@ var GUIDES = [
     peak:[11,12,1,2], on:[10,3], video:true
   },
   {
+    url:'/guides/steelhead-bait/',
+    title:'The best bait for steelhead in Ontario',
+    blurb:'Roe bags, beads, worms and flies. Which to tie on for the water in front of you, what size and colour of bead, and the bait rules.',
+    img:'/images/rivers/humber-winter-steelhead-buck.webp',
+    peak:[11,12,3,4], on:[10,1,2], video:true
+  },
+  {
     url:'/rivers/humber/',
     title:'Salmon and steelhead on the Humber',
     blurb:'Toronto\u2019s closest salmon river. Old Mill is packed in the fall, quiet in winter, full of redhorse in spring, and open all year below Eglinton.',
